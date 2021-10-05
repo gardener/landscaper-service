@@ -9,6 +9,7 @@ Source: https://github.com/gardener/landscaper-service
 Files:
   .github/*
   .gitignore
+  .golangci.yaml
   CODEOWNERS
   go.mod
   go.sum
