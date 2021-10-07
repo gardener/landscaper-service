@@ -6,9 +6,15 @@ REPO_ROOT                                      := $(shell dirname $(realpath $(l
 VERSION                                        := $(shell cat $(REPO_ROOT)/VERSION)
 EFFECTIVE_VERSION                              := $(VERSION)-$(shell git rev-parse HEAD)
 
+.PHONY: revendor
+revendor:
+	@$(REPO_ROOT)/hack/revendor.sh
+	@cd $(REPO_ROOT)/apis && $(REPO_ROOT)/hack/revendor.sh
+	@chmod +x $(REPO_ROOT)/apis/vendor/k8s.io/code-generator/*
+
 .PHONY: format
 format:
-	@$(REPO_ROOT)/hack/format.sh $(REPO_ROOT)/pkg $(REPO_ROOT)/cmd
+	@$(REPO_ROOT)/hack/format.sh $(REPO_ROOT)/pkg $(REPO_ROOT)/cmd $(REPO_ROOT)/apis/core
 
 .PHONY: check
 check:
@@ -16,3 +22,10 @@ check:
 
 .PHONY: verify
 verify: check
+
+.PHONY: generate-code
+generate-code:
+	@cd $(REPO_ROOT)/apis && $(REPO_ROOT)/hack/generate.sh ./... && cd $(REPO_ROOT)
+
+.PHONY: generate
+generate: generate-code format revendor

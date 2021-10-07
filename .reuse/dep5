@@ -14,6 +14,9 @@ Files:
   go.mod
   go.sum
   VERSION
+  apis/vendor/*
+  apis/go.mod
+  apis/go.sum
 Copyright: 2021 SAP SE or an SAP affiliate company and Gardener contributors
 License: Apache-2.0
 
