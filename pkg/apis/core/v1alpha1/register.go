@@ -9,7 +9,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 
-	"github.com/gardener/landscaper-service/apis/core"
+	"github.com/gardener/landscaper-service/pkg/apis/core"
 )
 
 // SchemeGroupVersion is group version used to register these objects

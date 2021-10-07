@@ -2,6 +2,6 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-//go:generate ../hack/generate-code.sh
+//go:generate ../../hack/generate-code.sh
 
 package apis
