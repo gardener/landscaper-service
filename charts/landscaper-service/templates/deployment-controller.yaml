@@ -1,0 +1,62 @@
+{{/* SPDX-FileCopyrightText: 2021 "SAP SE or an SAP affiliate company and Gardener contributors"
+
+  SPDX-License-Identifier: Apache-2.0
+*/}}
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "landscaper-service.fullname" . }}
+  labels:
+    {{- include "landscaper-service.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.controller.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "landscaper-service.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "landscaper-service.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "landscaper-service.controller.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{  toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ include "landscaper-service-controller-image" . }}"
+          imagePullPolicy: {{ .Values.controller.image.pullPolicy }}
+          args:
+          - "-v={{ .Values.landscaperservice.verbosity }}"
+          {{- if .Values.landscaperservice.metrics }}
+          ports:
+            - name: metrics
+              containerPort: {{ .Values.landscaperservice.metrics.port }}
+          {{- end }}
+          volumeMounts:
+          - name: config
+            mountPath: /app/ls/config
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+      - name: config
+        secret:
+          secretName: {{ include "landscaper-service.fullname" . }}-config
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

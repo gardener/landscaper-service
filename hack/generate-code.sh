@@ -30,6 +30,15 @@ bash "${PROJECT_ROOT}"/vendor/k8s.io/code-generator/generate-internal-groups.sh 
   "core:v1alpha1" \
   --go-header-file "${PROJECT_ROOT}/hack/boilerplate.go.txt"
 
+echo "> Generating groups for Config"
+bash "${PROJECT_ROOT}"/vendor/k8s.io/code-generator/generate-internal-groups.sh \
+  deepcopy,defaulter,conversion \
+  $PROJECT_MOD_ROOT/pkg/generated \
+  $PROJECT_MOD_ROOT/pkg/apis \
+  $PROJECT_MOD_ROOT/pkg/apis \
+  "config:v1alpha1" \
+  --go-header-file "${PROJECT_ROOT}/hack/boilerplate.go.txt"
+
 echo "> Generating openapi definitions"
 go install "${PROJECT_ROOT}"/vendor/k8s.io/kube-openapi/cmd/openapi-gen
 ${GOPATH}/bin/openapi-gen "$@" \
