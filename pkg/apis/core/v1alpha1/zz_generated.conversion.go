@@ -11,7 +11,12 @@ SPDX-License-Identifier: Apache-2.0
 package v1alpha1
 
 import (
+	unsafe "unsafe"
+
+	conversion "k8s.io/apimachinery/pkg/conversion"
 	runtime "k8s.io/apimachinery/pkg/runtime"
+
+	core "github.com/gardener/landscaper-service/pkg/apis/core"
 )
 
 func init() {
@@ -21,5 +26,409 @@ func init() {
 // RegisterConversions adds conversion functions to the given scheme.
 // Public to allow building arbitrary schemes.
 func RegisterConversions(s *runtime.Scheme) error {
+	if err := s.AddGeneratedConversionFunc((*Error)(nil), (*core.Error)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_Error_To_core_Error(a.(*Error), b.(*core.Error), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.Error)(nil), (*Error)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_Error_To_v1alpha1_Error(a.(*core.Error), b.(*Error), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*Instance)(nil), (*core.Instance)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_Instance_To_core_Instance(a.(*Instance), b.(*core.Instance), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.Instance)(nil), (*Instance)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_Instance_To_v1alpha1_Instance(a.(*core.Instance), b.(*Instance), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*InstanceSpec)(nil), (*core.InstanceSpec)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_InstanceSpec_To_core_InstanceSpec(a.(*InstanceSpec), b.(*core.InstanceSpec), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.InstanceSpec)(nil), (*InstanceSpec)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_InstanceSpec_To_v1alpha1_InstanceSpec(a.(*core.InstanceSpec), b.(*InstanceSpec), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*InstanceStatus)(nil), (*core.InstanceStatus)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_InstanceStatus_To_core_InstanceStatus(a.(*InstanceStatus), b.(*core.InstanceStatus), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.InstanceStatus)(nil), (*InstanceStatus)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_InstanceStatus_To_v1alpha1_InstanceStatus(a.(*core.InstanceStatus), b.(*InstanceStatus), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*LandscaperDeployment)(nil), (*core.LandscaperDeployment)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_LandscaperDeployment_To_core_LandscaperDeployment(a.(*LandscaperDeployment), b.(*core.LandscaperDeployment), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.LandscaperDeployment)(nil), (*LandscaperDeployment)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_LandscaperDeployment_To_v1alpha1_LandscaperDeployment(a.(*core.LandscaperDeployment), b.(*LandscaperDeployment), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*LandscaperDeploymentSpec)(nil), (*core.LandscaperDeploymentSpec)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_LandscaperDeploymentSpec_To_core_LandscaperDeploymentSpec(a.(*LandscaperDeploymentSpec), b.(*core.LandscaperDeploymentSpec), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.LandscaperDeploymentSpec)(nil), (*LandscaperDeploymentSpec)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_LandscaperDeploymentSpec_To_v1alpha1_LandscaperDeploymentSpec(a.(*core.LandscaperDeploymentSpec), b.(*LandscaperDeploymentSpec), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*LandscaperDeploymentStatus)(nil), (*core.LandscaperDeploymentStatus)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_LandscaperDeploymentStatus_To_core_LandscaperDeploymentStatus(a.(*LandscaperDeploymentStatus), b.(*core.LandscaperDeploymentStatus), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.LandscaperDeploymentStatus)(nil), (*LandscaperDeploymentStatus)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_LandscaperDeploymentStatus_To_v1alpha1_LandscaperDeploymentStatus(a.(*core.LandscaperDeploymentStatus), b.(*LandscaperDeploymentStatus), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*ObjectReference)(nil), (*core.ObjectReference)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_ObjectReference_To_core_ObjectReference(a.(*ObjectReference), b.(*core.ObjectReference), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.ObjectReference)(nil), (*ObjectReference)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_ObjectReference_To_v1alpha1_ObjectReference(a.(*core.ObjectReference), b.(*ObjectReference), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*SeedConfig)(nil), (*core.SeedConfig)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_SeedConfig_To_core_SeedConfig(a.(*SeedConfig), b.(*core.SeedConfig), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.SeedConfig)(nil), (*SeedConfig)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_SeedConfig_To_v1alpha1_SeedConfig(a.(*core.SeedConfig), b.(*SeedConfig), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*SeedConfigSpec)(nil), (*core.SeedConfigSpec)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_SeedConfigSpec_To_core_SeedConfigSpec(a.(*SeedConfigSpec), b.(*core.SeedConfigSpec), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.SeedConfigSpec)(nil), (*SeedConfigSpec)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_SeedConfigSpec_To_v1alpha1_SeedConfigSpec(a.(*core.SeedConfigSpec), b.(*SeedConfigSpec), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*SeedConfigStatus)(nil), (*core.SeedConfigStatus)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_SeedConfigStatus_To_core_SeedConfigStatus(a.(*SeedConfigStatus), b.(*core.SeedConfigStatus), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.SeedConfigStatus)(nil), (*SeedConfigStatus)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_SeedConfigStatus_To_v1alpha1_SeedConfigStatus(a.(*core.SeedConfigStatus), b.(*SeedConfigStatus), scope)
+	}); err != nil {
+		return err
+	}
 	return nil
+}
+
+func autoConvert_v1alpha1_Error_To_core_Error(in *Error, out *core.Error, s conversion.Scope) error {
+	out.Operation = in.Operation
+	out.Message = in.Message
+	return nil
+}
+
+// Convert_v1alpha1_Error_To_core_Error is an autogenerated conversion function.
+func Convert_v1alpha1_Error_To_core_Error(in *Error, out *core.Error, s conversion.Scope) error {
+	return autoConvert_v1alpha1_Error_To_core_Error(in, out, s)
+}
+
+func autoConvert_core_Error_To_v1alpha1_Error(in *core.Error, out *Error, s conversion.Scope) error {
+	out.Operation = in.Operation
+	out.Message = in.Message
+	return nil
+}
+
+// Convert_core_Error_To_v1alpha1_Error is an autogenerated conversion function.
+func Convert_core_Error_To_v1alpha1_Error(in *core.Error, out *Error, s conversion.Scope) error {
+	return autoConvert_core_Error_To_v1alpha1_Error(in, out, s)
+}
+
+func autoConvert_v1alpha1_Instance_To_core_Instance(in *Instance, out *core.Instance, s conversion.Scope) error {
+	out.ObjectMeta = in.ObjectMeta
+	if err := Convert_v1alpha1_InstanceSpec_To_core_InstanceSpec(&in.Spec, &out.Spec, s); err != nil {
+		return err
+	}
+	if err := Convert_v1alpha1_InstanceStatus_To_core_InstanceStatus(&in.Status, &out.Status, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_v1alpha1_Instance_To_core_Instance is an autogenerated conversion function.
+func Convert_v1alpha1_Instance_To_core_Instance(in *Instance, out *core.Instance, s conversion.Scope) error {
+	return autoConvert_v1alpha1_Instance_To_core_Instance(in, out, s)
+}
+
+func autoConvert_core_Instance_To_v1alpha1_Instance(in *core.Instance, out *Instance, s conversion.Scope) error {
+	out.ObjectMeta = in.ObjectMeta
+	if err := Convert_core_InstanceSpec_To_v1alpha1_InstanceSpec(&in.Spec, &out.Spec, s); err != nil {
+		return err
+	}
+	if err := Convert_core_InstanceStatus_To_v1alpha1_InstanceStatus(&in.Status, &out.Status, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_core_Instance_To_v1alpha1_Instance is an autogenerated conversion function.
+func Convert_core_Instance_To_v1alpha1_Instance(in *core.Instance, out *Instance, s conversion.Scope) error {
+	return autoConvert_core_Instance_To_v1alpha1_Instance(in, out, s)
+}
+
+func autoConvert_v1alpha1_InstanceSpec_To_core_InstanceSpec(in *InstanceSpec, out *core.InstanceSpec, s conversion.Scope) error {
+	if err := Convert_v1alpha1_ObjectReference_To_core_ObjectReference(&in.SeedConfigRef, &out.SeedConfigRef, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_v1alpha1_InstanceSpec_To_core_InstanceSpec is an autogenerated conversion function.
+func Convert_v1alpha1_InstanceSpec_To_core_InstanceSpec(in *InstanceSpec, out *core.InstanceSpec, s conversion.Scope) error {
+	return autoConvert_v1alpha1_InstanceSpec_To_core_InstanceSpec(in, out, s)
+}
+
+func autoConvert_core_InstanceSpec_To_v1alpha1_InstanceSpec(in *core.InstanceSpec, out *InstanceSpec, s conversion.Scope) error {
+	if err := Convert_core_ObjectReference_To_v1alpha1_ObjectReference(&in.SeedConfigRef, &out.SeedConfigRef, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_core_InstanceSpec_To_v1alpha1_InstanceSpec is an autogenerated conversion function.
+func Convert_core_InstanceSpec_To_v1alpha1_InstanceSpec(in *core.InstanceSpec, out *InstanceSpec, s conversion.Scope) error {
+	return autoConvert_core_InstanceSpec_To_v1alpha1_InstanceSpec(in, out, s)
+}
+
+func autoConvert_v1alpha1_InstanceStatus_To_core_InstanceStatus(in *InstanceStatus, out *core.InstanceStatus, s conversion.Scope) error {
+	out.ObservedGeneration = in.ObservedGeneration
+	out.LastError = (*core.Error)(unsafe.Pointer(in.LastError))
+	out.TargetRef = (*core.ObjectReference)(unsafe.Pointer(in.TargetRef))
+	out.InstallationRef = (*core.ObjectReference)(unsafe.Pointer(in.InstallationRef))
+	out.ClusterEndpointRef = (*core.ObjectReference)(unsafe.Pointer(in.ClusterEndpointRef))
+	out.ClusterKubeconfigRef = (*core.ObjectReference)(unsafe.Pointer(in.ClusterKubeconfigRef))
+	return nil
+}
+
+// Convert_v1alpha1_InstanceStatus_To_core_InstanceStatus is an autogenerated conversion function.
+func Convert_v1alpha1_InstanceStatus_To_core_InstanceStatus(in *InstanceStatus, out *core.InstanceStatus, s conversion.Scope) error {
+	return autoConvert_v1alpha1_InstanceStatus_To_core_InstanceStatus(in, out, s)
+}
+
+func autoConvert_core_InstanceStatus_To_v1alpha1_InstanceStatus(in *core.InstanceStatus, out *InstanceStatus, s conversion.Scope) error {
+	out.ObservedGeneration = in.ObservedGeneration
+	out.LastError = (*Error)(unsafe.Pointer(in.LastError))
+	out.TargetRef = (*ObjectReference)(unsafe.Pointer(in.TargetRef))
+	out.InstallationRef = (*ObjectReference)(unsafe.Pointer(in.InstallationRef))
+	out.ClusterEndpointRef = (*ObjectReference)(unsafe.Pointer(in.ClusterEndpointRef))
+	out.ClusterKubeconfigRef = (*ObjectReference)(unsafe.Pointer(in.ClusterKubeconfigRef))
+	return nil
+}
+
+// Convert_core_InstanceStatus_To_v1alpha1_InstanceStatus is an autogenerated conversion function.
+func Convert_core_InstanceStatus_To_v1alpha1_InstanceStatus(in *core.InstanceStatus, out *InstanceStatus, s conversion.Scope) error {
+	return autoConvert_core_InstanceStatus_To_v1alpha1_InstanceStatus(in, out, s)
+}
+
+func autoConvert_v1alpha1_LandscaperDeployment_To_core_LandscaperDeployment(in *LandscaperDeployment, out *core.LandscaperDeployment, s conversion.Scope) error {
+	out.ObjectMeta = in.ObjectMeta
+	if err := Convert_v1alpha1_LandscaperDeploymentSpec_To_core_LandscaperDeploymentSpec(&in.Spec, &out.Spec, s); err != nil {
+		return err
+	}
+	if err := Convert_v1alpha1_LandscaperDeploymentStatus_To_core_LandscaperDeploymentStatus(&in.Status, &out.Status, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_v1alpha1_LandscaperDeployment_To_core_LandscaperDeployment is an autogenerated conversion function.
+func Convert_v1alpha1_LandscaperDeployment_To_core_LandscaperDeployment(in *LandscaperDeployment, out *core.LandscaperDeployment, s conversion.Scope) error {
+	return autoConvert_v1alpha1_LandscaperDeployment_To_core_LandscaperDeployment(in, out, s)
+}
+
+func autoConvert_core_LandscaperDeployment_To_v1alpha1_LandscaperDeployment(in *core.LandscaperDeployment, out *LandscaperDeployment, s conversion.Scope) error {
+	out.ObjectMeta = in.ObjectMeta
+	if err := Convert_core_LandscaperDeploymentSpec_To_v1alpha1_LandscaperDeploymentSpec(&in.Spec, &out.Spec, s); err != nil {
+		return err
+	}
+	if err := Convert_core_LandscaperDeploymentStatus_To_v1alpha1_LandscaperDeploymentStatus(&in.Status, &out.Status, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_core_LandscaperDeployment_To_v1alpha1_LandscaperDeployment is an autogenerated conversion function.
+func Convert_core_LandscaperDeployment_To_v1alpha1_LandscaperDeployment(in *core.LandscaperDeployment, out *LandscaperDeployment, s conversion.Scope) error {
+	return autoConvert_core_LandscaperDeployment_To_v1alpha1_LandscaperDeployment(in, out, s)
+}
+
+func autoConvert_v1alpha1_LandscaperDeploymentSpec_To_core_LandscaperDeploymentSpec(in *LandscaperDeploymentSpec, out *core.LandscaperDeploymentSpec, s conversion.Scope) error {
+	out.Purpose = in.Purpose
+	out.Region = in.Region
+	return nil
+}
+
+// Convert_v1alpha1_LandscaperDeploymentSpec_To_core_LandscaperDeploymentSpec is an autogenerated conversion function.
+func Convert_v1alpha1_LandscaperDeploymentSpec_To_core_LandscaperDeploymentSpec(in *LandscaperDeploymentSpec, out *core.LandscaperDeploymentSpec, s conversion.Scope) error {
+	return autoConvert_v1alpha1_LandscaperDeploymentSpec_To_core_LandscaperDeploymentSpec(in, out, s)
+}
+
+func autoConvert_core_LandscaperDeploymentSpec_To_v1alpha1_LandscaperDeploymentSpec(in *core.LandscaperDeploymentSpec, out *LandscaperDeploymentSpec, s conversion.Scope) error {
+	out.Purpose = in.Purpose
+	out.Region = in.Region
+	return nil
+}
+
+// Convert_core_LandscaperDeploymentSpec_To_v1alpha1_LandscaperDeploymentSpec is an autogenerated conversion function.
+func Convert_core_LandscaperDeploymentSpec_To_v1alpha1_LandscaperDeploymentSpec(in *core.LandscaperDeploymentSpec, out *LandscaperDeploymentSpec, s conversion.Scope) error {
+	return autoConvert_core_LandscaperDeploymentSpec_To_v1alpha1_LandscaperDeploymentSpec(in, out, s)
+}
+
+func autoConvert_v1alpha1_LandscaperDeploymentStatus_To_core_LandscaperDeploymentStatus(in *LandscaperDeploymentStatus, out *core.LandscaperDeploymentStatus, s conversion.Scope) error {
+	out.ObservedGeneration = in.ObservedGeneration
+	out.LastError = (*core.Error)(unsafe.Pointer(in.LastError))
+	out.InstanceRef = (*core.ObjectReference)(unsafe.Pointer(in.InstanceRef))
+	return nil
+}
+
+// Convert_v1alpha1_LandscaperDeploymentStatus_To_core_LandscaperDeploymentStatus is an autogenerated conversion function.
+func Convert_v1alpha1_LandscaperDeploymentStatus_To_core_LandscaperDeploymentStatus(in *LandscaperDeploymentStatus, out *core.LandscaperDeploymentStatus, s conversion.Scope) error {
+	return autoConvert_v1alpha1_LandscaperDeploymentStatus_To_core_LandscaperDeploymentStatus(in, out, s)
+}
+
+func autoConvert_core_LandscaperDeploymentStatus_To_v1alpha1_LandscaperDeploymentStatus(in *core.LandscaperDeploymentStatus, out *LandscaperDeploymentStatus, s conversion.Scope) error {
+	out.ObservedGeneration = in.ObservedGeneration
+	out.LastError = (*Error)(unsafe.Pointer(in.LastError))
+	out.InstanceRef = (*ObjectReference)(unsafe.Pointer(in.InstanceRef))
+	return nil
+}
+
+// Convert_core_LandscaperDeploymentStatus_To_v1alpha1_LandscaperDeploymentStatus is an autogenerated conversion function.
+func Convert_core_LandscaperDeploymentStatus_To_v1alpha1_LandscaperDeploymentStatus(in *core.LandscaperDeploymentStatus, out *LandscaperDeploymentStatus, s conversion.Scope) error {
+	return autoConvert_core_LandscaperDeploymentStatus_To_v1alpha1_LandscaperDeploymentStatus(in, out, s)
+}
+
+func autoConvert_v1alpha1_ObjectReference_To_core_ObjectReference(in *ObjectReference, out *core.ObjectReference, s conversion.Scope) error {
+	out.Name = in.Name
+	out.Namespace = in.Namespace
+	return nil
+}
+
+// Convert_v1alpha1_ObjectReference_To_core_ObjectReference is an autogenerated conversion function.
+func Convert_v1alpha1_ObjectReference_To_core_ObjectReference(in *ObjectReference, out *core.ObjectReference, s conversion.Scope) error {
+	return autoConvert_v1alpha1_ObjectReference_To_core_ObjectReference(in, out, s)
+}
+
+func autoConvert_core_ObjectReference_To_v1alpha1_ObjectReference(in *core.ObjectReference, out *ObjectReference, s conversion.Scope) error {
+	out.Name = in.Name
+	out.Namespace = in.Namespace
+	return nil
+}
+
+// Convert_core_ObjectReference_To_v1alpha1_ObjectReference is an autogenerated conversion function.
+func Convert_core_ObjectReference_To_v1alpha1_ObjectReference(in *core.ObjectReference, out *ObjectReference, s conversion.Scope) error {
+	return autoConvert_core_ObjectReference_To_v1alpha1_ObjectReference(in, out, s)
+}
+
+func autoConvert_v1alpha1_SeedConfig_To_core_SeedConfig(in *SeedConfig, out *core.SeedConfig, s conversion.Scope) error {
+	out.ObjectMeta = in.ObjectMeta
+	if err := Convert_v1alpha1_SeedConfigSpec_To_core_SeedConfigSpec(&in.Spec, &out.Spec, s); err != nil {
+		return err
+	}
+	if err := Convert_v1alpha1_SeedConfigStatus_To_core_SeedConfigStatus(&in.Status, &out.Status, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_v1alpha1_SeedConfig_To_core_SeedConfig is an autogenerated conversion function.
+func Convert_v1alpha1_SeedConfig_To_core_SeedConfig(in *SeedConfig, out *core.SeedConfig, s conversion.Scope) error {
+	return autoConvert_v1alpha1_SeedConfig_To_core_SeedConfig(in, out, s)
+}
+
+func autoConvert_core_SeedConfig_To_v1alpha1_SeedConfig(in *core.SeedConfig, out *SeedConfig, s conversion.Scope) error {
+	out.ObjectMeta = in.ObjectMeta
+	if err := Convert_core_SeedConfigSpec_To_v1alpha1_SeedConfigSpec(&in.Spec, &out.Spec, s); err != nil {
+		return err
+	}
+	if err := Convert_core_SeedConfigStatus_To_v1alpha1_SeedConfigStatus(&in.Status, &out.Status, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_core_SeedConfig_To_v1alpha1_SeedConfig is an autogenerated conversion function.
+func Convert_core_SeedConfig_To_v1alpha1_SeedConfig(in *core.SeedConfig, out *SeedConfig, s conversion.Scope) error {
+	return autoConvert_core_SeedConfig_To_v1alpha1_SeedConfig(in, out, s)
+}
+
+func autoConvert_v1alpha1_SeedConfigSpec_To_core_SeedConfigSpec(in *SeedConfigSpec, out *core.SeedConfigSpec, s conversion.Scope) error {
+	out.ProviderType = in.ProviderType
+	out.Region = in.Region
+	out.Priority = in.Priority
+	out.Visible = in.Visible
+	if err := Convert_v1alpha1_ObjectReference_To_core_ObjectReference(&in.SecretRef, &out.SecretRef, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_v1alpha1_SeedConfigSpec_To_core_SeedConfigSpec is an autogenerated conversion function.
+func Convert_v1alpha1_SeedConfigSpec_To_core_SeedConfigSpec(in *SeedConfigSpec, out *core.SeedConfigSpec, s conversion.Scope) error {
+	return autoConvert_v1alpha1_SeedConfigSpec_To_core_SeedConfigSpec(in, out, s)
+}
+
+func autoConvert_core_SeedConfigSpec_To_v1alpha1_SeedConfigSpec(in *core.SeedConfigSpec, out *SeedConfigSpec, s conversion.Scope) error {
+	out.ProviderType = in.ProviderType
+	out.Region = in.Region
+	out.Priority = in.Priority
+	out.Visible = in.Visible
+	if err := Convert_core_ObjectReference_To_v1alpha1_ObjectReference(&in.SecretRef, &out.SecretRef, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_core_SeedConfigSpec_To_v1alpha1_SeedConfigSpec is an autogenerated conversion function.
+func Convert_core_SeedConfigSpec_To_v1alpha1_SeedConfigSpec(in *core.SeedConfigSpec, out *SeedConfigSpec, s conversion.Scope) error {
+	return autoConvert_core_SeedConfigSpec_To_v1alpha1_SeedConfigSpec(in, out, s)
+}
+
+func autoConvert_v1alpha1_SeedConfigStatus_To_core_SeedConfigStatus(in *SeedConfigStatus, out *core.SeedConfigStatus, s conversion.Scope) error {
+	out.ObservedGeneration = in.ObservedGeneration
+	out.Capacity = in.Capacity
+	return nil
+}
+
+// Convert_v1alpha1_SeedConfigStatus_To_core_SeedConfigStatus is an autogenerated conversion function.
+func Convert_v1alpha1_SeedConfigStatus_To_core_SeedConfigStatus(in *SeedConfigStatus, out *core.SeedConfigStatus, s conversion.Scope) error {
+	return autoConvert_v1alpha1_SeedConfigStatus_To_core_SeedConfigStatus(in, out, s)
+}
+
+func autoConvert_core_SeedConfigStatus_To_v1alpha1_SeedConfigStatus(in *core.SeedConfigStatus, out *SeedConfigStatus, s conversion.Scope) error {
+	out.ObservedGeneration = in.ObservedGeneration
+	out.Capacity = in.Capacity
+	return nil
+}
+
+// Convert_core_SeedConfigStatus_To_v1alpha1_SeedConfigStatus is an autogenerated conversion function.
+func Convert_core_SeedConfigStatus_To_v1alpha1_SeedConfigStatus(in *core.SeedConfigStatus, out *SeedConfigStatus, s conversion.Scope) error {
+	return autoConvert_core_SeedConfigStatus_To_v1alpha1_SeedConfigStatus(in, out, s)
 }

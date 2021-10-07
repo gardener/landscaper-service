@@ -29,3 +29,18 @@ bash "${PROJECT_ROOT}"/vendor/k8s.io/code-generator/generate-internal-groups.sh 
   $PROJECT_MOD_ROOT/pkg/apis \
   "core:v1alpha1" \
   --go-header-file "${PROJECT_ROOT}/hack/boilerplate.go.txt"
+
+echo "> Generating openapi definitions"
+go install "${PROJECT_ROOT}"/vendor/k8s.io/kube-openapi/cmd/openapi-gen
+${GOPATH}/bin/openapi-gen "$@" \
+  --v 1 \
+  --logtostderr \
+  --input-dirs=github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1 \
+  --input-dirs=k8s.io/api/core/v1 \
+  --input-dirs=k8s.io/apimachinery/pkg/apis/meta/v1 \
+  --input-dirs=k8s.io/apimachinery/pkg/api/resource \
+  --input-dirs=k8s.io/apimachinery/pkg/types \
+  --input-dirs=k8s.io/apimachinery/pkg/runtime \
+  --report-filename=${PROJECT_ROOT}/pkg/apis/openapi/api_violations.report \
+  --output-package=github.com/gardener/landscaper-service/pkg/apis/openapi \
+  -h "${PROJECT_ROOT}/hack/boilerplate.go.txt"

@@ -11,3 +11,10 @@ import (
 func addDefaultsFuncs(scheme *runtime.Scheme) error {
 	return RegisterDefaults(scheme)
 }
+
+// SetDefaults_SeedConfig sets the default values for SeedConfig objects
+func SetDefaults_SeedConfig(obj *SeedConfig) {
+	if len(obj.Spec.SecretRef.Namespace) == 0 {
+		obj.Spec.SecretRef.Namespace = obj.GetNamespace()
+	}
+}
