@@ -4,7 +4,6 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-set -x
 set -o errexit
 set -o nounset
 set -o pipefail
@@ -18,8 +17,6 @@ PROJECT_MOD_ROOT="github.com/gardener/landscaper-service"
 CURRENT_DIR=$(dirname $0)
 PROJECT_ROOT="${CURRENT_DIR}"/..
 
-ls -la $PROJECT_ROOT
-
 chmod +x ${PROJECT_ROOT}/vendor/k8s.io/code-generator/*
 
 export GOFLAGS=-mod=vendor
@@ -28,7 +25,7 @@ echo "> Generating groups for Landscaper Service"
 bash "${PROJECT_ROOT}"/vendor/k8s.io/code-generator/generate-internal-groups.sh \
   deepcopy,defaulter,conversion \
   $PROJECT_MOD_ROOT/pkg/generated \
-  $PROJECT_MOD_ROOT/apis \
-  $PROJECT_MOD_ROOT/apis \
+  $PROJECT_MOD_ROOT/pkg/apis \
+  $PROJECT_MOD_ROOT/pkg/apis \
   "core:v1alpha1" \
   --go-header-file "${PROJECT_ROOT}/hack/boilerplate.go.txt"
