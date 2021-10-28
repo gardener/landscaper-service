@@ -9,10 +9,12 @@ Source: https://github.com/gardener/landscaper-service
 Files:
   .github/*
   .gitignore
+  .golangci.yaml
   CODEOWNERS
   go.mod
   go.sum
   VERSION
+  vendor/*
 Copyright: 2021 SAP SE or an SAP affiliate company and Gardener contributors
 License: Apache-2.0
 
