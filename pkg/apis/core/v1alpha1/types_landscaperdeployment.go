@@ -13,7 +13,7 @@ import (
 // +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// The LandscaperDeployment is created to define a deployment of the Landscaper Service.
+// The LandscaperDeployment is created to define a deployment of the landscaper.
 type LandscaperDeployment struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
