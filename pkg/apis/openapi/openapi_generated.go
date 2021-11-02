@@ -29,9 +29,9 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentSpec":   schema_pkg_apis_core_v1alpha1_LandscaperDeploymentSpec(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentStatus": schema_pkg_apis_core_v1alpha1_LandscaperDeploymentStatus(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference":            schema_pkg_apis_core_v1alpha1_ObjectReference(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SeedConfig":                 schema_pkg_apis_core_v1alpha1_SeedConfig(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SeedConfigSpec":             schema_pkg_apis_core_v1alpha1_SeedConfigSpec(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SeedConfigStatus":           schema_pkg_apis_core_v1alpha1_SeedConfigStatus(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfig":        schema_pkg_apis_core_v1alpha1_ServiceTargetConfig(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfigSpec":    schema_pkg_apis_core_v1alpha1_ServiceTargetConfigSpec(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfigStatus":  schema_pkg_apis_core_v1alpha1_ServiceTargetConfigStatus(ref),
 		"k8s.io/api/core/v1.AWSElasticBlockStoreVolumeSource":                                      schema_k8sio_api_core_v1_AWSElasticBlockStoreVolumeSource(ref),
 		"k8s.io/api/core/v1.Affinity":                                    schema_k8sio_api_core_v1_Affinity(ref),
 		"k8s.io/api/core/v1.AttachedVolume":                              schema_k8sio_api_core_v1_AttachedVolume(ref),
@@ -329,7 +329,7 @@ func schema_pkg_apis_core_v1alpha1_Instance(ref common.ReferenceCallback) common
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
-				Description: "The Instance is created for each LandscaperDeployment. The landscaper service controller selects a suitable/available SeedConfig and creates an Installation.",
+				Description: "The Instance is created for each LandscaperDeployment. The landscaper service controller selects a suitable/available ServiceTargetConfig and creates an Installation.",
 				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
 					"kind": {
@@ -455,7 +455,7 @@ func schema_pkg_apis_core_v1alpha1_LandscaperDeployment(ref common.ReferenceCall
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
-				Description: "The LandscaperDeployment is created to define a deployment of the Landscaper Service.",
+				Description: "The LandscaperDeployment is created to define a deployment of the landscaper.",
 				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
 					"kind": {
@@ -610,11 +610,11 @@ func schema_pkg_apis_core_v1alpha1_ObjectReference(ref common.ReferenceCallback)
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_SeedConfig(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha1_ServiceTargetConfig(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
-				Description: "The SeedConfig is created to define the configuration for a Kubernetes cluster, that can host Landscaper Service deployments.",
+				Description: "The ServiceTargetConfig is created to define the configuration for a Kubernetes cluster, that can host Landscaper Service deployments.",
 				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
 					"kind": {
@@ -639,16 +639,16 @@ func schema_pkg_apis_core_v1alpha1_SeedConfig(ref common.ReferenceCallback) comm
 					},
 					"spec": {
 						SchemaProps: spec.SchemaProps{
-							Description: "Spec contains the specification for the SeedConfig",
+							Description: "Spec contains the specification for the ServiceTargetConfig",
 							Default:     map[string]interface{}{},
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SeedConfigSpec"),
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfigSpec"),
 						},
 					},
 					"status": {
 						SchemaProps: spec.SchemaProps{
-							Description: "Status contains the status of the SeedConfig.",
+							Description: "Status contains the status of the ServiceTargetConfig.",
 							Default:     map[string]interface{}{},
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SeedConfigStatus"),
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfigStatus"),
 						},
 					},
 				},
@@ -656,15 +656,15 @@ func schema_pkg_apis_core_v1alpha1_SeedConfig(ref common.ReferenceCallback) comm
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SeedConfigSpec", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SeedConfigStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfigSpec", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfigStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_SeedConfigSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha1_ServiceTargetConfigSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
-				Description: "SeedConfigSpec contains the specification for a SeedConfig.",
+				Description: "ServiceTargetConfigSpec contains the specification for a ServiceTargetConfig.",
 				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
 					"providerType": {
@@ -685,7 +685,7 @@ func schema_pkg_apis_core_v1alpha1_SeedConfigSpec(ref common.ReferenceCallback) 
 					},
 					"priority": {
 						SchemaProps: spec.SchemaProps{
-							Description: "The Priority of this SeedConfig. SeedConfigs with a higher priority number will be preferred over lower numbers when scheduling new landscaper service installations.",
+							Description: "The Priority of this ServiceTargetConfig. SeedConfigs with a higher priority number will be preferred over lower numbers when scheduling new landscaper service installations.",
 							Default:     0,
 							Type:        []string{"integer"},
 							Format:      "int64",
@@ -693,7 +693,7 @@ func schema_pkg_apis_core_v1alpha1_SeedConfigSpec(ref common.ReferenceCallback) 
 					},
 					"visible": {
 						SchemaProps: spec.SchemaProps{
-							Description: "Visible defines whether the SeedConfig is visible for scheduling. If set to true, new Landscaper Service deployments can be scheduled on this seed. If set to false, no new Landscaper Service deployments can be scheduled on this seed.",
+							Description: "Visible defines whether the ServiceTargetConfig is visible for scheduling. If set to true, new Landscaper Service deployments can be scheduled on this seed. If set to false, no new Landscaper Service deployments can be scheduled on this seed.",
 							Default:     false,
 							Type:        []string{"boolean"},
 							Format:      "",
@@ -715,16 +715,16 @@ func schema_pkg_apis_core_v1alpha1_SeedConfigSpec(ref common.ReferenceCallback) 
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_SeedConfigStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha1_ServiceTargetConfigStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
-				Description: "SeedConfigStatus contains the status of a SeedConfig.",
+				Description: "ServiceTargetConfigStatus contains the status of a ServiceTargetConfig.",
 				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
 					"observedGeneration": {
 						SchemaProps: spec.SchemaProps{
-							Description: "ObservedGeneration is the most recent generation observed for this SeedConfig. It corresponds to the SeedConfig generation, which is updated on mutation by the landscaper service controller.",
+							Description: "ObservedGeneration is the most recent generation observed for this ServiceTargetConfig. It corresponds to the ServiceTargetConfig generation, which is updated on mutation by the landscaper service controller.",
 							Default:     0,
 							Type:        []string{"integer"},
 							Format:      "int64",

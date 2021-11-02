@@ -41,7 +41,7 @@ var (
 		Definitions: []lsschema.CustomResourceDefinition{
 			LandscaperDeploymentDefinition,
 			InstanceDefinition,
-			SeedConfigDefinition,
+			ServiceTargetConfigDefinition,
 		},
 	}
 )
@@ -52,7 +52,7 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 		SchemeGroupVersion,
 		&LandscaperDeployment{},
 		&Instance{},
-		&SeedConfig{})
+		&ServiceTargetConfig{})
 
 	if err := RegisterConversions(scheme); err != nil {
 		return err

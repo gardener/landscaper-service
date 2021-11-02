@@ -12,33 +12,33 @@ import (
 // +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// The SeedConfig is created to define the configuration for a Kubernetes cluster, that can host Landscaper Service deployments.
-type SeedConfig struct {
+// The ServiceTargetConfig is created to define the configuration for a Kubernetes cluster, that can host Landscaper Service deployments.
+type ServiceTargetConfig struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	// Spec contains the specification for the SeedConfig
-	Spec SeedConfigSpec `json:"spec"`
+	// Spec contains the specification for the ServiceTargetConfig
+	Spec ServiceTargetConfigSpec `json:"spec"`
 
-	// Status contains the status of the SeedConfig.
+	// Status contains the status of the ServiceTargetConfig.
 	// +optional
-	Status SeedConfigStatus `json:"status"`
+	Status ServiceTargetConfigStatus `json:"status"`
 }
 
-// SeedConfigSpec contains the specification for a SeedConfig.
-type SeedConfigSpec struct {
+// ServiceTargetConfigSpec contains the specification for a ServiceTargetConfig.
+type ServiceTargetConfigSpec struct {
 	// ProviderType specifies the type of the underlying infrastructure provide.
 	ProviderType string `json:"providerType"`
 
 	// Region specifies the region in which the target cluster is located.
 	Region string `json:"region"`
 
-	// The Priority of this SeedConfig.
+	// The Priority of this ServiceTargetConfig.
 	// SeedConfigs with a higher priority number will be preferred over lower numbers
 	// when scheduling new landscaper service installations.
 	Priority int64 `json:"priority"`
 
-	// Visible defines whether the SeedConfig is visible for scheduling.
+	// Visible defines whether the ServiceTargetConfig is visible for scheduling.
 	// If set to true, new Landscaper Service deployments can be scheduled on this seed.
 	// If set to false, no new Landscaper Service deployments can be scheduled on this seed.
 	Visible bool `json:"visible"`
@@ -47,10 +47,10 @@ type SeedConfigSpec struct {
 	SecretRef ObjectReference `json:"secretRef"`
 }
 
-// SeedConfigStatus contains the status of a SeedConfig.
-type SeedConfigStatus struct {
-	// ObservedGeneration is the most recent generation observed for this SeedConfig.
-	// It corresponds to the SeedConfig generation, which is updated on mutation by the landscaper service controller.
+// ServiceTargetConfigStatus contains the status of a ServiceTargetConfig.
+type ServiceTargetConfigStatus struct {
+	// ObservedGeneration is the most recent generation observed for this ServiceTargetConfig.
+	// It corresponds to the ServiceTargetConfig generation, which is updated on mutation by the landscaper service controller.
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration"`
 
@@ -62,14 +62,14 @@ type SeedConfigStatus struct {
 	Capacity int64 `json:"capacity"`
 }
 
-var SeedConfigDefinition = lsschema.CustomResourceDefinition{
+var ServiceTargetConfigDefinition = lsschema.CustomResourceDefinition{
 	Names: lsschema.CustomResourceDefinitionNames{
-		Plural:   "seedconfigs",
-		Singular: "seedconfig",
+		Plural:   "servicetargetconfigs",
+		Singular: "servicetargetconfig",
 		ShortNames: []string{
-			"seedcfg",
+			"servcfg",
 		},
-		Kind: "SeedConfig",
+		Kind: "ServiceTargetConfig",
 	},
 	Scope:             lsschema.NamespaceScoped,
 	Storage:           true,

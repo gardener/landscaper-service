@@ -13,7 +13,7 @@ import (
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 // The Instance is created for each LandscaperDeployment.
-// The landscaper service controller selects a suitable/available SeedConfig and creates
+// The landscaper service controller selects a suitable/available ServiceTargetConfig and creates
 // an Installation.
 type Instance struct {
 	metav1.TypeMeta   `json:",inline"`
@@ -78,7 +78,7 @@ var InstanceDefinition = lsschema.CustomResourceDefinition{
 	SubresourceStatus: true,
 	AdditionalPrinterColumns: []lsschema.CustomResourceColumnDefinition{
 		{
-			Name:     "SeedConfig",
+			Name:     "ServiceTargetConfig",
 			Type:     "string",
 			JSONPath: ".spec.seedConfigRef.name",
 		},

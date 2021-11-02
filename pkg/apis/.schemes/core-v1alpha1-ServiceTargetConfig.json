@@ -20,8 +20,8 @@
         }
       }
     },
-    "core-v1alpha1-SeedConfigSpec": {
-      "description": "SeedConfigSpec contains the specification for a SeedConfig.",
+    "core-v1alpha1-ServiceTargetConfigSpec": {
+      "description": "ServiceTargetConfigSpec contains the specification for a ServiceTargetConfig.",
       "type": "object",
       "required": [
         "providerType",
@@ -32,7 +32,7 @@
       ],
       "properties": {
         "priority": {
-          "description": "The Priority of this SeedConfig. SeedConfigs with a higher priority number will be preferred over lower numbers when scheduling new landscaper service installations.",
+          "description": "The Priority of this ServiceTargetConfig. SeedConfigs with a higher priority number will be preferred over lower numbers when scheduling new landscaper service installations.",
           "type": "integer",
           "format": "int64",
           "default": 0
@@ -53,14 +53,14 @@
           "$ref": "#/definitions/core-v1alpha1-ObjectReference"
         },
         "visible": {
-          "description": "Visible defines whether the SeedConfig is visible for scheduling. If set to true, new Landscaper Service deployments can be scheduled on this seed. If set to false, no new Landscaper Service deployments can be scheduled on this seed.",
+          "description": "Visible defines whether the ServiceTargetConfig is visible for scheduling. If set to true, new Landscaper Service deployments can be scheduled on this seed. If set to false, no new Landscaper Service deployments can be scheduled on this seed.",
           "type": "boolean",
           "default": false
         }
       }
     },
-    "core-v1alpha1-SeedConfigStatus": {
-      "description": "SeedConfigStatus contains the status of a SeedConfig.",
+    "core-v1alpha1-ServiceTargetConfigStatus": {
+      "description": "ServiceTargetConfigStatus contains the status of a ServiceTargetConfig.",
       "type": "object",
       "properties": {
         "capacity": {
@@ -70,7 +70,7 @@
           "default": 0
         },
         "observedGeneration": {
-          "description": "ObservedGeneration is the most recent generation observed for this SeedConfig. It corresponds to the SeedConfig generation, which is updated on mutation by the landscaper service controller.",
+          "description": "ObservedGeneration is the most recent generation observed for this ServiceTargetConfig. It corresponds to the ServiceTargetConfig generation, which is updated on mutation by the landscaper service controller.",
           "type": "integer",
           "format": "int64",
           "default": 0
@@ -253,7 +253,7 @@
       "format": "date-time"
     }
   },
-  "description": "The SeedConfig is created to define the configuration for a Kubernetes cluster, that can host Landscaper Service deployments.",
+  "description": "The ServiceTargetConfig is created to define the configuration for a Kubernetes cluster, that can host Landscaper Service deployments.",
   "properties": {
     "apiVersion": {
       "description": "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
@@ -268,19 +268,19 @@
       "default": {}
     },
     "spec": {
-      "$ref": "#/definitions/core-v1alpha1-SeedConfigSpec",
+      "$ref": "#/definitions/core-v1alpha1-ServiceTargetConfigSpec",
       "default": {},
-      "description": "Spec contains the specification for the SeedConfig"
+      "description": "Spec contains the specification for the ServiceTargetConfig"
     },
     "status": {
-      "$ref": "#/definitions/core-v1alpha1-SeedConfigStatus",
+      "$ref": "#/definitions/core-v1alpha1-ServiceTargetConfigStatus",
       "default": {},
-      "description": "Status contains the status of the SeedConfig."
+      "description": "Status contains the status of the ServiceTargetConfig."
     }
   },
   "required": [
     "spec"
   ],
-  "title": "core-v1alpha1-SeedConfig",
+  "title": "core-v1alpha1-ServiceTargetConfig",
   "type": "object"
 }

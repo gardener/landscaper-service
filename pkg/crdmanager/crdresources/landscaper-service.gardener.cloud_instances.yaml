@@ -15,7 +15,7 @@ spec:
   versions:
   - additionalPrinterColumns:
     - jsonPath: .spec.seedConfigRef.name
-      name: SeedConfig
+      name: ServiceTargetConfig
       type: string
     - jsonPath: .status.installationRef.name
       name: Installation
@@ -27,8 +27,8 @@ spec:
     schema:
       openAPIV3Schema:
         description: The Instance is created for each LandscaperDeployment. The landscaper
-          service controller selects a suitable/available SeedConfig and creates an
-          Installation.
+          service controller selects a suitable/available ServiceTargetConfig and
+          creates an Installation.
         properties:
           spec:
             description: Spec contains the specification for the Instance.

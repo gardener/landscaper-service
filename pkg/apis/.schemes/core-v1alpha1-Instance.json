@@ -262,7 +262,7 @@
       "format": "date-time"
     }
   },
-  "description": "The Instance is created for each LandscaperDeployment. The landscaper service controller selects a suitable/available SeedConfig and creates an Installation.",
+  "description": "The Instance is created for each LandscaperDeployment. The landscaper service controller selects a suitable/available ServiceTargetConfig and creates an Installation.",
   "properties": {
     "apiVersion": {
       "description": "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",

@@ -30,7 +30,7 @@ import (
 var Exports = []string{
 	"LandscaperDeployment",
 	"Instance",
-	"SeedConfig",
+	"ServiceTargetConfig",
 }
 
 var CRDs = []lsschema.CustomResourceDefinitions{

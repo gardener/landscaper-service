@@ -39,6 +39,6 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 		SchemeGroupVersion,
 		&LandscaperDeployment{},
 		&Instance{},
-		&SeedConfig{})
+		&ServiceTargetConfig{})
 	return nil
 }
