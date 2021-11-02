@@ -28,6 +28,10 @@ type LandscaperDeployment struct {
 type LandscaperDeploymentSpec struct {
 	// Purpose contains the purpose of this LandscaperDeployment.
 	Purpose string `json:"purpose"`
+
+	// Deployers is the list of deployers that are getting installed alongside with this LandscaperDeployment.
+	Deployers []string `json:"deployers"`
+
 	// Region selects the region this LandscaperDeployment should be installed on.
 	// +optional
 	Region string `json:"region,omitempty"`

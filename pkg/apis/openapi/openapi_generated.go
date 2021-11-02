@@ -516,6 +516,21 @@ func schema_pkg_apis_core_v1alpha1_LandscaperDeploymentSpec(ref common.Reference
 							Format:      "",
 						},
 					},
+					"deployers": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Deployers is the list of deployers that are getting installed alongside with this LandscaperDeployment.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
 					"region": {
 						SchemaProps: spec.SchemaProps{
 							Description: "Region selects the region this LandscaperDeployment should be installed on.",
@@ -524,7 +539,7 @@ func schema_pkg_apis_core_v1alpha1_LandscaperDeploymentSpec(ref common.Reference
 						},
 					},
 				},
-				Required: []string{"purpose"},
+				Required: []string{"purpose", "deployers"},
 			},
 		},
 	}

@@ -281,6 +281,7 @@ func Convert_core_LandscaperDeployment_To_v1alpha1_LandscaperDeployment(in *core
 
 func autoConvert_v1alpha1_LandscaperDeploymentSpec_To_core_LandscaperDeploymentSpec(in *LandscaperDeploymentSpec, out *core.LandscaperDeploymentSpec, s conversion.Scope) error {
 	out.Purpose = in.Purpose
+	out.Deployers = *(*[]string)(unsafe.Pointer(&in.Deployers))
 	out.Region = in.Region
 	return nil
 }
@@ -292,6 +293,7 @@ func Convert_v1alpha1_LandscaperDeploymentSpec_To_core_LandscaperDeploymentSpec(
 
 func autoConvert_core_LandscaperDeploymentSpec_To_v1alpha1_LandscaperDeploymentSpec(in *core.LandscaperDeploymentSpec, out *LandscaperDeploymentSpec, s conversion.Scope) error {
 	out.Purpose = in.Purpose
+	out.Deployers = *(*[]string)(unsafe.Pointer(&in.Deployers))
 	out.Region = in.Region
 	return nil
 }

@@ -29,6 +29,12 @@ spec:
           spec:
             description: Spec contains the specification for the LandscaperDeployment
             properties:
+              deployers:
+                description: Deployers is the list of deployers that are getting installed
+                  alongside with this LandscaperDeployment.
+                items:
+                  type: string
+                type: array
               purpose:
                 description: Purpose contains the purpose of this LandscaperDeployment.
                 type: string
@@ -38,6 +44,7 @@ spec:
                 type: string
             required:
             - purpose
+            - deployers
             type: object
           status:
             description: Status contains the status of the LandscaperDeployment.

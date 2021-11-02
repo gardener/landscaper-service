@@ -25,9 +25,18 @@
       "description": "LandscaperDeploymentSpec contains the specification for a LandscaperDeployment.",
       "type": "object",
       "required": [
-        "purpose"
+        "purpose",
+        "deployers"
       ],
       "properties": {
+        "deployers": {
+          "description": "Deployers is the list of deployers that are getting installed alongside with this LandscaperDeployment.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "default": ""
+          }
+        },
         "purpose": {
           "description": "Purpose contains the purpose of this LandscaperDeployment.",
           "type": "string",
