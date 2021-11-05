@@ -5,6 +5,7 @@
 package v1alpha1
 
 import (
+	lsschema "github.com/gardener/landscaper/apis/schema"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -31,12 +32,30 @@ var (
 	localSchemeBuilder = &SchemeBuilder
 	// AddToScheme is a reference to the Schema Builder's AddToScheme function.
 	AddToScheme = SchemeBuilder.AddToScheme
+
+	ResourceDefinition = lsschema.CustomResourceDefinitions{
+		Group:     SchemeGroupVersion.Group,
+		Version:   SchemeGroupVersion.Version,
+		OutputDir: "../../pkg/crdmanager/crdresources",
+
+		Definitions: []lsschema.CustomResourceDefinition{
+			LandscaperDeploymentDefinition,
+			InstanceDefinition,
+			ServiceTargetConfigDefinition,
+		},
+	}
 )
 
 // Adds the list of known types to Schema.
 func addKnownTypes(scheme *runtime.Scheme) error {
 	scheme.AddKnownTypes(
-		SchemeGroupVersion)
+		SchemeGroupVersion,
+		&LandscaperDeployment{},
+		&LandscaperDeploymentList{},
+		&Instance{},
+		&InstanceList{},
+		&ServiceTargetConfig{},
+		&ServiceTargetConfigList{})
 
 	if err := RegisterConversions(scheme); err != nil {
 		return err

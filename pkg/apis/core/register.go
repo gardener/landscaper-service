@@ -35,6 +35,13 @@ var (
 
 // Adds the list of known types to Schema.
 func addKnownTypes(scheme *runtime.Scheme) error {
-	scheme.AddKnownTypes(SchemeGroupVersion)
+	scheme.AddKnownTypes(
+		SchemeGroupVersion,
+		&LandscaperDeployment{},
+		&LandscaperDeploymentList{},
+		&Instance{},
+		&InstanceList{},
+		&ServiceTargetConfig{},
+		&ServiceTargetConfigList{})
 	return nil
 }

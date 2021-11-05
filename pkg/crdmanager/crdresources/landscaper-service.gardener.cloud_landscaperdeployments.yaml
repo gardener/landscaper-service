@@ -1,0 +1,100 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  creationTimestamp: null
+  name: landscaperdeployments.landscaper-service.gardener.cloud
+spec:
+  group: landscaper-service.gardener.cloud
+  names:
+    kind: LandscaperDeployment
+    plural: landscaperdeployments
+    shortNames:
+    - lsdepl
+    singular: landscaperdeployment
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .status.instanceRef.name
+      name: Instance
+      type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: The LandscaperDeployment is created to define a deployment of
+          the landscaper.
+        properties:
+          spec:
+            description: Spec contains the specification for the LandscaperDeployment
+            properties:
+              deployers:
+                description: Deployers is the list of deployers that are getting installed
+                  alongside with this LandscaperDeployment.
+                items:
+                  type: string
+                type: array
+              purpose:
+                description: Purpose contains the purpose of this LandscaperDeployment.
+                type: string
+              region:
+                description: Region selects the region this LandscaperDeployment should
+                  be installed on.
+                type: string
+            required:
+            - purpose
+            - deployers
+            type: object
+          status:
+            description: Status contains the status of the LandscaperDeployment.
+            properties:
+              instanceRef:
+                description: InstanceRef references the instance that is created for
+                  this LandscaperDeployment.
+                properties:
+                  name:
+                    description: Name is the name of the kubernetes object.
+                    type: string
+                  namespace:
+                    description: Namespace is the namespace of kubernetes object.
+                    type: string
+                required:
+                - name
+                type: object
+              lastError:
+                description: LastError describes the last error that occurred.
+                properties:
+                  message:
+                    description: A human-readable message indicating details about
+                      the transition.
+                    type: string
+                  operation:
+                    description: Operation describes the operator where the error
+                      occurred.
+                    type: string
+                required:
+                - operation
+                - message
+                type: object
+              observedGeneration:
+                description: ObservedGeneration is the most recent generation observed
+                  for this LandscaperDeployment. It corresponds to the LandscaperDeployment
+                  generation, which is updated on mutation by the landscaper service
+                  controller.
+                format: int64
+                type: integer
+            type: object
+        required:
+        - spec
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []

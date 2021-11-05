@@ -1,0 +1,116 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  creationTimestamp: null
+  name: servicetargetconfigs.landscaper-service.gardener.cloud
+spec:
+  group: landscaper-service.gardener.cloud
+  names:
+    kind: ServiceTargetConfig
+    plural: servicetargetconfigs
+    shortNames:
+    - servcfg
+    singular: servicetargetconfig
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .spec.providerType
+      name: ProviderType
+      type: string
+    - jsonPath: .spec.region
+      name: Region
+      type: string
+    - jsonPath: .spec.visible
+      name: Visible
+      type: boolean
+    - jsonPath: .spec.priority
+      name: Priority
+      type: number
+    - jsonPath: .status.capacity
+      name: Capacity
+      type: number
+    - jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: The ServiceTargetConfig is created to define the configuration
+          for a Kubernetes cluster, that can host Landscaper Service deployments.
+        properties:
+          spec:
+            description: Spec contains the specification for the ServiceTargetConfig
+            properties:
+              priority:
+                description: The Priority of this ServiceTargetConfig. SeedConfigs
+                  with a higher priority number will be preferred over lower numbers
+                  when scheduling new landscaper service installations.
+                format: int64
+                type: integer
+              providerType:
+                description: ProviderType specifies the type of the underlying infrastructure
+                  provide.
+                type: string
+              region:
+                description: Region specifies the region in which the target cluster
+                  is located.
+                type: string
+              secretRef:
+                description: SecretRef references the secret that contains the kubeconfig
+                  of the target cluster.
+                properties:
+                  name:
+                    description: Name is the name of the kubernetes object.
+                    type: string
+                  namespace:
+                    description: Namespace is the namespace of kubernetes object.
+                    type: string
+                required:
+                - name
+                type: object
+              visible:
+                description: Visible defines whether the ServiceTargetConfig is visible
+                  for scheduling. If set to true, new Landscaper Service deployments
+                  can be scheduled on this seed. If set to false, no new Landscaper
+                  Service deployments can be scheduled on this seed.
+                type: boolean
+            required:
+            - providerType
+            - region
+            - priority
+            - visible
+            - secretRef
+            type: object
+          status:
+            description: Status contains the status of the ServiceTargetConfig.
+            properties:
+              capacity:
+                description: Capacity specifies the remaining capacity for Landscaper
+                  Service deployments. For each Landscaper Service deployment that
+                  is installed on this seed, the value will be decremented. For each
+                  Landscaper Service deployment that is uninstalled from this seed,
+                  the value will be incremented. When this value reaches zero, no
+                  new Landscaper Services can be deployed on this seed.
+                format: int64
+                type: integer
+              observedGeneration:
+                description: ObservedGeneration is the most recent generation observed
+                  for this ServiceTargetConfig. It corresponds to the ServiceTargetConfig
+                  generation, which is updated on mutation by the landscaper service
+                  controller.
+                format: int64
+                type: integer
+            type: object
+        required:
+        - spec
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
