@@ -9,6 +9,15 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
+// InstanceList contains a list of Instance
+type InstanceList struct {
+	metav1.TypeMeta `json:",inline"`
+	metav1.ListMeta `json:"metadata,omitempty"`
+	Items           []Instance `json:"items"`
+}
+
 // +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 

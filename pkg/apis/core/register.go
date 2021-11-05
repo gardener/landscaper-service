@@ -38,7 +38,10 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 	scheme.AddKnownTypes(
 		SchemeGroupVersion,
 		&LandscaperDeployment{},
+		&LandscaperDeploymentList{},
 		&Instance{},
-		&ServiceTargetConfig{})
+		&InstanceList{},
+		&ServiceTargetConfig{},
+		&ServiceTargetConfigList{})
 	return nil
 }

@@ -23,13 +23,16 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 	return map[string]common.OpenAPIDefinition{
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Error":                      schema_pkg_apis_core_v1alpha1_Error(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Instance":                   schema_pkg_apis_core_v1alpha1_Instance(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceList":               schema_pkg_apis_core_v1alpha1_InstanceList(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceSpec":               schema_pkg_apis_core_v1alpha1_InstanceSpec(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceStatus":             schema_pkg_apis_core_v1alpha1_InstanceStatus(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeployment":       schema_pkg_apis_core_v1alpha1_LandscaperDeployment(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentList":   schema_pkg_apis_core_v1alpha1_LandscaperDeploymentList(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentSpec":   schema_pkg_apis_core_v1alpha1_LandscaperDeploymentSpec(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentStatus": schema_pkg_apis_core_v1alpha1_LandscaperDeploymentStatus(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference":            schema_pkg_apis_core_v1alpha1_ObjectReference(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfig":        schema_pkg_apis_core_v1alpha1_ServiceTargetConfig(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfigList":    schema_pkg_apis_core_v1alpha1_ServiceTargetConfigList(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfigSpec":    schema_pkg_apis_core_v1alpha1_ServiceTargetConfigSpec(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfigStatus":  schema_pkg_apis_core_v1alpha1_ServiceTargetConfigStatus(ref),
 		"k8s.io/api/core/v1.AWSElasticBlockStoreVolumeSource":                                      schema_k8sio_api_core_v1_AWSElasticBlockStoreVolumeSource(ref),
@@ -375,6 +378,55 @@ func schema_pkg_apis_core_v1alpha1_Instance(ref common.ReferenceCallback) common
 	}
 }
 
+func schema_pkg_apis_core_v1alpha1_InstanceList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "InstanceList contains a list of Instance",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"),
+						},
+					},
+					"items": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Instance"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"items"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Instance", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
+	}
+}
+
 func schema_pkg_apis_core_v1alpha1_InstanceSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
@@ -498,6 +550,55 @@ func schema_pkg_apis_core_v1alpha1_LandscaperDeployment(ref common.ReferenceCall
 		},
 		Dependencies: []string{
 			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentSpec", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+	}
+}
+
+func schema_pkg_apis_core_v1alpha1_LandscaperDeploymentList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "LandscaperDeploymentList contains a list of LandscaperDeployment",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"),
+						},
+					},
+					"items": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeployment"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"items"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeployment", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
 	}
 }
 
@@ -657,6 +758,55 @@ func schema_pkg_apis_core_v1alpha1_ServiceTargetConfig(ref common.ReferenceCallb
 		},
 		Dependencies: []string{
 			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfigSpec", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfigStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+	}
+}
+
+func schema_pkg_apis_core_v1alpha1_ServiceTargetConfigList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "ServiceTargetConfigList contains a list of ServiceTargetConfig",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"),
+						},
+					},
+					"items": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfig"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"items"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfig", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
 	}
 }
 

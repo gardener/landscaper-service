@@ -8,6 +8,15 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
+// LandscaperDeploymentList contains a list of LandscaperDeployment
+type LandscaperDeploymentList struct {
+	metav1.TypeMeta `json:",inline"`
+	metav1.ListMeta `json:"metadata,omitempty"`
+	Items           []LandscaperDeployment `json:"items"`
+}
+
 // +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
