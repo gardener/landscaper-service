@@ -26,6 +26,7 @@ import (
 	"github.com/gardener/landscaper-service/pkg/webhook"
 )
 
+// NewLandscaperServiceWebhooksCommand creates a new command for the landscaper service webhooks server
 func NewLandscaperServiceWebhooksCommand(ctx context.Context) *cobra.Command {
 	options := NewOptions()
 
