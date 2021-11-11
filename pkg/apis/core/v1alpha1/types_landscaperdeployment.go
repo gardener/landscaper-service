@@ -40,8 +40,11 @@ type LandscaperDeploymentSpec struct {
 	// Purpose contains the purpose of this LandscaperDeployment.
 	Purpose string `json:"purpose"`
 
-	// Deployers is the list of deployers that are getting installed alongside with this LandscaperDeployment.
-	Deployers []string `json:"deployers"`
+	// LandscaperConfiguration contains the configuration for the landscaper service deployment
+	LandscaperConfiguration LandscaperConfiguration `json:"landscaperConfiguration"`
+
+	// ComponentReference define the reference to the landscaper server component.
+	ComponentReference LandscaperServiceComponentReference `json:"componentReference"`
 
 	// Region selects the region this LandscaperDeployment should be installed on.
 	// +optional

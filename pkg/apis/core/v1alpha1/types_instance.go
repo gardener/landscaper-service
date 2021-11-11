@@ -38,8 +38,14 @@ type Instance struct {
 
 // InstanceSpec contains the specification for an Instance.
 type InstanceSpec struct {
-	// SeedConfigReg specifies the target cluster for which the installation is created.
-	SeedConfigRef ObjectReference `json:"seedConfigRef"`
+	// LandscaperConfiguration contains the configuration for the landscaper service deployment
+	LandscaperConfiguration LandscaperConfiguration `json:"landscaperConfiguration"`
+
+	// ComponentReference define the reference to the landscaper server component.
+	ComponentReference LandscaperServiceComponentReference `json:"componentReference"`
+
+	// ServiceTargetConfigRef specifies the target cluster for which the installation is created.
+	ServiceTargetConfigRef ObjectReference `json:"serviceTargetConfigRef"`
 }
 
 // InstanceStatus contains the status for an Instance.
@@ -55,21 +61,19 @@ type InstanceStatus struct {
 
 	// TargetRef references the Target for this Instance.
 	// +optional
-	TargetRef *ObjectReference `json:"targetRef"`
+	TargetRef *ObjectReference `json:"targetRef,omitempty"`
 
 	// InstallationRef references the Installation for this Instance.
 	// +optional
-	InstallationRef *ObjectReference `json:"installationRef"`
+	InstallationRef *ObjectReference `json:"installationRef,omitempty"`
 
-	// ClusterEndpointRef references a data object,
-	// containing the URL at which the landscaper cluster is accessible.
+	// ClusterEndpointRef contains the URL at which the landscaper cluster is accessible.
 	// +optional
-	ClusterEndpointRef *ObjectReference `json:"clusterEndpoint"`
+	ClusterEndpoint string `json:"clusterEndpoint,omitempty"`
 
-	// ClusterEndpointRef references a data object,
-	// containing the Kubeconfig which can be used for accessing the landscaper cluster.
+	// ClusterKubeconfigRef contains the Kubeconfig which can be used for accessing the landscaper cluster.
 	// +optional
-	ClusterKubeconfigRef *ObjectReference `json:"clusterKubeconfigRef"`
+	ClusterKubeconfig string `json:"clusterKubeconfig,omitempty"`
 }
 
 var InstanceDefinition = lsschema.CustomResourceDefinition{
@@ -89,7 +93,7 @@ var InstanceDefinition = lsschema.CustomResourceDefinition{
 		{
 			Name:     "ServiceTargetConfig",
 			Type:     "string",
-			JSONPath: ".spec.seedConfigRef.name",
+			JSONPath: ".spec.serviceTargetConfigRef.name",
 		},
 		{
 			Name:     "Installation",

@@ -21,21 +21,24 @@ import (
 
 func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenAPIDefinition {
 	return map[string]common.OpenAPIDefinition{
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Error":                      schema_pkg_apis_core_v1alpha1_Error(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Instance":                   schema_pkg_apis_core_v1alpha1_Instance(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceList":               schema_pkg_apis_core_v1alpha1_InstanceList(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceSpec":               schema_pkg_apis_core_v1alpha1_InstanceSpec(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceStatus":             schema_pkg_apis_core_v1alpha1_InstanceStatus(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeployment":       schema_pkg_apis_core_v1alpha1_LandscaperDeployment(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentList":   schema_pkg_apis_core_v1alpha1_LandscaperDeploymentList(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentSpec":   schema_pkg_apis_core_v1alpha1_LandscaperDeploymentSpec(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentStatus": schema_pkg_apis_core_v1alpha1_LandscaperDeploymentStatus(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference":            schema_pkg_apis_core_v1alpha1_ObjectReference(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfig":        schema_pkg_apis_core_v1alpha1_ServiceTargetConfig(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfigList":    schema_pkg_apis_core_v1alpha1_ServiceTargetConfigList(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfigSpec":    schema_pkg_apis_core_v1alpha1_ServiceTargetConfigSpec(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfigStatus":  schema_pkg_apis_core_v1alpha1_ServiceTargetConfigStatus(ref),
-		"k8s.io/api/core/v1.AWSElasticBlockStoreVolumeSource":                                      schema_k8sio_api_core_v1_AWSElasticBlockStoreVolumeSource(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Error":                               schema_pkg_apis_core_v1alpha1_Error(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Instance":                            schema_pkg_apis_core_v1alpha1_Instance(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceList":                        schema_pkg_apis_core_v1alpha1_InstanceList(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceSpec":                        schema_pkg_apis_core_v1alpha1_InstanceSpec(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceStatus":                      schema_pkg_apis_core_v1alpha1_InstanceStatus(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperConfiguration":             schema_pkg_apis_core_v1alpha1_LandscaperConfiguration(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeployment":                schema_pkg_apis_core_v1alpha1_LandscaperDeployment(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentList":            schema_pkg_apis_core_v1alpha1_LandscaperDeploymentList(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentSpec":            schema_pkg_apis_core_v1alpha1_LandscaperDeploymentSpec(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentStatus":          schema_pkg_apis_core_v1alpha1_LandscaperDeploymentStatus(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperServiceComponentReference": schema_pkg_apis_core_v1alpha1_LandscaperServiceComponentReference(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference":                     schema_pkg_apis_core_v1alpha1_ObjectReference(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SecretReference":                     schema_pkg_apis_core_v1alpha1_SecretReference(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfig":                 schema_pkg_apis_core_v1alpha1_ServiceTargetConfig(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfigList":             schema_pkg_apis_core_v1alpha1_ServiceTargetConfigList(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfigSpec":             schema_pkg_apis_core_v1alpha1_ServiceTargetConfigSpec(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfigStatus":           schema_pkg_apis_core_v1alpha1_ServiceTargetConfigStatus(ref),
+		"k8s.io/api/core/v1.AWSElasticBlockStoreVolumeSource":                                               schema_k8sio_api_core_v1_AWSElasticBlockStoreVolumeSource(ref),
 		"k8s.io/api/core/v1.Affinity":                                    schema_k8sio_api_core_v1_Affinity(ref),
 		"k8s.io/api/core/v1.AttachedVolume":                              schema_k8sio_api_core_v1_AttachedVolume(ref),
 		"k8s.io/api/core/v1.AvoidPods":                                   schema_k8sio_api_core_v1_AvoidPods(ref),
@@ -312,6 +315,28 @@ func schema_pkg_apis_core_v1alpha1_Error(ref common.ReferenceCallback) common.Op
 							Format:      "",
 						},
 					},
+					"lastTransitionTime": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Last time the condition transitioned from one status to another.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
+					"lastUpdateTime": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Last time the condition was updated.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
+					"reason": {
+						SchemaProps: spec.SchemaProps{
+							Description: "The reason for the condition's last transition.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
 					"message": {
 						SchemaProps: spec.SchemaProps{
 							Description: "A human-readable message indicating details about the transition.",
@@ -321,9 +346,11 @@ func schema_pkg_apis_core_v1alpha1_Error(ref common.ReferenceCallback) common.Op
 						},
 					},
 				},
-				Required: []string{"operation", "message"},
+				Required: []string{"operation", "lastTransitionTime", "lastUpdateTime", "reason", "message"},
 			},
 		},
+		Dependencies: []string{
+			"k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
 	}
 }
 
@@ -433,19 +460,33 @@ func schema_pkg_apis_core_v1alpha1_InstanceSpec(ref common.ReferenceCallback) co
 				Description: "InstanceSpec contains the specification for an Instance.",
 				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
-					"seedConfigRef": {
+					"landscaperConfiguration": {
 						SchemaProps: spec.SchemaProps{
-							Description: "SeedConfigReg specifies the target cluster for which the installation is created.",
+							Description: "LandscaperConfiguration contains the configuration for the landscaper service deployment",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperConfiguration"),
+						},
+					},
+					"componentReference": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ComponentReference define the reference to the landscaper server component.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperServiceComponentReference"),
+						},
+					},
+					"serviceTargetConfigRef": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ServiceTargetConfigRef specifies the target cluster for which the installation is created.",
 							Default:     map[string]interface{}{},
 							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference"),
 						},
 					},
 				},
-				Required: []string{"seedConfigRef"},
+				Required: []string{"landscaperConfiguration", "componentReference", "serviceTargetConfigRef"},
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperConfiguration", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperServiceComponentReference", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference"},
 	}
 }
 
@@ -484,14 +525,16 @@ func schema_pkg_apis_core_v1alpha1_InstanceStatus(ref common.ReferenceCallback) 
 					},
 					"clusterEndpoint": {
 						SchemaProps: spec.SchemaProps{
-							Description: "ClusterEndpointRef references a data object, containing the URL at which the landscaper cluster is accessible.",
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference"),
+							Description: "ClusterEndpointRef contains the URL at which the landscaper cluster is accessible.",
+							Type:        []string{"string"},
+							Format:      "",
 						},
 					},
-					"clusterKubeconfigRef": {
+					"clusterKubeconfig": {
 						SchemaProps: spec.SchemaProps{
-							Description: "ClusterEndpointRef references a data object, containing the Kubeconfig which can be used for accessing the landscaper cluster.",
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference"),
+							Description: "ClusterKubeconfigRef contains the Kubeconfig which can be used for accessing the landscaper cluster.",
+							Type:        []string{"string"},
+							Format:      "",
 						},
 					},
 				},
@@ -499,6 +542,35 @@ func schema_pkg_apis_core_v1alpha1_InstanceStatus(ref common.ReferenceCallback) 
 		},
 		Dependencies: []string{
 			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Error", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference"},
+	}
+}
+
+func schema_pkg_apis_core_v1alpha1_LandscaperConfiguration(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "LandscaperConfiguration contains the configuration for a landscaper service deployment.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"deployers": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Deployers is the list of deployers that are getting installed alongside with this Instance.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"deployers"},
+			},
+		},
 	}
 }
 
@@ -616,19 +688,18 @@ func schema_pkg_apis_core_v1alpha1_LandscaperDeploymentSpec(ref common.Reference
 							Format:      "",
 						},
 					},
-					"deployers": {
+					"landscaperConfiguration": {
 						SchemaProps: spec.SchemaProps{
-							Description: "Deployers is the list of deployers that are getting installed alongside with this LandscaperDeployment.",
-							Type:        []string{"array"},
-							Items: &spec.SchemaOrArray{
-								Schema: &spec.Schema{
-									SchemaProps: spec.SchemaProps{
-										Default: "",
-										Type:    []string{"string"},
-										Format:  "",
-									},
-								},
-							},
+							Description: "LandscaperConfiguration contains the configuration for the landscaper service deployment",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperConfiguration"),
+						},
+					},
+					"componentReference": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ComponentReference define the reference to the landscaper server component.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperServiceComponentReference"),
 						},
 					},
 					"region": {
@@ -639,9 +710,11 @@ func schema_pkg_apis_core_v1alpha1_LandscaperDeploymentSpec(ref common.Reference
 						},
 					},
 				},
-				Required: []string{"purpose", "deployers"},
+				Required: []string{"purpose", "landscaperConfiguration", "componentReference"},
 			},
 		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperConfiguration", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperServiceComponentReference"},
 	}
 }
 
@@ -680,6 +753,44 @@ func schema_pkg_apis_core_v1alpha1_LandscaperDeploymentStatus(ref common.Referen
 	}
 }
 
+func schema_pkg_apis_core_v1alpha1_LandscaperServiceComponentReference(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "LandscaperServiceComponentReference defines the landscaper service component reference and context that should be used.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"context": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Context is the name of the landscaper context to use for the deployment.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"componentName": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ComponentName defines the component name of the landscaper service component to use for this deployment.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"version": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Version defines the version of the landscaper service component to use for this deployment.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"version"},
+			},
+		},
+	}
+}
+
 func schema_pkg_apis_core_v1alpha1_ObjectReference(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
@@ -698,6 +809,44 @@ func schema_pkg_apis_core_v1alpha1_ObjectReference(ref common.ReferenceCallback)
 					"namespace": {
 						SchemaProps: spec.SchemaProps{
 							Description: "Namespace is the namespace of kubernetes object.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"name"},
+			},
+		},
+	}
+}
+
+func schema_pkg_apis_core_v1alpha1_SecretReference(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "SecretReference is a reference to data in a secret.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name is the name of the kubernetes object.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"namespace": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Namespace is the namespace of kubernetes object.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"key": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Key is the name of the key in the secret that holds the data.",
 							Default:     "",
 							Type:        []string{"string"},
 							Format:      "",
@@ -852,7 +1001,7 @@ func schema_pkg_apis_core_v1alpha1_ServiceTargetConfigSpec(ref common.ReferenceC
 						SchemaProps: spec.SchemaProps{
 							Description: "SecretRef references the secret that contains the kubeconfig of the target cluster.",
 							Default:     map[string]interface{}{},
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference"),
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SecretReference"),
 						},
 					},
 				},
@@ -860,7 +1009,7 @@ func schema_pkg_apis_core_v1alpha1_ServiceTargetConfigSpec(ref common.ReferenceC
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SecretReference"},
 	}
 }
 
@@ -881,15 +1030,30 @@ func schema_pkg_apis_core_v1alpha1_ServiceTargetConfigStatus(ref common.Referenc
 					},
 					"capacity": {
 						SchemaProps: spec.SchemaProps{
-							Description: "Capacity specifies the remaining capacity for Landscaper Service deployments. For each Landscaper Service deployment that is installed on this seed, the value will be decremented. For each Landscaper Service deployment that is uninstalled from this seed, the value will be incremented. When this value reaches zero, no new Landscaper Services can be deployed on this seed.",
-							Default:     0,
+							Description: "Capacity specifies the remaining capacity for Landscaper Service deployments. For each Landscaper Service deployment that is installed on this target, the value will be decremented. For each Landscaper Service deployment that is uninstalled from this target, the value will be incremented. When this value reaches zero, no new Landscaper Services can be deployed on this target.",
 							Type:        []string{"integer"},
 							Format:      "int64",
+						},
+					},
+					"instanceRefs": {
+						SchemaProps: spec.SchemaProps{
+							Description: "InstanceRefs is the list of references to instances that use this ServiceTargetConfig.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference"),
+									},
+								},
+							},
 						},
 					},
 				},
 			},
 		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference"},
 	}
 }
 

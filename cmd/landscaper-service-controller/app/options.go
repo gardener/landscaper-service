@@ -13,6 +13,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/serializer"
 
 	"github.com/gardener/landscaper-service/pkg/apis/config"
+	configinstall "github.com/gardener/landscaper-service/pkg/apis/config/install"
 	"github.com/gardener/landscaper-service/pkg/apis/config/v1alpha1"
 
 	"github.com/gardener/landscaper/controller-utils/pkg/logger"
@@ -62,6 +63,7 @@ func (o *options) Complete(ctx context.Context) error {
 
 func (o *options) parseConfigurationFile(ctx context.Context) (*config.LandscaperServiceConfiguration, error) {
 	configScheme := runtime.NewScheme()
+	configinstall.Install(configScheme)
 	decoder := serializer.NewCodecFactory(configScheme).UniversalDecoder()
 
 	configv1alpha1 := &v1alpha1.LandscaperServiceConfiguration{}

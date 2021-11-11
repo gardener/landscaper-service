@@ -53,7 +53,7 @@ type ServiceTargetConfigSpec struct {
 	Visible bool `json:"visible"`
 
 	// SecretRef references the secret that contains the kubeconfig of the target cluster.
-	SecretRef ObjectReference `json:"secretRef"`
+	SecretRef SecretReference `json:"secretRef"`
 }
 
 // ServiceTargetConfigStatus contains the status of a ServiceTargetConfig.
@@ -64,11 +64,15 @@ type ServiceTargetConfigStatus struct {
 	ObservedGeneration int64 `json:"observedGeneration"`
 
 	// Capacity specifies the remaining capacity for Landscaper Service deployments.
-	// For each Landscaper Service deployment that is installed on this seed, the value will be decremented.
-	// For each Landscaper Service deployment that is uninstalled from this seed, the value will be incremented.
-	// When this value reaches zero, no new Landscaper Services can be deployed on this seed.
+	// For each Landscaper Service deployment that is installed on this target, the value will be decremented.
+	// For each Landscaper Service deployment that is uninstalled from this target, the value will be incremented.
+	// When this value reaches zero, no new Landscaper Services can be deployed on this target.
 	// +optional
-	Capacity int64 `json:"capacity"`
+	Capacity *int64 `json:"capacity"`
+
+	// InstanceRefs is the list of references to instances that use this ServiceTargetConfig.
+	// +optional
+	InstanceRefs []ObjectReference `json:"instanceRefs,omitempty"`
 }
 
 var ServiceTargetConfigDefinition = lsschema.CustomResourceDefinition{

@@ -18,5 +18,44 @@ import (
 // Public to allow building arbitrary schemes.
 // All generated defaulters are covering - they call all nested defaulters.
 func RegisterDefaults(scheme *runtime.Scheme) error {
+	scheme.AddTypeDefaultingFunc(&Instance{}, func(obj interface{}) { SetObjectDefaults_Instance(obj.(*Instance)) })
+	scheme.AddTypeDefaultingFunc(&InstanceList{}, func(obj interface{}) { SetObjectDefaults_InstanceList(obj.(*InstanceList)) })
+	scheme.AddTypeDefaultingFunc(&LandscaperDeployment{}, func(obj interface{}) { SetObjectDefaults_LandscaperDeployment(obj.(*LandscaperDeployment)) })
+	scheme.AddTypeDefaultingFunc(&LandscaperDeploymentList{}, func(obj interface{}) { SetObjectDefaults_LandscaperDeploymentList(obj.(*LandscaperDeploymentList)) })
+	scheme.AddTypeDefaultingFunc(&ServiceTargetConfig{}, func(obj interface{}) { SetObjectDefaults_ServiceTargetConfig(obj.(*ServiceTargetConfig)) })
+	scheme.AddTypeDefaultingFunc(&ServiceTargetConfigList{}, func(obj interface{}) { SetObjectDefaults_ServiceTargetConfigList(obj.(*ServiceTargetConfigList)) })
 	return nil
+}
+
+func SetObjectDefaults_Instance(in *Instance) {
+	SetDefaults_Instance(in)
+}
+
+func SetObjectDefaults_InstanceList(in *InstanceList) {
+	for i := range in.Items {
+		a := &in.Items[i]
+		SetObjectDefaults_Instance(a)
+	}
+}
+
+func SetObjectDefaults_LandscaperDeployment(in *LandscaperDeployment) {
+	SetDefaults_LandscaperDeployment(in)
+}
+
+func SetObjectDefaults_LandscaperDeploymentList(in *LandscaperDeploymentList) {
+	for i := range in.Items {
+		a := &in.Items[i]
+		SetObjectDefaults_LandscaperDeployment(a)
+	}
+}
+
+func SetObjectDefaults_ServiceTargetConfig(in *ServiceTargetConfig) {
+	SetDefaults_ServiceTargetConfig(in)
+}
+
+func SetObjectDefaults_ServiceTargetConfigList(in *ServiceTargetConfigList) {
+	for i := range in.Items {
+		a := &in.Items[i]
+		SetObjectDefaults_ServiceTargetConfig(a)
+	}
 }

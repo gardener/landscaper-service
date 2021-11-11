@@ -2,29 +2,27 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package instances
+package servicetargetconfigs
 
 import (
-	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	"github.com/go-logr/logr"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 
-	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 )
 
-// AddControllerToManager adds the instances controller to the manager
+// AddControllerToManager adds the landscaperdeployments controller to the manager
 func AddControllerToManager(logger logr.Logger, mgr manager.Manager) error {
-	log := logger.WithName("Instances")
+	log := logger.WithName("ServiceTargetConfigs")
 	ctrl, err := NewController(log, mgr.GetClient(), mgr.GetScheme())
 	if err != nil {
 		return err
 	}
 
 	return builder.ControllerManagedBy(mgr).
-		For(&lssv1alpha1.Instance{}).
-		Owns(&lsv1alpha1.Installation{}).
-		Owns(&lsv1alpha1.Target{}).
+		For(&v1alpha1.ServiceTargetConfig{}).
+		Owns(&v1alpha1.ServiceTargetConfig{}).
 		WithLogger(log).
 		Complete(ctrl)
 }

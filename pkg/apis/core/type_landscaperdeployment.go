@@ -20,7 +20,7 @@ type LandscaperDeploymentList struct {
 // +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// LandscaperDeployment is created to define a deployment of the landscaper.
+// The LandscaperDeployment is created to define a deployment of the landscaper.
 type LandscaperDeployment struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
@@ -38,8 +38,11 @@ type LandscaperDeploymentSpec struct {
 	// Purpose contains the purpose of this LandscaperDeployment.
 	Purpose string `json:"purpose"`
 
-	// Deployers is the list of deployers that are getting installed alongside with this LandscaperDeployment.
-	Deployers []string `json:"deployers"`
+	// LandscaperConfiguration contains the configuration for the landscaper service deployment
+	LandscaperConfiguration LandscaperConfiguration `json:"landscaperConfiguration"`
+
+	// ComponentReference define the reference to the landscaper server component.
+	ComponentReference LandscaperServiceComponentReference `json:"componentReference"`
 
 	// Region selects the region this LandscaperDeployment should be installed on.
 	// +optional

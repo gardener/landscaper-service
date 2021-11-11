@@ -6,9 +6,22 @@
       "type": "object",
       "required": [
         "operation",
+        "lastTransitionTime",
+        "lastUpdateTime",
+        "reason",
         "message"
       ],
       "properties": {
+        "lastTransitionTime": {
+          "description": "Last time the condition transitioned from one status to another.",
+          "default": {},
+          "$ref": "#/definitions/meta-v1-Time"
+        },
+        "lastUpdateTime": {
+          "description": "Last time the condition was updated.",
+          "default": {},
+          "$ref": "#/definitions/meta-v1-Time"
+        },
         "message": {
           "description": "A human-readable message indicating details about the transition.",
           "type": "string",
@@ -18,6 +31,11 @@
           "description": "Operation describes the operator where the error occurred.",
           "type": "string",
           "default": ""
+        },
+        "reason": {
+          "description": "The reason for the condition's last transition.",
+          "type": "string",
+          "default": ""
         }
       }
     },
@@ -25,11 +43,23 @@
       "description": "InstanceSpec contains the specification for an Instance.",
       "type": "object",
       "required": [
-        "seedConfigRef"
+        "landscaperConfiguration",
+        "componentReference",
+        "serviceTargetConfigRef"
       ],
       "properties": {
-        "seedConfigRef": {
-          "description": "SeedConfigReg specifies the target cluster for which the installation is created.",
+        "componentReference": {
+          "description": "ComponentReference define the reference to the landscaper server component.",
+          "default": {},
+          "$ref": "#/definitions/core-v1alpha1-LandscaperServiceComponentReference"
+        },
+        "landscaperConfiguration": {
+          "description": "LandscaperConfiguration contains the configuration for the landscaper service deployment",
+          "default": {},
+          "$ref": "#/definitions/core-v1alpha1-LandscaperConfiguration"
+        },
+        "serviceTargetConfigRef": {
+          "description": "ServiceTargetConfigRef specifies the target cluster for which the installation is created.",
           "default": {},
           "$ref": "#/definitions/core-v1alpha1-ObjectReference"
         }
@@ -40,12 +70,12 @@
       "type": "object",
       "properties": {
         "clusterEndpoint": {
-          "description": "ClusterEndpointRef references a data object, containing the URL at which the landscaper cluster is accessible.",
-          "$ref": "#/definitions/core-v1alpha1-ObjectReference"
+          "description": "ClusterEndpointRef contains the URL at which the landscaper cluster is accessible.",
+          "type": "string"
         },
-        "clusterKubeconfigRef": {
-          "description": "ClusterEndpointRef references a data object, containing the Kubeconfig which can be used for accessing the landscaper cluster.",
-          "$ref": "#/definitions/core-v1alpha1-ObjectReference"
+        "clusterKubeconfig": {
+          "description": "ClusterKubeconfigRef contains the Kubeconfig which can be used for accessing the landscaper cluster.",
+          "type": "string"
         },
         "installationRef": {
           "description": "InstallationRef references the Installation for this Instance.",
@@ -64,6 +94,47 @@
         "targetRef": {
           "description": "TargetRef references the Target for this Instance.",
           "$ref": "#/definitions/core-v1alpha1-ObjectReference"
+        }
+      }
+    },
+    "core-v1alpha1-LandscaperConfiguration": {
+      "description": "LandscaperConfiguration contains the configuration for a landscaper service deployment.",
+      "type": "object",
+      "required": [
+        "deployers"
+      ],
+      "properties": {
+        "deployers": {
+          "description": "Deployers is the list of deployers that are getting installed alongside with this Instance.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "default": ""
+          }
+        }
+      }
+    },
+    "core-v1alpha1-LandscaperServiceComponentReference": {
+      "description": "LandscaperServiceComponentReference defines the landscaper service component reference and context that should be used.",
+      "type": "object",
+      "required": [
+        "version"
+      ],
+      "properties": {
+        "componentName": {
+          "description": "ComponentName defines the component name of the landscaper service component to use for this deployment.",
+          "type": "string",
+          "default": ""
+        },
+        "context": {
+          "description": "Context is the name of the landscaper context to use for the deployment.",
+          "type": "string",
+          "default": ""
+        },
+        "version": {
+          "description": "Version defines the version of the landscaper service component to use for this deployment.",
+          "type": "string",
+          "default": ""
         }
       }
     },
