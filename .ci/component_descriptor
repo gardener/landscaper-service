@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# SPDX-FileCopyrightText: 2021 SAP SE or an SAP affiliate company and Gardener contributors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
+SOURCE_PATH="$(dirname $0)/.."
+VERSION="$(${SOURCE_PATH}/hack/get-version.sh)"
+
+# add landscaper component descriptor
+printf "> Create Landscaper Service ca archive\n"
+LS_CA_PATH="$(mktemp -d)"
+cp ${BASE_DEFINITION_PATH} "${LS_CA_PATH}/component-descriptor.yaml"
+component-cli ca resources add ${LS_CA_PATH} \
+    VERSION=${VERSION} \
+    ${SOURCE_PATH}/.landscaper/resources.yaml
+
+printf "> Add Landscaper Service CA to ctf\n"
+component-cli ctf add "${CTF_PATH}" -f "${LS_CA_PATH}"
+
+# also upload the components to a open source repo
+# todo: remove as soon as the default component repository is public
+component-cli ctf push --repo-ctx="eu.gcr.io/gardener-project/development" "${CTF_PATH}"

@@ -18,6 +18,9 @@ Files:
   pkg/crdmanager/crdresources/*
   pkg/apis/.schemes/*
   pkg/apis/openapi/api_violations.report
+  .landscaper/*
+  gen/*
+  charts/landscaper-service/.helmignore
 Copyright: 2021 SAP SE or an SAP affiliate company and Gardener contributors
 License: Apache-2.0
 

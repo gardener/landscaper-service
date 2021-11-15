@@ -1,0 +1,38 @@
+{{/* SPDX-FileCopyrightText: 2021 "SAP SE or an SAP affiliate company and Gardener contributors"
+
+  SPDX-License-Identifier: Apache-2.0
+*/}}
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "landscaper-service.fullname" . }}
+  labels:
+    {{- include "landscaper-service.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+  {{- include "landscaper-service.selectorLabels" . | nindent 4 }}
+---
+{{- if not (has "all" .Values.webhooksServer.disableWebhooks) }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "landscaper-service.webhooks.fullname" . }}
+  labels:
+  {{- include "landscaper-service.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.webhooksServer.servicePort }}
+      targetPort: {{ .Values.webhooksServer.servicePort }}
+      protocol: TCP
+      name: webhook
+  selector:
+  {{- include "landscaper-service.webhooks.selectorLabels" . | nindent 4 }}
+{{- end }}

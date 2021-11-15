@@ -1,0 +1,60 @@
+{{/* SPDX-FileCopyrightText: 2021 "SAP SE or an SAP affiliate company and Gardener contributors"
+
+  SPDX-License-Identifier: Apache-2.0
+*/}}
+
+{{- if not (has "all" .Values.webhooksServer.disableWebhooks) }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "landscaper-service.webhooks.fullname" . }}
+  labels:
+    {{- include "landscaper-service.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.webhooksServer.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "landscaper-service.webhooks.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        {{ range $key, $value := .Values.podAnnotations }}
+          {{ $key }}: {{ $value}}
+          {{- end }}
+      labels:
+        {{- include "landscaper-service.webhooks.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "landscaper-service.webhooksServer.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ include "landscaper-service-webhook-image" . }}"
+          imagePullPolicy: {{ .Values.webhooksServer.image.pullPolicy }}
+          args:
+          - --webhook-service={{ .Release.Namespace }}/{{ include "landscaper-service.webhooks.fullname" . }}
+          - --webhook-service-port={{ .Values.webhooksServer.servicePort }}
+          - "-v={{ .Values.landscaperservice.verbosity }}"
+          - --port={{ .Values.webhooksServer.servicePort }}
+          {{- if .Values.webhooksServer.disableWebhooks }}
+          - --disable-webhooks={{ .Values.webhooksServer.disableWebhooks | join "," }}
+          {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}
