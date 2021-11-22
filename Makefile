@@ -12,6 +12,7 @@ LANDSCAPER_SERVICE_WEBHOOKS_SERVER_IMAGE_REPOSITORY    := $(REGISTRY)/landscaper
 
 .PHONY: install-requirements
 install-requirements:
+	@go install sigs.k8s.io/controller-runtime/tools/setup-envtest@latest
 	@$(REPO_ROOT)/hack/install-requirements.sh
 
 .PHONY: revendor
@@ -28,6 +29,14 @@ check:
 
 .PHONY: verify
 verify: check
+
+.PHONY: setup-testenv
+setup-testenv:
+	@$(REPO_ROOT)/hack/setup-testenv.sh
+
+.PHONY: test
+test: setup-testenv
+	@$(REPO_ROOT)/hack/test.sh
 
 .PHONY: generate-code
 generate-code:
