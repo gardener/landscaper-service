@@ -15,11 +15,11 @@ landscaper-service:
         dockerimages:
           landscaper-service-controller:
             registry: 'gcr-readwrite'
-            target: 'landscaper-controller'
+            target: 'landscaper-service-controller'
             image: eu.gcr.io/gardener-project/landscaper-service/landscaper-service-controller
           landscaper-service-webhooks-server:
             registry: 'gcr-readwrite'
-            target: 'landscaper-webhooks-server'
+            target: 'landscaper-service-webhooks-server'
             image: eu.gcr.io/gardener-project/landscaper-service/landscaper-service-webhooks-server
     steps:
       verify:
