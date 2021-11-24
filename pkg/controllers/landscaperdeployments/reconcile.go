@@ -121,7 +121,7 @@ func (c *Controller) findServiceTargetConfig(ctx context.Context, log logr.Logge
 		return nil, fmt.Errorf("unable to list service target configs: %w", err)
 	}
 
-	filterServiceTargetConfigs(serviceTargetConfigs)
+	FilterServiceTargetConfigs(serviceTargetConfigs)
 
 	if len(serviceTargetConfigs.Items) == 0 {
 		err := fmt.Errorf("no service target with remaining capacity available")
@@ -131,8 +131,8 @@ func (c *Controller) findServiceTargetConfig(ctx context.Context, log logr.Logge
 	return &serviceTargetConfigs.Items[0], nil
 }
 
-// filterServiceTargetConfigs will remove all configs with no remaining capacity and then sort the configs by priority and capacity.
-func filterServiceTargetConfigs(configs *lssv1alpha1.ServiceTargetConfigList) {
+// FilterServiceTargetConfigs will remove all configs with no remaining capacity and then sort the configs by priority and capacity.
+func FilterServiceTargetConfigs(configs *lssv1alpha1.ServiceTargetConfigList) {
 	if len(configs.Items) == 0 {
 		return
 	}
