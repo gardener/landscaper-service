@@ -137,16 +137,6 @@ func filterServiceTargetConfigs(configs *lssv1alpha1.ServiceTargetConfigList) {
 		return
 	}
 
-	// remove all configurations with no remaining capacity
-	n := 0
-	for _, conf := range configs.Items {
-		if conf.Status.Capacity != nil && *conf.Status.Capacity > 0 {
-			configs.Items[n] = conf
-			n++
-		}
-	}
-	configs.Items = configs.Items[:n]
-
 	// sort the configurations by priority and capacity
 	sort.SliceStable(configs.Items, func(i, j int) bool {
 		l := &configs.Items[i]
@@ -155,7 +145,7 @@ func filterServiceTargetConfigs(configs *lssv1alpha1.ServiceTargetConfigList) {
 		if l.Spec.Priority > r.Spec.Priority {
 			return true
 		} else if l.Spec.Priority == r.Spec.Priority {
-			return *l.Status.Capacity > *r.Status.Capacity
+			return len(l.Status.InstanceRefs) < len(r.Status.InstanceRefs)
 		}
 		return false
 	})

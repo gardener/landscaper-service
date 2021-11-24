@@ -26,9 +26,6 @@ spec:
     - jsonPath: .spec.priority
       name: Priority
       type: number
-    - jsonPath: .status.capacity
-      name: Capacity
-      type: number
     - jsonPath: .metadata.creationTimestamp
       name: Age
       type: date
@@ -88,15 +85,6 @@ spec:
           status:
             description: Status contains the status of the ServiceTargetConfig.
             properties:
-              capacity:
-                description: Capacity specifies the remaining capacity for Landscaper
-                  Service deployments. For each Landscaper Service deployment that
-                  is installed on this target, the value will be decremented. For
-                  each Landscaper Service deployment that is uninstalled from this
-                  target, the value will be incremented. When this value reaches zero,
-                  no new Landscaper Services can be deployed on this target.
-                format: int64
-                type: integer
               instanceRefs:
                 description: InstanceRefs is the list of references to instances that
                   use this ServiceTargetConfig.

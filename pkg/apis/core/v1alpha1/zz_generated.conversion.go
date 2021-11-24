@@ -639,7 +639,6 @@ func Convert_core_ServiceTargetConfigSpec_To_v1alpha1_ServiceTargetConfigSpec(in
 
 func autoConvert_v1alpha1_ServiceTargetConfigStatus_To_core_ServiceTargetConfigStatus(in *ServiceTargetConfigStatus, out *core.ServiceTargetConfigStatus, s conversion.Scope) error {
 	out.ObservedGeneration = in.ObservedGeneration
-	out.Capacity = (*int64)(unsafe.Pointer(in.Capacity))
 	out.InstanceRefs = *(*[]core.ObjectReference)(unsafe.Pointer(&in.InstanceRefs))
 	return nil
 }
@@ -651,7 +650,6 @@ func Convert_v1alpha1_ServiceTargetConfigStatus_To_core_ServiceTargetConfigStatu
 
 func autoConvert_core_ServiceTargetConfigStatus_To_v1alpha1_ServiceTargetConfigStatus(in *core.ServiceTargetConfigStatus, out *ServiceTargetConfigStatus, s conversion.Scope) error {
 	out.ObservedGeneration = in.ObservedGeneration
-	out.Capacity = (*int64)(unsafe.Pointer(in.Capacity))
 	out.InstanceRefs = *(*[]ObjectReference)(unsafe.Pointer(&in.InstanceRefs))
 	return nil
 }

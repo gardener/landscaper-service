@@ -1028,13 +1028,6 @@ func schema_pkg_apis_core_v1alpha1_ServiceTargetConfigStatus(ref common.Referenc
 							Format:      "int64",
 						},
 					},
-					"capacity": {
-						SchemaProps: spec.SchemaProps{
-							Description: "Capacity specifies the remaining capacity for Landscaper Service deployments. For each Landscaper Service deployment that is installed on this target, the value will be decremented. For each Landscaper Service deployment that is uninstalled from this target, the value will be incremented. When this value reaches zero, no new Landscaper Services can be deployed on this target.",
-							Type:        []string{"integer"},
-							Format:      "int64",
-						},
-					},
 					"instanceRefs": {
 						SchemaProps: spec.SchemaProps{
 							Description: "InstanceRefs is the list of references to instances that use this ServiceTargetConfig.",

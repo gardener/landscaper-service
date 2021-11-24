@@ -11,7 +11,6 @@ import (
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	"github.com/go-logr/logr"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
@@ -23,14 +22,14 @@ import (
 func (c *Controller) handleDelete(ctx context.Context, log logr.Logger, instance *lssv1alpha1.Instance) error {
 	curOp := "Delete"
 
-	if instance.Status.InstallationRef != nil {
+	if instance.Status.InstallationRef != nil && !instance.Status.InstallationRef.IsEmpty() {
 		if err := c.ensureDeleteInstallationForInstance(ctx, log, instance); err != nil {
 			return lsserrors.NewWrappedError(err, curOp, "DeleteInstallation", err.Error())
 		}
 		return nil
 	}
 
-	if instance.Status.TargetRef != nil {
+	if instance.Status.TargetRef != nil && !instance.Status.TargetRef.IsEmpty() {
 		if err := c.ensureDeleteTargetForInstance(ctx, log, instance); err != nil {
 			return lsserrors.NewWrappedError(err, curOp, "DeleteTarget", err.Error())
 		}
@@ -63,21 +62,21 @@ func (c *Controller) handleDelete(ctx context.Context, log logr.Logger, instance
 // ensureDeleteInstallationForInstance ensures that the installation for an instance is deleted
 func (c *Controller) ensureDeleteInstallationForInstance(ctx context.Context, log logr.Logger, instance *lssv1alpha1.Instance) error {
 	log.Info("Delete installation for instance")
-	installationMeta := &metav1.PartialObjectMetadata{}
-	installationMeta.SetGroupVersionKind(lsv1alpha1.SchemeGroupVersion.WithKind("Installation"))
+	installation := &lsv1alpha1.Installation{}
 
-	if err := c.Client().Get(ctx, instance.Status.InstallationRef.NamespacedName(), installationMeta); err != nil {
+	if err := c.Client().Get(ctx, instance.Status.InstallationRef.NamespacedName(), installation); err != nil {
 		if apierrors.IsNotFound(err) {
 			instance.Status.InstallationRef = nil
 			if err := c.Client().Status().Update(ctx, instance); err != nil {
 				return fmt.Errorf("failed to remove installation reference: %w", err)
 			}
+		} else {
+			return fmt.Errorf("unable to get installation for instance: %w", err)
 		}
-		return fmt.Errorf("unable to get installation for instance: %w", err)
 	}
 
-	if installationMeta.DeletionTimestamp.IsZero() {
-		if err := c.Client().Delete(ctx, installationMeta); err != nil {
+	if installation.DeletionTimestamp.IsZero() {
+		if err := c.Client().Delete(ctx, installation); err != nil {
 			return fmt.Errorf("unable to delete installation for instance: %w", err)
 		}
 	}
@@ -88,21 +87,21 @@ func (c *Controller) ensureDeleteInstallationForInstance(ctx context.Context, lo
 // ensureDeleteTargetForInstance ensures that the target for an instance is deleted
 func (c *Controller) ensureDeleteTargetForInstance(ctx context.Context, log logr.Logger, instance *lssv1alpha1.Instance) error {
 	log.Info("Delete target for instance")
-	targetMeta := &metav1.PartialObjectMetadata{}
-	targetMeta.SetGroupVersionKind(lsv1alpha1.SchemeGroupVersion.WithKind("Target"))
+	target := &lsv1alpha1.Target{}
 
-	if err := c.Client().Get(ctx, instance.Status.TargetRef.NamespacedName(), targetMeta); err != nil {
+	if err := c.Client().Get(ctx, instance.Status.TargetRef.NamespacedName(), target); err != nil {
 		if apierrors.IsNotFound(err) {
 			instance.Status.TargetRef = nil
 			if err := c.Client().Status().Update(ctx, instance); err != nil {
 				return fmt.Errorf("failed to remove target reference: %w", err)
 			}
+		} else {
+			return fmt.Errorf("unable to get target for instance: %w", err)
 		}
-		return fmt.Errorf("unable to get target for instance: %w", err)
 	}
 
-	if targetMeta.DeletionTimestamp.IsZero() {
-		if err := c.Client().Delete(ctx, targetMeta); err != nil {
+	if target.DeletionTimestamp.IsZero() {
+		if err := c.Client().Delete(ctx, target); err != nil {
 			return fmt.Errorf("unable to delete target for instance: %w", err)
 		}
 	}

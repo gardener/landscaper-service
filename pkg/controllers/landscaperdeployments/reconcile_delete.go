@@ -20,7 +20,7 @@ import (
 // handleDelete handles the deletion of a landscaper deployment.
 func (c *Controller) handleDelete(ctx context.Context, log logr.Logger, deployment *lssv1alpha1.LandscaperDeployment) error {
 	currOp := "Delete"
-	if deployment.Status.InstanceRef != nil {
+	if deployment.Status.InstanceRef != nil && !deployment.Status.InstanceRef.IsEmpty() {
 		return c.ensureDeleteInstanceForDeployment(ctx, log, deployment)
 	}
 
@@ -34,6 +34,7 @@ func (c *Controller) handleDelete(ctx context.Context, log logr.Logger, deployme
 
 // ensureDeleteInstanceForDeployment ensures that the instance referenced by this deployment is deleted.
 func (c *Controller) ensureDeleteInstanceForDeployment(ctx context.Context, log logr.Logger, deployment *lssv1alpha1.LandscaperDeployment) error {
+	log.Info("Delete instance for landscaper deployment")
 	instance := &lssv1alpha1.Instance{}
 
 	if err := c.Client().Get(ctx, deployment.Status.InstanceRef.NamespacedName(), instance); err != nil {
@@ -42,9 +43,9 @@ func (c *Controller) ensureDeleteInstanceForDeployment(ctx context.Context, log 
 			if err := c.Client().Status().Update(ctx, deployment); err != nil {
 				return fmt.Errorf("unable to remove instance reference: %w", err)
 			}
+		} else {
+			return fmt.Errorf("unable to get instance for deployment: %w", err)
 		}
-		log.Error(err, "unable to get instance for deployment")
-		return fmt.Errorf("unable to get instance for deployment")
 	}
 
 	if instance.GetDeletionTimestamp().IsZero() {

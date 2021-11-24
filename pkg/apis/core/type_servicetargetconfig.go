@@ -62,13 +62,6 @@ type ServiceTargetConfigStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration"`
 
-	// Capacity specifies the remaining capacity for Landscaper Service deployments.
-	// For each Landscaper Service deployment that is installed on this seed, the value will be decremented.
-	// For each Landscaper Service deployment that is uninstalled from this seed, the value will be incremented.
-	// When this value reaches zero, no new Landscaper Services can be deployed on this seed.
-	// +optional
-	Capacity *int64 `json:"capacity"`
-
 	// InstanceRefs is the list of references to instances that use this ServiceTargetConfig.
 	// +optional
 	InstanceRefs []ObjectReference `json:"instanceRefs,omitempty"`

@@ -87,11 +87,6 @@
       "description": "ServiceTargetConfigStatus contains the status of a ServiceTargetConfig.",
       "type": "object",
       "properties": {
-        "capacity": {
-          "description": "Capacity specifies the remaining capacity for Landscaper Service deployments. For each Landscaper Service deployment that is installed on this target, the value will be decremented. For each Landscaper Service deployment that is uninstalled from this target, the value will be incremented. When this value reaches zero, no new Landscaper Services can be deployed on this target.",
-          "type": "integer",
-          "format": "int64"
-        },
         "instanceRefs": {
           "description": "InstanceRefs is the list of references to instances that use this ServiceTargetConfig.",
           "type": "array",
