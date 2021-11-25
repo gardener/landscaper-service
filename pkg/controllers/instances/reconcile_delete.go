@@ -20,19 +20,30 @@ import (
 
 // handleDelete handles the deletion of instances
 func (c *Controller) handleDelete(ctx context.Context, log logr.Logger, instance *lssv1alpha1.Instance) error {
-	curOp := "Delete"
+	var (
+		err                 error
+		curOp               = "Delete"
+		targetDeleted       = true
+		installationDeleted = true
+	)
 
 	if instance.Status.InstallationRef != nil && !instance.Status.InstallationRef.IsEmpty() {
-		if err := c.ensureDeleteInstallationForInstance(ctx, log, instance); err != nil {
+		if targetDeleted, err = c.ensureDeleteInstallationForInstance(ctx, log, instance); err != nil {
 			return lsserrors.NewWrappedError(err, curOp, "DeleteInstallation", err.Error())
 		}
+	}
+
+	if !targetDeleted {
 		return nil
 	}
 
 	if instance.Status.TargetRef != nil && !instance.Status.TargetRef.IsEmpty() {
-		if err := c.ensureDeleteTargetForInstance(ctx, log, instance); err != nil {
+		if installationDeleted, err = c.ensureDeleteTargetForInstance(ctx, log, instance); err != nil {
 			return lsserrors.NewWrappedError(err, curOp, "DeleteTarget", err.Error())
 		}
+	}
+
+	if !installationDeleted {
 		return nil
 	}
 
@@ -60,7 +71,7 @@ func (c *Controller) handleDelete(ctx context.Context, log logr.Logger, instance
 }
 
 // ensureDeleteInstallationForInstance ensures that the installation for an instance is deleted
-func (c *Controller) ensureDeleteInstallationForInstance(ctx context.Context, log logr.Logger, instance *lssv1alpha1.Instance) error {
+func (c *Controller) ensureDeleteInstallationForInstance(ctx context.Context, log logr.Logger, instance *lssv1alpha1.Instance) (bool, error) {
 	log.Info("Delete installation for instance")
 	installation := &lsv1alpha1.Installation{}
 
@@ -68,24 +79,25 @@ func (c *Controller) ensureDeleteInstallationForInstance(ctx context.Context, lo
 		if apierrors.IsNotFound(err) {
 			instance.Status.InstallationRef = nil
 			if err := c.Client().Status().Update(ctx, instance); err != nil {
-				return fmt.Errorf("failed to remove installation reference: %w", err)
+				return false, fmt.Errorf("failed to remove installation reference: %w", err)
 			}
+			return true, nil
 		} else {
-			return fmt.Errorf("unable to get installation for instance: %w", err)
+			return false, fmt.Errorf("unable to get installation for instance: %w", err)
 		}
 	}
 
 	if installation.DeletionTimestamp.IsZero() {
 		if err := c.Client().Delete(ctx, installation); err != nil {
-			return fmt.Errorf("unable to delete installation for instance: %w", err)
+			return false, fmt.Errorf("unable to delete installation for instance: %w", err)
 		}
 	}
 
-	return nil
+	return false, nil
 }
 
 // ensureDeleteTargetForInstance ensures that the target for an instance is deleted
-func (c *Controller) ensureDeleteTargetForInstance(ctx context.Context, log logr.Logger, instance *lssv1alpha1.Instance) error {
+func (c *Controller) ensureDeleteTargetForInstance(ctx context.Context, log logr.Logger, instance *lssv1alpha1.Instance) (bool, error) {
 	log.Info("Delete target for instance")
 	target := &lsv1alpha1.Target{}
 
@@ -93,18 +105,19 @@ func (c *Controller) ensureDeleteTargetForInstance(ctx context.Context, log logr
 		if apierrors.IsNotFound(err) {
 			instance.Status.TargetRef = nil
 			if err := c.Client().Status().Update(ctx, instance); err != nil {
-				return fmt.Errorf("failed to remove target reference: %w", err)
+				return false, fmt.Errorf("failed to remove target reference: %w", err)
 			}
+			return true, nil
 		} else {
-			return fmt.Errorf("unable to get target for instance: %w", err)
+			return false, fmt.Errorf("unable to get target for instance: %w", err)
 		}
 	}
 
 	if target.DeletionTimestamp.IsZero() {
 		if err := c.Client().Delete(ctx, target); err != nil {
-			return fmt.Errorf("unable to delete target for instance: %w", err)
+			return false, fmt.Errorf("unable to delete target for instance: %w", err)
 		}
 	}
 
-	return nil
+	return false, nil
 }

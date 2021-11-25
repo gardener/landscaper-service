@@ -35,6 +35,14 @@ func NewController(log logr.Logger, c client.Client, scheme *runtime.Scheme) (re
 	return ctrl, nil
 }
 
+// NewTestActuator creates a new controller for testing purposes.
+func NewTestActuator(op operation.Operation) *Controller {
+	ctrl := &Controller{
+		Operation: op,
+	}
+	return ctrl
+}
+
 // Reconcile reconciles requests for instances
 func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reconcile.Result, error) {
 	log := c.Log().WithValues("instance", req.NamespacedName.String())

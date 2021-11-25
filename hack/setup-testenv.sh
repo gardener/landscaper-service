@@ -24,3 +24,15 @@ export KUBEBUILDER_ASSETS=$(setup-envtest use -p path ${K8S_VERSION} ${ARCH_ARG}
 mkdir -p ${PROJECT_ROOT}/tmp/test
 rm -f ${PROJECT_ROOT}/tmp/test/bin
 ln -s "${KUBEBUILDER_ASSETS}" ${PROJECT_ROOT}/tmp/test/bin
+
+# TODO: The landscaper crd files used for testing are currently not exported via landscaper api module.
+#       To avoid adding the landscaper module, download the needed crd files directly.
+LANDSCAPER_APIS_VERSION=$(go list -m -mod=readonly -f {{.Version}}  github.com/gardener/landscaper/apis)
+LANDSCAPER_CRD_URL="https://raw.githubusercontent.com/gardener/landscaper/${LANDSCAPER_APIS_VERSION}/pkg/landscaper/crdmanager/crdresources"
+LANDSCAPER_CRD_DIR="${PROJECT_ROOT}/tmp/landscapercrd"
+LANDSCAPER_CRDS="landscaper.gardener.cloud_installations.yaml landscaper.gardener.cloud_targets.yaml landscaper.gardener.cloud_dataobjects.yaml"
+mkdir -p ${PROJECT_ROOT}/tmp/landscapercrd
+
+for crd in $LANDSCAPER_CRDS; do
+  (cd ${LANDSCAPER_CRD_DIR} && curl -s -O "$LANDSCAPER_CRD_URL/$crd")
+done

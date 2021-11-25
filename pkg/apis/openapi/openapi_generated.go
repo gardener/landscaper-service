@@ -973,28 +973,12 @@ func schema_pkg_apis_core_v1alpha1_ServiceTargetConfigSpec(ref common.ReferenceC
 							Format:      "",
 						},
 					},
-					"region": {
-						SchemaProps: spec.SchemaProps{
-							Description: "Region specifies the region in which the target cluster is located.",
-							Default:     "",
-							Type:        []string{"string"},
-							Format:      "",
-						},
-					},
 					"priority": {
 						SchemaProps: spec.SchemaProps{
 							Description: "The Priority of this ServiceTargetConfig. SeedConfigs with a higher priority number will be preferred over lower numbers when scheduling new landscaper service installations.",
 							Default:     0,
 							Type:        []string{"integer"},
 							Format:      "int64",
-						},
-					},
-					"visible": {
-						SchemaProps: spec.SchemaProps{
-							Description: "Visible defines whether the ServiceTargetConfig is visible for scheduling. If set to true, new Landscaper Service deployments can be scheduled on this seed. If set to false, no new Landscaper Service deployments can be scheduled on this seed.",
-							Default:     false,
-							Type:        []string{"boolean"},
-							Format:      "",
 						},
 					},
 					"secretRef": {
@@ -1005,7 +989,7 @@ func schema_pkg_apis_core_v1alpha1_ServiceTargetConfigSpec(ref common.ReferenceC
 						},
 					},
 				},
-				Required: []string{"providerType", "region", "priority", "visible", "secretRef"},
+				Required: []string{"providerType", "priority", "secretRef"},
 			},
 		},
 		Dependencies: []string{

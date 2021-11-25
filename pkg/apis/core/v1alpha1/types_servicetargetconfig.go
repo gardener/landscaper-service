@@ -9,6 +9,15 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+const (
+	// ServiceTargetConfigVisibleLabelName label defines whether the ServiceTargetConfig is visible for scheduling.
+	// If set to "true", any Landscaper Service deployment can be scheduled on this seed.
+	// If not set or set to "false", no new Landscaper Service deployments can be scheduled on this seed.
+	ServiceTargetConfigVisibleLabelName = "config.landscaper-service.gardener.cloud/visible"
+	// ServiceTargetConfigRegionLabelName label specifies the region in which the target cluster is located.
+	ServiceTargetConfigRegionLabelName = "config.landscaper-service.gardener.cloud/region"
+)
+
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 // ServiceTargetConfigList contains a list of ServiceTargetConfig
@@ -39,18 +48,10 @@ type ServiceTargetConfigSpec struct {
 	// ProviderType specifies the type of the underlying infrastructure provide.
 	ProviderType string `json:"providerType"`
 
-	// Region specifies the region in which the target cluster is located.
-	Region string `json:"region"`
-
 	// The Priority of this ServiceTargetConfig.
 	// SeedConfigs with a higher priority number will be preferred over lower numbers
 	// when scheduling new landscaper service installations.
 	Priority int64 `json:"priority"`
-
-	// Visible defines whether the ServiceTargetConfig is visible for scheduling.
-	// If set to true, new Landscaper Service deployments can be scheduled on this seed.
-	// If set to false, no new Landscaper Service deployments can be scheduled on this seed.
-	Visible bool `json:"visible"`
 
 	// SecretRef references the secret that contains the kubeconfig of the target cluster.
 	SecretRef SecretReference `json:"secretRef"`
@@ -90,12 +91,12 @@ var ServiceTargetConfigDefinition = lsschema.CustomResourceDefinition{
 		{
 			Name:     "Region",
 			Type:     "string",
-			JSONPath: ".spec.region",
+			JSONPath: ".metadata.labels.landscaper-service\\.gardener\\.cloud/region",
 		},
 		{
 			Name:     "Visible",
-			Type:     "boolean",
-			JSONPath: ".spec.visible",
+			Type:     "string",
+			JSONPath: ".metadata.labels.landscaper-service\\.gardener\\.cloud/visible",
 		},
 		{
 			Name:     "Priority",

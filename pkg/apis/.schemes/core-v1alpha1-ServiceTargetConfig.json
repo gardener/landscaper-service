@@ -49,9 +49,7 @@
       "type": "object",
       "required": [
         "providerType",
-        "region",
         "priority",
-        "visible",
         "secretRef"
       ],
       "properties": {
@@ -66,20 +64,10 @@
           "type": "string",
           "default": ""
         },
-        "region": {
-          "description": "Region specifies the region in which the target cluster is located.",
-          "type": "string",
-          "default": ""
-        },
         "secretRef": {
           "description": "SecretRef references the secret that contains the kubeconfig of the target cluster.",
           "default": {},
           "$ref": "#/definitions/core-v1alpha1-SecretReference"
-        },
-        "visible": {
-          "description": "Visible defines whether the ServiceTargetConfig is visible for scheduling. If set to true, new Landscaper Service deployments can be scheduled on this seed. If set to false, no new Landscaper Service deployments can be scheduled on this seed.",
-          "type": "boolean",
-          "default": false
         }
       }
     },

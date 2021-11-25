@@ -38,18 +38,10 @@ type ServiceTargetConfigSpec struct {
 	// ProviderType specifies the type of the underlying infrastructure provide.
 	ProviderType string `json:"providerType"`
 
-	// Region specifies the region in which the target cluster is located.
-	Region string `json:"region"`
-
 	// The Priority of this ServiceTargetConfig.
 	// SeedConfigs with a higher priority number will be preferred over lower numbers
 	// when scheduling new landscaper service installations.
 	Priority int64 `json:"priority"`
-
-	// Visible defines whether the ServiceTargetConfig is visible for scheduling.
-	// If set to true, new Landscaper Service deployments can be scheduled on this seed.
-	// If set to false, no new Landscaper Service deployments can be scheduled on this seed.
-	Visible bool `json:"visible"`
 
 	// SecretRef references the secret that contains the kubeconfig of the target cluster.
 	SecretRef SecretReference `json:"secretRef"`

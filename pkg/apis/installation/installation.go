@@ -28,6 +28,25 @@ const (
 	// WebhooksServicePortDefault is the default service port for the landscaper webhooks server deployment.
 	WebhooksServicePortDefault = 9443
 
+	// HostingClusterNamespaceImportName is the import name for the hosting cluster namespace.
+	HostingClusterNamespaceImportName = "hostingClusterNamespace"
+	// DeleteHostingClusterImportName is the import for specifying whether the hosting cluster namespace shall be deleted.
+	// before the installation.
+	DeleteHostingClusterImportName = "deleteHostingClusterNamespace"
+	// VirtualClusterNamespaceImportName is the import for the virtual cluster namespace.
+	VirtualClusterNamespaceImportName = "virtualClusterNamespace"
+	// ProviderTypeImportName is the import for the provider type.
+	ProviderTypeImportName = "providerType"
+	// RegistryConfigImportName is the import for the registry configuration.
+	RegistryConfigImportName = "registryConfig"
+	// LandscaperConfigImportName is the import for the landscaper configuration.
+	LandscaperConfigImportName = "landscaperConfig"
+	// DNSAccessDomainImportName is the import for the API server DNS name.
+	DNSAccessDomainImportName = "dnsAccessDomain"
+
+	// VirtualClusterNamespace is the virtual cluster namespace used for landscaper internals.
+	VirtualClusterNamespace = "ls-system"
+
 	// ClusterEndpointExportName is the name of the cluster endpoint export.
 	ClusterEndpointExportName = "landscaperClusterEndpoint"
 	// ClusterKubeconfigExportName is the name of the cluster kubeconfig export.

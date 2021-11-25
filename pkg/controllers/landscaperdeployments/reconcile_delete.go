@@ -19,21 +19,33 @@ import (
 
 // handleDelete handles the deletion of a landscaper deployment.
 func (c *Controller) handleDelete(ctx context.Context, log logr.Logger, deployment *lssv1alpha1.LandscaperDeployment) error {
-	currOp := "Delete"
+	var (
+		err             error
+		currOp          = "Delete"
+		removeFinalizer bool
+	)
+
 	if deployment.Status.InstanceRef != nil && !deployment.Status.InstanceRef.IsEmpty() {
-		return c.ensureDeleteInstanceForDeployment(ctx, log, deployment)
+		removeFinalizer, err = c.ensureDeleteInstanceForDeployment(ctx, log, deployment)
+		if err != nil {
+			return err
+		}
+	} else {
+		removeFinalizer = true
 	}
 
-	controllerutil.RemoveFinalizer(deployment, lssv1alpha1.LandscaperServiceFinalizer)
-	if err := c.Client().Update(ctx, deployment); err != nil {
-		return lsserrors.NewWrappedError(err, currOp, "RemoveFinalizer", err.Error())
+	if removeFinalizer {
+		controllerutil.RemoveFinalizer(deployment, lssv1alpha1.LandscaperServiceFinalizer)
+		if err = c.Client().Update(ctx, deployment); err != nil {
+			return lsserrors.NewWrappedError(err, currOp, "RemoveFinalizer", err.Error())
+		}
 	}
 
 	return nil
 }
 
 // ensureDeleteInstanceForDeployment ensures that the instance referenced by this deployment is deleted.
-func (c *Controller) ensureDeleteInstanceForDeployment(ctx context.Context, log logr.Logger, deployment *lssv1alpha1.LandscaperDeployment) error {
+func (c *Controller) ensureDeleteInstanceForDeployment(ctx context.Context, log logr.Logger, deployment *lssv1alpha1.LandscaperDeployment) (bool, error) {
 	log.Info("Delete instance for landscaper deployment")
 	instance := &lssv1alpha1.Instance{}
 
@@ -41,18 +53,19 @@ func (c *Controller) ensureDeleteInstanceForDeployment(ctx context.Context, log 
 		if apierrors.IsNotFound(err) {
 			deployment.Status.InstanceRef = nil
 			if err := c.Client().Status().Update(ctx, deployment); err != nil {
-				return fmt.Errorf("unable to remove instance reference: %w", err)
+				return false, fmt.Errorf("unable to remove instance reference: %w", err)
 			}
+			return true, nil
 		} else {
-			return fmt.Errorf("unable to get instance for deployment: %w", err)
+			return false, fmt.Errorf("unable to get instance for deployment: %w", err)
 		}
 	}
 
 	if instance.GetDeletionTimestamp().IsZero() {
 		if err := c.Client().Delete(ctx, instance); err != nil {
-			return fmt.Errorf("unable to delete instance: %w", err)
+			return false, fmt.Errorf("unable to delete instance: %w", err)
 		}
 	}
 
-	return nil
+	return false, nil
 }

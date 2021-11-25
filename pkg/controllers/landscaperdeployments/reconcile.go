@@ -10,9 +10,10 @@ import (
 	"sort"
 	"strings"
 
+	"k8s.io/apimachinery/pkg/labels"
+
 	"github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	"github.com/go-logr/logr"
-	"k8s.io/apimachinery/pkg/fields"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
@@ -105,16 +106,16 @@ func (c *Controller) mutateInstance(ctx context.Context, log logr.Logger, deploy
 func (c *Controller) findServiceTargetConfig(ctx context.Context, log logr.Logger, deployment *lssv1alpha1.LandscaperDeployment) (*lssv1alpha1.ServiceTargetConfig, error) {
 	serviceTargetConfigs := &lssv1alpha1.ServiceTargetConfigList{}
 	selectorBuilder := strings.Builder{}
-	selectorBuilder.WriteString("spec.visible=true")
+	selectorBuilder.WriteString(fmt.Sprintf("%s=true", lssv1alpha1.ServiceTargetConfigVisibleLabelName))
 
 	if len(deployment.Spec.Region) > 0 {
 		log.V(5).Info("region filter active", "region", deployment.Spec.Region)
-		selectorBuilder.WriteString(fmt.Sprintf(",spec.region=%s", deployment.Spec.Region))
+		selectorBuilder.WriteString(fmt.Sprintf(",%s=%s", lssv1alpha1.ServiceTargetConfigRegionLabelName, deployment.Spec.Region))
 	}
 
-	fieldSelector, _ := fields.ParseSelector(selectorBuilder.String())
+	labelSelector, _ := labels.Parse(selectorBuilder.String())
 	listOptions := client.ListOptions{
-		FieldSelector: fieldSelector,
+		LabelSelector: labelSelector,
 	}
 
 	if err := c.Client().List(ctx, serviceTargetConfigs, &listOptions); err != nil {

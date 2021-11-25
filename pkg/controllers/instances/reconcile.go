@@ -204,14 +204,14 @@ func (c *Controller) mutateInstallation(ctx context.Context, log logr.Logger, in
 			},
 		},
 		ImportDataMappings: map[string]lsv1alpha1.AnyJSON{
-			"hostingClusterNamespace":       utils.StringToAnyJSON(fmt.Sprintf("%s-%s", instance.GetNamespace(), instance.GetName())),
-			"deleteHostingClusterNamespace": utils.BoolToAnyJSON(true),
-			"virtualClusterNamespace":       utils.StringToAnyJSON("ls-system"),
-			"providerType":                  utils.StringToAnyJSON(config.Spec.ProviderType),
-			"registryConfig":                *registryConfigRaw,
-			"landscaperConfig":              *landscaperConfigRaw,
+			lsinstallation.HostingClusterNamespaceImportName: utils.StringToAnyJSON(fmt.Sprintf("%s-%s", instance.GetNamespace(), instance.GetName())),
+			lsinstallation.DeleteHostingClusterImportName:    utils.BoolToAnyJSON(true),
+			lsinstallation.VirtualClusterNamespaceImportName: utils.StringToAnyJSON(lsinstallation.VirtualClusterNamespace),
+			lsinstallation.ProviderTypeImportName:            utils.StringToAnyJSON(config.Spec.ProviderType),
+			lsinstallation.RegistryConfigImportName:          *registryConfigRaw,
+			lsinstallation.LandscaperConfigImportName:        *landscaperConfigRaw,
 			// TODO: how should this be configured?
-			"dnsAccessDomain": utils.StringToAnyJSON(""),
+			lsinstallation.DNSAccessDomainImportName: utils.StringToAnyJSON(""),
 		},
 		Exports: lsv1alpha1.InstallationExports{
 			Data: []lsv1alpha1.DataExport{

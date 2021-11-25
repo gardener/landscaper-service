@@ -607,9 +607,7 @@ func Convert_core_ServiceTargetConfigList_To_v1alpha1_ServiceTargetConfigList(in
 
 func autoConvert_v1alpha1_ServiceTargetConfigSpec_To_core_ServiceTargetConfigSpec(in *ServiceTargetConfigSpec, out *core.ServiceTargetConfigSpec, s conversion.Scope) error {
 	out.ProviderType = in.ProviderType
-	out.Region = in.Region
 	out.Priority = in.Priority
-	out.Visible = in.Visible
 	if err := Convert_v1alpha1_SecretReference_To_core_SecretReference(&in.SecretRef, &out.SecretRef, s); err != nil {
 		return err
 	}
@@ -623,9 +621,7 @@ func Convert_v1alpha1_ServiceTargetConfigSpec_To_core_ServiceTargetConfigSpec(in
 
 func autoConvert_core_ServiceTargetConfigSpec_To_v1alpha1_ServiceTargetConfigSpec(in *core.ServiceTargetConfigSpec, out *ServiceTargetConfigSpec, s conversion.Scope) error {
 	out.ProviderType = in.ProviderType
-	out.Region = in.Region
 	out.Priority = in.Priority
-	out.Visible = in.Visible
 	if err := Convert_core_SecretReference_To_v1alpha1_SecretReference(&in.SecretRef, &out.SecretRef, s); err != nil {
 		return err
 	}
