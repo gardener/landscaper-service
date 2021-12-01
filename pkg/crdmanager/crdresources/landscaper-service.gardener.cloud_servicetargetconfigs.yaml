@@ -17,10 +17,10 @@ spec:
     - jsonPath: .spec.providerType
       name: ProviderType
       type: string
-    - jsonPath: .metadata.labels.landscaper-service\.gardener\.cloud/region
+    - jsonPath: .metadata.labels.config\.landscaper-service\.gardener\.cloud/region
       name: Region
       type: string
-    - jsonPath: .metadata.labels.landscaper-service\.gardener\.cloud/visible
+    - jsonPath: .metadata.labels.config\.landscaper-service\.gardener\.cloud/visible
       name: Visible
       type: string
     - jsonPath: .spec.priority

@@ -91,12 +91,12 @@ var ServiceTargetConfigDefinition = lsschema.CustomResourceDefinition{
 		{
 			Name:     "Region",
 			Type:     "string",
-			JSONPath: ".metadata.labels.landscaper-service\\.gardener\\.cloud/region",
+			JSONPath: ".metadata.labels.config\\.landscaper-service\\.gardener\\.cloud/region",
 		},
 		{
 			Name:     "Visible",
 			Type:     "string",
-			JSONPath: ".metadata.labels.landscaper-service\\.gardener\\.cloud/visible",
+			JSONPath: ".metadata.labels.config\\.landscaper-service\\.gardener\\.cloud/visible",
 		},
 		{
 			Name:     "Priority",
