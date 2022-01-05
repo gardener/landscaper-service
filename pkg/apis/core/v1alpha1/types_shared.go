@@ -5,6 +5,7 @@
 package v1alpha1
 
 import (
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 )
 
@@ -26,11 +27,64 @@ func (r *ObjectReference) NamespacedName() types.NamespacedName {
 	}
 }
 
+// IsEmpty checks whether this reference has an empty name or empty namespace.
+func (r *ObjectReference) IsEmpty() bool {
+	return len(r.Name) == 0 || len(r.Namespace) == 0
+}
+
+// Equals test whether this object reference equals the given object reference.
+func (r *ObjectReference) Equals(other *ObjectReference) bool {
+	return r.Name == other.Name && r.Namespace == other.Namespace
+}
+
+// IsObject tests whether this object reference references the given object.
+func (r *ObjectReference) IsObject(o metav1.Object) bool {
+	return r.Name == o.GetName() && r.Namespace == o.GetNamespace()
+}
+
+// SecretReference is a reference to data in a secret.
+type SecretReference struct {
+	ObjectReference `json:",inline"`
+
+	// Key is the name of the key in the secret that holds the data.
+	// +optional
+	Key string `json:"key"`
+}
+
 // Error holds information about an error that occurred.
 type Error struct {
 	// Operation describes the operator where the error occurred.
 	Operation string `json:"operation"`
 
+	// Last time the condition transitioned from one status to another.
+	LastTransitionTime metav1.Time `json:"lastTransitionTime"`
+
+	// Last time the condition was updated.
+	LastUpdateTime metav1.Time `json:"lastUpdateTime"`
+
+	// The reason for the condition's last transition.
+	Reason string `json:"reason"`
+
 	// A human-readable message indicating details about the transition.
 	Message string `json:"message"`
+}
+
+// LandscaperConfiguration contains the configuration for a landscaper service deployment.
+type LandscaperConfiguration struct {
+	// Deployers is the list of deployers that are getting installed alongside with this Instance.
+	Deployers []string `json:"deployers"`
+}
+
+// LandscaperServiceComponentReference defines the landscaper service component reference and context that should be used.
+type LandscaperServiceComponentReference struct {
+	// Context is the name of the landscaper context to use for the deployment.
+	// +optional
+	Context string `json:"context"`
+
+	// ComponentName defines the component name of the landscaper service component to use for this deployment.
+	// +optional
+	ComponentName string `json:"componentName"`
+
+	// Version defines the version of the landscaper service component to use for this deployment.
+	Version string `json:"version"`
 }

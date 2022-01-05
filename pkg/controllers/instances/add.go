@@ -5,11 +5,12 @@
 package instances
 
 import (
+	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	"github.com/go-logr/logr"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 
-	"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 )
 
 // AddControllerToManager adds the instances controller to the manager
@@ -21,7 +22,9 @@ func AddControllerToManager(logger logr.Logger, mgr manager.Manager) error {
 	}
 
 	return builder.ControllerManagedBy(mgr).
-		For(&v1alpha1.Instance{}).
+		For(&lssv1alpha1.Instance{}).
+		Owns(&lsv1alpha1.Installation{}).
+		Owns(&lsv1alpha1.Target{}).
 		WithLogger(log).
 		Complete(ctrl)
 }

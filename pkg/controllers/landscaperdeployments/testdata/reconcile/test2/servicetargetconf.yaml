@@ -1,0 +1,89 @@
+# SPDX-FileCopyrightText: 2021 "SAP SE or an SAP affiliate company and Gardener contributors"
+#
+# SPDX-License-Identifier: Apache-2.0
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: target
+  namespace: {{ .Namespace }}
+type: Opaque
+stringData:
+  kubeconfig: |
+    dummy
+---
+apiVersion: landscaper-service.gardener.cloud/v1alpha1
+kind: ServiceTargetConfig
+
+metadata:
+  name: config1
+  namespace: {{ .Namespace }}
+  labels:
+    config.landscaper-service.gardener.cloud/visible: "true"
+    config.landscaper-service.gardener.cloud/region: eu
+
+spec:
+  providerType: gcp
+  priority: 10
+
+  secretRef:
+    name: target
+    namespace: {{ .Namespace }}
+    key: kubeconfig
+---
+apiVersion: landscaper-service.gardener.cloud/v1alpha1
+kind: ServiceTargetConfig
+
+metadata:
+  name: config2
+  namespace: {{ .Namespace }}
+  labels:
+    config.landscaper-service.gardener.cloud/visible: "true"
+    config.landscaper-service.gardener.cloud/region: eu
+
+spec:
+  providerType: gcp
+  priority: 20
+
+  secretRef:
+    name: target
+    namespace: {{ .Namespace }}
+    key: kubeconfig
+---
+apiVersion: landscaper-service.gardener.cloud/v1alpha1
+kind: ServiceTargetConfig
+
+metadata:
+  name: config3
+  namespace: {{ .Namespace }}
+  labels:
+    config.landscaper-service.gardener.cloud/visible: "true"
+    config.landscaper-service.gardener.cloud/region: us
+
+spec:
+  providerType: gcp
+  priority: 30
+
+  secretRef:
+    name: target
+    namespace: {{ .Namespace }}
+    key: kubeconfig
+---
+apiVersion: landscaper-service.gardener.cloud/v1alpha1
+kind: ServiceTargetConfig
+
+metadata:
+  name: configt4
+  namespace: {{ .Namespace }}
+  labels:
+    config.landscaper-service.gardener.cloud/visible: "false"
+    config.landscaper-service.gardener.cloud/region: eu
+
+spec:
+  providerType: gcp
+  priority: 30
+
+  secretRef:
+    name: target
+    namespace: {{ .Namespace }}
+    key: kubeconfig

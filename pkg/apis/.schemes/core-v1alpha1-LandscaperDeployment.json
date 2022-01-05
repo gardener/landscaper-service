@@ -6,9 +6,22 @@
       "type": "object",
       "required": [
         "operation",
+        "lastTransitionTime",
+        "lastUpdateTime",
+        "reason",
         "message"
       ],
       "properties": {
+        "lastTransitionTime": {
+          "description": "Last time the condition transitioned from one status to another.",
+          "default": {},
+          "$ref": "#/definitions/meta-v1-Time"
+        },
+        "lastUpdateTime": {
+          "description": "Last time the condition was updated.",
+          "default": {},
+          "$ref": "#/definitions/meta-v1-Time"
+        },
         "message": {
           "description": "A human-readable message indicating details about the transition.",
           "type": "string",
@@ -18,6 +31,28 @@
           "description": "Operation describes the operator where the error occurred.",
           "type": "string",
           "default": ""
+        },
+        "reason": {
+          "description": "The reason for the condition's last transition.",
+          "type": "string",
+          "default": ""
+        }
+      }
+    },
+    "core-v1alpha1-LandscaperConfiguration": {
+      "description": "LandscaperConfiguration contains the configuration for a landscaper service deployment.",
+      "type": "object",
+      "required": [
+        "deployers"
+      ],
+      "properties": {
+        "deployers": {
+          "description": "Deployers is the list of deployers that are getting installed alongside with this Instance.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "default": ""
+          }
         }
       }
     },
@@ -26,16 +61,19 @@
       "type": "object",
       "required": [
         "purpose",
-        "deployers"
+        "landscaperConfiguration",
+        "componentReference"
       ],
       "properties": {
-        "deployers": {
-          "description": "Deployers is the list of deployers that are getting installed alongside with this LandscaperDeployment.",
-          "type": "array",
-          "items": {
-            "type": "string",
-            "default": ""
-          }
+        "componentReference": {
+          "description": "ComponentReference define the reference to the landscaper server component.",
+          "default": {},
+          "$ref": "#/definitions/core-v1alpha1-LandscaperServiceComponentReference"
+        },
+        "landscaperConfiguration": {
+          "description": "LandscaperConfiguration contains the configuration for the landscaper service deployment",
+          "default": {},
+          "$ref": "#/definitions/core-v1alpha1-LandscaperConfiguration"
         },
         "purpose": {
           "description": "Purpose contains the purpose of this LandscaperDeployment.",
@@ -65,6 +103,30 @@
           "type": "integer",
           "format": "int64",
           "default": 0
+        }
+      }
+    },
+    "core-v1alpha1-LandscaperServiceComponentReference": {
+      "description": "LandscaperServiceComponentReference defines the landscaper service component reference and context that should be used.",
+      "type": "object",
+      "required": [
+        "version"
+      ],
+      "properties": {
+        "componentName": {
+          "description": "ComponentName defines the component name of the landscaper service component to use for this deployment.",
+          "type": "string",
+          "default": ""
+        },
+        "context": {
+          "description": "Context is the name of the landscaper context to use for the deployment.",
+          "type": "string",
+          "default": ""
+        },
+        "version": {
+          "description": "Version defines the version of the landscaper service component to use for this deployment.",
+          "type": "string",
+          "default": ""
         }
       }
     },

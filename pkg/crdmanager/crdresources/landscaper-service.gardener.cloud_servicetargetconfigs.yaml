@@ -17,17 +17,14 @@ spec:
     - jsonPath: .spec.providerType
       name: ProviderType
       type: string
-    - jsonPath: .spec.region
+    - jsonPath: .metadata.labels.config\.landscaper-service\.gardener\.cloud/region
       name: Region
       type: string
-    - jsonPath: .spec.visible
+    - jsonPath: .metadata.labels.config\.landscaper-service\.gardener\.cloud/visible
       name: Visible
-      type: boolean
+      type: string
     - jsonPath: .spec.priority
       name: Priority
-      type: number
-    - jsonPath: .status.capacity
-      name: Capacity
       type: number
     - jsonPath: .metadata.creationTimestamp
       name: Age
@@ -51,14 +48,14 @@ spec:
                 description: ProviderType specifies the type of the underlying infrastructure
                   provide.
                 type: string
-              region:
-                description: Region specifies the region in which the target cluster
-                  is located.
-                type: string
               secretRef:
                 description: SecretRef references the secret that contains the kubeconfig
                   of the target cluster.
                 properties:
+                  key:
+                    description: Key is the name of the key in the secret that holds
+                      the data.
+                    type: string
                   name:
                     description: Name is the name of the kubernetes object.
                     type: string
@@ -68,31 +65,30 @@ spec:
                 required:
                 - name
                 type: object
-              visible:
-                description: Visible defines whether the ServiceTargetConfig is visible
-                  for scheduling. If set to true, new Landscaper Service deployments
-                  can be scheduled on this seed. If set to false, no new Landscaper
-                  Service deployments can be scheduled on this seed.
-                type: boolean
             required:
             - providerType
-            - region
             - priority
-            - visible
             - secretRef
             type: object
           status:
             description: Status contains the status of the ServiceTargetConfig.
             properties:
-              capacity:
-                description: Capacity specifies the remaining capacity for Landscaper
-                  Service deployments. For each Landscaper Service deployment that
-                  is installed on this seed, the value will be decremented. For each
-                  Landscaper Service deployment that is uninstalled from this seed,
-                  the value will be incremented. When this value reaches zero, no
-                  new Landscaper Services can be deployed on this seed.
-                format: int64
-                type: integer
+              instanceRefs:
+                description: InstanceRefs is the list of references to instances that
+                  use this ServiceTargetConfig.
+                items:
+                  description: ObjectReference is the reference to a kubernetes object.
+                  properties:
+                    name:
+                      description: Name is the name of the kubernetes object.
+                      type: string
+                    namespace:
+                      description: Namespace is the namespace of kubernetes object.
+                      type: string
+                  required:
+                  - name
+                  type: object
+                type: array
               observedGeneration:
                 description: ObservedGeneration is the most recent generation observed
                   for this ServiceTargetConfig. It corresponds to the ServiceTargetConfig

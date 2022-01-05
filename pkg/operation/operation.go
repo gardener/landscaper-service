@@ -10,12 +10,17 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
+// Operation is the base type for all controller types.
 type Operation struct {
-	log    logr.Logger
+	// log is the logger instance.
+	log logr.Logger
+	// client is the kubernetes client instance
 	client client.Client
+	// scheme is the controller manager scheme used for serializing and deserializing objects.
 	scheme *runtime.Scheme
 }
 
+// NewOperation creates a new Operation for the given values.
 func NewOperation(log logr.Logger, c client.Client, scheme *runtime.Scheme) *Operation {
 	return &Operation{
 		log:    log,

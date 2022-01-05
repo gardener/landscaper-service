@@ -9,13 +9,15 @@ import (
 	"fmt"
 	"os"
 
+	lsinstall "github.com/gardener/landscaper/apis/core/install"
 	"github.com/spf13/cobra"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 
-	"github.com/gardener/landscaper-service/pkg/apis/core/install"
+	lssinstall "github.com/gardener/landscaper-service/pkg/apis/core/install"
 	instancesctrl "github.com/gardener/landscaper-service/pkg/controllers/instances"
 	landscaperdeploymentsctrl "github.com/gardener/landscaper-service/pkg/controllers/landscaperdeployments"
+	servicetargetconfigsctrl "github.com/gardener/landscaper-service/pkg/controllers/servicetargetconfigs"
 	"github.com/gardener/landscaper-service/pkg/crdmanager"
 	"github.com/gardener/landscaper-service/pkg/version"
 )
@@ -71,14 +73,18 @@ func (o *options) run(ctx context.Context) error {
 		return fmt.Errorf("failed to handle CRDs: %w", err)
 	}
 
-	install.Install(mgr.GetScheme())
+	lssinstall.Install(mgr.GetScheme())
+	lsinstall.Install(mgr.GetScheme())
 
 	ctrlLogger := o.Log.WithName("controllers")
-	if err := landscaperdeploymentsctrl.AddControllerToManager(ctrlLogger, mgr); err != nil {
+	if err := landscaperdeploymentsctrl.AddControllerToManager(ctx, ctrlLogger, mgr); err != nil {
 		return fmt.Errorf("unable to setup landscaper deployments controller: %w", err)
 	}
 	if err := instancesctrl.AddControllerToManager(ctrlLogger, mgr); err != nil {
 		return fmt.Errorf("unable to setup instances controller: %w", err)
+	}
+	if err := servicetargetconfigsctrl.AddControllerToManager(ctrlLogger, mgr); err != nil {
+		return fmt.Errorf("unable to setup service target configs controller: %w", err)
 	}
 
 	o.Log.Info("starting the controllers")

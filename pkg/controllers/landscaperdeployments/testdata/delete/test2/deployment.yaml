@@ -1,0 +1,19 @@
+# SPDX-FileCopyrightText: 2021 "SAP SE or an SAP affiliate company and Gardener contributors"
+#
+# SPDX-License-Identifier: Apache-2.0
+
+apiVersion: landscaper-service.gardener.cloud/v1alpha1
+kind: LandscaperDeployment
+metadata:
+  name: "test"
+  namespace: {{ .Namespace }}
+spec:
+  purpose: "test"
+  region: "eu"
+  landscaperConfiguration:
+    deployers:
+      - helm
+      - manifest
+      - container
+  componentReference:
+    version: v0.16.0
