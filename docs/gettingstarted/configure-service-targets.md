@@ -1,8 +1,11 @@
 # Configure ServiceTargetConfigs
 
+In this Chapter we deploy a [ServiceTargetConfig](../usage/ServiceTargetConfigs.md) manifest, which defines a kubernetes
+cluster into which the Landscaper as a Service could deploy Landscaper instances.
+
 ## Kubeconfig Secret
 
-To create a new [ServiceTargetConfig](../usage/ServiceTargetConfigs.md) a kubernetes secret of type `Opaque` needs to be created.
+To create a new ServiceTargetConfig a kubernetes secret of type `Opaque` needs to be created.
 This secret needs have a key that contains the kubeconfig of the target cluster that the ServiceTargetConfig represents.
 The secret can be created in any namespace. It is however recommended, to create it in a namespace that is only accessible to landscaper service administrators.
 
@@ -65,19 +68,4 @@ kubectl -n laas-system get servicetargetconfigs.landscaper-service.gardener.clou
 
 NAME      PROVIDERTYPE   REGION   VISIBLE   PRIORITY   AGE
 default   gcp            eu       true      10         1h10m
-```
-
-## Managing Visibility
-
-A ServiceTargetConfig can be set to invisible state. When invisible, no new Landscaper deployments can be scheduled on the referenced kubernetes target cluster.
-To set a ServiceTargetConfig to invisible, do the following:
-
-```sh
-kubectl -n laas-system label --overwrite=true servicetargetconfigs.landscaper-service.gardener.cloud default config.landscaper-service.gardener.cloud/visible=false
-```
-
-To set a ServiceTargetConfig to visible, do the following:
-
-```sh
-kubectl -n laas-system label --overwrite=true servicetargetconfigs.landscaper-service.gardener.cloud default config.landscaper-service.gardener.cloud/visible=true
 ```

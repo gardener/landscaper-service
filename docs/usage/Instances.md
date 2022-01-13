@@ -67,7 +67,9 @@ The target contains the kubeconfig that has been copied from the selected Servic
 
 ## Cluster Endpoint
 
-The `status.clusterEndpoint` field contains the API endpoint of the deployed Landscaper.
+The `status.clusterEndpoint` field contains the API endpoint of the deployed Landscaper instance, i.e. it is used to
+create and maintain Landscaper [Installations](https://github.com/gardener/landscaper/blob/master/docs/usage/Installations.md), 
+which are handled by the corresponding Landscaper instance.
 
 ## Cluster Kubeconfig
 
