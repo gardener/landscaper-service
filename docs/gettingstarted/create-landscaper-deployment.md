@@ -1,6 +1,7 @@
 # Create a Landscaper Deployment
 
-To deploy a Landscaper, a [LandscaperDeployment](../usage/LandscaperDeployments.md) resource needs to be created.
+To trigger the deployment of a Landscaper instance by the Landscaper as a Service, 
+a [LandscaperDeployment](../usage/LandscaperDeployments.md) resource needs to be created.
 The LandscaperDeployment specifies the configuration of the Landscaper deployment as well as the version of the Landscaper to deploy.
 If not already existing, a namespace for the deployment needs to be created.
 
@@ -64,7 +65,7 @@ test   test-8qh5w   13m
 The Instance will show the selected ServiceTargetConfig as well as the Installation that has been automatically created by the landscaper service controller.
 
 ```sh
-k get instances.landscaper-service.gardener.cloud test-8qh5w
+kubectl -n laas-user get instances.landscaper-service.gardener.cloud test-8qh5w
 
 NAME         SERVICETARGETCONFIG   INSTALLATION       AGE
 test-8qh5w   default               test-8qh5w-hmzrp   15m
@@ -96,7 +97,7 @@ landscaper-cli installations inspect -n laas-user test-8qh5w-hmzrp
         └── [✅ Succeeded] DeployItem landscaper-deployment-25mxk-landscaper-8c5cz
 ```
 
-Once the installation has successfully finished, the landscaper service controller will update the Instance status with the `cluseterEndpoint` and `clusterKubeconfig` information.
+Once the installation has successfully finished, the landscaper service controller will update the Instance status with the `clusterEndpoint` and `clusterKubeconfig` information.
 
 ```sh
 kubectl -n laas-user get instances.landscaper-service.gardener.cloud test-8qh5w -o jsonpath="{.status}" | jq
@@ -121,4 +122,4 @@ The `status.clusterKubeconfig` field is base64 encode and can be exported into a
 kubectl -n laas-user get instances.landscaper-service.gardener.cloud test-8qh5w -o jsonpath="{.status.clusterKubeconfig}" | base64 -d > landscaper-kubeconfig.yaml
 ```
 
-This kubeconfig file can be used to authenticate at the deployed Landscaper.
+This kubeconfig file can be used to authenticate at the deployed Landscaper instance.

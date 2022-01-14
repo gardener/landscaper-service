@@ -1,6 +1,8 @@
 # ServiceTargetConfigs
 
-ServiceTargetConfigs are kubernetes resources that represent a target cluster on which a Landscaper as a service can be deployed.
+ServiceTargetConfigs are kubernetes resources that represent a target cluster on which a Landscaper as a Service can
+deploy Landscaper instances.
+
 Each ServiceTargetConfig has a reference to a Secret that contains the Kubeconfig of the target cluster.
 ServiceTargetConfigs doesn't need to reside in the namespaces as [LandscaperDeployments](LandscaperDeployments.md) and [Instances](Instances.md) which are referencing it.
 It is advised to create the ServiceTargetConfigs in a separate namespace that is only accessible by administrators.
@@ -42,6 +44,21 @@ When not set or set to any other value than `true`, no new deployments can be sc
 * `config.landscaper-service.gardener.cloud/region` can be used to specify the geo-region of the referenced kubernetes cluster.
 LandscaperDeployments can make use of this label to specify on which geo-region the Landscaper shall be deployed.
 
+### Managing Visibility
+
+A ServiceTargetConfig can be set to invisible state. When invisible, no new Landscaper deployments can be scheduled on the referenced kubernetes target cluster.
+To set a ServiceTargetConfig to invisible, do the following:
+
+```sh
+kubectl -n laas-system label --overwrite=true servicetargetconfigs.landscaper-service.gardener.cloud default config.landscaper-service.gardener.cloud/visible=false
+```
+
+To set a ServiceTargetConfig to visible, do the following:
+
+```sh
+kubectl -n laas-system label --overwrite=true servicetargetconfigs.landscaper-service.gardener.cloud default config.landscaper-service.gardener.cloud/visible=true
+```
+
 
 ## Provider Type
 
@@ -51,7 +68,6 @@ Currently, supported values are:
 * `gcp`
 * `aws`
 * `alicloud`
-
 
 ## Priority
 

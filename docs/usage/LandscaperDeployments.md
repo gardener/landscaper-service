@@ -1,7 +1,8 @@
 # LandscaperDeployments
 
-LandscaperDeployments are kubernetes resources that represent a deployment of a landscaper instance.
-The landscaper service controller will select a suitable [ServiceTargetConfig](ServiceTargetConfigs.md) and create an [Instance](Instances.md) for the LandscaperDeployment.
+LandscaperDeployments are kubernetes resources, created by clients/users, to trigger the deployment of a landscaper instance by 
+the Landscaper as a Service. The Landscaper as a Service controller will select a suitable [ServiceTargetConfig](ServiceTargetConfigs.md) 
+and creates an [Instance](Instances.md) for the LandscaperDeployment.
 
 ### Basic structure:
 
