@@ -65,7 +65,7 @@ test   test-8qh5w   13m
 The Instance will show the selected ServiceTargetConfig as well as the Installation that has been automatically created by the landscaper service controller.
 
 ```sh
-k -n laas-user get instances.landscaper-service.gardener.cloud test-8qh5w
+kubectl -n laas-user get instances.landscaper-service.gardener.cloud test-8qh5w
 
 NAME         SERVICETARGETCONFIG   INSTALLATION       AGE
 test-8qh5w   default               test-8qh5w-hmzrp   15m
