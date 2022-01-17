@@ -122,7 +122,7 @@ func (c *Controller) findServiceTargetConfig(ctx context.Context, log logr.Logge
 		return nil, fmt.Errorf("unable to list service target configs: %w", err)
 	}
 
-	FilterServiceTargetConfigs(serviceTargetConfigs)
+	SortServiceTargetConfigs(serviceTargetConfigs)
 
 	if len(serviceTargetConfigs.Items) == 0 {
 		err := fmt.Errorf("no service target with remaining capacity available")
@@ -132,8 +132,8 @@ func (c *Controller) findServiceTargetConfig(ctx context.Context, log logr.Logge
 	return &serviceTargetConfigs.Items[0], nil
 }
 
-// FilterServiceTargetConfigs will remove all configs with no remaining capacity and then sort the configs by priority and capacity.
-func FilterServiceTargetConfigs(configs *lssv1alpha1.ServiceTargetConfigList) {
+// SortServiceTargetConfigs sorts all configs by priority and usage.
+func SortServiceTargetConfigs(configs *lssv1alpha1.ServiceTargetConfigList) {
 	if len(configs.Items) == 0 {
 		return
 	}
@@ -143,11 +143,9 @@ func FilterServiceTargetConfigs(configs *lssv1alpha1.ServiceTargetConfigList) {
 		l := &configs.Items[i]
 		r := &configs.Items[j]
 
-		if l.Spec.Priority > r.Spec.Priority {
-			return true
-		} else if l.Spec.Priority == r.Spec.Priority {
-			return len(l.Status.InstanceRefs) < len(r.Status.InstanceRefs)
-		}
-		return false
+		lPrio := l.Spec.Priority / int64(len(l.Status.InstanceRefs)+1)
+		rPrio := r.Spec.Priority / int64(len(r.Status.InstanceRefs)+1)
+
+		return lPrio > rPrio
 	})
 }

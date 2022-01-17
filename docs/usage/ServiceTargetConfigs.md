@@ -56,8 +56,9 @@ Currently, supported values are:
 ## Priority
 
 The `spec.priority` field is an integer number specifying the scheduling priority for the ServiceTargetConfig. 
-ServiceTargetConfigs with a higher priority number will be prioritized over those ServiceTargetConfigs with a lower priority.
-If the priority of two ServiceTarget configs is the same, the one with the lower number of Instances references will be prioritized.
+To calculate the effective priority when scheduling Instances is calculated by dividing the specified priority by the number of instance references
+(`spec.priority/(len(status.InstanceRegs) + 1)`).
+The more instances that are referenced by a ServiceTargetConfig, the lower the effective priority becomes.
 
 
 ## Secret Reference
