@@ -57,7 +57,7 @@ Currently, supported values are:
 
 The `spec.priority` field is an integer number specifying the scheduling priority for the ServiceTargetConfig. 
 To calculate the effective priority when scheduling Instances is calculated by dividing the specified priority by the number of instance references
-(`spec.priority/(len(status.InstanceRegs) + 1)`).
+(`spec.priority/(len(status.instanceRefs) + 1)`).
 The more instances that are referenced by a ServiceTargetConfig, the lower the effective priority becomes.
 
 
