@@ -23,7 +23,7 @@ import (
 	"github.com/gardener/landscaper-service/test/utils/envtest"
 )
 
-var _ = Describe("FilterServiceTargetConfigs", func() {
+var _ = Describe("SortServiceTargetConfigs", func() {
 	It("should sort descending by priority", func() {
 		configs := &lssv1alpha1.ServiceTargetConfigList{
 			Items: []lssv1alpha1.ServiceTargetConfig{
@@ -45,7 +45,7 @@ var _ = Describe("FilterServiceTargetConfigs", func() {
 			},
 		}
 
-		deploymentscontroller.FilterServiceTargetConfigs(configs)
+		deploymentscontroller.SortServiceTargetConfigs(configs)
 		Expect(configs.Items).To(HaveLen(3))
 		Expect(configs.Items[0].Spec.Priority).To(Equal(int64(30)))
 		Expect(configs.Items[1].Spec.Priority).To(Equal(int64(20)))
@@ -102,7 +102,7 @@ var _ = Describe("FilterServiceTargetConfigs", func() {
 			},
 		}
 
-		deploymentscontroller.FilterServiceTargetConfigs(configs)
+		deploymentscontroller.SortServiceTargetConfigs(configs)
 		Expect(configs.Items).To(HaveLen(3))
 		Expect(configs.Items[0].GetName()).To(Equal("second"))
 		Expect(configs.Items[1].GetName()).To(Equal("first"))
@@ -117,7 +117,7 @@ var _ = Describe("FilterServiceTargetConfigs", func() {
 						Name: "first",
 					},
 					Spec: lssv1alpha1.ServiceTargetConfigSpec{
-						Priority: 20,
+						Priority: 30,
 					},
 					Status: lssv1alpha1.ServiceTargetConfigStatus{
 						InstanceRefs: []lssv1alpha1.ObjectReference{
@@ -141,7 +141,7 @@ var _ = Describe("FilterServiceTargetConfigs", func() {
 						Name: "third",
 					},
 					Spec: lssv1alpha1.ServiceTargetConfigSpec{
-						Priority: 30,
+						Priority: 40,
 					},
 					Status: lssv1alpha1.ServiceTargetConfigStatus{
 						InstanceRefs: []lssv1alpha1.ObjectReference{
@@ -159,11 +159,11 @@ var _ = Describe("FilterServiceTargetConfigs", func() {
 			},
 		}
 
-		deploymentscontroller.FilterServiceTargetConfigs(configs)
+		deploymentscontroller.SortServiceTargetConfigs(configs)
 		Expect(configs.Items).To(HaveLen(3))
-		Expect(configs.Items[0].GetName()).To(Equal("third"))
-		Expect(configs.Items[1].GetName()).To(Equal("second"))
-		Expect(configs.Items[2].GetName()).To(Equal("first"))
+		Expect(configs.Items[0].GetName()).To(Equal("second"))
+		Expect(configs.Items[1].GetName()).To(Equal("first"))
+		Expect(configs.Items[2].GetName()).To(Equal("third"))
 	})
 })
 
