@@ -25,6 +25,7 @@ func (c *Controller) handleDelete(ctx context.Context, log logr.Logger, instance
 		curOp               = "Delete"
 		targetDeleted       = true
 		installationDeleted = true
+		contextDeleted      = true
 	)
 
 	if instance.Status.InstallationRef != nil && !instance.Status.InstallationRef.IsEmpty() {
@@ -44,6 +45,16 @@ func (c *Controller) handleDelete(ctx context.Context, log logr.Logger, instance
 	}
 
 	if !installationDeleted {
+		return nil
+	}
+
+	if instance.Status.ContextRef != nil && !instance.Status.ContextRef.IsEmpty() {
+		if contextDeleted, err = c.ensureDeleteContextForInstance(ctx, log, instance); err != nil {
+			return lsserrors.NewWrappedError(err, curOp, "DeleteContext", err.Error())
+		}
+	}
+
+	if !contextDeleted {
 		return nil
 	}
 
@@ -116,6 +127,32 @@ func (c *Controller) ensureDeleteTargetForInstance(ctx context.Context, log logr
 	if target.DeletionTimestamp.IsZero() {
 		if err := c.Client().Delete(ctx, target); err != nil {
 			return false, fmt.Errorf("unable to delete target for instance: %w", err)
+		}
+	}
+
+	return false, nil
+}
+
+// ensureDeleteContextForInstance ensures that the context for an instance is deleted
+func (c *Controller) ensureDeleteContextForInstance(ctx context.Context, log logr.Logger, instance *lssv1alpha1.Instance) (bool, error) {
+	log.Info("Delete context for instance")
+	landscaperContext := &lsv1alpha1.Context{}
+
+	if err := c.Client().Get(ctx, instance.Status.ContextRef.NamespacedName(), landscaperContext); err != nil {
+		if apierrors.IsNotFound(err) {
+			instance.Status.ContextRef = nil
+			if err := c.Client().Status().Update(ctx, instance); err != nil {
+				return false, fmt.Errorf("failed to remove context reference: %w", err)
+			}
+			return true, nil
+		} else {
+			return false, fmt.Errorf("unable to get context for instance: %w", err)
+		}
+	}
+
+	if landscaperContext.DeletionTimestamp.IsZero() {
+		if err := c.Client().Delete(ctx, landscaperContext); err != nil {
+			return false, fmt.Errorf("unable to delete context for instance: %w", err)
 		}
 	}
 

@@ -9,13 +9,14 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 
+	coreconfig "github.com/gardener/landscaper-service/pkg/apis/config"
 	"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 )
 
 // AddControllerToManager adds the landscaperdeployments controller to the manager
-func AddControllerToManager(logger logr.Logger, mgr manager.Manager) error {
+func AddControllerToManager(logger logr.Logger, mgr manager.Manager, config *coreconfig.LandscaperServiceConfiguration) error {
 	log := logger.WithName("ServiceTargetConfigs")
-	ctrl, err := NewController(log, mgr.GetClient(), mgr.GetScheme())
+	ctrl, err := NewController(log, mgr.GetClient(), mgr.GetScheme(), config)
 	if err != nil {
 		return err
 	}

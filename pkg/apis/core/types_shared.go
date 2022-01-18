@@ -75,16 +75,11 @@ type LandscaperConfiguration struct {
 	Deployers []string `json:"deployers"`
 }
 
-// LandscaperServiceComponentReference defines the landscaper service component reference and context that should be used.
-type LandscaperServiceComponentReference struct {
-	// Context is the name of the landscaper context to use for the deployment.
-	// +optional
-	Context string `json:"context"`
+// LandscaperServiceComponent defines the landscaper service component that is being used.
+type LandscaperServiceComponent struct {
+	// Name defines the component name of the landscaper service component.
+	Name string `json:"name"`
 
-	// ComponentName defines the component name of the landscaper service component to use for this deployment.
-	// +optional
-	ComponentName string `json:"componentName"`
-
-	// Version defines the version of the landscaper service component to use for this deployment.
+	// Version defines the version of the landscaper service component.
 	Version string `json:"version"`
 }

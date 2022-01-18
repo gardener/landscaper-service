@@ -77,13 +77,13 @@ func (o *options) run(ctx context.Context) error {
 	lsinstall.Install(mgr.GetScheme())
 
 	ctrlLogger := o.Log.WithName("controllers")
-	if err := landscaperdeploymentsctrl.AddControllerToManager(ctx, ctrlLogger, mgr); err != nil {
+	if err := landscaperdeploymentsctrl.AddControllerToManager(ctx, ctrlLogger, mgr, o.Config); err != nil {
 		return fmt.Errorf("unable to setup landscaper deployments controller: %w", err)
 	}
-	if err := instancesctrl.AddControllerToManager(ctrlLogger, mgr); err != nil {
+	if err := instancesctrl.AddControllerToManager(ctrlLogger, mgr, o.Config); err != nil {
 		return fmt.Errorf("unable to setup instances controller: %w", err)
 	}
-	if err := servicetargetconfigsctrl.AddControllerToManager(ctrlLogger, mgr); err != nil {
+	if err := servicetargetconfigsctrl.AddControllerToManager(ctrlLogger, mgr, o.Config); err != nil {
 		return fmt.Errorf("unable to setup service target configs controller: %w", err)
 	}
 

@@ -96,7 +96,6 @@ func (c *Controller) mutateInstance(ctx context.Context, log logr.Logger, deploy
 	}
 
 	instance.Spec.LandscaperConfiguration = deployment.Spec.LandscaperConfiguration
-	instance.Spec.ComponentReference = deployment.Spec.ComponentReference
 	c.Operation.Scheme().Default(instance)
 
 	return nil

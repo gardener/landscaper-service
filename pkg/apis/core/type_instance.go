@@ -40,9 +40,6 @@ type InstanceSpec struct {
 	// LandscaperConfiguration contains the configuration for the landscaper service deployment
 	LandscaperConfiguration LandscaperConfiguration `json:"landscaperConfiguration"`
 
-	// ComponentReference define the reference to the landscaper server component.
-	ComponentReference LandscaperServiceComponentReference `json:"componentReference"`
-
 	// ServiceTargetConfigRef specifies the target cluster for which the installation is created.
 	ServiceTargetConfigRef ObjectReference `json:"serviceTargetConfigRef"`
 }
@@ -57,6 +54,14 @@ type InstanceStatus struct {
 	// LastError describes the last error that occurred.
 	// +optional
 	LastError *Error `json:"lastError,omitempty"`
+
+	// LandscaperServiceComponent define the landscaper server component that is used for this instance.
+	// +optional
+	LandscaperServiceComponent *LandscaperServiceComponent `json:"landscaperServiceComponent"`
+
+	// ContextRef references the landscaper context for this Instance.
+	// +optional
+	ContextRef *ObjectReference `json:"contextRef,omitempty"`
 
 	// TargetRef references the Target for this Instance.
 	// +optional

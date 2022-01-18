@@ -126,13 +126,13 @@ func RegisterConversions(s *runtime.Scheme) error {
 	}); err != nil {
 		return err
 	}
-	if err := s.AddGeneratedConversionFunc((*LandscaperServiceComponentReference)(nil), (*core.LandscaperServiceComponentReference)(nil), func(a, b interface{}, scope conversion.Scope) error {
-		return Convert_v1alpha1_LandscaperServiceComponentReference_To_core_LandscaperServiceComponentReference(a.(*LandscaperServiceComponentReference), b.(*core.LandscaperServiceComponentReference), scope)
+	if err := s.AddGeneratedConversionFunc((*LandscaperServiceComponent)(nil), (*core.LandscaperServiceComponent)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_LandscaperServiceComponent_To_core_LandscaperServiceComponent(a.(*LandscaperServiceComponent), b.(*core.LandscaperServiceComponent), scope)
 	}); err != nil {
 		return err
 	}
-	if err := s.AddGeneratedConversionFunc((*core.LandscaperServiceComponentReference)(nil), (*LandscaperServiceComponentReference)(nil), func(a, b interface{}, scope conversion.Scope) error {
-		return Convert_core_LandscaperServiceComponentReference_To_v1alpha1_LandscaperServiceComponentReference(a.(*core.LandscaperServiceComponentReference), b.(*LandscaperServiceComponentReference), scope)
+	if err := s.AddGeneratedConversionFunc((*core.LandscaperServiceComponent)(nil), (*LandscaperServiceComponent)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_LandscaperServiceComponent_To_v1alpha1_LandscaperServiceComponent(a.(*core.LandscaperServiceComponent), b.(*LandscaperServiceComponent), scope)
 	}); err != nil {
 		return err
 	}
@@ -285,9 +285,6 @@ func autoConvert_v1alpha1_InstanceSpec_To_core_InstanceSpec(in *InstanceSpec, ou
 	if err := Convert_v1alpha1_LandscaperConfiguration_To_core_LandscaperConfiguration(&in.LandscaperConfiguration, &out.LandscaperConfiguration, s); err != nil {
 		return err
 	}
-	if err := Convert_v1alpha1_LandscaperServiceComponentReference_To_core_LandscaperServiceComponentReference(&in.ComponentReference, &out.ComponentReference, s); err != nil {
-		return err
-	}
 	if err := Convert_v1alpha1_ObjectReference_To_core_ObjectReference(&in.ServiceTargetConfigRef, &out.ServiceTargetConfigRef, s); err != nil {
 		return err
 	}
@@ -301,9 +298,6 @@ func Convert_v1alpha1_InstanceSpec_To_core_InstanceSpec(in *InstanceSpec, out *c
 
 func autoConvert_core_InstanceSpec_To_v1alpha1_InstanceSpec(in *core.InstanceSpec, out *InstanceSpec, s conversion.Scope) error {
 	if err := Convert_core_LandscaperConfiguration_To_v1alpha1_LandscaperConfiguration(&in.LandscaperConfiguration, &out.LandscaperConfiguration, s); err != nil {
-		return err
-	}
-	if err := Convert_core_LandscaperServiceComponentReference_To_v1alpha1_LandscaperServiceComponentReference(&in.ComponentReference, &out.ComponentReference, s); err != nil {
 		return err
 	}
 	if err := Convert_core_ObjectReference_To_v1alpha1_ObjectReference(&in.ServiceTargetConfigRef, &out.ServiceTargetConfigRef, s); err != nil {
@@ -320,6 +314,8 @@ func Convert_core_InstanceSpec_To_v1alpha1_InstanceSpec(in *core.InstanceSpec, o
 func autoConvert_v1alpha1_InstanceStatus_To_core_InstanceStatus(in *InstanceStatus, out *core.InstanceStatus, s conversion.Scope) error {
 	out.ObservedGeneration = in.ObservedGeneration
 	out.LastError = (*core.Error)(unsafe.Pointer(in.LastError))
+	out.LandscaperServiceComponent = (*core.LandscaperServiceComponent)(unsafe.Pointer(in.LandscaperServiceComponent))
+	out.ContextRef = (*core.ObjectReference)(unsafe.Pointer(in.ContextRef))
 	out.TargetRef = (*core.ObjectReference)(unsafe.Pointer(in.TargetRef))
 	out.InstallationRef = (*core.ObjectReference)(unsafe.Pointer(in.InstallationRef))
 	out.ClusterEndpoint = in.ClusterEndpoint
@@ -335,6 +331,8 @@ func Convert_v1alpha1_InstanceStatus_To_core_InstanceStatus(in *InstanceStatus, 
 func autoConvert_core_InstanceStatus_To_v1alpha1_InstanceStatus(in *core.InstanceStatus, out *InstanceStatus, s conversion.Scope) error {
 	out.ObservedGeneration = in.ObservedGeneration
 	out.LastError = (*Error)(unsafe.Pointer(in.LastError))
+	out.LandscaperServiceComponent = (*LandscaperServiceComponent)(unsafe.Pointer(in.LandscaperServiceComponent))
+	out.ContextRef = (*ObjectReference)(unsafe.Pointer(in.ContextRef))
 	out.TargetRef = (*ObjectReference)(unsafe.Pointer(in.TargetRef))
 	out.InstallationRef = (*ObjectReference)(unsafe.Pointer(in.InstallationRef))
 	out.ClusterEndpoint = in.ClusterEndpoint
@@ -426,9 +424,6 @@ func autoConvert_v1alpha1_LandscaperDeploymentSpec_To_core_LandscaperDeploymentS
 	if err := Convert_v1alpha1_LandscaperConfiguration_To_core_LandscaperConfiguration(&in.LandscaperConfiguration, &out.LandscaperConfiguration, s); err != nil {
 		return err
 	}
-	if err := Convert_v1alpha1_LandscaperServiceComponentReference_To_core_LandscaperServiceComponentReference(&in.ComponentReference, &out.ComponentReference, s); err != nil {
-		return err
-	}
 	out.Region = in.Region
 	return nil
 }
@@ -441,9 +436,6 @@ func Convert_v1alpha1_LandscaperDeploymentSpec_To_core_LandscaperDeploymentSpec(
 func autoConvert_core_LandscaperDeploymentSpec_To_v1alpha1_LandscaperDeploymentSpec(in *core.LandscaperDeploymentSpec, out *LandscaperDeploymentSpec, s conversion.Scope) error {
 	out.Purpose = in.Purpose
 	if err := Convert_core_LandscaperConfiguration_To_v1alpha1_LandscaperConfiguration(&in.LandscaperConfiguration, &out.LandscaperConfiguration, s); err != nil {
-		return err
-	}
-	if err := Convert_core_LandscaperServiceComponentReference_To_v1alpha1_LandscaperServiceComponentReference(&in.ComponentReference, &out.ComponentReference, s); err != nil {
 		return err
 	}
 	out.Region = in.Region
@@ -479,28 +471,26 @@ func Convert_core_LandscaperDeploymentStatus_To_v1alpha1_LandscaperDeploymentSta
 	return autoConvert_core_LandscaperDeploymentStatus_To_v1alpha1_LandscaperDeploymentStatus(in, out, s)
 }
 
-func autoConvert_v1alpha1_LandscaperServiceComponentReference_To_core_LandscaperServiceComponentReference(in *LandscaperServiceComponentReference, out *core.LandscaperServiceComponentReference, s conversion.Scope) error {
-	out.Context = in.Context
-	out.ComponentName = in.ComponentName
+func autoConvert_v1alpha1_LandscaperServiceComponent_To_core_LandscaperServiceComponent(in *LandscaperServiceComponent, out *core.LandscaperServiceComponent, s conversion.Scope) error {
+	out.Name = in.Name
 	out.Version = in.Version
 	return nil
 }
 
-// Convert_v1alpha1_LandscaperServiceComponentReference_To_core_LandscaperServiceComponentReference is an autogenerated conversion function.
-func Convert_v1alpha1_LandscaperServiceComponentReference_To_core_LandscaperServiceComponentReference(in *LandscaperServiceComponentReference, out *core.LandscaperServiceComponentReference, s conversion.Scope) error {
-	return autoConvert_v1alpha1_LandscaperServiceComponentReference_To_core_LandscaperServiceComponentReference(in, out, s)
+// Convert_v1alpha1_LandscaperServiceComponent_To_core_LandscaperServiceComponent is an autogenerated conversion function.
+func Convert_v1alpha1_LandscaperServiceComponent_To_core_LandscaperServiceComponent(in *LandscaperServiceComponent, out *core.LandscaperServiceComponent, s conversion.Scope) error {
+	return autoConvert_v1alpha1_LandscaperServiceComponent_To_core_LandscaperServiceComponent(in, out, s)
 }
 
-func autoConvert_core_LandscaperServiceComponentReference_To_v1alpha1_LandscaperServiceComponentReference(in *core.LandscaperServiceComponentReference, out *LandscaperServiceComponentReference, s conversion.Scope) error {
-	out.Context = in.Context
-	out.ComponentName = in.ComponentName
+func autoConvert_core_LandscaperServiceComponent_To_v1alpha1_LandscaperServiceComponent(in *core.LandscaperServiceComponent, out *LandscaperServiceComponent, s conversion.Scope) error {
+	out.Name = in.Name
 	out.Version = in.Version
 	return nil
 }
 
-// Convert_core_LandscaperServiceComponentReference_To_v1alpha1_LandscaperServiceComponentReference is an autogenerated conversion function.
-func Convert_core_LandscaperServiceComponentReference_To_v1alpha1_LandscaperServiceComponentReference(in *core.LandscaperServiceComponentReference, out *LandscaperServiceComponentReference, s conversion.Scope) error {
-	return autoConvert_core_LandscaperServiceComponentReference_To_v1alpha1_LandscaperServiceComponentReference(in, out, s)
+// Convert_core_LandscaperServiceComponent_To_v1alpha1_LandscaperServiceComponent is an autogenerated conversion function.
+func Convert_core_LandscaperServiceComponent_To_v1alpha1_LandscaperServiceComponent(in *core.LandscaperServiceComponent, out *LandscaperServiceComponent, s conversion.Scope) error {
+	return autoConvert_core_LandscaperServiceComponent_To_v1alpha1_LandscaperServiceComponent(in, out, s)
 }
 
 func autoConvert_v1alpha1_ObjectReference_To_core_ObjectReference(in *ObjectReference, out *core.ObjectReference, s conversion.Scope) error {

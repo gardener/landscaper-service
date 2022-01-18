@@ -41,9 +41,6 @@ type LandscaperDeploymentSpec struct {
 	// LandscaperConfiguration contains the configuration for the landscaper service deployment
 	LandscaperConfiguration LandscaperConfiguration `json:"landscaperConfiguration"`
 
-	// ComponentReference define the reference to the landscaper server component.
-	ComponentReference LandscaperServiceComponentReference `json:"componentReference"`
-
 	// Region selects the region this LandscaperDeployment should be installed on.
 	// +optional
 	Region string `json:"region,omitempty"`

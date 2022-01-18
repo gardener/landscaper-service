@@ -61,15 +61,9 @@
       "type": "object",
       "required": [
         "purpose",
-        "landscaperConfiguration",
-        "componentReference"
+        "landscaperConfiguration"
       ],
       "properties": {
-        "componentReference": {
-          "description": "ComponentReference define the reference to the landscaper server component.",
-          "default": {},
-          "$ref": "#/definitions/core-v1alpha1-LandscaperServiceComponentReference"
-        },
         "landscaperConfiguration": {
           "description": "LandscaperConfiguration contains the configuration for the landscaper service deployment",
           "default": {},
@@ -103,30 +97,6 @@
           "type": "integer",
           "format": "int64",
           "default": 0
-        }
-      }
-    },
-    "core-v1alpha1-LandscaperServiceComponentReference": {
-      "description": "LandscaperServiceComponentReference defines the landscaper service component reference and context that should be used.",
-      "type": "object",
-      "required": [
-        "version"
-      ],
-      "properties": {
-        "componentName": {
-          "description": "ComponentName defines the component name of the landscaper service component to use for this deployment.",
-          "type": "string",
-          "default": ""
-        },
-        "context": {
-          "description": "Context is the name of the landscaper context to use for the deployment.",
-          "type": "string",
-          "default": ""
-        },
-        "version": {
-          "description": "Version defines the version of the landscaper service component to use for this deployment.",
-          "type": "string",
-          "default": ""
         }
       }
     },

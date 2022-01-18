@@ -11,6 +11,7 @@ import (
 	"reflect"
 	"strings"
 
+	cdv2 "github.com/gardener/component-spec/bindings-go/apis/v2"
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	"github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	"github.com/go-logr/logr"
@@ -36,6 +37,10 @@ var (
 func (c *Controller) reconcile(ctx context.Context, log logr.Logger, instance *lssv1alpha1.Instance) error {
 	currOp := "Reconcile"
 
+	if err := c.reconcileContext(ctx, log, instance); err != nil {
+		return errors.NewWrappedError(err, currOp, "ReconcileContextFailed", err.Error())
+	}
+
 	if err := c.reconcileTarget(ctx, log, instance); err != nil {
 		return errors.NewWrappedError(err, currOp, "ReconcileTargetFailed", err.Error())
 	}
@@ -44,6 +49,52 @@ func (c *Controller) reconcile(ctx context.Context, log logr.Logger, instance *l
 		return errors.NewWrappedError(err, currOp, "ReconcileInstallationFailed", err.Error())
 	}
 
+	return nil
+}
+
+// reconcileContext reconciles the context for an instance.
+func (c *Controller) reconcileContext(ctx context.Context, log logr.Logger, instance *lssv1alpha1.Instance) error {
+	landscaperContext := &lsv1alpha1.Context{}
+	landscaperContext.GenerateName = fmt.Sprintf("%s-", instance.GetName())
+	landscaperContext.Namespace = instance.GetNamespace()
+
+	if instance.Status.ContextRef != nil && !instance.Status.ContextRef.IsEmpty() {
+		landscaperContext.Name = instance.Status.ContextRef.Name
+		landscaperContext.Namespace = instance.Status.ContextRef.Namespace
+	}
+
+	_, err := kubernetes.CreateOrUpdate(ctx, c.Client(), landscaperContext, func() error {
+		return c.mutateContext(ctx, log, landscaperContext, instance)
+	})
+
+	if err != nil {
+		return fmt.Errorf("unable to create/update landscaperContext: %w", err)
+	}
+
+	if instance.Status.ContextRef == nil || !instance.Status.ContextRef.IsObject(landscaperContext) {
+		instance.Status.ContextRef = &lssv1alpha1.ObjectReference{
+			Name:      landscaperContext.GetName(),
+			Namespace: landscaperContext.GetNamespace(),
+		}
+
+		if err := c.Client().Status().Update(ctx, instance); err != nil {
+			return fmt.Errorf("unable to update target reference for instance: %w", err)
+		}
+	}
+
+	return nil
+}
+
+// mutateTarget creates or updates the context for an instance.
+func (c *Controller) mutateContext(_ context.Context, _ logr.Logger, context *lsv1alpha1.Context, _ *lssv1alpha1.Instance) error {
+	repositoryContext := &cdv2.UnstructuredTypedObject{}
+	err := json.Unmarshal(c.Config().RepositoryContext.RawMessage, repositoryContext)
+
+	if err != nil {
+		return fmt.Errorf("failed to unmarshal repository context: %w", err)
+	}
+
+	context.RepositoryContext = repositoryContext
 	return nil
 }
 
@@ -142,18 +193,28 @@ func (c *Controller) reconcileInstallation(ctx context.Context, log logr.Logger,
 		return fmt.Errorf("unable to create/update installation: %w", err)
 	}
 
-	if instance.Status.InstallationRef == nil || !instance.Status.InstallationRef.IsObject(installation) {
-		instance.Status.InstallationRef = &lssv1alpha1.ObjectReference{
-			Name:      installation.GetName(),
-			Namespace: installation.GetNamespace(),
-		}
+	old := instance.DeepCopy()
+	instance.Status.InstallationRef = &lssv1alpha1.ObjectReference{
+		Name:      installation.GetName(),
+		Namespace: installation.GetNamespace(),
+	}
 
+	instance.Status.LandscaperServiceComponent = &lssv1alpha1.LandscaperServiceComponent{
+		Name:    installation.Spec.ComponentDescriptor.Reference.ComponentName,
+		Version: installation.Spec.ComponentDescriptor.Reference.Version,
+	}
+
+	if err := c.handleExports(ctx, log, instance, installation); err != nil {
+		return err
+	}
+
+	if !reflect.DeepEqual(old.Status, instance.Status) {
 		if err := c.Client().Status().Update(ctx, instance); err != nil {
-			return fmt.Errorf("unable to update target reference for instance: %w", err)
+			return fmt.Errorf("unable to update instance status: %w", err)
 		}
 	}
 
-	return c.handleExports(ctx, log, instance, installation)
+	return nil
 }
 
 // mutateInstallation creates or updates the installation for an instance.
@@ -183,11 +244,11 @@ func (c *Controller) mutateInstallation(ctx context.Context, log logr.Logger, in
 	}
 
 	installation.Spec = lsv1alpha1.InstallationSpec{
-		Context: instance.Spec.ComponentReference.Context,
+		Context: instance.Status.ContextRef.Name,
 		ComponentDescriptor: &lsv1alpha1.ComponentDescriptorDefinition{
 			Reference: &lsv1alpha1.ComponentDescriptorReference{
-				ComponentName: instance.Spec.ComponentReference.ComponentName,
-				Version:       instance.Spec.ComponentReference.Version,
+				ComponentName: c.Operation.Config().LandscaperServiceComponent.Name,
+				Version:       c.Operation.Config().LandscaperServiceComponent.Version,
 			},
 		},
 		Blueprint: lsv1alpha1.BlueprintDefinition{
@@ -232,7 +293,6 @@ func (c *Controller) mutateInstallation(ctx context.Context, log logr.Logger, in
 
 // handleExports tries to find the exports of the installation and update the instance status accordingly.
 func (c *Controller) handleExports(ctx context.Context, log logr.Logger, instance *lssv1alpha1.Instance, installation *lsv1alpha1.Installation) error {
-	old := instance.DeepCopy()
 	dataObjects := &lsv1alpha1.DataObjectList{}
 	selectorBuilder := strings.Builder{}
 
@@ -277,12 +337,6 @@ func (c *Controller) handleExports(ctx context.Context, log logr.Logger, instanc
 		log.Info("found export data object for cluster endpoint", "resource", dataObjects.Items[0].GetName())
 		if err := json.Unmarshal(dataObjects.Items[0].Data.RawMessage, &instance.Status.ClusterEndpoint); err != nil {
 			return fmt.Errorf("unable to unmarshal ClusterEndpoint: %w", err)
-		}
-	}
-
-	if !reflect.DeepEqual(old.Status, instance.Status) {
-		if err := c.Client().Status().Update(ctx, instance); err != nil {
-			return fmt.Errorf("unable to update instance status for exports: %w", err)
 		}
 	}
 
