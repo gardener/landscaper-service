@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2022 "SAP SE or an SAP affiliate company and Gardener contributors"
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # Instances
 
 Instances are kubernetes resources that represent an instance of a [LandscaperDeployment](LandscaperDeployments.md) which has been scheduled on a specific [ServiceTargetConfig](ServiceTargetConfigs.md).

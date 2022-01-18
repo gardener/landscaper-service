@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2022 "SAP SE or an SAP affiliate company and Gardener contributors"
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # Configure ServiceTargetConfigs
 
 In this Chapter we deploy a [ServiceTargetConfig](../usage/ServiceTargetConfigs.md) manifest, which defines a kubernetes
