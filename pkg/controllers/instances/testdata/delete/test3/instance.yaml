@@ -28,3 +28,7 @@ status:
     targetRef:
       name: test
       namespace: {{ .Namespace }}
+
+    contextRef:
+      name: test
+      namespace: {{ .Namespace }}

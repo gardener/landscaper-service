@@ -14,10 +14,6 @@ spec:
       - helm
       - manifest
       - container
-  componentReference:
-    context: mycontext
-    componentName: github.com/gardener/landscaper-service/testing
-    version: v0.16.0
   serviceTargetConfigRef:
     name: default
     namespace: {{ .Namespace }}

@@ -38,7 +38,7 @@ var _ = Describe("Reconcile", func() {
 
 	BeforeEach(func() {
 		ctx = context.Background()
-		op = operation.NewOperation(logr.Discard(), testenv.Client, envtest.LandscaperServiceScheme)
+		op = operation.NewOperation(logr.Discard(), testenv.Client, envtest.LandscaperServiceScheme, testutils.DefaultControllerConfiguration())
 		ctrl = instancescontroller.NewTestActuator(*op)
 	})
 
@@ -62,7 +62,7 @@ var _ = Describe("Reconcile", func() {
 		Expect(instance.Status.ObservedGeneration).To(Equal(int64(1)))
 	})
 
-	It("should create a target and an installation and handle the data exports", func() {
+	It("should create a context, target and an installation and handle the data exports", func() {
 		var err error
 		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test2")
 		Expect(err).ToNot(HaveOccurred())
@@ -78,14 +78,19 @@ var _ = Describe("Reconcile", func() {
 		Expect(instance.Status.TargetRef).ToNot(BeNil())
 		Expect(instance.Status.InstallationRef).ToNot(BeNil())
 
+		context := &lsv1alpha1.Context{}
+		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: instance.Status.ContextRef.Name, Namespace: instance.Status.ContextRef.Namespace}, context))
+		Expect(context.RepositoryContext).ToNot(BeNil())
+		Expect(context.RepositoryContext.Type).To(Equal("ociRegistry"))
+
 		target := &lsv1alpha1.Target{}
 		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: instance.Status.TargetRef.Name, Namespace: instance.Status.TargetRef.Namespace}, target))
 
 		installation := &lsv1alpha1.Installation{}
 		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: instance.Status.InstallationRef.Name, Namespace: instance.Status.InstallationRef.Namespace}, installation))
-		Expect(installation.Spec.Context).To(Equal("mycontext"))
-		Expect(installation.Spec.ComponentDescriptor.Reference.Version).To(Equal("v0.16.0"))
-		Expect(installation.Spec.ComponentDescriptor.Reference.ComponentName).To(Equal("github.com/gardener/landscaper-service/testing"))
+		Expect(installation.Spec.Context).To(ContainSubstring("test-"))
+		Expect(installation.Spec.ComponentDescriptor.Reference.Version).To(Equal(op.Config().LandscaperServiceComponent.Version))
+		Expect(installation.Spec.ComponentDescriptor.Reference.ComponentName).To(Equal(op.Config().LandscaperServiceComponent.Name))
 		Expect(installation.Spec.ImportDataMappings[lsinstallation.ProviderTypeImportName]).To(Equal(utils.StringToAnyJSON(config.Spec.ProviderType)))
 		Expect(installation.Spec.ImportDataMappings[lsinstallation.VirtualClusterNamespaceImportName]).To(Equal(utils.StringToAnyJSON(lsinstallation.VirtualClusterNamespace)))
 		Expect(installation.Spec.ImportDataMappings[lsinstallation.HostingClusterNamespaceImportName]).To(Equal(utils.StringToAnyJSON(fmt.Sprintf("%s-%s", instance.Namespace, instance.Name))))
@@ -129,30 +134,5 @@ var _ = Describe("Reconcile", func() {
 
 		Expect(instance.Status.ClusterEndpoint).To(Equal(clusterEndpoint))
 		Expect(instance.Status.ClusterKubeconfig).To(Equal(clusterKubeConfig))
-	})
-
-	It("should create a target and an installation with default component reference", func() {
-		var err error
-		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test3")
-		Expect(err).ToNot(HaveOccurred())
-
-		instance := state.GetInstance("test")
-
-		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
-		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
-		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
-		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
-
-		Expect(instance.Status.TargetRef).ToNot(BeNil())
-		Expect(instance.Status.InstallationRef).ToNot(BeNil())
-
-		target := &lsv1alpha1.Target{}
-		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: instance.Status.TargetRef.Name, Namespace: instance.Status.TargetRef.Namespace}, target))
-
-		installation := &lsv1alpha1.Installation{}
-		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: instance.Status.InstallationRef.Name, Namespace: instance.Status.InstallationRef.Namespace}, installation))
-		Expect(installation.Spec.Context).To(Equal(lsv1alpha1.DefaultContextName))
-		Expect(installation.Spec.ComponentDescriptor.Reference.Version).To(Equal("v0.16.0"))
-		Expect(installation.Spec.ComponentDescriptor.Reference.ComponentName).To(Equal(lssv1alpha1.LandscaperServiceComponentName))
 	})
 })

@@ -6,6 +6,9 @@ package utils
 
 import (
 	"context"
+	"encoding/json"
+	"github.com/gardener/landscaper-service/pkg/apis/config"
+	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 
 	"github.com/onsi/gomega"
 	"k8s.io/apimachinery/pkg/types"
@@ -35,4 +38,21 @@ func ShouldReconcile(ctx context.Context, reconciler reconcile.Reconciler, req r
 func ShouldNotReconcile(ctx context.Context, reconciler reconcile.Reconciler, req reconcile.Request, optionalDescription ...interface{}) {
 	_, err := reconciler.Reconcile(ctx, req)
 	gomega.ExpectWithOffset(1, err).To(gomega.HaveOccurred(), optionalDescription...)
+}
+
+func DefaultControllerConfiguration() *config.LandscaperServiceConfiguration {
+	cfg := &config.LandscaperServiceConfiguration{
+		LandscaperServiceComponent: config.LandscaperServiceComponentConfiguration{
+			Name: "github.com/gardener/landscaper/landscaper-service",
+			Version: "v1.1.1",
+		},
+	}
+	repositoryContext, err := json.Marshal(map[string]interface{}{
+		"type": "ociRegistry",
+		"baseUrl": "eu.gcr.io/gardener-project/development",
+	})
+
+	gomega.Expect(err).ToNot(gomega.HaveOccurred())
+	cfg.RepositoryContext = lsv1alpha1.NewAnyJSON(repositoryContext)
+	return cfg
 }

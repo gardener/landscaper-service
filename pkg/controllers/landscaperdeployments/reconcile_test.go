@@ -177,7 +177,7 @@ var _ = Describe("Reconcile", func() {
 
 	BeforeEach(func() {
 		ctx = context.Background()
-		op = operation.NewOperation(logr.Discard(), testenv.Client, envtest.LandscaperServiceScheme)
+		op = operation.NewOperation(logr.Discard(), testenv.Client, envtest.LandscaperServiceScheme, testutils.DefaultControllerConfiguration())
 		ctrl = deploymentscontroller.NewTestActuator(*op)
 	})
 
@@ -220,7 +220,6 @@ var _ = Describe("Reconcile", func() {
 		Expect(err).ToNot(HaveOccurred())
 		Expect(instance.Spec.ServiceTargetConfigRef.Name).To(Equal("config2"))
 		Expect(instance.Spec.LandscaperConfiguration).To(Equal(deployment.Spec.LandscaperConfiguration))
-		Expect(instance.Spec.ComponentReference).To(Equal(deployment.Spec.ComponentReference))
 
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(config), config)).To(Succeed())
 		Expect(config.Status.InstanceRefs).To(HaveLen(1))
@@ -261,12 +260,10 @@ var _ = Describe("Reconcile", func() {
 		deployment.Spec.LandscaperConfiguration.Deployers = []string{
 			"foo",
 		}
-		deployment.Spec.ComponentReference.Version = "v0.77.0"
 		Expect(testenv.Client.Update(ctx, deployment)).To(Succeed())
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(deployment))
 		err = testenv.Client.Get(ctx, types.NamespacedName{Name: deployment.Status.InstanceRef.Name, Namespace: deployment.Status.InstanceRef.Namespace}, instance)
 		Expect(err).ToNot(HaveOccurred())
 		Expect(instance.Spec.LandscaperConfiguration).To(Equal(deployment.Spec.LandscaperConfiguration))
-		Expect(instance.Spec.ComponentReference).To(Equal(deployment.Spec.ComponentReference))
 	})
 })
