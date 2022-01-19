@@ -26,10 +26,6 @@ spec:
       - helm
       - manifest
       - container
-  componentReference:
-    context: mycontext
-    componentName: github.com/gardener/landscaper/landscaper-service
-    version: v0.16.0
 
 status:
   instanceRef:
@@ -52,15 +48,6 @@ The `spec.region` field is optional and can be used to restrict the selected tar
 The `spec.landscaperConfiguration` field contains the configuration of the Landscaper deployment.
 Configuration contains the list of the standard deployers that shall be deployed.
 For available deployers please check [this documentation](https://github.com/gardener/landscaper/tree/master/docs/deployer).
-
-## Component Reference
-
-The `spec.componentReference` field contains the following configuration:
-
-* `context`: _Optional_; Specifies the [Landscaper context](https://github.com/gardener/landscaper/blob/master/docs/usage/Context.md) to use for the Installation. 
-   When not specified, defaults to the `default` context.
-* `componentName`: _Optional_; Specifies the component name of the Landscaper Service deployment to use. Default: `github.com/gardener/landscaper/landscaper-service`
-* `version`: _Required_; Specifies the version of the Landscaper that shall be deployed. Changing this value will attempt to upgrade/downgrade the existing Landscaper deployment.
 
 ## Instance Reference
 

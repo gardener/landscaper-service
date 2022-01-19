@@ -17,23 +17,8 @@ Please consult the [landscaper documentation](https://github.com/gardener/landsc
 
 ## Installation
 
-The landscaper service can be installed via [Helm](https://helm.sh) using the Helm chart [charts/landscaper-service](../../charts/landscaper-service)
-or via a landscaper installation using the _landscaper-service-blueprint_ blueprint of the _github.com/gardener/landscaper-service_ component.
+The landscaper service can be installed via a landscaper installation using the _landscaper-service-blueprint_ blueprint of the _github.com/gardener/landscaper-service_ component.
 
-
-### Helm
-
-To install the landscaper service via Helm, the chart has to be pulled from the landscaper service OCI registry.
-
-:warning: Attention: Helm version v3.7.0 or later is required for this to work.
-
-```sh
-export HELM_EXPERIMENTAL_OCI=1
-export LAAS_VERSION="v0.1.0" # use the latest available version
-
-kubectl create namespace laas-system
-helm pull oci://eu.gcr.io/gardener-project/landscaper-service/charts/landscaper-service --version $LAAS_VERSION
-helm install -n laas-system landscaper-service ./landscaper-service-${LAAS_VERSION}.tgz
 ```
 
 
@@ -105,3 +90,8 @@ landscaper-cli installations inspect -n laas-system
     └── [✅ Succeeded] DeployItem landscaper-service-landscaper-service-2dv4x
 
 ```
+
+## Update Process
+
+The _github.com/gardener/landscaper-service_ component contains a component reference to the supported landscaper version.
+When the landscaper service controller is updated, all currently deployed landscaper instances will be automatically updated to the new supported version.

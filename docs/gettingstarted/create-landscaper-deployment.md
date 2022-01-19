@@ -15,28 +15,7 @@ If not already existing, a namespace for the deployment needs to be created.
 kubectl create namespace laas-user
 ```
 
-The landscaper service controller uses a [Landscaper Context](https://github.com/gardener/landscaper/blob/master/docs/usage/Context.md) to configure the repository context for the Landscaper deployment.
-The Landscaper Service component is stored in an OCI registry with the base URL `eu.gcr.io/gardener-project/development`.
-If this repository context is not already contained in the default context `default`, a new context for the Landscaper deployment needs to be created.
-
-```yaml
-apiVersion: landscaper.gardener.cloud/v1alpha1
-kind: Context
-metadata:
-  name: laas
-
-repositoryContext:
-  type: ociRegistry
-  baseUrl: "eu.gcr.io/gardener-project/development"
-```
-
-```sh
-kubectl -n laas-user apply -f context.yaml
-```
-
 In the next step, the LandscaperDeployment resource is created. The field `spec.landscaperConfiguration.deployers` has to contain the list of active deployers.
-The field `spec.componentReference.context` references the Context resource created previously.
-The field `spec.componentReference.version` specifies the Landscaper version to deploy.
 
 ```yaml
 apiVersion: landscaper-service.gardener.cloud/v1alpha1
@@ -50,9 +29,6 @@ spec:
       - helm
       - manifest
       - container
-  componentReference:
-    context: laas
-    version: v0.16.0
 ```
 
 ```sh
@@ -117,6 +93,10 @@ kubectl -n laas-user get instances.landscaper-service.gardener.cloud test-8qh5w 
   "observedGeneration": 1,
   "targetRef": {
     "name": "test-8qh5w-k88bs",
+    "namespace": "laas-user"
+  },
+  "contextRef": {
+    "name": "test-8qh5w-a5w3s",
     "namespace": "laas-user"
   }
 }

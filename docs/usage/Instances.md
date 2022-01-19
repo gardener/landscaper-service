@@ -24,10 +24,6 @@ spec:
       - helm
       - manifest
       - container
-  componentReference:
-    context: mycontext
-    componentName: github.com/gardener/landscaper-service
-    version: v0.16.0
   serviceTargetConfigRef:
     name: default
     namespace: laas-system
@@ -40,6 +36,14 @@ status:
   targetRef:
     name: test
     namespace: my-namespace
+    
+  contextRef:
+    name: test
+    namespace: my-namespace
+    
+  landscaperServiceComponent:
+    name: github.com/gardener/landscaper/landscaper-service
+    nersion: v0.19.0
 
   clusterEndpoint: "10.0.0.1:1234"
   clusterKubeconfig: "a3ViZWNvbmZpZyBjb250ZW50 ..."
@@ -49,27 +53,35 @@ status:
 
 The `spec.landscaperConfiguration` field specifies the Landscaper configuration that is defined by the parent LandscaperDeployment [landscaper configuration](LandscaperDeployments.md#landscaper-configuration).
 
-
 ## Component Reference
 
 The `spec.componentReference` field specifies the component reference that is defined by the parent LandscaperDeployment [component reference](LandscaperDeployments.md#component-reference).
-
 
 ## Service Target Configuration Reference
 
 The `spec.serviceTargetConfigRef` field specified the ServiceTargetConfig that has been selected for this Instance. 
 The ServiceTarget config specifies the target kubernetes cluster on which the Landscaper will be deployed.
 
-
 ## Installation Reference
 
 The `status.installationRef` field references the Installation that has been created by the landscaper service controller for this Instance.
-
 
 ## Target Reference
 
 The `status.targetRef` field references the Target that has been created by the landscaper service controller for this Instance.
 The target contains the kubeconfig that has been copied from the selected ServiceTargetConfig [secret reference](ServiceTargetConfigs.md#secret-reference).
+
+## Context Reference
+
+The `status.contextRef` field references the Landscaper Context that has been created by the landscaper service controller for this Instance.
+The Context contains the repository context that is used by the Installation that has been created for this Instance.
+
+## Landscaper Service Component
+
+The `status.landscaperServiceComponent` field contains the landscaper service component name and version that is being used for the Landscaper instance.
+The component name and version are set in the landscaper service controller configuration. 
+The landscaper service controller is updated with a different landscaper service component version, all Instances will automatically be reconciled.
+During the reconciliation the controller will update the deployed Landscaper to the new version.
 
 ## Cluster Endpoint
 
