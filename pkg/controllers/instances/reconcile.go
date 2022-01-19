@@ -88,7 +88,7 @@ func (c *Controller) reconcileContext(ctx context.Context, log logr.Logger, inst
 // mutateTarget creates or updates the context for an instance.
 func (c *Controller) mutateContext(_ context.Context, _ logr.Logger, context *lsv1alpha1.Context, _ *lssv1alpha1.Instance) error {
 	repositoryContext := &cdv2.UnstructuredTypedObject{}
-	err := json.Unmarshal(c.Config().RepositoryContext.RawMessage, repositoryContext)
+	err := json.Unmarshal(c.Config().LandscaperServiceComponent.RepositoryContext.RawMessage, repositoryContext)
 
 	if err != nil {
 		return fmt.Errorf("failed to unmarshal repository context: %w", err)

@@ -53,6 +53,6 @@ func DefaultControllerConfiguration() *config.LandscaperServiceConfiguration {
 	})
 
 	gomega.Expect(err).ToNot(gomega.HaveOccurred())
-	cfg.RepositoryContext = lsv1alpha1.NewAnyJSON(repositoryContext)
+	cfg.LandscaperServiceComponent.RepositoryContext = lsv1alpha1.NewAnyJSON(repositoryContext)
 	return cfg
 }

@@ -25,9 +25,6 @@ type LandscaperServiceConfiguration struct {
 
 	// LandscaperServiceComponent configures the landscaper component that is used by the landscaper service controller.
 	LandscaperServiceComponent LandscaperServiceComponentConfiguration `json:"landscaperServiceComponent"`
-
-	// RepositoryContext specifies the repository context for accessing the landscaper service component.
-	RepositoryContext v1alpha1.AnyJSON `json:"repositoryContext"`
 }
 
 // MetricsConfiguration allows to configure how metrics are exposed
@@ -53,4 +50,7 @@ type LandscaperServiceComponentConfiguration struct {
 
 	// Version is the component version
 	Version string `json:"version"`
+
+	// RepositoryContext specifies the repository context for accessing the landscaper service component.
+	RepositoryContext v1alpha1.AnyJSON `json:"repositoryContext"`
 }

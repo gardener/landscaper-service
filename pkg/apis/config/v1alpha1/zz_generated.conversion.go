@@ -94,6 +94,7 @@ func Convert_config_CrdManagementConfiguration_To_v1alpha1_CrdManagementConfigur
 func autoConvert_v1alpha1_LandscaperServiceComponentConfiguration_To_config_LandscaperServiceComponentConfiguration(in *LandscaperServiceComponentConfiguration, out *config.LandscaperServiceComponentConfiguration, s conversion.Scope) error {
 	out.Name = in.Name
 	out.Version = in.Version
+	out.RepositoryContext = in.RepositoryContext
 	return nil
 }
 
@@ -105,6 +106,7 @@ func Convert_v1alpha1_LandscaperServiceComponentConfiguration_To_config_Landscap
 func autoConvert_config_LandscaperServiceComponentConfiguration_To_v1alpha1_LandscaperServiceComponentConfiguration(in *config.LandscaperServiceComponentConfiguration, out *LandscaperServiceComponentConfiguration, s conversion.Scope) error {
 	out.Name = in.Name
 	out.Version = in.Version
+	out.RepositoryContext = in.RepositoryContext
 	return nil
 }
 
@@ -121,7 +123,6 @@ func autoConvert_v1alpha1_LandscaperServiceConfiguration_To_config_LandscaperSer
 	if err := Convert_v1alpha1_LandscaperServiceComponentConfiguration_To_config_LandscaperServiceComponentConfiguration(&in.LandscaperServiceComponent, &out.LandscaperServiceComponent, s); err != nil {
 		return err
 	}
-	out.RepositoryContext = in.RepositoryContext
 	return nil
 }
 
@@ -138,7 +139,6 @@ func autoConvert_config_LandscaperServiceConfiguration_To_v1alpha1_LandscaperSer
 	if err := Convert_config_LandscaperServiceComponentConfiguration_To_v1alpha1_LandscaperServiceComponentConfiguration(&in.LandscaperServiceComponent, &out.LandscaperServiceComponent, s); err != nil {
 		return err
 	}
-	out.RepositoryContext = in.RepositoryContext
 	return nil
 }
 
