@@ -12,6 +12,16 @@ landscaperservice:
     deployCrd: true
   #   forceUpdate: true
 
+  landscaperServiceComponent:
+    name: github.com/gardener/landscaper/landscaper-service
+    # the version of the landscaper service component is mandatory
+    version: v0.0.0
+
+    # the repository context for the landscaper service component
+    repositoryContext:
+      type: ociRegistry
+      baseUrl: "eu.gcr.io/gardener-project/development"
+
 image: {}
 
 controller:

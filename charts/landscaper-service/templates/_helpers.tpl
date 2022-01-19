@@ -108,10 +108,15 @@ metrics:
 
 {{- if .Values.landscaperservice.crdManagement }}
 crdManagement:
-    deployCrd: {{ .Values.landscaperservice.crdManagement.deployCrd }}
-    {{- if .Values.landscaperservice.crdManagement.forceUpdate }}
-    forceUpdate: {{ .Values.landscaperservice.crdManagement.forceUpdate }}
-    {{- end }}
+  deployCrd: {{ .Values.landscaperservice.crdManagement.deployCrd }}
+  {{- if .Values.landscaperservice.crdManagement.forceUpdate }}
+  forceUpdate: {{ .Values.landscaperservice.crdManagement.forceUpdate }}
+  {{- end }}
 {{- end }}
 
+landscaperServiceComponent:
+  name:  {{ .Values.landscaperservice.landscaperServiceComponent.name }}
+  version: {{ .Values.landscaperservice.landscaperServiceComponent.version }}
+  repositoryContext:
+{{ toYaml .Values.landscaperservice.landscaperServiceComponent.repositoryContext | indent 4 }}
 {{- end }}

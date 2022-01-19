@@ -24,6 +24,14 @@ deployItems:
         {{ $webhooksImgRepo := ociRefRepo $webhooksImgResource.access.imageReference }}
         {{ $webhooksImgTag := ociRefVersion $webhooksImgResource.access.imageReference }}
 
+        {{ $landscaperServiceComponent := getComponent .cd "name" "landscaper-service" }}
+        {{ $landscaperServiceCompinentName := $landscaperServiceComponent.component.name }}
+        {{ $landscaperServiceCompinentVersion := $landscaperServiceComponent.component.version }}
+
+        {{ $repositoryContext := getRepositoryContext .cd }}
+        {{ $repositoryContextType := $repositoryContext.type }}
+        {{ $repositoryContextBaseUrl := $repositoryContext.baseUrl }}
+
         controller:
           image:
             repository: {{ $controllerImgRepo }}
@@ -42,6 +50,14 @@ deployItems:
           crdManagement:
             deployCrd: true
             forceUpdate: true
+
+          landscaperServiceComponent:
+            name: {{ $landscaperServiceCompinentName }}
+            version: {{ $landscaperServiceCompinentVersion }}
+
+            repositoryContext:
+              type: {{ $repositoryContextType }}
+              baseUrl: {{ $repositoryContextBaseUrl }}
 
         serviceAccount:
           controller:
