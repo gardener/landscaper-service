@@ -86,7 +86,7 @@ func (c *Controller) reconcileContext(ctx context.Context, log logr.Logger, inst
 }
 
 // mutateTarget creates or updates the context for an instance.
-func (c *Controller) mutateContext(_ context.Context, _ logr.Logger, context *lsv1alpha1.Context, _ *lssv1alpha1.Instance) error {
+func (c *Controller) mutateContext(ctx context.Context, _ logr.Logger, context *lsv1alpha1.Context, instance *lssv1alpha1.Instance) error {
 	repositoryContext := &cdv2.UnstructuredTypedObject{}
 	err := json.Unmarshal(c.Config().LandscaperServiceComponent.RepositoryContext.RawMessage, repositoryContext)
 
@@ -95,6 +95,33 @@ func (c *Controller) mutateContext(_ context.Context, _ logr.Logger, context *ls
 	}
 
 	context.RepositoryContext = repositoryContext
+	context.RegistryPullSecrets = make([]corev1.LocalObjectReference, 0, len(c.Config().LandscaperServiceComponent.RegistryPullSecrets))
+
+	for i, secretRef := range c.Config().LandscaperServiceComponent.RegistryPullSecrets {
+		configuredSecret := &corev1.Secret{}
+		if err := c.Client().Get(ctx, client.ObjectKey{Name: secretRef.Name, Namespace: secretRef.Namespace}, configuredSecret); err != nil {
+			return fmt.Errorf("unable to get registry pull secret \"%s/%s\": %w", secretRef.Namespace, secretRef.Name, err)
+		}
+
+		registryPullSecret := &corev1.Secret{}
+		registryPullSecret.Name = fmt.Sprintf("%s-regsecret-%d", instance.Name, i)
+		registryPullSecret.Namespace = context.Namespace
+
+		_, err := kubernetes.CreateOrUpdate(ctx, c.Client(), registryPullSecret, func() error {
+			registryPullSecret.Type = configuredSecret.Type
+			registryPullSecret.Data = configuredSecret.Data
+			return nil
+		})
+
+		if err != nil {
+			return fmt.Errorf("unable to create/update registry pull configuredSecret: %w", err)
+		}
+
+		context.RegistryPullSecrets = append(context.RegistryPullSecrets, corev1.LocalObjectReference{
+			Name: registryPullSecret.Name,
+		})
+	}
+
 	return nil
 }
 

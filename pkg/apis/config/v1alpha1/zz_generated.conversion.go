@@ -13,6 +13,7 @@ package v1alpha1
 import (
 	unsafe "unsafe"
 
+	v1 "k8s.io/api/core/v1"
 	conversion "k8s.io/apimachinery/pkg/conversion"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 
@@ -95,6 +96,7 @@ func autoConvert_v1alpha1_LandscaperServiceComponentConfiguration_To_config_Land
 	out.Name = in.Name
 	out.Version = in.Version
 	out.RepositoryContext = in.RepositoryContext
+	out.RegistryPullSecrets = *(*[]v1.SecretReference)(unsafe.Pointer(&in.RegistryPullSecrets))
 	return nil
 }
 
@@ -107,6 +109,7 @@ func autoConvert_config_LandscaperServiceComponentConfiguration_To_v1alpha1_Land
 	out.Name = in.Name
 	out.Version = in.Version
 	out.RepositoryContext = in.RepositoryContext
+	out.RegistryPullSecrets = *(*[]v1.SecretReference)(unsafe.Pointer(&in.RegistryPullSecrets))
 	return nil
 }
 

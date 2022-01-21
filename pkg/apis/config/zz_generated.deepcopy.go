@@ -11,6 +11,7 @@ SPDX-License-Identifier: Apache-2.0
 package config
 
 import (
+	v1 "k8s.io/api/core/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 )
 
@@ -44,6 +45,11 @@ func (in *CrdManagementConfiguration) DeepCopy() *CrdManagementConfiguration {
 func (in *LandscaperServiceComponentConfiguration) DeepCopyInto(out *LandscaperServiceComponentConfiguration) {
 	*out = *in
 	in.RepositoryContext.DeepCopyInto(&out.RepositoryContext)
+	if in.RegistryPullSecrets != nil {
+		in, out := &in.RegistryPullSecrets, &out.RegistryPullSecrets
+		*out = make([]v1.SecretReference, len(*in))
+		copy(*out, *in)
+	}
 	return
 }
 

@@ -19,14 +19,15 @@ landscaperservice:
 
     # the repository context for the landscaper service component
     repositoryContext:
-      type: ociRegistry
-      baseUrl: "eu.gcr.io/gardener-project/development"
+     type: ociRegistry
+     baseUrl: "eu.gcr.io/gardener-project/development"
 
-    # optional list of secret references { name, namespace }
-    # secrets need to be in the docker credentials format: see https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
-    registryPullSecrets: []
+    registryPullSecrets:
+      - name: foo
+        namespace: bar
 
-image: {}
+image:
+  tag: v0.1.0-dev-b635b11fc7d95c8aa33327fa0d0114a8ea03068d
 
 controller:
   replicaCount: 1

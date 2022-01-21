@@ -119,4 +119,8 @@ landscaperServiceComponent:
   version: {{ .Values.landscaperservice.landscaperServiceComponent.version }}
   repositoryContext:
 {{ toYaml .Values.landscaperservice.landscaperServiceComponent.repositoryContext | indent 4 }}
+{{- if .Values.landscaperservice.landscaperServiceComponent.registryPullSecrets }}
+  registryPullSecrets:
+{{ toYaml .Values.landscaperservice.landscaperServiceComponent.registryPullSecrets | indent 4 }}
+{{- end }}
 {{- end }}

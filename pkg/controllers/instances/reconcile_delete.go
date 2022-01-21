@@ -8,6 +8,10 @@ import (
 	"context"
 	"fmt"
 
+	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/apimachinery/pkg/util/errors"
+
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	"github.com/go-logr/logr"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -150,6 +154,10 @@ func (c *Controller) ensureDeleteContextForInstance(ctx context.Context, log log
 		}
 	}
 
+	if err := c.deleteSecretsForContext(ctx, log, landscaperContext); err != nil {
+		return false, err
+	}
+
 	if landscaperContext.DeletionTimestamp.IsZero() {
 		if err := c.Client().Delete(ctx, landscaperContext); err != nil {
 			return false, fmt.Errorf("unable to delete context for instance: %w", err)
@@ -157,4 +165,25 @@ func (c *Controller) ensureDeleteContextForInstance(ctx context.Context, log log
 	}
 
 	return false, nil
+}
+
+func (c *Controller) deleteSecretsForContext(ctx context.Context, log logr.Logger, landscaperContext *lsv1alpha1.Context) error {
+	log.Info("Delete secrets for context")
+	errs := make([]error, 0)
+
+	for _, secretRef := range landscaperContext.RegistryPullSecrets {
+		secret := &corev1.Secret{}
+		if err := c.Client().Get(ctx, types.NamespacedName{Name: secretRef.Name, Namespace: landscaperContext.Namespace}, secret); err != nil {
+			if !apierrors.IsNotFound(err) {
+				errs = append(errs, fmt.Errorf("unable to get secret \"%s\" for context: %w", secretRef.Name, err))
+			}
+			continue
+		}
+		if secret.DeletionTimestamp.IsZero() {
+			if err := c.Client().Delete(ctx, secret); err != nil {
+				errs = append(errs, fmt.Errorf("unable to delete secret \"%s\" for context: %w", secretRef.Name, err))
+			}
+		}
+	}
+	return errors.NewAggregate(errs)
 }

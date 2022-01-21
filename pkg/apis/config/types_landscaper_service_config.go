@@ -6,6 +6,7 @@ package config
 
 import (
 	"github.com/gardener/landscaper/apis/core/v1alpha1"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -53,4 +54,8 @@ type LandscaperServiceComponentConfiguration struct {
 
 	// RepositoryContext specifies the repository context for accessing the landscaper service component.
 	RepositoryContext v1alpha1.AnyJSON `json:"repositoryContext"`
+
+	// RegistryPullSecrets can be used to specify secrets that are needed to access the repository context.
+	// +optional
+	RegistryPullSecrets []corev1.SecretReference `json:"registryPullSecrets,omitempty"`
 }

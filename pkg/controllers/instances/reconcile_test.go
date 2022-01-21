@@ -9,6 +9,8 @@ import (
 	"encoding/json"
 	"fmt"
 
+	corev1 "k8s.io/api/core/v1"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
@@ -79,15 +81,15 @@ var _ = Describe("Reconcile", func() {
 		Expect(instance.Status.InstallationRef).ToNot(BeNil())
 
 		context := &lsv1alpha1.Context{}
-		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: instance.Status.ContextRef.Name, Namespace: instance.Status.ContextRef.Namespace}, context))
+		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: instance.Status.ContextRef.Name, Namespace: instance.Status.ContextRef.Namespace}, context)).To(Succeed())
 		Expect(context.RepositoryContext).ToNot(BeNil())
 		Expect(context.RepositoryContext.Type).To(Equal("ociRegistry"))
 
 		target := &lsv1alpha1.Target{}
-		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: instance.Status.TargetRef.Name, Namespace: instance.Status.TargetRef.Namespace}, target))
+		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: instance.Status.TargetRef.Name, Namespace: instance.Status.TargetRef.Namespace}, target)).To(Succeed())
 
 		installation := &lsv1alpha1.Installation{}
-		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: instance.Status.InstallationRef.Name, Namespace: instance.Status.InstallationRef.Namespace}, installation))
+		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: instance.Status.InstallationRef.Name, Namespace: instance.Status.InstallationRef.Namespace}, installation)).To(Succeed())
 		Expect(installation.Spec.Context).To(ContainSubstring("test-"))
 		Expect(installation.Spec.ComponentDescriptor.Reference.Version).To(Equal(op.Config().LandscaperServiceComponent.Version))
 		Expect(installation.Spec.ComponentDescriptor.Reference.ComponentName).To(Equal(op.Config().LandscaperServiceComponent.Name))
@@ -134,5 +136,44 @@ var _ = Describe("Reconcile", func() {
 
 		Expect(instance.Status.ClusterEndpoint).To(Equal(clusterEndpoint))
 		Expect(instance.Status.ClusterKubeconfig).To(Equal(clusterKubeConfig))
+	})
+
+	It("should create registry pull secrets for the context", func() {
+		var err error
+		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test3")
+		Expect(err).ToNot(HaveOccurred())
+
+		op.Config().LandscaperServiceComponent.RegistryPullSecrets = []corev1.SecretReference{
+			{
+				Name:      "regpullsecret1",
+				Namespace: state.Namespace,
+			},
+			{
+				Name:      "regpullsecret2",
+				Namespace: state.Namespace,
+			},
+		}
+
+		instance := state.GetInstance("test")
+		configuredSecret1 := state.GetSecret("regpullsecret1")
+		configuredSecret2 := state.GetSecret("regpullsecret2")
+
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
+
+		context := &lsv1alpha1.Context{}
+		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: instance.Status.ContextRef.Name, Namespace: instance.Status.ContextRef.Namespace}, context)).To(Succeed())
+		Expect(context.RegistryPullSecrets).To(HaveLen(2))
+
+		contextSecret := &corev1.Secret{}
+		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: context.RegistryPullSecrets[0].Name, Namespace: state.Namespace}, contextSecret)).To(Succeed())
+		Expect(contextSecret.Type).To(Equal(configuredSecret1.Type))
+		Expect(contextSecret.Data).To(Equal(configuredSecret1.Data))
+
+		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: context.RegistryPullSecrets[1].Name, Namespace: state.Namespace}, contextSecret)).To(Succeed())
+		Expect(contextSecret.Type).To(Equal(configuredSecret2.Type))
+		Expect(contextSecret.Data).To(Equal(configuredSecret2.Data))
 	})
 })

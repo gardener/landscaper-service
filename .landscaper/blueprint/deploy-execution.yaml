@@ -59,6 +59,11 @@ deployItems:
               type: {{ $repositoryContextType }}
               baseUrl: {{ $repositoryContextBaseUrl }}
 
+{{- if .imports.registryPullSecrets }}
+            registryPullSecrets:
+{{ toYaml .imports.registryPullSecrets | indent 14 }}
+{{- end }}
+
         serviceAccount:
           controller:
             create: true
