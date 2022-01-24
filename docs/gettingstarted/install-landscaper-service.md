@@ -74,7 +74,18 @@ spec:
   importDataMappings:
     namespace: laas-system
     verbosity: 2
+
+    # optional: registry pull secrets, list of secrets in "kubernetes.io/dockerconfigjson" format
+    # registryPullSecrets:
+    #  - name: secret1
+    #    namespace: laas-system
+    #  - name: secret2
+    #    namespace: laas-system
 ```
+
+The specification of the `registryPullSecrets` is optional and is only needed when the landscaper service component can't be pulled anonymously.
+The `registryPullSecrets` field contains a list of secrets referenced by name and namespace.
+See [this documentation](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/#registry-secret-existing-credentials) for the required secret format.
 
 ```sh
 kubectl apply -n laas-system -f installation.yaml 
