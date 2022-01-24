@@ -3,7 +3,8 @@ module github.com/gardener/landscaper-service
 go 1.17
 
 require (
-	github.com/gardener/landscaper/apis v0.16.0
+	github.com/gardener/component-spec/bindings-go v0.0.53
+	github.com/gardener/landscaper/apis v0.19.0
 	github.com/gardener/landscaper/controller-utils v0.16.0
 	github.com/go-logr/logr v0.4.0
 	github.com/go-openapi/spec v0.19.5
@@ -33,7 +34,6 @@ require (
 	github.com/evanphx/json-patch v4.11.0+incompatible // indirect
 	github.com/felixge/httpsnoop v1.0.1 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
-	github.com/gardener/component-spec/bindings-go v0.0.41 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/go-logr/zapr v0.4.0 // indirect
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect

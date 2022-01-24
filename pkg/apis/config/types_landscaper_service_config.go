@@ -5,6 +5,8 @@
 package config
 
 import (
+	"github.com/gardener/landscaper/apis/core/v1alpha1"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -21,6 +23,9 @@ type LandscaperServiceConfiguration struct {
 	// CrdManagement configures whether the landscaper controller should deploy the CRDs it needs into the cluster
 	// +optional
 	CrdManagement CrdManagementConfiguration `json:"crdManagement,omitempty"`
+
+	// LandscaperServiceComponent configures the landscaper component that is used by the landscaper service controller.
+	LandscaperServiceComponent LandscaperServiceComponentConfiguration `json:"landscaperServiceComponent"`
 }
 
 // MetricsConfiguration allows to configure how metrics are exposed
@@ -37,4 +42,20 @@ type CrdManagementConfiguration struct {
 	// ForceUpdate specifies whether existing CRDs should be updated
 	// +optional
 	ForceUpdate *bool `json:"forceUpdate,omitempty"`
+}
+
+// LandscaperServiceComponentConfiguration contains the configuration for the landscaper service component.
+type LandscaperServiceComponentConfiguration struct {
+	// Name is the component name
+	Name string `json:"name"`
+
+	// Version is the component version
+	Version string `json:"version"`
+
+	// RepositoryContext specifies the repository context for accessing the landscaper service component.
+	RepositoryContext v1alpha1.AnyJSON `json:"repositoryContext"`
+
+	// RegistryPullSecrets can be used to specify secrets that are needed to access the repository context.
+	// +optional
+	RegistryPullSecrets []corev1.SecretReference `json:"registryPullSecrets,omitempty"`
 }

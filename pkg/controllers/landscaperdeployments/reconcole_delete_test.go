@@ -33,7 +33,7 @@ var _ = Describe("Delete", func() {
 
 	BeforeEach(func() {
 		ctx = context.Background()
-		op = operation.NewOperation(logr.Discard(), testenv.Client, envtest.LandscaperServiceScheme)
+		op = operation.NewOperation(logr.Discard(), testenv.Client, envtest.LandscaperServiceScheme, testutils.DefaultControllerConfiguration())
 		ctrl = deploymentscontroller.NewTestActuator(*op)
 	})
 

@@ -30,7 +30,7 @@ ln -s "${KUBEBUILDER_ASSETS}" ${PROJECT_ROOT}/tmp/test/bin
 LANDSCAPER_APIS_VERSION=$(go list -m -mod=readonly -f {{.Version}}  github.com/gardener/landscaper/apis)
 LANDSCAPER_CRD_URL="https://raw.githubusercontent.com/gardener/landscaper/${LANDSCAPER_APIS_VERSION}/pkg/landscaper/crdmanager/crdresources"
 LANDSCAPER_CRD_DIR="${PROJECT_ROOT}/tmp/landscapercrd"
-LANDSCAPER_CRDS="landscaper.gardener.cloud_installations.yaml landscaper.gardener.cloud_targets.yaml landscaper.gardener.cloud_dataobjects.yaml"
+LANDSCAPER_CRDS="landscaper.gardener.cloud_installations.yaml landscaper.gardener.cloud_targets.yaml landscaper.gardener.cloud_dataobjects.yaml landscaper.gardener.cloud_contexts.yaml"
 mkdir -p ${PROJECT_ROOT}/tmp/landscapercrd
 
 for crd in $LANDSCAPER_CRDS; do

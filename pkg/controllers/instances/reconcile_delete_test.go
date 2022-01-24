@@ -32,7 +32,7 @@ var _ = Describe("Delete", func() {
 
 	BeforeEach(func() {
 		ctx = context.Background()
-		op = operation.NewOperation(logr.Discard(), testenv.Client, envtest.LandscaperServiceScheme)
+		op = operation.NewOperation(logr.Discard(), testenv.Client, envtest.LandscaperServiceScheme, testutils.DefaultControllerConfiguration())
 		ctrl = instancescontroller.NewTestActuator(*op)
 	})
 
@@ -83,7 +83,7 @@ var _ = Describe("Delete", func() {
 		Expect(config.Status.InstanceRefs).To(HaveLen(1))
 	})
 
-	It("should remove the associated target and installation", func() {
+	It("should remove the associated context, target and installation", func() {
 		var err error
 		state, err = testenv.InitResources(ctx, "./testdata/delete/test3")
 		Expect(err).ToNot(HaveOccurred())
@@ -91,6 +91,7 @@ var _ = Describe("Delete", func() {
 		instance := state.GetInstance("test")
 		target := state.GetTarget("test")
 		installation := state.GetInstallation("test")
+		context := state.GetContext("test")
 
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
@@ -102,9 +103,34 @@ var _ = Describe("Delete", func() {
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
 		// target
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		// context
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
 
 		Expect(testenv.WaitForObjectToBeDeleted(ctx, instance, 5*time.Second)).To(Succeed())
 		Expect(testenv.WaitForObjectToBeDeleted(ctx, target, 5*time.Second)).To(Succeed())
 		Expect(testenv.WaitForObjectToBeDeleted(ctx, installation, 5*time.Second)).To(Succeed())
+		Expect(testenv.WaitForObjectToBeDeleted(ctx, context, 5*time.Second)).To(Succeed())
+	})
+
+	It("should remove the secrets referenced by the context", func() {
+		var err error
+		state, err = testenv.InitResources(ctx, "./testdata/delete/test4")
+		Expect(err).ToNot(HaveOccurred())
+
+		instance := state.GetInstance("test")
+		regpullsecret1 := state.GetSecret("regpullsecret1")
+		regpullsecret2 := state.GetSecret("regpullsecret2")
+
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
+		Expect(kutil.HasFinalizer(instance, lssv1alpha1.LandscaperServiceFinalizer)).To(BeTrue())
+
+		Expect(testenv.Client.Delete(ctx, instance)).To(Succeed())
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		// context
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+
+		Expect(testenv.WaitForObjectToBeDeleted(ctx, regpullsecret1, 5*time.Second)).To(Succeed())
+		Expect(testenv.WaitForObjectToBeDeleted(ctx, regpullsecret2, 5*time.Second)).To(Succeed())
 	})
 })

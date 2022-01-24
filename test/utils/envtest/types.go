@@ -33,6 +33,8 @@ var (
 	InstallationGVK schema.GroupVersionKind
 	// TargetGVK is the GVK for targets.
 	TargetGVK schema.GroupVersionKind
+	// ContextGVK is the GVK for contexts.
+	ContextGVK schema.GroupVersionKind
 )
 
 func init() {
@@ -53,5 +55,7 @@ func init() {
 	InstallationGVK, err = apiutil.GVKForObject(&lsv1alpha1.Installation{}, LandscaperServiceScheme)
 	utilruntime.Must(err)
 	TargetGVK, err = apiutil.GVKForObject(&lsv1alpha1.Target{}, LandscaperServiceScheme)
+	utilruntime.Must(err)
+	ContextGVK, err = apiutil.GVKForObject(&lsv1alpha1.Context{}, LandscaperServiceScheme)
 	utilruntime.Must(err)
 }

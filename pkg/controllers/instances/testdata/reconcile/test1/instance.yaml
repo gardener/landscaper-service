@@ -14,8 +14,6 @@ spec:
       - helm
       - manifest
       - container
-  componentReference:
-    version: v0.16.0
   serviceTargetConfigRef:
     name: default
     namespace: {{ .Namespace }}

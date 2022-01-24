@@ -20,21 +20,9 @@ func SetDefaults_ServiceTargetConfig(obj *ServiceTargetConfig) {
 }
 
 // SetDefaults_LandscaperDeployment sets the default values for LandscaperDeployment objects
-func SetDefaults_LandscaperDeployment(obj *LandscaperDeployment) {
-	setDefaults_ComponentReference(&obj.Spec.ComponentReference)
+func SetDefaults_LandscaperDeployment(_ *LandscaperDeployment) {
 }
 
 // SetDefaults_Instance sets the default values for Instance objects
-func SetDefaults_Instance(obj *Instance) {
-	setDefaults_ComponentReference(&obj.Spec.ComponentReference)
-}
-
-func setDefaults_ComponentReference(obj *LandscaperServiceComponentReference) {
-	if len(obj.Context) == 0 {
-		obj.Context = LandscaperServiceDefaultContext
-	}
-
-	if len(obj.ComponentName) == 0 {
-		obj.ComponentName = LandscaperServiceComponentName
-	}
+func SetDefaults_Instance(_ *Instance) {
 }

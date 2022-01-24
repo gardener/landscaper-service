@@ -30,6 +30,8 @@ type State struct {
 	Installations map[string]*lsv1alpha1.Installation
 	// Targets contains all targets in this test environment.
 	Targets map[string]*lsv1alpha1.Target
+	// Contexts contains all contexts in this test environment
+	Contexts map[string]*lsv1alpha1.Context
 }
 
 // NewState creates a new state.
@@ -42,6 +44,7 @@ func NewState(namespace string) *State {
 		Secrets: make(map[string]*corev1.Secret),
 		Installations: make(map[string]*lsv1alpha1.Installation),
 		Targets: make(map[string]*lsv1alpha1.Target),
+		Contexts: make(map[string]*lsv1alpha1.Context),
 	}
 }
 
@@ -75,6 +78,11 @@ func (s *State) GetTarget(name string) *lsv1alpha1.Target {
 	return s.Targets[s.Namespace + "/" + name]
 }
 
+// GetContext retrieves a context by the given name.
+func (s *State) GetContext(name string) *lsv1alpha1.Context {
+	return s.Contexts[s.Namespace + "/" + name]
+}
+
 // AddObject adds a client.Object to the state.
 func (s *State) AddObject(object client.Object) {
 	switch o := object.(type) {
@@ -96,5 +104,7 @@ func (s *State) AddObject(object client.Object) {
 		s.Installations[types.NamespacedName{Name: o.Name, Namespace: o.Namespace}.String()] = o.DeepCopy()
 	case *lsv1alpha1.Target:
 		s.Targets[types.NamespacedName{Name: o.Name, Namespace: o.Namespace}.String()] = o.DeepCopy()
+	case *lsv1alpha1.Context:
+		s.Contexts[types.NamespacedName{Name: o.Name, Namespace: o.Namespace}.String()] = o.DeepCopy()
 	}
 }

@@ -19,14 +19,6 @@ spec:
     namespace: {{ .Namespace }}
 
 status:
-    installationRef:
-      name: test
-      namespace: {{ .Namespace }}
-
-    targetRef:
-      name: test
-      namespace: {{ .Namespace }}
-
     contextRef:
       name: test
       namespace: {{ .Namespace }}

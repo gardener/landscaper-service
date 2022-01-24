@@ -33,25 +33,6 @@ spec:
           spec:
             description: Spec contains the specification for the Instance.
             properties:
-              componentReference:
-                description: ComponentReference define the reference to the landscaper
-                  server component.
-                properties:
-                  componentName:
-                    description: ComponentName defines the component name of the landscaper
-                      service component to use for this deployment.
-                    type: string
-                  context:
-                    description: Context is the name of the landscaper context to
-                      use for the deployment.
-                    type: string
-                  version:
-                    description: Version defines the version of the landscaper service
-                      component to use for this deployment.
-                    type: string
-                required:
-                - version
-                type: object
               landscaperConfiguration:
                 description: LandscaperConfiguration contains the configuration for
                   the landscaper service deployment
@@ -80,7 +61,6 @@ spec:
                 type: object
             required:
             - landscaperConfiguration
-            - componentReference
             - serviceTargetConfigRef
             type: object
           status:
@@ -94,6 +74,19 @@ spec:
                 description: ClusterKubeconfigRef contains the Kubeconfig which can
                   be used for accessing the landscaper cluster.
                 type: string
+              contextRef:
+                description: ContextRef references the landscaper context for this
+                  Instance.
+                properties:
+                  name:
+                    description: Name is the name of the kubernetes object.
+                    type: string
+                  namespace:
+                    description: Namespace is the namespace of kubernetes object.
+                    type: string
+                required:
+                - name
+                type: object
               installationRef:
                 description: InstallationRef references the Installation for this
                   Instance.
@@ -106,6 +99,22 @@ spec:
                     type: string
                 required:
                 - name
+                type: object
+              landscaperServiceComponent:
+                description: LandscaperServiceComponent define the landscaper server
+                  component that is used for this instance.
+                properties:
+                  name:
+                    description: Name defines the component name of the landscaper
+                      service component.
+                    type: string
+                  version:
+                    description: Version defines the version of the landscaper service
+                      component.
+                    type: string
+                required:
+                - name
+                - version
                 type: object
               lastError:
                 description: LastError describes the last error that occurred.

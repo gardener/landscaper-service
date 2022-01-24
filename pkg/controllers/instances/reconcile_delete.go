@@ -8,6 +8,10 @@ import (
 	"context"
 	"fmt"
 
+	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/apimachinery/pkg/util/errors"
+
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	"github.com/go-logr/logr"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -25,6 +29,7 @@ func (c *Controller) handleDelete(ctx context.Context, log logr.Logger, instance
 		curOp               = "Delete"
 		targetDeleted       = true
 		installationDeleted = true
+		contextDeleted      = true
 	)
 
 	if instance.Status.InstallationRef != nil && !instance.Status.InstallationRef.IsEmpty() {
@@ -44,6 +49,16 @@ func (c *Controller) handleDelete(ctx context.Context, log logr.Logger, instance
 	}
 
 	if !installationDeleted {
+		return nil
+	}
+
+	if instance.Status.ContextRef != nil && !instance.Status.ContextRef.IsEmpty() {
+		if contextDeleted, err = c.ensureDeleteContextForInstance(ctx, log, instance); err != nil {
+			return lsserrors.NewWrappedError(err, curOp, "DeleteContext", err.Error())
+		}
+	}
+
+	if !contextDeleted {
 		return nil
 	}
 
@@ -120,4 +135,55 @@ func (c *Controller) ensureDeleteTargetForInstance(ctx context.Context, log logr
 	}
 
 	return false, nil
+}
+
+// ensureDeleteContextForInstance ensures that the context for an instance is deleted
+func (c *Controller) ensureDeleteContextForInstance(ctx context.Context, log logr.Logger, instance *lssv1alpha1.Instance) (bool, error) {
+	log.Info("Delete context for instance")
+	landscaperContext := &lsv1alpha1.Context{}
+
+	if err := c.Client().Get(ctx, instance.Status.ContextRef.NamespacedName(), landscaperContext); err != nil {
+		if apierrors.IsNotFound(err) {
+			instance.Status.ContextRef = nil
+			if err := c.Client().Status().Update(ctx, instance); err != nil {
+				return false, fmt.Errorf("failed to remove context reference: %w", err)
+			}
+			return true, nil
+		} else {
+			return false, fmt.Errorf("unable to get context for instance: %w", err)
+		}
+	}
+
+	if err := c.deleteSecretsForContext(ctx, log, landscaperContext); err != nil {
+		return false, err
+	}
+
+	if landscaperContext.DeletionTimestamp.IsZero() {
+		if err := c.Client().Delete(ctx, landscaperContext); err != nil {
+			return false, fmt.Errorf("unable to delete context for instance: %w", err)
+		}
+	}
+
+	return false, nil
+}
+
+func (c *Controller) deleteSecretsForContext(ctx context.Context, log logr.Logger, landscaperContext *lsv1alpha1.Context) error {
+	log.Info("Delete secrets for context")
+	errs := make([]error, 0)
+
+	for _, secretRef := range landscaperContext.RegistryPullSecrets {
+		secret := &corev1.Secret{}
+		if err := c.Client().Get(ctx, types.NamespacedName{Name: secretRef.Name, Namespace: landscaperContext.Namespace}, secret); err != nil {
+			if !apierrors.IsNotFound(err) {
+				errs = append(errs, fmt.Errorf("unable to get secret \"%s\" for context: %w", secretRef.Name, err))
+			}
+			continue
+		}
+		if secret.DeletionTimestamp.IsZero() {
+			if err := c.Client().Delete(ctx, secret); err != nil {
+				errs = append(errs, fmt.Errorf("unable to delete secret \"%s\" for context: %w", secretRef.Name, err))
+			}
+		}
+	}
+	return errors.NewAggregate(errs)
 }

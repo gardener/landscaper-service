@@ -44,15 +44,9 @@
       "type": "object",
       "required": [
         "landscaperConfiguration",
-        "componentReference",
         "serviceTargetConfigRef"
       ],
       "properties": {
-        "componentReference": {
-          "description": "ComponentReference define the reference to the landscaper server component.",
-          "default": {},
-          "$ref": "#/definitions/core-v1alpha1-LandscaperServiceComponentReference"
-        },
         "landscaperConfiguration": {
           "description": "LandscaperConfiguration contains the configuration for the landscaper service deployment",
           "default": {},
@@ -77,9 +71,17 @@
           "description": "ClusterKubeconfigRef contains the Kubeconfig which can be used for accessing the landscaper cluster.",
           "type": "string"
         },
+        "contextRef": {
+          "description": "ContextRef references the landscaper context for this Instance.",
+          "$ref": "#/definitions/core-v1alpha1-ObjectReference"
+        },
         "installationRef": {
           "description": "InstallationRef references the Installation for this Instance.",
           "$ref": "#/definitions/core-v1alpha1-ObjectReference"
+        },
+        "landscaperServiceComponent": {
+          "description": "LandscaperServiceComponent define the landscaper server component that is used for this instance.",
+          "$ref": "#/definitions/core-v1alpha1-LandscaperServiceComponent"
         },
         "lastError": {
           "description": "LastError describes the last error that occurred.",
@@ -114,25 +116,21 @@
         }
       }
     },
-    "core-v1alpha1-LandscaperServiceComponentReference": {
-      "description": "LandscaperServiceComponentReference defines the landscaper service component reference and context that should be used.",
+    "core-v1alpha1-LandscaperServiceComponent": {
+      "description": "LandscaperServiceComponent defines the landscaper service component that is being used.",
       "type": "object",
       "required": [
+        "name",
         "version"
       ],
       "properties": {
-        "componentName": {
-          "description": "ComponentName defines the component name of the landscaper service component to use for this deployment.",
-          "type": "string",
-          "default": ""
-        },
-        "context": {
-          "description": "Context is the name of the landscaper context to use for the deployment.",
+        "name": {
+          "description": "Name defines the component name of the landscaper service component.",
           "type": "string",
           "default": ""
         },
         "version": {
-          "description": "Version defines the version of the landscaper service component to use for this deployment.",
+          "description": "Version defines the version of the landscaper service component.",
           "type": "string",
           "default": ""
         }

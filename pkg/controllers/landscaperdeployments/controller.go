@@ -9,8 +9,6 @@ import (
 	"fmt"
 	"reflect"
 
-	lsserrors "github.com/gardener/landscaper-service/pkg/apis/errors"
-
 	kutils "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	"github.com/go-logr/logr"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -19,7 +17,9 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
+	coreconfig "github.com/gardener/landscaper-service/pkg/apis/config"
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	lsserrors "github.com/gardener/landscaper-service/pkg/apis/errors"
 	"github.com/gardener/landscaper-service/pkg/operation"
 )
 
@@ -29,9 +29,9 @@ type Controller struct {
 }
 
 // NewController returns a new landscaperdeployments controller
-func NewController(log logr.Logger, c client.Client, scheme *runtime.Scheme) (reconcile.Reconciler, error) {
+func NewController(log logr.Logger, c client.Client, scheme *runtime.Scheme, config *coreconfig.LandscaperServiceConfiguration) (reconcile.Reconciler, error) {
 	ctrl := &Controller{}
-	op := operation.NewOperation(log, c, scheme)
+	op := operation.NewOperation(log, c, scheme, config)
 	ctrl.Operation = *op
 	return ctrl, nil
 }

@@ -29,25 +29,6 @@ spec:
           spec:
             description: Spec contains the specification for the LandscaperDeployment
             properties:
-              componentReference:
-                description: ComponentReference define the reference to the landscaper
-                  server component.
-                properties:
-                  componentName:
-                    description: ComponentName defines the component name of the landscaper
-                      service component to use for this deployment.
-                    type: string
-                  context:
-                    description: Context is the name of the landscaper context to
-                      use for the deployment.
-                    type: string
-                  version:
-                    description: Version defines the version of the landscaper service
-                      component to use for this deployment.
-                    type: string
-                required:
-                - version
-                type: object
               landscaperConfiguration:
                 description: LandscaperConfiguration contains the configuration for
                   the landscaper service deployment
@@ -71,7 +52,6 @@ spec:
             required:
             - purpose
             - landscaperConfiguration
-            - componentReference
             type: object
           status:
             description: Status contains the status of the LandscaperDeployment.
