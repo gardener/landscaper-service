@@ -34,6 +34,7 @@ spec:
           imagePullPolicy: {{ .Values.controller.image.pullPolicy }}
           args:
           - "-v={{ .Values.landscaperservice.verbosity }}"
+          - "--config=/app/ls/config/config.yaml"
           {{- if .Values.landscaperservice.metrics }}
           ports:
             - name: metrics
