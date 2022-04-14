@@ -189,15 +189,22 @@ func OwnerOfGVK(ownerRefs []metav1.OwnerReference, gvk schema.GroupVersionKind) 
 // GetOwner returns the owner reference of a object.
 // If multiple owners are defined, the controlling owner is returned.
 func GetOwner(objMeta metav1.ObjectMeta) *metav1.OwnerReference {
-	if len(objMeta.GetOwnerReferences()) == 1 {
-		return &objMeta.GetOwnerReferences()[0]
+	return GetMainOwnerFromOwnerReferences(objMeta.GetOwnerReferences())
+}
+
+// GetMainOwnerFromOwnerReferences returns the main owner from a list of owner references.
+// If the list contains only a single reference, that one is returned.
+// If multiple owners are defined, the controlling owner is returned.
+// If there are multiple references and no controlling one, nil is returned.
+func GetMainOwnerFromOwnerReferences(owners []metav1.OwnerReference) *metav1.OwnerReference {
+	if len(owners) == 1 {
+		return &owners[0]
 	}
-	for _, ownerRef := range objMeta.GetOwnerReferences() {
+	for _, ownerRef := range owners {
 		if ownerRef.Controller != nil && *ownerRef.Controller {
 			return &ownerRef
 		}
 	}
-
 	return nil
 }
 
@@ -604,6 +611,23 @@ func SetRequiredNestedFieldsFromObj(currObj, obj *unstructured.Unstructured) err
 		if found {
 			if err := unstructured.SetNestedField(obj.Object, clusterIP, "spec", "clusterIP"); err != nil {
 				return err
+			}
+		}
+	case "ServiceAccount":
+		secrets, found, err := unstructured.NestedSlice(obj.Object, "secrets")
+		if err != nil {
+			return err
+		}
+
+		if !found || len(secrets) == 0 {
+			secrets, found, err = unstructured.NestedSlice(currObj.Object, "secrets")
+			if err != nil {
+				return err
+			}
+			if found && len(secrets) > 0 {
+				if err := unstructured.SetNestedSlice(obj.Object, secrets, "secrets"); err != nil {
+					return err
+				}
 			}
 		}
 	}
