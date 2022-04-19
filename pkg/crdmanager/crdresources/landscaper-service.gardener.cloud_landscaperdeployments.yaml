@@ -49,7 +49,11 @@ spec:
                 description: Region selects the region this LandscaperDeployment should
                   be installed on.
                 type: string
+              tenantId:
+                description: TenantId is the unique identifier of the owning tenant.
+                type: string
             required:
+            - tenantId
             - purpose
             - landscaperConfiguration
             type: object

@@ -6,6 +6,8 @@ package landscaperdeployments
 
 import (
 	"context"
+	"crypto/sha1"
+	"encoding/hex"
 	"fmt"
 	"sort"
 	"strings"
@@ -95,6 +97,13 @@ func (c *Controller) mutateInstance(ctx context.Context, log logr.Logger, deploy
 		instance.Spec.ServiceTargetConfigRef.Namespace = serviceTargetConf.GetNamespace()
 	}
 
+	if len(instance.Spec.ID) == 0 {
+		h := sha1.New()
+		id := h.Sum([]byte(instance.Name))
+		instance.Spec.ID = hex.EncodeToString(id[:4])
+	}
+
+	instance.Spec.TenantId = deployment.Spec.TenantId
 	instance.Spec.LandscaperConfiguration = deployment.Spec.LandscaperConfiguration
 	c.Operation.Scheme().Default(instance)
 

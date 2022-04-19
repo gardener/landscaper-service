@@ -95,7 +95,7 @@ var _ = Describe("Reconcile", func() {
 		Expect(installation.Spec.ComponentDescriptor.Reference.ComponentName).To(Equal(op.Config().LandscaperServiceComponent.Name))
 		Expect(installation.Spec.ImportDataMappings[lsinstallation.ProviderTypeImportName]).To(Equal(utils.StringToAnyJSON(config.Spec.ProviderType)))
 		Expect(installation.Spec.ImportDataMappings[lsinstallation.VirtualClusterNamespaceImportName]).To(Equal(utils.StringToAnyJSON(lsinstallation.VirtualClusterNamespace)))
-		Expect(installation.Spec.ImportDataMappings[lsinstallation.HostingClusterNamespaceImportName]).To(Equal(utils.StringToAnyJSON(fmt.Sprintf("%s-%s", instance.Namespace, instance.Name))))
+		Expect(installation.Spec.ImportDataMappings[lsinstallation.HostingClusterNamespaceImportName]).To(Equal(utils.StringToAnyJSON("12345-abcdef")))
 
 		landscaperConfigRaw := installation.Spec.ImportDataMappings[lsinstallation.LandscaperConfigImportName]
 		Expect(landscaperConfigRaw).ToNot(BeNil())

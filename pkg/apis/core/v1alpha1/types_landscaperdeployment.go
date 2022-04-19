@@ -37,6 +37,9 @@ type LandscaperDeployment struct {
 
 // LandscaperDeploymentSpec contains the specification for a LandscaperDeployment.
 type LandscaperDeploymentSpec struct {
+	// TenantId is the unique identifier of the owning tenant.
+	TenantId string `json:"tenantId"`
+
 	// Purpose contains the purpose of this LandscaperDeployment.
 	Purpose string `json:"purpose"`
 

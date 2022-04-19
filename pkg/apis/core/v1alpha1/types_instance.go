@@ -38,6 +38,12 @@ type Instance struct {
 
 // InstanceSpec contains the specification for an Instance.
 type InstanceSpec struct {
+	// TenantId is the unique identifier of the owning tenant.
+	TenantId string `json:"tenantId"`
+
+	// ID is the id of this instance
+	ID string `json:"id"`
+
 	// LandscaperConfiguration contains the configuration for the landscaper service deployment
 	LandscaperConfiguration LandscaperConfiguration `json:"landscaperConfiguration"`
 

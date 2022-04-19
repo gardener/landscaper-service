@@ -282,6 +282,8 @@ func Convert_core_InstanceList_To_v1alpha1_InstanceList(in *core.InstanceList, o
 }
 
 func autoConvert_v1alpha1_InstanceSpec_To_core_InstanceSpec(in *InstanceSpec, out *core.InstanceSpec, s conversion.Scope) error {
+	out.TenantId = in.TenantId
+	out.ID = in.ID
 	if err := Convert_v1alpha1_LandscaperConfiguration_To_core_LandscaperConfiguration(&in.LandscaperConfiguration, &out.LandscaperConfiguration, s); err != nil {
 		return err
 	}
@@ -297,6 +299,8 @@ func Convert_v1alpha1_InstanceSpec_To_core_InstanceSpec(in *InstanceSpec, out *c
 }
 
 func autoConvert_core_InstanceSpec_To_v1alpha1_InstanceSpec(in *core.InstanceSpec, out *InstanceSpec, s conversion.Scope) error {
+	out.TenantId = in.TenantId
+	out.ID = in.ID
 	if err := Convert_core_LandscaperConfiguration_To_v1alpha1_LandscaperConfiguration(&in.LandscaperConfiguration, &out.LandscaperConfiguration, s); err != nil {
 		return err
 	}
@@ -420,6 +424,7 @@ func Convert_core_LandscaperDeploymentList_To_v1alpha1_LandscaperDeploymentList(
 }
 
 func autoConvert_v1alpha1_LandscaperDeploymentSpec_To_core_LandscaperDeploymentSpec(in *LandscaperDeploymentSpec, out *core.LandscaperDeploymentSpec, s conversion.Scope) error {
+	out.TenantId = in.TenantId
 	out.Purpose = in.Purpose
 	if err := Convert_v1alpha1_LandscaperConfiguration_To_core_LandscaperConfiguration(&in.LandscaperConfiguration, &out.LandscaperConfiguration, s); err != nil {
 		return err
@@ -434,6 +439,7 @@ func Convert_v1alpha1_LandscaperDeploymentSpec_To_core_LandscaperDeploymentSpec(
 }
 
 func autoConvert_core_LandscaperDeploymentSpec_To_v1alpha1_LandscaperDeploymentSpec(in *core.LandscaperDeploymentSpec, out *LandscaperDeploymentSpec, s conversion.Scope) error {
+	out.TenantId = in.TenantId
 	out.Purpose = in.Purpose
 	if err := Convert_core_LandscaperConfiguration_To_v1alpha1_LandscaperConfiguration(&in.LandscaperConfiguration, &out.LandscaperConfiguration, s); err != nil {
 		return err
