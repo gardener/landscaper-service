@@ -460,6 +460,22 @@ func schema_pkg_apis_core_v1alpha1_InstanceSpec(ref common.ReferenceCallback) co
 				Description: "InstanceSpec contains the specification for an Instance.",
 				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
+					"tenantId": {
+						SchemaProps: spec.SchemaProps{
+							Description: "TenantId is the unique identifier of the owning tenant.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"id": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ID is the id of this instance",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
 					"landscaperConfiguration": {
 						SchemaProps: spec.SchemaProps{
 							Description: "LandscaperConfiguration contains the configuration for the landscaper service deployment",
@@ -475,7 +491,7 @@ func schema_pkg_apis_core_v1alpha1_InstanceSpec(ref common.ReferenceCallback) co
 						},
 					},
 				},
-				Required: []string{"landscaperConfiguration", "serviceTargetConfigRef"},
+				Required: []string{"tenantId", "id", "landscaperConfiguration", "serviceTargetConfigRef"},
 			},
 		},
 		Dependencies: []string{
@@ -685,6 +701,14 @@ func schema_pkg_apis_core_v1alpha1_LandscaperDeploymentSpec(ref common.Reference
 				Description: "LandscaperDeploymentSpec contains the specification for a LandscaperDeployment.",
 				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
+					"tenantId": {
+						SchemaProps: spec.SchemaProps{
+							Description: "TenantId is the unique identifier of the owning tenant.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
 					"purpose": {
 						SchemaProps: spec.SchemaProps{
 							Description: "Purpose contains the purpose of this LandscaperDeployment.",
@@ -708,7 +732,7 @@ func schema_pkg_apis_core_v1alpha1_LandscaperDeploymentSpec(ref common.Reference
 						},
 					},
 				},
-				Required: []string{"purpose", "landscaperConfiguration"},
+				Required: []string{"tenantId", "purpose", "landscaperConfiguration"},
 			},
 		},
 		Dependencies: []string{

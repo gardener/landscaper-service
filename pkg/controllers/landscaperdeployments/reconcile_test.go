@@ -220,6 +220,8 @@ var _ = Describe("Reconcile", func() {
 		Expect(err).ToNot(HaveOccurred())
 		Expect(instance.Spec.ServiceTargetConfigRef.Name).To(Equal("config2"))
 		Expect(instance.Spec.LandscaperConfiguration).To(Equal(deployment.Spec.LandscaperConfiguration))
+		Expect(instance.Spec.TenantId).To(Equal(deployment.Spec.TenantId))
+		Expect(instance.Spec.ID).To(MatchRegexp("[a-f0-9]+"))
 
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(config), config)).To(Succeed())
 		Expect(config.Status.InstanceRefs).To(HaveLen(1))
@@ -256,6 +258,7 @@ var _ = Describe("Reconcile", func() {
 		instance := &lssv1alpha1.Instance{}
 		err = testenv.Client.Get(ctx, types.NamespacedName{Name: deployment.Status.InstanceRef.Name, Namespace: deployment.Status.InstanceRef.Namespace}, instance)
 		Expect(err).ToNot(HaveOccurred())
+		uid := instance.Spec.ID
 
 		deployment.Spec.LandscaperConfiguration.Deployers = []string{
 			"foo",
@@ -265,5 +268,6 @@ var _ = Describe("Reconcile", func() {
 		err = testenv.Client.Get(ctx, types.NamespacedName{Name: deployment.Status.InstanceRef.Name, Namespace: deployment.Status.InstanceRef.Namespace}, instance)
 		Expect(err).ToNot(HaveOccurred())
 		Expect(instance.Spec.LandscaperConfiguration).To(Equal(deployment.Spec.LandscaperConfiguration))
+		Expect(instance.Spec.ID).To(Equal(uid))
 	})
 })

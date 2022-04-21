@@ -43,10 +43,17 @@
       "description": "InstanceSpec contains the specification for an Instance.",
       "type": "object",
       "required": [
+        "tenantId",
+        "id",
         "landscaperConfiguration",
         "serviceTargetConfigRef"
       ],
       "properties": {
+        "id": {
+          "description": "ID is the id of this instance",
+          "type": "string",
+          "default": ""
+        },
         "landscaperConfiguration": {
           "description": "LandscaperConfiguration contains the configuration for the landscaper service deployment",
           "default": {},
@@ -56,6 +63,11 @@
           "description": "ServiceTargetConfigRef specifies the target cluster for which the installation is created.",
           "default": {},
           "$ref": "#/definitions/core-v1alpha1-ObjectReference"
+        },
+        "tenantId": {
+          "description": "TenantId is the unique identifier of the owning tenant.",
+          "type": "string",
+          "default": ""
         }
       }
     },

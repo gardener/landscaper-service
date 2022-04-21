@@ -8,6 +8,7 @@ metadata:
   name: "test"
   namespace: {{ .Namespace }}
 spec:
+  tenantId: "12345"
   purpose: "test"
   landscaperConfiguration:
     deployers:

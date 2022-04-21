@@ -33,6 +33,9 @@ spec:
           spec:
             description: Spec contains the specification for the Instance.
             properties:
+              id:
+                description: ID is the id of this instance
+                type: string
               landscaperConfiguration:
                 description: LandscaperConfiguration contains the configuration for
                   the landscaper service deployment
@@ -59,7 +62,12 @@ spec:
                 required:
                 - name
                 type: object
+              tenantId:
+                description: TenantId is the unique identifier of the owning tenant.
+                type: string
             required:
+            - tenantId
+            - id
             - landscaperConfiguration
             - serviceTargetConfigRef
             type: object
