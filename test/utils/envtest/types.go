@@ -13,9 +13,10 @@ import (
 	kubernetescheme "k8s.io/client-go/kubernetes/scheme"
 	"sigs.k8s.io/controller-runtime/pkg/client/apiutil"
 
+	lscoreinstall "github.com/gardener/landscaper/apis/core/install"
+
 	lsscoreinstall "github.com/gardener/landscaper-service/pkg/apis/core/install"
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
-	lscoreinstall "github.com/gardener/landscaper/apis/core/install"
 )
 
 var (

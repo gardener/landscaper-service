@@ -18,14 +18,16 @@ install-requirements:
 .PHONY: revendor
 revendor:
 	@$(REPO_ROOT)/hack/revendor.sh
+	@cd $(REPO_ROOT)/integration-test && $(REPO_ROOT)/hack/revendor.sh
 
 .PHONY: format
 format:
-	@$(REPO_ROOT)/hack/format.sh $(REPO_ROOT)/pkg $(REPO_ROOT)/cmd $(REPO_ROOT)/hack
+	@$(REPO_ROOT)/hack/format.sh $(REPO_ROOT)/pkg $(REPO_ROOT)/cmd $(REPO_ROOT)/hack $(REPO_ROOT)/test $(REPO_ROOT)/integration-test/pkg
 
 .PHONY: check
 check:
-	@$(REPO_ROOT)/hack/check.sh --golangci-lint-config=./.golangci.yaml $(REPO_ROOT)/cmd/... $(REPO_ROOT)/pkg/... $(REPO_ROOT)/hack/...
+	@$(REPO_ROOT)/hack/check.sh --golangci-lint-config=./.golangci.yaml $(REPO_ROOT)/cmd/... $(REPO_ROOT)/pkg/... $(REPO_ROOT)/hack/... $(REPO_ROOT)/test/...
+	@cd $(REPO_ROOT)/integration-test && $(REPO_ROOT)/hack/check.sh --golangci-lint-config=$(REPO_ROOT)/.golangci.yaml ./pkg/...
 
 .PHONY: verify
 verify: check
@@ -37,6 +39,10 @@ setup-testenv:
 .PHONY: test
 test: setup-testenv
 	@$(REPO_ROOT)/hack/test.sh
+
+.PHONY: integration-test
+integration-test:
+	@cd $(REPO_ROOT)/integration-test && go run ./pkg --kubeconfig $(KUBECONFIG) --laas-version $(EFFECTIVE_VERSION) --laas-repository $(REGISTRY) --provider-type $(CLUSTER_PROVIDER_TYPE)
 
 .PHONY: generate-code
 generate-code:

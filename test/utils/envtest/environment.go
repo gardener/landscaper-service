@@ -9,16 +9,18 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"time"
 
+	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
+
+	"html/template"
+
 	kutil "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	"github.com/pkg/errors"
-	"html/template"
 	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -293,7 +295,6 @@ func (e *Environment) removeFinalizer(ctx context.Context, obj client.Object) er
 	return nil
 }
 
-
 func (e *Environment) parseResources(path string, state *State) ([]client.Object, error) {
 	objects := make([]client.Object, 0)
 	errOuter := filepath.Walk(path, func(path string, info os.FileInfo, walkerr error) error {
@@ -401,5 +402,4 @@ func (e *Environment) decodeAndAppendLSSObject(data []byte, objects []client.Obj
 	default:
 		return objects, nil
 	}
-	return nil, nil
 }

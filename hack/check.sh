@@ -30,7 +30,7 @@ folders=()
 for f in $@; do
   folders+=( "$(echo $f | sed 's/\(.*\)\/\.\.\./\1/')" )
 done
-unformatted_files="$(goimports -l -local=github.com/gardener/landscapercli ${folders[*]})"
+unformatted_files="$(goimports -l -local=github.com/gardener/landscaper-service ${folders[*]})"
 if [[ "$unformatted_files" ]]; then
   echo "Unformatted files detected:"
   echo "$unformatted_files"
