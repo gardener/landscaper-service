@@ -14,7 +14,6 @@ import (
 	"github.com/go-logr/logr"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
-	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	deploymentscontroller "github.com/gardener/landscaper-service/pkg/controllers/landscaperdeployments"
@@ -170,7 +169,7 @@ var _ = Describe("SortServiceTargetConfigs", func() {
 var _ = Describe("Reconcile", func() {
 	var (
 		op    *operation.Operation
-		ctrl  reconcile.Reconciler
+		ctrl  *deploymentscontroller.Controller
 		ctx   context.Context
 		state *envtest.State
 	)
@@ -222,6 +221,7 @@ var _ = Describe("Reconcile", func() {
 		Expect(instance.Spec.LandscaperConfiguration).To(Equal(deployment.Spec.LandscaperConfiguration))
 		Expect(instance.Spec.TenantId).To(Equal(deployment.Spec.TenantId))
 		Expect(instance.Spec.ID).To(MatchRegexp("[a-f0-9]+"))
+		Expect(instance.Spec.ID).To(HaveLen(8))
 
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(config), config)).To(Succeed())
 		Expect(config.Status.InstanceRefs).To(HaveLen(1))
@@ -269,5 +269,40 @@ var _ = Describe("Reconcile", func() {
 		Expect(err).ToNot(HaveOccurred())
 		Expect(instance.Spec.LandscaperConfiguration).To(Equal(deployment.Spec.LandscaperConfiguration))
 		Expect(instance.Spec.ID).To(Equal(uid))
+	})
+
+	It("should not create instances with duplicated ids", func() {
+		var err error
+
+		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test5")
+		Expect(err).ToNot(HaveOccurred())
+
+		deployment := state.GetDeployment("test")
+		existingInstance := state.GetInstance("existing")
+
+		callCount := 0
+		uniqueId := "eb08fabb"
+		ctrl.UniqueIDFunc = func() string {
+			var id string
+			if callCount == 0 {
+				id = existingInstance.Spec.ID
+			} else {
+				id = uniqueId
+			}
+			callCount += 1
+			return id
+		}
+
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(deployment))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(deployment), deployment)).To(Succeed())
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(deployment))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(deployment), deployment)).To(Succeed())
+		Expect(deployment.Status.InstanceRef).ToNot(BeNil())
+
+		instance := &lssv1alpha1.Instance{}
+		err = testenv.Client.Get(ctx, types.NamespacedName{Name: deployment.Status.InstanceRef.Name, Namespace: deployment.Status.InstanceRef.Namespace}, instance)
+		Expect(err).ToNot(HaveOccurred())
+
+		Expect(instance.Spec.ID).To(Equal(uniqueId))
 	})
 })

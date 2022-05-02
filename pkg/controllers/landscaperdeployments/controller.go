@@ -9,6 +9,8 @@ import (
 	"fmt"
 	"reflect"
 
+	guuid "github.com/google/uuid"
+
 	kutils "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	"github.com/go-logr/logr"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -26,11 +28,28 @@ import (
 // Controller is the landscaperdeployments controller
 type Controller struct {
 	operation.Operation
+
+	UniqueIDFunc func() string
+}
+
+// NewUniqueID creates a new unique id string with a length of 8.
+func (c *Controller) NewUniqueID() string {
+	id := c.UniqueIDFunc()
+	if len(id) > 8 {
+		id = id[:8]
+	}
+	return id
+}
+
+func defaultUniqueIdFunc() string {
+	return guuid.New().String()
 }
 
 // NewController returns a new landscaperdeployments controller
 func NewController(log logr.Logger, c client.Client, scheme *runtime.Scheme, config *coreconfig.LandscaperServiceConfiguration) (reconcile.Reconciler, error) {
-	ctrl := &Controller{}
+	ctrl := &Controller{
+		UniqueIDFunc: defaultUniqueIdFunc,
+	}
 	op := operation.NewOperation(log, c, scheme, config)
 	ctrl.Operation = *op
 	return ctrl, nil
@@ -39,7 +58,8 @@ func NewController(log logr.Logger, c client.Client, scheme *runtime.Scheme, con
 // NewTestActuator creates a new controller for testing purposes.
 func NewTestActuator(op operation.Operation) *Controller {
 	ctrl := &Controller{
-		Operation: op,
+		Operation:    op,
+		UniqueIDFunc: defaultUniqueIdFunc,
 	}
 	return ctrl
 }
