@@ -54,12 +54,12 @@ landscaper-service:
         scheduling:
           suppress_parallel_execution: true
     release:
-       steps:
-         run_integration_test:
-           image: 'golang:1.17.9-alpine3.14'
-           execute:
-           - "integration_test"
-           output_dir: 'integration_test'
+      steps:
+        run_integration_test:
+          image: 'golang:1.17.9-alpine3.14'
+          execute:
+          - "integration_test"
+          output_dir: 'integration_test'
       traits:
         scheduling:
           suppress_parallel_execution: true
