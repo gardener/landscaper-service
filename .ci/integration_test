@@ -1,5 +1,6 @@
 #!/bin/sh
 
-#!/bin/sh
+PROJECT_ROOT="$(dirname $0)/.."
 
-echo "integration test"
+echo "laas integration test"
+${PROJECT_ROOT}/hack/integration-test.sh
