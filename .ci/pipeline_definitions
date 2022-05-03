@@ -40,13 +40,29 @@ landscaper-service:
               - committers
               - codeowners
     pull-request:
+      steps:
+        run_integration_test:
+          image: 'golang:1.17.9-alpine3.14'
+          execute:
+          - "integration_test"
+          output_dir: 'integration_test'
       traits:
         pull-request: ~
         draft_release: ~
         options:
           public_build_logs: True
+        scheduling:
+          suppress_parallel_execution: true
     release:
+       steps:
+         run_integration_test:
+           image: 'golang:1.17.9-alpine3.14'
+           execute:
+           - "integration_test"
+           output_dir: 'integration_test'
       traits:
+        scheduling:
+          suppress_parallel_execution: true
         version:
           preprocess: 'finalize'
         release:
