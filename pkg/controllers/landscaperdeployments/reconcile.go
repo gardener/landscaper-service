@@ -6,18 +6,18 @@ package landscaperdeployments
 
 import (
 	"context"
-	"crypto/sha1"
-	"encoding/hex"
 	"fmt"
 	"sort"
 	"strings"
 
-	"k8s.io/apimachinery/pkg/labels"
-
-	"github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	"github.com/go-logr/logr"
+
+	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/apimachinery/pkg/util/sets"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
+
+	"github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	lsserrors "github.com/gardener/landscaper-service/pkg/apis/errors"
@@ -97,13 +97,22 @@ func (c *Controller) mutateInstance(ctx context.Context, log logr.Logger, deploy
 		instance.Spec.ServiceTargetConfigRef.Namespace = serviceTargetConf.GetNamespace()
 	}
 
-	// The instance has a generated name and therefore may be not set yet.
-	// The hash is therefore calculated with the name of the deployment.
-	// Since the name of the instance is derived from the deployment name, which is unique in a namespace,
-	// the hash value is also unique.
-	h := sha1.New()
-	id := h.Sum([]byte(deployment.Name))
-	instance.Spec.ID = hex.EncodeToString(id[:4])
+	if len(instance.Spec.ID) == 0 {
+		instanceList := &lssv1alpha1.InstanceList{}
+		if err := c.Client().List(ctx, instanceList, &client.ListOptions{Namespace: deployment.Namespace}); err != nil {
+			return fmt.Errorf("unable to list instances in namespace %s: %w", deployment.Namespace, err)
+		}
+
+		existingIds := sets.NewString()
+		for _, i := range instanceList.Items {
+			existingIds.Insert(i.Spec.ID)
+		}
+
+		var id string
+		for id = c.NewUniqueID(); existingIds.Has(id); id = c.NewUniqueID() {
+		}
+		instance.Spec.ID = id
+	}
 
 	instance.Spec.TenantId = deployment.Spec.TenantId
 	instance.Spec.LandscaperConfiguration = deployment.Spec.LandscaperConfiguration
