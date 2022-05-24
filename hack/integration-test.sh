@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # SPDX-FileCopyrightText: 2022 "SAP SE or an SAP affiliate company and Gardener contributors"
 #
@@ -13,13 +13,20 @@ then
     apk add --no-cache --no-progress git
 fi
 
+
+
 PROJECT_ROOT="$(dirname $0)/.."
 TARGET_CLUSTER="laas-integration-test"
 TARGET_CLUSTER_PROVIDER="gcp"
-LAAS_VERSION="$("${SOURCE_PATH}"/hack/get-version.sh)"
 LAAS_REPOSITORY="eu.gcr.io/sap-se-gcr-k8s-private/cnudie/gardener/development"
 REPO_AUTH_URL="https://eu.gcr.io"
 REPO_CTX_BASE_URL="eu.gcr.io/sap-se-gcr-k8s-private"
+
+LAAS_VERSION="$(cat "${PROJECT_ROOT}/VERSION")"
+pushd "${PROJECT_ROOT}" > /dev/null 2>&1
+LAAS_VERSION="$VERSION-$(git rev-parse HEAD)"
+popd > /dev/null 2>&1
+
 
 export PROJECT_ROOT
 export TARGET_CLUSTER
