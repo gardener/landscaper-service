@@ -7,8 +7,10 @@ package utils
 import (
 	"context"
 	"encoding/json"
-	"github.com/gardener/landscaper-service/pkg/apis/config"
+
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
+
+	"github.com/gardener/landscaper-service/pkg/apis/config"
 
 	"github.com/onsi/gomega"
 	"k8s.io/apimachinery/pkg/types"
@@ -43,12 +45,12 @@ func ShouldNotReconcile(ctx context.Context, reconciler reconcile.Reconciler, re
 func DefaultControllerConfiguration() *config.LandscaperServiceConfiguration {
 	cfg := &config.LandscaperServiceConfiguration{
 		LandscaperServiceComponent: config.LandscaperServiceComponentConfiguration{
-			Name: "github.com/gardener/landscaper/landscaper-service",
+			Name:    "github.com/gardener/landscaper/landscaper-service",
 			Version: "v1.1.1",
 		},
 	}
 	repositoryContext, err := json.Marshal(map[string]interface{}{
-		"type": "ociRegistry",
+		"type":    "ociRegistry",
 		"baseUrl": "eu.gcr.io/gardener-project/development",
 	})
 

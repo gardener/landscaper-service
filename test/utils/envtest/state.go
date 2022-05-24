@@ -37,50 +37,50 @@ type State struct {
 // NewState creates a new state.
 func NewState(namespace string) *State {
 	return &State{
-		Namespace: namespace,
-		Deployments: make(map[string]*lssv1alpha1.LandscaperDeployment),
-		Instances: make(map[string]*lssv1alpha1.Instance),
-		Configs: make(map[string]*lssv1alpha1.ServiceTargetConfig),
-		Secrets: make(map[string]*corev1.Secret),
+		Namespace:     namespace,
+		Deployments:   make(map[string]*lssv1alpha1.LandscaperDeployment),
+		Instances:     make(map[string]*lssv1alpha1.Instance),
+		Configs:       make(map[string]*lssv1alpha1.ServiceTargetConfig),
+		Secrets:       make(map[string]*corev1.Secret),
 		Installations: make(map[string]*lsv1alpha1.Installation),
-		Targets: make(map[string]*lsv1alpha1.Target),
-		Contexts: make(map[string]*lsv1alpha1.Context),
+		Targets:       make(map[string]*lsv1alpha1.Target),
+		Contexts:      make(map[string]*lsv1alpha1.Context),
 	}
 }
 
 // GetDeployment retrieves a landscaper deployment by the given name.
 func (s *State) GetDeployment(name string) *lssv1alpha1.LandscaperDeployment {
-	return s.Deployments[s.Namespace + "/" + name]
+	return s.Deployments[s.Namespace+"/"+name]
 }
 
 // GetInstance retrieves an instance by the given name.
 func (s *State) GetInstance(name string) *lssv1alpha1.Instance {
-	return s.Instances[s.Namespace + "/" + name]
+	return s.Instances[s.Namespace+"/"+name]
 }
 
 // GetConfig retrieves a landscaper target config by the given name.
 func (s *State) GetConfig(name string) *lssv1alpha1.ServiceTargetConfig {
-	return s.Configs[s.Namespace + "/" + name]
+	return s.Configs[s.Namespace+"/"+name]
 }
 
 // GetSecret retrieves a secret by the given name.
 func (s *State) GetSecret(name string) *corev1.Secret {
-	return s.Secrets[s.Namespace + "/" + name]
+	return s.Secrets[s.Namespace+"/"+name]
 }
 
 // GetInstallation retrieves an installation by the given name.
 func (s *State) GetInstallation(name string) *lsv1alpha1.Installation {
-	return s.Installations[s.Namespace + "/" + name]
+	return s.Installations[s.Namespace+"/"+name]
 }
 
 // GetTarget retrieves a target by the given name.
 func (s *State) GetTarget(name string) *lsv1alpha1.Target {
-	return s.Targets[s.Namespace + "/" + name]
+	return s.Targets[s.Namespace+"/"+name]
 }
 
 // GetContext retrieves a context by the given name.
 func (s *State) GetContext(name string) *lsv1alpha1.Context {
-	return s.Contexts[s.Namespace + "/" + name]
+	return s.Contexts[s.Namespace+"/"+name]
 }
 
 // AddObject adds a client.Object to the state.

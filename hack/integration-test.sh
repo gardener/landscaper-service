@@ -1,6 +1,34 @@
 #!/bin/sh
 
+# SPDX-FileCopyrightText: 2022 "SAP SE or an SAP affiliate company and Gardener contributors"
+#
+# SPDX-License-Identifier: Apache-2.0
+
+set -e
+
+apk add --no-cache --no-progress bash
+
+if ! command -v git &> /dev/null
+then
+    apk add --no-cache --no-progress git
+fi
+
 PROJECT_ROOT="$(dirname $0)/.."
+TARGET_CLUSTER="laas-integration-test"
+TARGET_CLUSTER_PROVIDER="gcp"
+LAAS_VERSION="$("${SOURCE_PATH}"/hack/get-version.sh)"
+LAAS_REPOSITORY="eu.gcr.io/sap-se-gcr-k8s-private/cnudie/gardener/development"
+REPO_AUTH_URL="https://eu.gcr.io"
+REPO_CTX_BASE_URL="eu.gcr.io/sap-se-gcr-k8s-private"
+
+export PROJECT_ROOT
+export TARGET_CLUSTER
+export TARGET_CLUSTER_PROVIDER
+export LAAS_VERSION
+export LAAS_REPOSITORY
+export REPO_AUTH_URL
+export REPO_CTX_BASE_URL
+
 
 if ! command -v curl &> /dev/null
 then
@@ -19,7 +47,6 @@ then
     echo "Helm could not be found"
     echo "Try installing it..."
     export DESIRED_VERSION="v3.7.1"
-    apk add --no-cache --no-progress bash
     curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
     # symlink to /bin/helm3 as it is required by the integration test script
     ln -s "$(which helm)" /bin/helm3
@@ -38,3 +65,5 @@ pip3 install --upgrade pip
 
 echo "Running pip3 install gardener-cicd-libs"
 pip3 install gardener-cicd-libs
+
+"${PROJECT_ROOT}/hack/integration-test.py"
