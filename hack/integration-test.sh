@@ -17,11 +17,9 @@ PROJECT_ROOT="$(dirname $0)/.."
 TARGET_CLUSTER="laas-integration-test"
 TARGET_CLUSTER_PROVIDER="gcp"
 LAAS_REPOSITORY="eu.gcr.io/sap-se-gcr-k8s-private/cnudie/gardener/development"
+LAAS_VERSION="$(${PROJECT_ROOT}/hack/get-version.sh)"
 REPO_AUTH_URL="https://eu.gcr.io"
 REPO_CTX_BASE_URL="eu.gcr.io/sap-se-gcr-k8s-private"
-
-unset EFFECTIVE_VERSION
-LAAS_VERSION="$(${PROJECT_ROOT}/hack/get-version.sh)"
 
 export PROJECT_ROOT
 export TARGET_CLUSTER
