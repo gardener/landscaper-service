@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 #### BUILDER ####
-FROM golang:1.17.3 AS builder
+FROM golang:1.18.3 AS builder
 
 WORKDIR /go/src/github.com/gardener/landscaper-service
 COPY . .
@@ -13,7 +13,7 @@ ARG EFFECTIVE_VERSION
 RUN make install EFFECTIVE_VERSION=$EFFECTIVE_VERSION
 
 #### BASE ####
-FROM alpine:3.14.2 AS base
+FROM alpine:3.16.0 AS base
 
 RUN apk add --no-cache ca-certificates
 
