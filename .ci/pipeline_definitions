@@ -23,7 +23,7 @@ landscaper-service:
             image: eu.gcr.io/gardener-project/landscaper-service/landscaper-service-webhooks-server
     steps:
       verify:
-        image: 'golang:1.17'
+        image: 'golang:1.18.3'
       publish-helm-charts:
         depends:
         - verify
@@ -35,7 +35,7 @@ landscaper-service:
           depends:
             - publish
             - publish-helm-charts
-          image: 'golang:1.17.9-alpine3.14'
+          image: 'golang:1.18.3-alpine3.16'
           execute:
             - "integration_test"
           output_dir: 'integration_test'
@@ -56,7 +56,7 @@ landscaper-service:
           depends: 
           - publish
           - publish-helm-charts
-          image: 'golang:1.17.9-alpine3.14'
+          image: 'golang:1.18.3-alpine3.16'
           execute:
           - "integration_test"
           output_dir: 'integration_test'
