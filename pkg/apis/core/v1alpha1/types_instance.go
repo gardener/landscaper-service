@@ -92,7 +92,7 @@ var InstanceDefinition = lsschema.CustomResourceDefinition{
 		Plural:   "instances",
 		Singular: "instance",
 		ShortNames: []string{
-			"inst",
+			"instc",
 		},
 		Kind: "Instance",
 	},

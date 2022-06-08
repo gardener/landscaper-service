@@ -9,7 +9,7 @@ spec:
     kind: Instance
     plural: instances
     shortNames:
-    - inst
+    - instc
     singular: instance
   scope: Namespaced
   versions:
