@@ -19,6 +19,7 @@ metadata:
   name: test
   namespace: my-namespace
 spec:
+  tenantId: "tenant-1"
   purpose: "test"
   region: "eu-west-1"
   landscaperConfiguration:
@@ -32,6 +33,10 @@ status:
     name: test
     namespace: my-namespace
 ```
+
+## TenantId
+
+The `spec.tenantId` field has to contain the globally unique identifier of the owning tenant.
 
 ## Purpose
 
