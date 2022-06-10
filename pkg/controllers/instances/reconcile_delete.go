@@ -33,22 +33,22 @@ func (c *Controller) handleDelete(ctx context.Context, log logr.Logger, instance
 	)
 
 	if instance.Status.InstallationRef != nil && !instance.Status.InstallationRef.IsEmpty() {
-		if targetDeleted, err = c.ensureDeleteInstallationForInstance(ctx, log, instance); err != nil {
+		if installationDeleted, err = c.ensureDeleteInstallationForInstance(ctx, log, instance); err != nil {
 			return lsserrors.NewWrappedError(err, curOp, "DeleteInstallation", err.Error())
 		}
 	}
 
-	if !targetDeleted {
+	if !installationDeleted {
 		return nil
 	}
 
 	if instance.Status.TargetRef != nil && !instance.Status.TargetRef.IsEmpty() {
-		if installationDeleted, err = c.ensureDeleteTargetForInstance(ctx, log, instance); err != nil {
+		if targetDeleted, err = c.ensureDeleteTargetForInstance(ctx, log, instance); err != nil {
 			return lsserrors.NewWrappedError(err, curOp, "DeleteTarget", err.Error())
 		}
 	}
 
-	if !installationDeleted {
+	if !targetDeleted {
 		return nil
 	}
 
