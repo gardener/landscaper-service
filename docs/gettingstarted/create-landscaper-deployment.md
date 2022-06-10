@@ -16,7 +16,7 @@ kubectl create namespace laas-user
 ```
 
 In the next step, the LandscaperDeployment resource is created. The field `spec.landscaperConfiguration.deployers` has to contain the list of active deployers.
-The field `spec.tenantId` has to contain globally unique tenant id.
+The field `spec.tenantId` has to contain a globally unique tenant id.
 
 ```yaml
 apiVersion: landscaper-service.gardener.cloud/v1alpha1
