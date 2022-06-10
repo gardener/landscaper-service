@@ -19,6 +19,8 @@ metadata:
   name: test
   namespace: my-namespace
 spec:
+  tenantId: "tenant-1"
+  id: "1234"
   landscaperConfiguration:
     deployers:
       - helm
@@ -48,6 +50,14 @@ status:
   clusterEndpoint: "10.0.0.1:1234"
   clusterKubeconfig: "a3ViZWNvbmZpZyBjb250ZW50 ..."
 ```
+
+## TenantId
+
+The `spec.tenantId` field contains the globally unique identifier of the owning tenant.
+
+## Id
+
+The `spec.id` field contains the id of the instance unique among all instances within the same namespace.
 
 ## Landscaper Configuration
 
