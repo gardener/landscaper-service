@@ -8,6 +8,10 @@ import (
 	"context"
 	"fmt"
 
+	cliutil "github.com/gardener/landscapercli/pkg/util"
+	k8serrors "k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/types"
+
 	"github.com/go-logr/logr"
 
 	corev1 "k8s.io/api/core/v1"
@@ -52,34 +56,27 @@ func (r *VerifyDeleteRunner) Run() error {
 	return nil
 }
 
-func (r *VerifyDeleteRunner) verifyNamespace(namespace string) error {
-	r.log.Info("verifying namespace", "name", namespace)
+func (r *VerifyDeleteRunner) verifyNamespace(namespaceName string) error {
+	r.log.Info("verifying namespace", "name", namespaceName)
 
-	pvcList := &corev1.PersistentVolumeClaimList{}
-	if err := r.kclient.List(r.ctx, pvcList, &client.ListOptions{Namespace: namespace}); err != nil {
-		return fmt.Errorf("failed to list persistent volume claims in namespace %q: %w", namespace, err)
+	timeout, err := cliutil.CheckConditionPeriodically(func() (bool, error) {
+		namespace := &corev1.Namespace{}
+		if err := r.kclient.Get(r.ctx, types.NamespacedName{Name: namespaceName}, namespace); err != nil {
+			if k8serrors.IsNotFound(err) {
+				return true, nil
+			} else {
+				return false, err
+			}
+		}
+
+		return false, nil
+	}, r.config.SleepTime, r.config.MaxRetries)
+
+	if timeout {
+		return fmt.Errorf("timeout while waiting for namespace %q being deleted", namespaceName)
 	}
-
-	if len(pvcList.Items) > 0 {
-		return fmt.Errorf("there are persistent volume claims existing in namespace %q", namespace)
-	}
-
-	podList := &corev1.PodList{}
-	if err := r.kclient.List(r.ctx, podList, &client.ListOptions{Namespace: namespace}); err != nil {
-		return fmt.Errorf("failed to list pods in namespace %q: %w", namespace, err)
-	}
-
-	if len(podList.Items) > 0 {
-		return fmt.Errorf("there are pods existing in namespace %q", namespace)
-	}
-
-	serviceList := &corev1.ServiceList{}
-	if err := r.kclient.List(r.ctx, serviceList, &client.ListOptions{Namespace: namespace}); err != nil {
-		return fmt.Errorf("failed to list services in namespace %q: %w", namespace, err)
-	}
-
-	if len(serviceList.Items) > 0 {
-		return fmt.Errorf("there are services existing in namespace %q", namespace)
+	if err != nil {
+		return fmt.Errorf("error while waiting for namespace %q being deleted: %w", namespaceName, err)
 	}
 
 	return nil

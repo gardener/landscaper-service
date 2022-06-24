@@ -5,8 +5,8 @@ go 1.17
 require (
 	github.com/gardener/component-spec/bindings-go v0.0.53
 	github.com/gardener/landscaper-service v0.0.0-00010101000000-000000000000
-	github.com/gardener/landscaper/apis v0.23.0
-	github.com/gardener/landscaper/controller-utils v0.23.0
+	github.com/gardener/landscaper/apis v0.26.0
+	github.com/gardener/landscaper/controller-utils v0.26.0
 	github.com/gardener/landscapercli v0.16.1-0.20220408051006-1a25c3c0b246
 	github.com/go-logr/logr v0.4.0
 	k8s.io/api v0.22.2

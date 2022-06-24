@@ -160,6 +160,21 @@ func (r *VerifyDeploymentRunner) verifyPods(namespace string, numDeployers int) 
 func (r *VerifyDeploymentRunner) verifyKubeconfig(instance *lssv1alpha1.Instance) error {
 	r.log.Info("verifying kubeconfig for instance", "name", instance.Name)
 
+	timeout, err := cliutil.CheckConditionPeriodically(func() (bool, error) {
+		if err := r.kclient.Get(r.ctx, types.NamespacedName{Name: instance.Name, Namespace: instance.Namespace}, instance); err != nil {
+			return false, err
+		}
+
+		return len(instance.Status.ClusterKubeconfig) > 0, nil
+	}, r.config.SleepTime, r.config.MaxRetries)
+
+	if timeout {
+		return fmt.Errorf("timeout while reading ClusterKubeconfig for instance %q", instance.Name)
+	}
+	if err != nil {
+		return fmt.Errorf("error while reading ClusterKubeconfig for instance %q: %w", instance.Name, err)
+	}
+
 	kubeconfig, err := base64.StdEncoding.DecodeString(instance.Status.ClusterKubeconfig)
 	if err != nil {
 		return fmt.Errorf("failed to decode kubeconfig of instance %q: %w", instance.Name, err)
