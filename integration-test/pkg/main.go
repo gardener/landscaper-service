@@ -39,9 +39,7 @@ var (
 		new(tests.UpdateDeploymentRunner),
 		new(tests.VerifyDeploymentRunner),
 		new(tests.DeleteDeploymentRunner),
-		// Delete verification disabled for now, because the clea-up steps
-		// are not yet implemented correctly.
-		//new(tests.VerifyDeleteRunner),
+		new(tests.VerifyDeleteRunner),
 		new(tests.UninstallLAASTestRunner),
 	}
 )
