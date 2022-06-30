@@ -7,23 +7,33 @@ package webhook
 import (
 	"context"
 	"fmt"
+	"net/http"
 
 	"github.com/go-logr/logr"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
+
+	lsscore "github.com/gardener/landscaper-service/pkg/apis/core"
+	"github.com/gardener/landscaper-service/pkg/apis/validation"
+)
+
+const (
+	LandscaperDeploymentsResourceType = "landscaperdeployments"
+	InstancesResourceType             = "instances"
+	ServiceTargetConfigsResourceType  = "servicetargetconfigs"
 )
 
 // ValidatorFromResourceType is a helper method that gets a resource type and returns the fitting validator
 func ValidatorFromResourceType(log logr.Logger, kubeClient client.Client, scheme *runtime.Scheme, resource string) (GenericValidator, error) {
 	abstrVal := newAbstractedValidator(log, kubeClient, scheme)
 	var val GenericValidator
-	if resource == "landscaperdeployments" {
+	if resource == LandscaperDeploymentsResourceType {
 		val = &LandscaperDeploymentValidator{abstrVal}
-	} else if resource == "instances" {
+	} else if resource == InstancesResourceType {
 		val = &InstanceValidator{abstrVal}
-	} else if resource == "servicetargetconfigs" {
+	} else if resource == ServiceTargetConfigsResourceType {
 		val = &ServiceTargetConfigValidator{abstrVal}
 	} else {
 		return nil, fmt.Errorf("unable to find validator for resource type %q", resource)
@@ -57,7 +67,16 @@ type GenericValidator interface {
 type LandscaperDeploymentValidator struct{ abstractValidator }
 
 // Handle handles a request to the webhook
-func (iv *LandscaperDeploymentValidator) Handle(ctx context.Context, req admission.Request) admission.Response {
+func (dv *LandscaperDeploymentValidator) Handle(ctx context.Context, req admission.Request) admission.Response {
+	deployment := &lsscore.LandscaperDeployment{}
+	if _, _, err := dv.decoder.Decode(req.Object.Raw, nil, deployment); err != nil {
+		return admission.Errored(http.StatusBadRequest, err)
+	}
+
+	if errs := validation.ValidateLandscaperDeployment(deployment); len(errs) > 0 {
+		return admission.Denied(errs.ToAggregate().Error())
+	}
+
 	return admission.Allowed("LandscaperDeployment is valid")
 }
 
@@ -68,6 +87,15 @@ type InstanceValidator struct{ abstractValidator }
 
 // Handle handles a request to the webhook
 func (iv *InstanceValidator) Handle(ctx context.Context, req admission.Request) admission.Response {
+	instance := &lsscore.Instance{}
+	if _, _, err := iv.decoder.Decode(req.Object.Raw, nil, instance); err != nil {
+		return admission.Errored(http.StatusBadRequest, err)
+	}
+
+	if errs := validation.ValidateInstance(instance); len(errs) > 0 {
+		return admission.Denied(errs.ToAggregate().Error())
+	}
+
 	return admission.Allowed("Instance is valid")
 }
 
@@ -77,6 +105,15 @@ func (iv *InstanceValidator) Handle(ctx context.Context, req admission.Request) 
 type ServiceTargetConfigValidator struct{ abstractValidator }
 
 // Handle handles a request to the webhook
-func (iv *ServiceTargetConfigValidator) Handle(ctx context.Context, req admission.Request) admission.Response {
+func (sv *ServiceTargetConfigValidator) Handle(ctx context.Context, req admission.Request) admission.Response {
+	config := &lsscore.ServiceTargetConfig{}
+	if _, _, err := sv.decoder.Decode(req.Object.Raw, nil, config); err != nil {
+		return admission.Errored(http.StatusBadRequest, err)
+	}
+
+	if errs := validation.ValidateServiceTargetConfig(config); len(errs) > 0 {
+		return admission.Denied(errs.ToAggregate().Error())
+	}
+
 	return admission.Allowed("ServiceTargetConfig is valid")
 }
