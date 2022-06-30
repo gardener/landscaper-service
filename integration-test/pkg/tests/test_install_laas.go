@@ -9,6 +9,8 @@ import (
 	"encoding/json"
 	"fmt"
 
+	lsscore "github.com/gardener/landscaper-service/pkg/apis/core"
+
 	"github.com/go-logr/logr"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -69,7 +71,8 @@ func (r *InstallLAASTestRunner) createServiceTargetConfig() error {
 			Name:      "default-target",
 			Namespace: r.config.LaasNamespace,
 			Labels: map[string]string{
-				lssv1alpha1.ServiceTargetConfigVisibleLabelName: "true",
+				lsscore.ServiceTargetConfigVisibleLabelName: "true",
+				lsscore.ServiceTargetConfigRegionLabelName:  "eu",
 			},
 		},
 		Spec: lssv1alpha1.ServiceTargetConfigSpec{
