@@ -1,5 +1,5 @@
 ---
 componentName: github.com/gardener/landscaper/landscaper-service
 name: landscaper-service
-version: v0.26.0
+version: v0.28.0-dev-2d1bcb5c45e59282a750a7c76a379b60afc2620f
 ...
