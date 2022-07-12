@@ -216,6 +216,7 @@ func buildLandscaperValues(namespace string) ([]byte, error) {
 	const valuesTemplate = `
 landscaper:
   landscaper:
+    verbosity: 10
     registryConfig: # contains optional oci secrets
       allowPlainHttpRegistries: true
       secrets: {}
@@ -223,6 +224,17 @@ landscaper:
     - container
     - helm
     - manifest
+    deployersConfig:
+      Deployers:
+        container:
+          deployer:
+            verbosityLevel: 10
+        helm:
+          deployer:
+            verbosityLevel: 10
+        manifest:
+          deployer:
+            verbosityLevel: 10
     deployerManagement:
       namespace: {{ .Namespace }}
       agent:
