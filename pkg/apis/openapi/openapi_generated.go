@@ -21,24 +21,29 @@ import (
 
 func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenAPIDefinition {
 	return map[string]common.OpenAPIDefinition{
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Error":                      schema_pkg_apis_core_v1alpha1_Error(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Instance":                   schema_pkg_apis_core_v1alpha1_Instance(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceList":               schema_pkg_apis_core_v1alpha1_InstanceList(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceSpec":               schema_pkg_apis_core_v1alpha1_InstanceSpec(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceStatus":             schema_pkg_apis_core_v1alpha1_InstanceStatus(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperConfiguration":    schema_pkg_apis_core_v1alpha1_LandscaperConfiguration(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeployment":       schema_pkg_apis_core_v1alpha1_LandscaperDeployment(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentList":   schema_pkg_apis_core_v1alpha1_LandscaperDeploymentList(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentSpec":   schema_pkg_apis_core_v1alpha1_LandscaperDeploymentSpec(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentStatus": schema_pkg_apis_core_v1alpha1_LandscaperDeploymentStatus(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperServiceComponent": schema_pkg_apis_core_v1alpha1_LandscaperServiceComponent(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference":            schema_pkg_apis_core_v1alpha1_ObjectReference(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SecretReference":            schema_pkg_apis_core_v1alpha1_SecretReference(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfig":        schema_pkg_apis_core_v1alpha1_ServiceTargetConfig(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfigList":    schema_pkg_apis_core_v1alpha1_ServiceTargetConfigList(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfigSpec":    schema_pkg_apis_core_v1alpha1_ServiceTargetConfigSpec(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfigStatus":  schema_pkg_apis_core_v1alpha1_ServiceTargetConfigStatus(ref),
-		"k8s.io/api/core/v1.AWSElasticBlockStoreVolumeSource":                                      schema_k8sio_api_core_v1_AWSElasticBlockStoreVolumeSource(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AvailabilityCollection":       schema_pkg_apis_core_v1alpha1_AvailabilityCollection(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AvailabilityCollectionList":   schema_pkg_apis_core_v1alpha1_AvailabilityCollectionList(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AvailabilityCollectionSpec":   schema_pkg_apis_core_v1alpha1_AvailabilityCollectionSpec(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AvailabilityCollectionStatus": schema_pkg_apis_core_v1alpha1_AvailabilityCollectionStatus(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AvailabilityInstance":         schema_pkg_apis_core_v1alpha1_AvailabilityInstance(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Error":                        schema_pkg_apis_core_v1alpha1_Error(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Instance":                     schema_pkg_apis_core_v1alpha1_Instance(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceList":                 schema_pkg_apis_core_v1alpha1_InstanceList(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceSpec":                 schema_pkg_apis_core_v1alpha1_InstanceSpec(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceStatus":               schema_pkg_apis_core_v1alpha1_InstanceStatus(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperConfiguration":      schema_pkg_apis_core_v1alpha1_LandscaperConfiguration(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeployment":         schema_pkg_apis_core_v1alpha1_LandscaperDeployment(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentList":     schema_pkg_apis_core_v1alpha1_LandscaperDeploymentList(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentSpec":     schema_pkg_apis_core_v1alpha1_LandscaperDeploymentSpec(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentStatus":   schema_pkg_apis_core_v1alpha1_LandscaperDeploymentStatus(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperServiceComponent":   schema_pkg_apis_core_v1alpha1_LandscaperServiceComponent(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference":              schema_pkg_apis_core_v1alpha1_ObjectReference(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SecretReference":              schema_pkg_apis_core_v1alpha1_SecretReference(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfig":          schema_pkg_apis_core_v1alpha1_ServiceTargetConfig(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfigList":      schema_pkg_apis_core_v1alpha1_ServiceTargetConfigList(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfigSpec":      schema_pkg_apis_core_v1alpha1_ServiceTargetConfigSpec(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfigStatus":    schema_pkg_apis_core_v1alpha1_ServiceTargetConfigStatus(ref),
+		"k8s.io/api/core/v1.AWSElasticBlockStoreVolumeSource":                                        schema_k8sio_api_core_v1_AWSElasticBlockStoreVolumeSource(ref),
 		"k8s.io/api/core/v1.Affinity":                                    schema_k8sio_api_core_v1_Affinity(ref),
 		"k8s.io/api/core/v1.AttachedVolume":                              schema_k8sio_api_core_v1_AttachedVolume(ref),
 		"k8s.io/api/core/v1.AvoidPods":                                   schema_k8sio_api_core_v1_AvoidPods(ref),
@@ -297,6 +302,234 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"k8s.io/apimachinery/pkg/runtime.RawExtension":                   schema_k8sio_apimachinery_pkg_runtime_RawExtension(ref),
 		"k8s.io/apimachinery/pkg/runtime.TypeMeta":                       schema_k8sio_apimachinery_pkg_runtime_TypeMeta(ref),
 		"k8s.io/apimachinery/pkg/runtime.Unknown":                        schema_k8sio_apimachinery_pkg_runtime_Unknown(ref),
+	}
+}
+
+func schema_pkg_apis_core_v1alpha1_AvailabilityCollection(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "AvailabilityCollection is created/updated by the AvailabilityMonitoringRegistrationController. It contains a list of references to Instances that should be monitored for availability.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"),
+						},
+					},
+					"spec": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Spec contains the specification for the AvailabilityCollection.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AvailabilityCollectionSpec"),
+						},
+					},
+					"status": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Status contains the status for the AvailabilityCollection.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AvailabilityCollectionStatus"),
+						},
+					},
+				},
+				Required: []string{"spec"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AvailabilityCollectionSpec", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AvailabilityCollectionStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+	}
+}
+
+func schema_pkg_apis_core_v1alpha1_AvailabilityCollectionList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "AvailabilityCollection contains a list of AvailabilityCollection",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"),
+						},
+					},
+					"items": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AvailabilityCollection"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"items"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AvailabilityCollection", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
+	}
+}
+
+func schema_pkg_apis_core_v1alpha1_AvailabilityCollectionSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"instanceRefs": {
+						SchemaProps: spec.SchemaProps{
+							Description: "InstanceRefs specifies all instances to monitor",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"instanceRefs"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference"},
+	}
+}
+
+func schema_pkg_apis_core_v1alpha1_AvailabilityCollectionStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"observedGeneration": {
+						SchemaProps: spec.SchemaProps{
+							Description: "metadata.generation observed by the HealthWatcher controller. Used to distingish between a necessary reconcile (scheduled or spec change) and unneccessary reconcile (status change)",
+							Type:        []string{"integer"},
+							Format:      "int64",
+						},
+					},
+					"lastRun": {
+						SchemaProps: spec.SchemaProps{
+							Description: "LastRun is the last time, the HealthWatcher collected all instance status.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
+					"lastReported": {
+						SchemaProps: spec.SchemaProps{
+							Description: "LastReported is the last time, the AV Uploader uploaded all instance status. Prevents multi upload of the same status.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
+					"instances": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Instances collects the status for all instances specified in spec.instanceRefs",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AvailabilityInstance"),
+									},
+								},
+							},
+						},
+					},
+					"self": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Self collects the status the own landscaper",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AvailabilityInstance"),
+						},
+					},
+				},
+				Required: []string{"lastRun", "lastReported", "instances", "self"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AvailabilityInstance", "k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
+	}
+}
+
+func schema_pkg_apis_core_v1alpha1_AvailabilityInstance(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name is the name of the kubernetes object.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"namespace": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Namespace is the namespace of kubernetes object.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"status": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
+						},
+					},
+					"failedReason": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
+						},
+					},
+				},
+				Required: []string{"name", "status", "failedReason"},
+			},
+		},
 	}
 }
 

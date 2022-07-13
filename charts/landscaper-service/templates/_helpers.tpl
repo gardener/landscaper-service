@@ -123,4 +123,10 @@ landscaperServiceComponent:
   registryPullSecrets:
 {{ toYaml .Values.landscaperservice.landscaperServiceComponent.registryPullSecrets | indent 4 }}
 {{- end }}
+  availabilityMonitoring:
+    availabilityCollectionName: {{ ((.Values.AvailabiliyMonitoring).availabilityCollectionName) | default "availability" }}
+    availabilityCollectionNamespace: {{ .Release.Namespace }}
+    selfLandscaperNamespace: {{ ((.Values.AvailabiliyMonitoring).selfLandscaperNamespace) | default "landscaper" }}
+    periodicCheckInterval: {{ ((.Values.AvailabiliyMonitoring).periodicCheckInterval) | default "1m" }}
+    lsHealthCheckTimeout: {{ ((.Values.AvailabiliyMonitoring).lsHealthCheckTimeout) | default "5m" }}
 {{- end }}

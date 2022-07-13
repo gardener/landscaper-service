@@ -1,0 +1,127 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  creationTimestamp: null
+  name: availabilitycollections.landscaper-service.gardener.cloud
+spec:
+  group: landscaper-service.gardener.cloud
+  names:
+    kind: AvailabilityCollection
+    plural: availabilitycollections
+    shortNames:
+    - avcol
+    singular: availabilitycollection
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .status.lastRun
+      name: Last Run
+      type: date
+    - jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: AvailabilityCollection is created/updated by the AvailabilityMonitoringRegistrationController.
+          It contains a list of references to Instances that should be monitored for
+          availability.
+        properties:
+          spec:
+            description: Spec contains the specification for the AvailabilityCollection.
+            properties:
+              instanceRefs:
+                description: InstanceRefs specifies all instances to monitor
+                items:
+                  description: ObjectReference is the reference to a kubernetes object.
+                  properties:
+                    name:
+                      description: Name is the name of the kubernetes object.
+                      type: string
+                    namespace:
+                      description: Namespace is the namespace of kubernetes object.
+                      type: string
+                  required:
+                  - name
+                  type: object
+                type: array
+            required:
+            - instanceRefs
+            type: object
+          status:
+            description: Status contains the status for the AvailabilityCollection.
+            properties:
+              instances:
+                description: Instances collects the status for all instances specified
+                  in spec.instanceRefs
+                items:
+                  properties:
+                    failedReason:
+                      type: string
+                    name:
+                      description: Name is the name of the kubernetes object.
+                      type: string
+                    namespace:
+                      description: Namespace is the namespace of kubernetes object.
+                      type: string
+                    status:
+                      type: string
+                  required:
+                  - name
+                  - status
+                  - failedReason
+                  type: object
+                type: array
+              lastReported:
+                description: LastReported is the last time, the AV Uploader uploaded
+                  all instance status. Prevents multi upload of the same status.
+                format: date-time
+                type: string
+              lastRun:
+                description: LastRun is the last time, the HealthWatcher collected
+                  all instance status.
+                format: date-time
+                type: string
+              observedGeneration:
+                description: metadata.generation observed by the HealthWatcher controller.
+                  Used to distingish between a necessary reconcile (scheduled or spec
+                  change) and unneccessary reconcile (status change)
+                format: int64
+                type: integer
+              self:
+                description: Self collects the status the own landscaper
+                properties:
+                  failedReason:
+                    type: string
+                  name:
+                    description: Name is the name of the kubernetes object.
+                    type: string
+                  namespace:
+                    description: Namespace is the namespace of kubernetes object.
+                    type: string
+                  status:
+                    type: string
+                required:
+                - name
+                - status
+                - failedReason
+                type: object
+            required:
+            - lastRun
+            - lastReported
+            - instances
+            - self
+            type: object
+        required:
+        - spec
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []

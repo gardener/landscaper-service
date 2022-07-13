@@ -20,12 +20,31 @@ type LandscaperServiceConfiguration struct {
 	//+optional
 	Metrics *MetricsConfiguration `json:"metrics,omitempty"`
 
+	AvailabilityMonitoring AvailabilityMonitoringConfiguration `json:"availabilityMonitoring"`
+
 	// CrdManagement configures whether the landscaper controller should deploy the CRDs it needs into the cluster
 	// +optional
 	CrdManagement CrdManagementConfiguration `json:"crdManagement,omitempty"`
 
 	// LandscaperServiceComponent configures the landscaper component that is used by the landscaper service controller.
 	LandscaperServiceComponent LandscaperServiceComponentConfiguration `json:"landscaperServiceComponent"`
+}
+
+type AvailabilityMonitoringConfiguration struct {
+	AvailabilityCollectionName      string `json:"availabilityCollectionName"`
+	AvailabilityCollectionNamespace string `json:"availabilityCollectionNamespace"`
+
+	AvailabilityServiceConfiguration AvailabilityServiceConfiguration `json:"availabilityService"`
+
+	SelfLandscaperNamespace string `json:"selfLandscaperNamespace"`
+
+	PeriodicCheckInterval v1alpha1.Duration `json:"periodicCheckInterval"`
+	LSHealthCheckTimeout  v1alpha1.Duration `json:"lsHealthCheckTimeout"`
+}
+
+type AvailabilityServiceConfiguration struct {
+	Url    string `json:"url"`
+	ApiKey string `json:"apiKey"`
 }
 
 // MetricsConfiguration allows to configure how metrics are exposed

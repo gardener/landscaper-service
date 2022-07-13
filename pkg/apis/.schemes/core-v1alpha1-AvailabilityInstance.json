@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "definitions": {},
+  "properties": {
+    "failedReason": {
+      "default": "",
+      "type": "string"
+    },
+    "name": {
+      "default": "",
+      "description": "Name is the name of the kubernetes object.",
+      "type": "string"
+    },
+    "namespace": {
+      "default": "",
+      "description": "Namespace is the namespace of kubernetes object.",
+      "type": "string"
+    },
+    "status": {
+      "default": "",
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "status",
+    "failedReason"
+  ],
+  "title": "core-v1alpha1-AvailabilityInstance",
+  "type": "object"
+}

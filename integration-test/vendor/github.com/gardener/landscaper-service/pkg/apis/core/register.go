@@ -42,6 +42,9 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 		&Instance{},
 		&InstanceList{},
 		&ServiceTargetConfig{},
-		&ServiceTargetConfigList{})
+		&ServiceTargetConfigList{},
+		&AvailabilityCollection{},
+		&AvailabilityCollectionList{},
+	)
 	return nil
 }
