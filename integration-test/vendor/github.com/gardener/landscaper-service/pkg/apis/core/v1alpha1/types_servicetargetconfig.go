@@ -9,15 +9,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-const (
-	// ServiceTargetConfigVisibleLabelName label defines whether the ServiceTargetConfig is visible for scheduling.
-	// If set to "true", any Landscaper Service deployment can be scheduled on this seed.
-	// If not set or set to "false", no new Landscaper Service deployments can be scheduled on this seed.
-	ServiceTargetConfigVisibleLabelName = "config.landscaper-service.gardener.cloud/visible"
-	// ServiceTargetConfigRegionLabelName label specifies the region in which the target cluster is located.
-	ServiceTargetConfigRegionLabelName = "config.landscaper-service.gardener.cloud/region"
-)
-
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 // ServiceTargetConfigList contains a list of ServiceTargetConfig

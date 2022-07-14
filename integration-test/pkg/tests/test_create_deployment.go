@@ -6,9 +6,8 @@ package tests
 
 import (
 	"context"
-	"crypto/sha1"
-	"encoding/hex"
 	"fmt"
+	"math/rand"
 
 	"github.com/go-logr/logr"
 
@@ -63,7 +62,7 @@ func (r *CreateDeploymentRunner) createDeployment() error {
 			Namespace: r.config.TestNamespace,
 		},
 		Spec: lssv1alpha1.LandscaperDeploymentSpec{
-			TenantId: createTenantId("test-tenant"),
+			TenantId: createTenantId(),
 			Purpose:  "integration-test",
 			LandscaperConfiguration: lssv1alpha1.LandscaperConfiguration{
 				Deployers: []string{
@@ -153,8 +152,6 @@ func (r *CreateDeploymentRunner) createDeployment() error {
 	return nil
 }
 
-func createTenantId(name string) string {
-	h := sha1.New()
-	id := h.Sum([]byte(name))
-	return fmt.Sprintf("vc-%s", hex.EncodeToString(id[:4]))
+func createTenantId() string {
+	return fmt.Sprintf("vc-%d", rand.Intn(99999-10000))
 }
