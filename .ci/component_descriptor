@@ -10,6 +10,34 @@ set -o pipefail
 
 SOURCE_PATH="$(dirname $0)/.."
 VERSION="$(${SOURCE_PATH}/hack/get-version.sh)"
+COMMIT_SHA="$(git --git-dir ${SOURCE_PATH}/.git rev-parse HEAD)"
+REPO_CTX="${CURRENT_COMPONENT_REPOSITORY}"
+
+printf "> Building components with version ${VERSION} - ${COMMIT_SHA}\n"
+
+function buildComponentArchive() {
+  COMPONENT_NAME=$1
+  CA_PATH="$(mktemp -d)"
+  printf "> Building component ${COMPONENT_NAME}\n"
+
+  COMPONENT_REFERENCES=""
+
+  if [ -f ${SOURCE_PATH}/.landscaper/${COMPONENT_NAME}/component-references.yaml ]; then
+    COMPONENT_REFERENCES="-c ${SOURCE_PATH}/.landscaper/${COMPONENT_NAME}/component-references.yaml"
+  fi
+
+  component-cli ca "${CA_PATH}" "${CTF_PATH}" \
+    --component-name=github.com/gardener/landscaper-service/${COMPONENT_NAME} \
+    --component-version=${VERSION} \
+    --repo-ctx=${REPO_CTX} \
+    -s ${SOURCE_PATH}/.landscaper/sources.yaml \
+    -r ${SOURCE_PATH}/.landscaper/${COMPONENT_NAME}/resources.yaml \
+    COMMIT_SHA=${COMMIT_SHA} \
+    VERSION=${VERSION} \
+    $COMPONENT_REFERENCES
+}
+
+buildComponentArchive "logging-stack"
 
 # add landscaper component descriptor
 printf "> Create Landscaper Service ca archive\n"

@@ -36,7 +36,7 @@ fi
 echo "> Generate Component Descriptor ${EFFECTIVE_VERSION}"
 echo "> Creating base definition"
 component-cli ca create "${CA_PATH}" \
-    --component-name=github.com/gardener/landscaper-service/landscaper-service \
+    --component-name=github.com/gardener/landscaper-service \
     --component-version=${EFFECTIVE_VERSION} \
     --repo-ctx=${REPO_CTX}
 
