@@ -210,6 +210,10 @@ func (c *Controller) reconcileInstallation(ctx context.Context, log logr.Logger,
 	if instance.Status.InstallationRef != nil && !instance.Status.InstallationRef.IsEmpty() {
 		installation.Name = instance.Status.InstallationRef.Name
 		installation.Namespace = instance.Status.InstallationRef.Namespace
+
+		if err := c.Client().Get(ctx, instance.Status.InstallationRef.NamespacedName(), installation); err != nil {
+			return fmt.Errorf("unable to get installation: %w", err)
+		}
 	}
 
 	_, err := kubernetes.CreateOrUpdate(ctx, c.Client(), installation, func() error {
