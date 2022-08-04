@@ -248,6 +248,9 @@ func (c *Controller) reconcileInstallation(ctx context.Context, log logr.Logger,
 func (c *Controller) mutateInstallation(ctx context.Context, log logr.Logger, installation *lsv1alpha1.Installation, instance *lssv1alpha1.Instance) error {
 	log.Info("Create/Update installation for instance")
 
+	// create a copy of the current installation spec for deciding whether a reconcile-annotation has to be set.
+	oldInstallationSpec := installation.Spec.DeepCopy()
+
 	if err := controllerutil.SetControllerReference(instance, installation, c.Scheme()); err != nil {
 		return fmt.Errorf("unable to set owner reference for installation: %w", err)
 	}
@@ -313,6 +316,12 @@ func (c *Controller) mutateInstallation(ctx context.Context, log logr.Logger, in
 				},
 			},
 		},
+	}
+
+	if !reflect.DeepEqual(installation.Spec, oldInstallationSpec) {
+		// set reconcile annotation to start/update the installation
+		log.Info("Setting reconcile operation annotation")
+		installation.Annotations[lsv1alpha1.OperationAnnotation] = string(lsv1alpha1.ReconcileOperation)
 	}
 
 	return nil
