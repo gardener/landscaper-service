@@ -205,6 +205,7 @@ var _ = Describe("Reconcile", func() {
 		Expect(testenv.Client.Update(ctx, installation)).To(Succeed())
 
 		instance.Spec.LandscaperConfiguration.Deployers = append(instance.Spec.LandscaperConfiguration.Deployers, "mock")
+		Expect(testenv.Client.Update(ctx, instance)).To(Succeed())
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
 
@@ -212,5 +213,35 @@ var _ = Describe("Reconcile", func() {
 		Expect(installation.Annotations).ToNot(BeNil())
 		Expect(installation.Annotations).To(HaveKey(lsv1alpha1.OperationAnnotation))
 		Expect(installation.Annotations[lsv1alpha1.OperationAnnotation]).To(Equal(string(lsv1alpha1.ReconcileOperation)))
+	})
+
+	It("should not set the reconcile operation annotation when the spec has not changed", func() {
+		var err error
+		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test2")
+		Expect(err).ToNot(HaveOccurred())
+
+		instance := state.GetInstance("test")
+
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
+
+		Expect(instance.Status.InstallationRef).ToNot(BeNil())
+
+		installation := &lsv1alpha1.Installation{}
+		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: instance.Status.InstallationRef.Name, Namespace: instance.Status.InstallationRef.Namespace}, installation)).To(Succeed())
+		Expect(installation.Annotations).ToNot(BeNil())
+		Expect(installation.Annotations).To(HaveKey(lsv1alpha1.OperationAnnotation))
+		Expect(installation.Annotations[lsv1alpha1.OperationAnnotation]).To(Equal(string(lsv1alpha1.ReconcileOperation)))
+
+		delete(installation.Annotations, lsv1alpha1.OperationAnnotation)
+		Expect(testenv.Client.Update(ctx, installation)).To(Succeed())
+
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
+
+		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: installation.Name, Namespace: installation.Namespace}, installation)).To(Succeed())
+		Expect(installation.Annotations).To(BeNil())
 	})
 })

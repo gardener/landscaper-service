@@ -322,7 +322,7 @@ func (c *Controller) mutateInstallation(ctx context.Context, log logr.Logger, in
 		},
 	}
 
-	if !reflect.DeepEqual(installation.Spec, oldInstallationSpec) {
+	if !deepEqualInstallationSpec(oldInstallationSpec, installation.Spec.DeepCopy()) {
 		// set reconcile annotation to start/update the installation
 		log.Info("Setting reconcile operation annotation")
 		if installation.Annotations == nil {
@@ -332,6 +332,40 @@ func (c *Controller) mutateInstallation(ctx context.Context, log logr.Logger, in
 	}
 
 	return nil
+}
+
+// deepEqualInstallationSpec tests whether two landscaper service installation specs are equal
+func deepEqualInstallationSpec(specA, specB *lsv1alpha1.InstallationSpec) bool {
+	landscaperConfigA := make(map[string]interface{})
+	if err := json.Unmarshal(specA.ImportDataMappings[lsinstallation.LandscaperConfigImportName].RawMessage, &landscaperConfigA); err != nil {
+		return false
+	}
+	landscaperConfigB := make(map[string]interface{})
+	if err := json.Unmarshal(specB.ImportDataMappings[lsinstallation.LandscaperConfigImportName].RawMessage, &landscaperConfigB); err != nil {
+		return false
+	}
+	if !reflect.DeepEqual(landscaperConfigA, landscaperConfigB) {
+		return false
+	}
+
+	registryConfigA := make(map[string]interface{})
+	if err := json.Unmarshal(specA.ImportDataMappings[lsinstallation.RegistryConfigImportName].RawMessage, &registryConfigA); err != nil {
+		return false
+	}
+	registryConfigB := make(map[string]interface{})
+	if err := json.Unmarshal(specA.ImportDataMappings[lsinstallation.RegistryConfigImportName].RawMessage, &registryConfigB); err != nil {
+		return false
+	}
+	if !reflect.DeepEqual(registryConfigA, registryConfigB) {
+		return false
+	}
+
+	delete(specA.ImportDataMappings, lsinstallation.LandscaperConfigImportName)
+	delete(specB.ImportDataMappings, lsinstallation.LandscaperConfigImportName)
+	delete(specA.ImportDataMappings, lsinstallation.RegistryConfigImportName)
+	delete(specB.ImportDataMappings, lsinstallation.RegistryConfigImportName)
+
+	return reflect.DeepEqual(specA, specB)
 }
 
 // handleExports tries to find the exports of the installation and update the instance status accordingly.
