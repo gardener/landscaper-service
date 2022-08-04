@@ -1,7 +1,9 @@
 run:
   concurrency: 4
   deadline: 10m
-  go: '1.17'
+
+  skip-dirs:
+    - .*vendor.*
 
   skip-files:
   - "zz_generated.*\\.go$"

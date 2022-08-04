@@ -321,6 +321,9 @@ func (c *Controller) mutateInstallation(ctx context.Context, log logr.Logger, in
 	if !reflect.DeepEqual(installation.Spec, oldInstallationSpec) {
 		// set reconcile annotation to start/update the installation
 		log.Info("Setting reconcile operation annotation")
+		if installation.Annotations == nil {
+			installation.Annotations = make(map[string]string)
+		}
 		installation.Annotations[lsv1alpha1.OperationAnnotation] = string(lsv1alpha1.ReconcileOperation)
 	}
 
