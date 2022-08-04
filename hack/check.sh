@@ -6,6 +6,8 @@
 
 set -e
 
+go version
+
 GOLANGCI_LINT_CONFIG_FILE=""
 
 for arg in "$@"; do
