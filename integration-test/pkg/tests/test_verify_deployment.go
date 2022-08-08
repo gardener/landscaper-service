@@ -51,6 +51,19 @@ func (r *VerifyDeploymentRunner) Name() string {
 	return "VerifyDeployment"
 }
 
+func (r *VerifyDeploymentRunner) Description() string {
+	description := `
+This test verifies that a tenant Landscaper deployment has been installed correctly.
+The test succeeds when all required pods (api server, etcd, landscaper ...) are running in the tenant namespace and
+the connection to the virtual cluster can be established. Otherwise the test fails.
+`
+	return description
+}
+
+func (r *VerifyDeploymentRunner) String() string {
+	return r.Name()
+}
+
 func (r *VerifyDeploymentRunner) Run() error {
 	for _, deployment := range r.testObjects.LandscaperDeployments {
 		if err := r.verifyDeployment(deployment); err != nil {

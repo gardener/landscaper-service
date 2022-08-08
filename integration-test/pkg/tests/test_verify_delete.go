@@ -44,7 +44,19 @@ func (r *VerifyDeleteRunner) Init(
 }
 
 func (r *VerifyDeleteRunner) Name() string {
-	return "VerifyDelete"
+	return "VerifyDeploymentDeleted"
+}
+
+func (r *VerifyDeleteRunner) Description() string {
+	description := `This test verifies that a tenant Landscaper deployment has been uninstalled and deleted correctly.
+This test succeeds when the virtual-cluster-namespace of the tenant Landscaper deployment has been deleted before the
+timeout expires. Otherwise the test fails.
+`
+	return description
+}
+
+func (r *VerifyDeleteRunner) String() string {
+	return r.Name()
 }
 
 func (r *VerifyDeleteRunner) Run() error {

@@ -9,6 +9,7 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"os"
 	"text/template"
 
@@ -155,20 +156,57 @@ func runTestSuite(ctx context.Context, log logr.Logger, kclient client.Client, c
 		LandscaperDeployments:    make(map[string]*lssv1alpha1.LandscaperDeployment),
 		HostingClusterNamespaces: make([]string, 0),
 	}
+
+	succeededTests := make([]test.TestRunner, 0, len(integrationTests))
+	testsNotRun := make([]test.TestRunner, len(integrationTests), len(integrationTests))
+	copy(testsNotRun, integrationTests)
+
+	log.Info("following tests will be run")
 	for _, runner := range integrationTests {
+		log.Info("test", "name", runner.Name(), "description", runner.Description())
+	}
+
+	for _, runner := range integrationTests {
+		testsNotRun = testsNotRun[1:]
 		log.Info("running test", "name", runner.Name())
 		runner.Init(ctx, log, kclient, config, target, testObjects)
 		if err := runner.Run(); err != nil {
-			log.Error(err, "error while running test", "name", runner.Name())
-			return err
+			return logTestSummary(log, succeededTests, testsNotRun, err, runner)
 		}
+		succeededTests = append(succeededTests, runner)
 	}
 
-	return nil
+	return logTestSummary(log, succeededTests, testsNotRun, nil, nil)
+}
+
+func logTestSummary(log logr.Logger, succeededTests, testsNotRun []test.TestRunner, err error, failedTest test.TestRunner) error {
+	log.Info("==========  Test summary ==========")
+	log.Info("successful tests", "tests", fmt.Sprintf("%v", succeededTests))
+	log.Info("tests not run", "tests", fmt.Sprintf("%v", testsNotRun))
+	if err != nil {
+		log.Error(err, "error while running test", "name", failedTest.Name())
+	}
+	return err
 }
 
 // uninstallLandscaper uninstalls the landscaper including the namespace it is installed in
 func uninstallLandscaper(ctx context.Context, log logr.Logger, kclient client.Client, config *test.TestConfig) error {
+	landscaperNamespace := &corev1.Namespace{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: config.LandscaperNamespace,
+		},
+	}
+
+	if err := kclient.Get(ctx, types.NamespacedName{Name: config.LandscaperNamespace}, landscaperNamespace); err != nil {
+		if apierrors.IsNotFound(err) {
+			if err := kclient.Create(ctx, landscaperNamespace); err != nil {
+				return fmt.Errorf("failed to create landscaper namespace %s: %w", config.LandscaperNamespace, err)
+			}
+		} else {
+			return fmt.Errorf("failed to get landscaper namespace %s: %w", config.LandscaperNamespace, err)
+		}
+	}
+
 	uninstallArgs := []string{
 		"--kubeconfig",
 		config.Kubeconfig,

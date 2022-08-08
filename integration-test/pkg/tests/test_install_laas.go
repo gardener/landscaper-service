@@ -51,6 +51,18 @@ func (r *InstallLAASTestRunner) Name() string {
 	return "InstallLAAS"
 }
 
+func (r *InstallLAASTestRunner) Description() string {
+	description := `This test installs the Landscaper-As-A-Service controller component.
+The test succeeds when the installation is in phase succeeded before the timeout expires.
+Otherwise the test fails.
+`
+	return description
+}
+
+func (r *InstallLAASTestRunner) String() string {
+	return r.Name()
+}
+
 func (r *InstallLAASTestRunner) Run() error {
 	r.log.Info("creating installation")
 	if err := r.createInstallation(); err != nil {

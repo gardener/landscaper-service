@@ -44,6 +44,17 @@ func (r *UninstallLAASTestRunner) Name() string {
 	return "UninstallLAAS"
 }
 
+func (r *UninstallLAASTestRunner) Description() string {
+	description := `This test uninstalls the Landscaper-As-A-Service controller.
+The test succeeds when the installation has been deleted before the timeout expires.
+`
+	return description
+}
+
+func (r *UninstallLAASTestRunner) String() string {
+	return r.Name()
+}
+
 func (r *UninstallLAASTestRunner) Run() error {
 	r.log.Info("deleting default service target config")
 	if err := r.deleteServiceTargetConfig(); err != nil {

@@ -45,6 +45,19 @@ func (r *DeleteDeploymentRunner) Name() string {
 	return "DeleteDeployment"
 }
 
+func (r *DeleteDeploymentRunner) Description() string {
+	description := `This test deletes a Landscaper deployment for a tenant.
+The test waits until the deployment crd has been deleted, which also means, that the
+corresponding installation has been deleted.
+The test fails when the deployment crd hasn't been deleted before the timeout has expired.'
+`
+	return description
+}
+
+func (r *DeleteDeploymentRunner) String() string {
+	return r.Name()
+}
+
 func (r *DeleteDeploymentRunner) Run() error {
 	for _, deployment := range r.testObjects.LandscaperDeployments {
 		if err := r.deleteDeployment(deployment); err != nil {

@@ -45,6 +45,18 @@ func (r *UpdateDeploymentRunner) Name() string {
 	return "UpdateDeployment"
 }
 
+func (r *UpdateDeploymentRunner) Description() string {
+	description := `This test updates the specification for an existing tenant Landscaper deployment.
+The test succeeds when the corresponding installation is in phase succeeded before the timeout expires.
+Otherwise the test fails.
+`
+	return description
+}
+
+func (r *UpdateDeploymentRunner) String() string {
+	return r.Name()
+}
+
 func (r *UpdateDeploymentRunner) Run() error {
 	for _, deployment := range r.testObjects.LandscaperDeployments {
 		if err := r.updateDeployment(deployment); err != nil {

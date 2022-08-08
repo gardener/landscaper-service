@@ -47,6 +47,18 @@ func (r *CreateDeploymentRunner) Name() string {
 	return "CreateDeployment"
 }
 
+func (r *CreateDeploymentRunner) Description() string {
+	description := `This test creates a Landscaper deployment for a tenant and waits until
+the corresponding installation has succeeded. If the installation is in phase succeeded before the test timeout has expired,
+the test succeeds, otherwise the test has failed.
+`
+	return description
+}
+
+func (r *CreateDeploymentRunner) String() string {
+	return r.Name()
+}
+
 func (r *CreateDeploymentRunner) Run() error {
 	r.log.Info("creating landscaper deployment")
 	if err := r.createDeployment(); err != nil {

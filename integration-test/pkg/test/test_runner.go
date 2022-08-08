@@ -27,5 +27,7 @@ type SharedTestObjects struct {
 type TestRunner interface {
 	Init(ctx context.Context, log logr.Logger, kclient client.Client, config *TestConfig, target *lsv1alpha1.Target, testObjects *SharedTestObjects)
 	Name() string
+	Description() string
+	String() string
 	Run() error
 }
