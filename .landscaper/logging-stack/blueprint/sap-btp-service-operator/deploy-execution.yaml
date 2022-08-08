@@ -1,0 +1,39 @@
+deployItems:
+  - name: sap-btp-service-operator
+    type: landscaper.gardener.cloud/helm
+    target:
+      name: {{ .imports.targetCluster.metadata.name }}
+      namespace: {{ .imports.targetCluster.metadata.namespace }}
+    config:
+      apiVersion: helm.deployer.landscaper.gardener.cloud/v1alpha1
+      kind: ProviderConfiguration
+      updateStrategy: patch
+      name: sap-btp-service-operator
+      namespace: {{ .imports.namespace }}
+
+      chart:
+        {{ $chartResource := getResource .cd "name" "sap-btp-service-operator-chart" }}
+        ref: {{ $chartResource.access.imageReference }}
+
+      values:
+        manager:
+          secret:
+            clientid: {{ .imports.clientId }}
+            clientsecret: {{ .imports.clientSecret }}
+            sm_url: {{ .imports.smURL }}
+            tokenurl: {{ .imports.tokenURL }}
+
+          image:
+            {{ $sapBTPServiceOperatorResource := getResource .cd "name" "sap-btp-service-operator-controller" }}
+            {{ $sapBTPServiceOperatorImage := parseOCIRef $sapBTPServiceOperatorResource.access.imageReference }}
+            {{ $sapBTPServiceOperatorSha := splitList ":" (index $sapBTPServiceOperatorImage 1) }}
+            repository: {{ index $sapBTPServiceOperatorImage 0 }}
+            sha: {{ index $sapBTPServiceOperatorSha 1 }}
+
+          rbacProxy:
+            image:
+              {{ $rbacProxyResource := getResource .cd "name" "kube-rbac-proxy" }}
+              {{ $rbacProxyImage := parseOCIRef $rbacProxyResource.access.imageReference }}
+              {{ $rbacProxySha := splitList ":" (index $rbacProxyImage 1) }}
+              repository: {{ index $rbacProxyImage 0 }}
+              sha: {{ index $rbacProxySha 1 }}
