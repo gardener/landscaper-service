@@ -25,7 +25,7 @@ format:
 	@$(REPO_ROOT)/hack/format.sh $(REPO_ROOT)/pkg $(REPO_ROOT)/cmd $(REPO_ROOT)/hack $(REPO_ROOT)/test $(REPO_ROOT)/integration-test/pkg
 
 .PHONY: check
-check:
+check: revendor
 	@$(REPO_ROOT)/hack/check.sh --golangci-lint-config=./.golangci.yaml $(REPO_ROOT)/cmd/... $(REPO_ROOT)/pkg/... $(REPO_ROOT)/hack/... $(REPO_ROOT)/test/...
 	@cd $(REPO_ROOT)/integration-test && $(REPO_ROOT)/hack/check.sh --golangci-lint-config=$(REPO_ROOT)/.golangci.yaml ./pkg/...
 

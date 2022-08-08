@@ -9,6 +9,7 @@ import (
 	"github.com/go-logr/logr"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
+	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	coreconfig "github.com/gardener/landscaper-service/pkg/apis/config"
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
@@ -26,6 +27,6 @@ func AddControllerToManager(logger logr.Logger, mgr manager.Manager, config *cor
 		For(&lssv1alpha1.Instance{}).
 		Owns(&lsv1alpha1.Installation{}).
 		Owns(&lsv1alpha1.Target{}).
-		WithLogger(log).
+		WithLogConstructor(func(r *reconcile.Request) logr.Logger { return log }).
 		Complete(ctrl)
 }

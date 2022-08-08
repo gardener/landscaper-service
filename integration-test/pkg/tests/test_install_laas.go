@@ -114,6 +114,9 @@ func (r *InstallLAASTestRunner) createInstallation() error {
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "laas",
 			Namespace: r.config.LaasNamespace,
+			Annotations: map[string]string{
+				lsv1alpha1.OperationAnnotation: string(lsv1alpha1.ReconcileOperation),
+			},
 		},
 		Spec: lsv1alpha1.InstallationSpec{
 			Context: "laas",
