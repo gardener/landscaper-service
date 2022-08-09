@@ -9,35 +9,31 @@ import (
 	"fmt"
 	"time"
 
+	cliutil "github.com/gardener/landscapercli/pkg/util"
 	"github.com/go-logr/logr"
 	"k8s.io/apimachinery/pkg/types"
-	"sigs.k8s.io/controller-runtime/pkg/client"
-
-	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
-	cliutil "github.com/gardener/landscapercli/pkg/util"
 
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	"github.com/gardener/landscaper-service/test/integration/pkg/test"
 )
 
 type UpdateDeploymentRunner struct {
-	ctx         context.Context
-	log         logr.Logger
-	kclient     client.Client
-	config      *test.TestConfig
-	target      *lsv1alpha1.Target
-	testObjects *test.SharedTestObjects
+	ctx            context.Context
+	log            logr.Logger
+	config         *test.TestConfig
+	clusterClients *test.ClusterClients
+	clusterTargets *test.ClusterTargets
+	testObjects    *test.SharedTestObjects
 }
 
 func (r *UpdateDeploymentRunner) Init(
-	ctx context.Context, log logr.Logger,
-	kclient client.Client, config *test.TestConfig,
-	target *lsv1alpha1.Target, testObjects *test.SharedTestObjects) {
+	ctx context.Context, log logr.Logger, config *test.TestConfig,
+	clusterClients *test.ClusterClients, clusterTargets *test.ClusterTargets, testObjects *test.SharedTestObjects) {
 	r.ctx = ctx
 	r.log = log.WithName(r.Name())
-	r.kclient = kclient
 	r.config = config
-	r.target = target
+	r.clusterClients = clusterClients
+	r.clusterTargets = clusterTargets
 	r.testObjects = testObjects
 }
 
@@ -71,12 +67,12 @@ func (r *UpdateDeploymentRunner) updateDeployment(deployment *lssv1alpha1.Landsc
 	r.log.Info("updating deployment", "name", deployment.Name)
 	deployment.Spec.LandscaperConfiguration.Deployers = append(deployment.Spec.LandscaperConfiguration.Deployers, "container")
 
-	if err := r.kclient.Update(r.ctx, deployment); err != nil {
+	if err := r.clusterClients.TestCluster.Update(r.ctx, deployment); err != nil {
 		return fmt.Errorf("failed to update deployment %q: %w", deployment.Name, err)
 	}
 
 	instance := &lssv1alpha1.Instance{}
-	if err := r.kclient.Get(
+	if err := r.clusterClients.TestCluster.Get(
 		r.ctx,
 		types.NamespacedName{Name: deployment.Status.InstanceRef.Name, Namespace: deployment.Status.InstanceRef.Namespace},
 		instance); err != nil {
@@ -89,7 +85,7 @@ func (r *UpdateDeploymentRunner) updateDeployment(deployment *lssv1alpha1.Landsc
 	r.log.Info("waiting for installation being succeeded")
 
 	timeout, err := cliutil.CheckAndWaitUntilLandscaperInstallationSucceeded(
-		r.kclient,
+		r.clusterClients.TestCluster,
 		types.NamespacedName{Name: instance.Status.InstallationRef.Name, Namespace: instance.Status.InstallationRef.Namespace},
 		r.config.SleepTime,
 		r.config.MaxRetries*10)

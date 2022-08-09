@@ -21,7 +21,6 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
-	"k8s.io/client-go/tools/clientcmd"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
@@ -39,6 +38,7 @@ var (
 		new(tests.VerifyDeploymentRunner),
 		new(tests.UpdateDeploymentRunner),
 		new(tests.VerifyDeploymentRunner),
+		new(tests.ManifestDeployerTestRunner),
 		new(tests.DeleteDeploymentRunner),
 		new(tests.VerifyDeleteRunner),
 		new(tests.UninstallLAASTestRunner),
@@ -87,25 +87,18 @@ func run() error {
 		"Provider Type", config.ProviderType,
 	)
 
-	cfg, err := clientcmd.BuildConfigFromFlags("", config.Kubeconfig)
-	if err != nil {
-		return err
-	}
-
-	kclient, err := client.New(cfg, client.Options{
-		Scheme: test.Scheme(),
-	})
+	clusterClients, err := test.NewClusterClients(config)
 	if err != nil {
 		return err
 	}
 
 	log.Info("========== Uninstalling Landscaper ==========")
-	if err := uninstallLandscaper(ctx, log, kclient, config); err != nil {
+	if err := uninstallLandscaper(ctx, log, clusterClients.TestCluster, config); err != nil {
 		return err
 	}
 
 	log.Info("========== Cleaning up before test ==========")
-	if err := cleanupResources(ctx, log, kclient, config); err != nil {
+	if err := cleanupResources(ctx, log, clusterClients.TestCluster, clusterClients.HostingCluster, config); err != nil {
 		return err
 	}
 
@@ -121,7 +114,7 @@ func run() error {
 		},
 	}
 
-	if err := kclient.Create(ctx, namespace); err != nil {
+	if err := clusterClients.TestCluster.Create(ctx, namespace); err != nil {
 		return fmt.Errorf("failed to create laas namespace: %w", err)
 	}
 
@@ -131,24 +124,24 @@ func run() error {
 		},
 	}
 
-	if err := kclient.Create(ctx, namespace); err != nil {
+	if err := clusterClients.TestCluster.Create(ctx, namespace); err != nil {
 		return fmt.Errorf("failed to create test namespace: %w", err)
 	}
 
-	target, err := util.BuildKubernetesClusterTarget(ctx, kclient, config.Kubeconfig, config.LaasNamespace)
+	clusterTargets, err := test.NewClusterTargets(ctx, clusterClients.TestCluster, config)
 	if err != nil {
-		return fmt.Errorf("cannot build target: %w", err)
+		return err
 	}
 
-	if err := util.BuildLandscaperContext(ctx, kclient, config.RegistryPullSecrets, "laas", config.LaasNamespace); err != nil {
+	if err := util.BuildLandscaperContext(ctx, clusterClients.TestCluster, config.RegistryPullSecrets, "laas", config.LaasNamespace); err != nil {
 		return fmt.Errorf("cannot build landscaper context: %w", err)
 	}
 
-	return runTestSuite(ctx, log, kclient, config, target)
+	return runTestSuite(ctx, log, clusterClients, clusterTargets, config)
 }
 
 // runTestSuite runs the tests defined in integrationTests
-func runTestSuite(ctx context.Context, log logr.Logger, kclient client.Client, config *test.TestConfig, target *lsv1alpha1.Target) error {
+func runTestSuite(ctx context.Context, log logr.Logger, clusterClients *test.ClusterClients, clusterTarget *test.ClusterTargets, config *test.TestConfig) error {
 	log.Info("========== Running test suite ==========")
 	testObjects := &test.SharedTestObjects{
 		Installations:            make(map[string]*lsv1alpha1.Installation),
@@ -169,7 +162,7 @@ func runTestSuite(ctx context.Context, log logr.Logger, kclient client.Client, c
 	for _, runner := range integrationTests {
 		testsNotRun = testsNotRun[1:]
 		log.Info("running test", "name", runner.Name())
-		runner.Init(ctx, log, kclient, config, target, testObjects)
+		runner.Init(ctx, log, config, clusterClients, clusterTarget, testObjects)
 		if err := runner.Run(); err != nil {
 			return logTestSummary(log, succeededTests, testsNotRun, err, runner)
 		}
@@ -199,9 +192,7 @@ func uninstallLandscaper(ctx context.Context, log logr.Logger, kclient client.Cl
 
 	if err := kclient.Get(ctx, types.NamespacedName{Name: config.LandscaperNamespace}, landscaperNamespace); err != nil {
 		if apierrors.IsNotFound(err) {
-			if err := kclient.Create(ctx, landscaperNamespace); err != nil {
-				return fmt.Errorf("failed to create landscaper namespace %s: %w", config.LandscaperNamespace, err)
-			}
+			return nil
 		} else {
 			return fmt.Errorf("failed to get landscaper namespace %s: %w", config.LandscaperNamespace, err)
 		}
@@ -209,7 +200,7 @@ func uninstallLandscaper(ctx context.Context, log logr.Logger, kclient client.Cl
 
 	uninstallArgs := []string{
 		"--kubeconfig",
-		config.Kubeconfig,
+		config.TestClusterKubeconfig,
 		"--namespace",
 		config.LandscaperNamespace,
 		"--delete-namespace",
@@ -226,7 +217,7 @@ func uninstallLandscaper(ctx context.Context, log logr.Logger, kclient client.Cl
 		return err
 	}
 
-	if err := util.ForceDeleteInstallations(ctx, log, kclient, config.Kubeconfig, config.LandscaperNamespace); err != nil {
+	if err := util.ForceDeleteInstallations(ctx, log, kclient, config.TestClusterKubeconfig, config.LandscaperNamespace); err != nil {
 		return err
 	}
 
@@ -321,7 +312,7 @@ func installLandscaper(ctx context.Context, config *test.TestConfig) error {
 
 	installArgs := []string{
 		"--kubeconfig",
-		config.Kubeconfig,
+		config.TestClusterKubeconfig,
 		"--landscaper-values",
 		tmpFile.Name(),
 		"--namespace",
@@ -341,46 +332,46 @@ func installLandscaper(ctx context.Context, config *test.TestConfig) error {
 
 // cleanupResources removes all landscaper and laas resource in the laas and test namespace.
 // It also tries to remove all virtual cluster namespaces that are still present in the cluster.
-func cleanupResources(ctx context.Context, log logr.Logger, kclient client.Client, config *test.TestConfig) error {
+func cleanupResources(ctx context.Context, log logr.Logger, hostingClient, laasClient client.Client, config *test.TestConfig) error {
 	// LAAS Namespace
-	if err := util.DeleteValidatingWebhookConfiguration(ctx, kclient, "landscaper-service-validation-webhook", config.LaasNamespace); err != nil {
+	if err := util.DeleteValidatingWebhookConfiguration(ctx, hostingClient, "landscaper-service-validation-webhook", config.LaasNamespace); err != nil {
 		return err
 	}
 
-	if err := util.RemoveFinalizerLandscaperResources(ctx, kclient, config.LaasNamespace); err != nil {
+	if err := util.RemoveFinalizerLandscaperResources(ctx, hostingClient, config.LaasNamespace); err != nil {
 		return err
 	}
 
-	if err := util.RemoveFinalizerLaasResources(ctx, kclient, config.LaasNamespace); err != nil {
+	if err := util.RemoveFinalizerLaasResources(ctx, hostingClient, config.LaasNamespace); err != nil {
 		return err
 	}
 
-	if err := util.CleanupLaasResources(ctx, log, kclient, config.LaasNamespace, config.SleepTime, config.MaxRetries); err != nil {
+	if err := util.CleanupLaasResources(ctx, log, hostingClient, config.LaasNamespace, config.SleepTime, config.MaxRetries); err != nil {
 		return err
 	}
 
-	if err := cliutil.DeleteNamespace(kclient, config.LaasNamespace, config.SleepTime, config.MaxRetries); err != nil {
+	if err := cliutil.DeleteNamespace(hostingClient, config.LaasNamespace, config.SleepTime, config.MaxRetries); err != nil {
 		return err
 	}
 
 	// Test Namespace
-	if err := util.RemoveFinalizerLaasResources(ctx, kclient, config.TestNamespace); err != nil {
+	if err := util.RemoveFinalizerLaasResources(ctx, hostingClient, config.TestNamespace); err != nil {
 		return err
 	}
 
-	if err := util.CleanupLaasResources(ctx, log, kclient, config.TestNamespace, config.SleepTime, config.MaxRetries); err != nil {
+	if err := util.CleanupLaasResources(ctx, log, hostingClient, config.TestNamespace, config.SleepTime, config.MaxRetries); err != nil {
 		return err
 	}
 
-	if err := util.RemoveFinalizerLandscaperResources(ctx, kclient, config.TestNamespace); err != nil {
+	if err := util.RemoveFinalizerLandscaperResources(ctx, hostingClient, config.TestNamespace); err != nil {
 		return err
 	}
 
-	if err := cliutil.DeleteNamespace(kclient, config.TestNamespace, config.SleepTime, config.MaxRetries); err != nil {
+	if err := cliutil.DeleteNamespace(hostingClient, config.TestNamespace, config.SleepTime, config.MaxRetries); err != nil {
 		return err
 	}
 
-	if err := util.DeleteVirtualClusterNamespaces(ctx, log, kclient, config.SleepTime, config.MaxRetries); err != nil {
+	if err := util.DeleteVirtualClusterNamespaces(ctx, log, laasClient, config.SleepTime, config.MaxRetries); err != nil {
 		return err
 	}
 

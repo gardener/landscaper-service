@@ -27,23 +27,22 @@ import (
 )
 
 type VerifyDeploymentRunner struct {
-	ctx         context.Context
-	log         logr.Logger
-	kclient     client.Client
-	config      *test.TestConfig
-	target      *lsv1alpha1.Target
-	testObjects *test.SharedTestObjects
+	ctx            context.Context
+	log            logr.Logger
+	config         *test.TestConfig
+	clusterClients *test.ClusterClients
+	clusterTargets *test.ClusterTargets
+	testObjects    *test.SharedTestObjects
 }
 
 func (r *VerifyDeploymentRunner) Init(
-	ctx context.Context, log logr.Logger,
-	kclient client.Client, config *test.TestConfig,
-	target *lsv1alpha1.Target, testObjects *test.SharedTestObjects) {
+	ctx context.Context, log logr.Logger, config *test.TestConfig,
+	clusterClients *test.ClusterClients, clusterTargets *test.ClusterTargets, testObjects *test.SharedTestObjects) {
 	r.ctx = ctx
 	r.log = log.WithName(r.Name())
-	r.kclient = kclient
 	r.config = config
-	r.target = target
+	r.clusterClients = clusterClients
+	r.clusterTargets = clusterTargets
 	r.testObjects = testObjects
 }
 
@@ -75,7 +74,7 @@ func (r *VerifyDeploymentRunner) Run() error {
 
 func (r *VerifyDeploymentRunner) verifyDeployment(deployment *lssv1alpha1.LandscaperDeployment) error {
 	instance := &lssv1alpha1.Instance{}
-	if err := r.kclient.Get(
+	if err := r.clusterClients.TestCluster.Get(
 		r.ctx,
 		types.NamespacedName{Name: deployment.Status.InstanceRef.Name, Namespace: deployment.Status.InstanceRef.Namespace},
 		instance); err != nil {
@@ -83,7 +82,7 @@ func (r *VerifyDeploymentRunner) verifyDeployment(deployment *lssv1alpha1.Landsc
 	}
 
 	installation := &lsv1alpha1.Installation{}
-	if err := r.kclient.Get(
+	if err := r.clusterClients.TestCluster.Get(
 		r.ctx,
 		types.NamespacedName{Name: instance.Status.InstallationRef.Name, Namespace: instance.Status.InstallationRef.Namespace},
 		installation); err != nil {
@@ -128,7 +127,7 @@ func (r *VerifyDeploymentRunner) verifyPods(namespace string, numDeployers int) 
 
 	podList := &corev1.PodList{}
 	timeout, err := cliutil.CheckConditionPeriodically(func() (bool, error) {
-		if err := r.kclient.List(r.ctx, podList, &client.ListOptions{Namespace: namespace}); err != nil {
+		if err := r.clusterClients.HostingCluster.List(r.ctx, podList, &client.ListOptions{Namespace: namespace}); err != nil {
 			return false, fmt.Errorf("failed to list pods in namespace %q: %w", namespace, err)
 		}
 		if len(podList.Items) >= (len(expectedPods) + numDeployers) {
@@ -147,7 +146,7 @@ func (r *VerifyDeploymentRunner) verifyPods(namespace string, numDeployers int) 
 	r.log.Info("waiting for pods to become running")
 
 	timeout, err = cliutil.CheckConditionPeriodically(func() (bool, error) {
-		if err := r.kclient.List(r.ctx, podList, &client.ListOptions{Namespace: namespace}); err != nil {
+		if err := r.clusterClients.HostingCluster.List(r.ctx, podList, &client.ListOptions{Namespace: namespace}); err != nil {
 			return false, fmt.Errorf("failed to list pods in namespace %q: %w", namespace, err)
 		}
 
@@ -174,7 +173,7 @@ func (r *VerifyDeploymentRunner) verifyKubeconfig(instance *lssv1alpha1.Instance
 	r.log.Info("verifying kubeconfig for instance", "name", instance.Name)
 
 	timeout, err := cliutil.CheckConditionPeriodically(func() (bool, error) {
-		if err := r.kclient.Get(r.ctx, types.NamespacedName{Name: instance.Name, Namespace: instance.Namespace}, instance); err != nil {
+		if err := r.clusterClients.TestCluster.Get(r.ctx, types.NamespacedName{Name: instance.Name, Namespace: instance.Namespace}, instance); err != nil {
 			return false, err
 		}
 
