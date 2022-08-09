@@ -24,6 +24,7 @@ REPO_CTX_BASE_URL="eu.gcr.io/sap-se-gcr-k8s-private"
 
 export PROJECT_ROOT
 export TEST_CLUSTER
+export HOSTING_CLUSTER
 export TARGET_CLUSTER_PROVIDER
 export LAAS_VERSION
 export LAAS_REPOSITORY
