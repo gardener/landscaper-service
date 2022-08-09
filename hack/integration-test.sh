@@ -23,7 +23,7 @@ REPO_AUTH_URL="https://eu.gcr.io"
 REPO_CTX_BASE_URL="eu.gcr.io/sap-se-gcr-k8s-private"
 
 export PROJECT_ROOT
-export TARGET_CLUSTER
+export TEST_CLUSTER
 export TARGET_CLUSTER_PROVIDER
 export LAAS_VERSION
 export LAAS_REPOSITORY
