@@ -9,9 +9,10 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
-	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"os"
 	"text/template"
+
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	"github.com/gardener/landscaper/controller-utils/pkg/logger"
@@ -161,7 +162,7 @@ func runTestSuite(ctx context.Context, log logr.Logger, clusterClients *test.Clu
 
 	for _, runner := range integrationTests {
 		testsNotRun = testsNotRun[1:]
-		log.Info("running test", "name", runner.Name())
+		log.Info("********** running test", "name", runner.Name())
 		runner.Init(ctx, log, config, clusterClients, clusterTarget, testObjects)
 		if err := runner.Run(); err != nil {
 			return logTestSummary(log, succeededTests, testsNotRun, err, runner)
@@ -174,8 +175,8 @@ func runTestSuite(ctx context.Context, log logr.Logger, clusterClients *test.Clu
 
 func logTestSummary(log logr.Logger, succeededTests, testsNotRun []test.TestRunner, err error, failedTest test.TestRunner) error {
 	log.Info("==========  Test summary ==========")
-	log.Info("successful tests", "tests", fmt.Sprintf("%v", succeededTests))
-	log.Info("tests not run", "tests", fmt.Sprintf("%v", testsNotRun))
+	log.Info("successful tests", "tests", fmt.Sprintf("%v", succeededTests), "total", fmt.Sprintf("%d/%d", len(succeededTests), len(integrationTests)))
+	log.Info("tests not run", "tests", fmt.Sprintf("%v", testsNotRun), "total", fmt.Sprintf("%d/%d", len(testsNotRun), len(integrationTests)))
 	if err != nil {
 		log.Error(err, "error while running test", "name", failedTest.Name())
 	}

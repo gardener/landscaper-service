@@ -8,11 +8,12 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/gardener/landscaper-service/test/integration/pkg/util"
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	"github.com/go-logr/logr"
 	"k8s.io/client-go/tools/clientcmd"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+
+	"github.com/gardener/landscaper-service/test/integration/pkg/util"
 
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 )

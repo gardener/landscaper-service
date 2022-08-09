@@ -14,8 +14,9 @@ import (
 
 	"github.com/go-logr/logr"
 
-	"github.com/gardener/landscaper-service/test/integration/pkg/test"
 	corev1 "k8s.io/api/core/v1"
+
+	"github.com/gardener/landscaper-service/test/integration/pkg/test"
 )
 
 type VerifyDeleteRunner struct {

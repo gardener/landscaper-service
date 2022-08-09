@@ -6,9 +6,10 @@ package tests
 
 import (
 	"context"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
+
+	"github.com/gardener/landscaper-service/test/integration/pkg/util"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
@@ -16,7 +17,6 @@ import (
 
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
-	"k8s.io/client-go/tools/clientcmd"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
@@ -187,27 +187,9 @@ func (r *VerifyDeploymentRunner) verifyKubeconfig(instance *lssv1alpha1.Instance
 		return fmt.Errorf("error while reading ClusterKubeconfig for instance %q: %w", instance.Name, err)
 	}
 
-	kubeconfig, err := base64.StdEncoding.DecodeString(instance.Status.ClusterKubeconfig)
+	virtualClient, err := util.BuildKubeClientForInstance(instance, test.Scheme())
 	if err != nil {
-		return fmt.Errorf("failed to decode kubeconfig of instance %q: %w", instance.Name, err)
-	}
-
-	laasClientCfg, err := clientcmd.Load(kubeconfig)
-	if err != nil {
-		return fmt.Errorf("failed to load kubeconfig of instance %q: %w", instance.Name, err)
-	}
-
-	loader := clientcmd.NewDefaultClientConfig(*laasClientCfg, nil)
-	laasRestConfig, err := loader.ClientConfig()
-	if err != nil {
-		return fmt.Errorf("failed to load rest config of instance %q: %err", instance.Name, err)
-	}
-
-	laasClient, err := client.New(laasRestConfig, client.Options{
-		Scheme: test.Scheme(),
-	})
-	if err != nil {
-		return fmt.Errorf("failed create client for instance %q: %err", instance.Name, err)
+		return err
 	}
 
 	namespace := &corev1.Namespace{
@@ -216,12 +198,12 @@ func (r *VerifyDeploymentRunner) verifyKubeconfig(instance *lssv1alpha1.Instance
 		},
 	}
 
-	if err := laasClient.Create(r.ctx, namespace); err != nil {
+	if err := virtualClient.Create(r.ctx, namespace); err != nil {
 		return fmt.Errorf("failed to create namespace on cluster for instance %q: %w", instance.Name, err)
 	}
 
 	installationList := &lsv1alpha1.InstallationList{}
-	if err := laasClient.List(r.ctx, installationList, &client.ListOptions{Namespace: namespace.Name}); err != nil {
+	if err := virtualClient.List(r.ctx, installationList, &client.ListOptions{Namespace: namespace.Name}); err != nil {
 		return fmt.Errorf("failed to list installations on cluster for instance %q: %w", instance.Name, err)
 	}
 
