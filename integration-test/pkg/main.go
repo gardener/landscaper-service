@@ -152,7 +152,7 @@ func runTestSuite(ctx context.Context, log logr.Logger, clusterClients *test.Clu
 	}
 
 	succeededTests := make([]test.TestRunner, 0, len(integrationTests))
-	testsNotRun := make([]test.TestRunner, len(integrationTests), len(integrationTests))
+	testsNotRun := make([]test.TestRunner, len(integrationTests))
 	copy(testsNotRun, integrationTests)
 
 	log.Info("following tests will be run")
