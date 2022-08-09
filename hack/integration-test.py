@@ -33,10 +33,11 @@ hosting_cluster_kubeconfig = factory.kubernetes(hosting_cluster)
 print(f"Getting credentials for {repo_ctx_base_url}")
 cr_conf = model.container_registry.find_config(repo_ctx_base_url, oa.Privileges.READONLY)
 
-with utils.TempFileAuto(prefix="test_cluster_kubeconfig_") as test_cluster_kubeconfig_temp_file,
-     utils.TempFileAuto(prefix="hosting_cluster_kubeconfig_") as hosting_cluster_kubeconfig_temp_file,
-     utils.TempFileAuto(prefix="registry_auth_", suffix=".json") as registry_temp_file:
-
+with (
+    utils.TempFileAuto(prefix="test_cluster_kubeconfig_") as test_cluster_kubeconfig_temp_file,
+    utils.TempFileAuto(prefix="hosting_cluster_kubeconfig_") as hosting_cluster_kubeconfig_temp_file,
+    utils.TempFileAuto(prefix="registry_auth_", suffix=".json") as registry_temp_file
+):
     test_cluster_kubeconfig_temp_file.write(yaml.safe_dump(test_cluster_kubeconfig.kubeconfig()))
     test_cluster_kubeconfig_path = test_cluster_kubeconfig_temp_file.switch()
 
