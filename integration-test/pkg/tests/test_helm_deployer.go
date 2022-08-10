@@ -3,11 +3,8 @@ package tests
 import (
 	"context"
 	"fmt"
+
 	cdv2 "github.com/gardener/component-spec/bindings-go/apis/v2"
-	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
-	lssutils "github.com/gardener/landscaper-service/pkg/utils"
-	"github.com/gardener/landscaper-service/test/integration/pkg/test"
-	"github.com/gardener/landscaper-service/test/integration/pkg/util"
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	cliutil "github.com/gardener/landscapercli/pkg/util"
 	"github.com/go-logr/logr"
@@ -17,6 +14,11 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/json"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+
+	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	lssutils "github.com/gardener/landscaper-service/pkg/utils"
+	"github.com/gardener/landscaper-service/test/integration/pkg/test"
+	"github.com/gardener/landscaper-service/test/integration/pkg/util"
 )
 
 const (
