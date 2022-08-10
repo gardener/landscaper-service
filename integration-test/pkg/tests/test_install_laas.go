@@ -66,7 +66,7 @@ func (r *InstallLAASTestRunner) Run() error {
 		return err
 	}
 
-	r.log.Info("creating service hostingTarget config")
+	r.log.Info("creating service target config")
 	if err := r.createServiceTargetConfig(); err != nil {
 		return err
 	}

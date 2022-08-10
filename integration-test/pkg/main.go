@@ -40,6 +40,7 @@ var (
 		new(tests.UpdateDeploymentRunner),
 		new(tests.VerifyDeploymentRunner),
 		new(tests.ManifestDeployerTestRunner),
+		new(tests.HelmDeployerTestRunner),
 		new(tests.DeleteDeploymentRunner),
 		new(tests.VerifyDeleteRunner),
 		new(tests.UninstallLAASTestRunner),

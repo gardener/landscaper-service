@@ -3,8 +3,11 @@ package tests
 import (
 	"context"
 	"fmt"
-
 	cdv2 "github.com/gardener/component-spec/bindings-go/apis/v2"
+	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	lssutils "github.com/gardener/landscaper-service/pkg/utils"
+	"github.com/gardener/landscaper-service/test/integration/pkg/test"
+	"github.com/gardener/landscaper-service/test/integration/pkg/util"
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	cliutil "github.com/gardener/landscapercli/pkg/util"
 	"github.com/go-logr/logr"
@@ -12,25 +15,21 @@ import (
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/apimachinery/pkg/util/json"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-
-	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
-	lssutils "github.com/gardener/landscaper-service/pkg/utils"
-	"github.com/gardener/landscaper-service/test/integration/pkg/test"
-	"github.com/gardener/landscaper-service/test/integration/pkg/util"
 )
 
 const (
-	manifestTestNamespace         = "example"
-	manifestTestTargetName        = "default-target"
-	manifestTestInstallationName  = "manifest-test"
-	manifestTestComponentName     = "github.com/gardener/landscaper-examples/manifest-deployer/create-configmap"
-	manifestTestComponentVersion  = "v0.1.0"
-	manifestTestRepositoryContext = "eu.gcr.io/gardener-project/landscaper/examples"
-	manifestTestConfigmapName     = "test-configmap"
+	helmTestNamespace         = "example"
+	helmTestTargetName        = "default-target"
+	helmTestInstallationName  = "helm-test"
+	helmTestComponentName     = "github.com/gardener/landscaper-examples/helm-deployer/helm-chart-1"
+	helmTestComponentVersion  = "v0.1.0"
+	helmTestRepositoryContext = "eu.gcr.io/gardener-project/landscaper/examples"
+	helmTestConfigmapName     = "test-configmap"
 )
 
-type ManifestDeployerTestRunner struct {
+type HelmDeployerTestRunner struct {
 	ctx            context.Context
 	log            logr.Logger
 	config         *test.TestConfig
@@ -39,7 +38,7 @@ type ManifestDeployerTestRunner struct {
 	testObjects    *test.SharedTestObjects
 }
 
-func (r *ManifestDeployerTestRunner) Init(
+func (r *HelmDeployerTestRunner) Init(
 	ctx context.Context, log logr.Logger, config *test.TestConfig,
 	clusterClients *test.ClusterClients, clusterTargets *test.ClusterTargets, testObjects *test.SharedTestObjects) {
 	r.ctx = ctx
@@ -50,23 +49,23 @@ func (r *ManifestDeployerTestRunner) Init(
 	r.testObjects = testObjects
 }
 
-func (r *ManifestDeployerTestRunner) Name() string {
-	return "ManifestDeployer"
+func (r *HelmDeployerTestRunner) Name() string {
+	return "HelmDeployer"
 }
 
-func (r *ManifestDeployerTestRunner) Description() string {
-	description := `This test creates an installation on the tenant virtual cluster using the Landscaper Manifest Deployer.
+func (r *HelmDeployerTestRunner) Description() string {
+	description := `This test creates an installation on the tenant virtual cluster using the Landscaper Helm Deployer.
 The target used by the installation points to the test cluster. The test succeeds when the installation is in phase succeeded
 before the timeout expires and the configmap is correctly created in the target cluster.
 `
 	return description
 }
 
-func (r *ManifestDeployerTestRunner) String() string {
+func (r *HelmDeployerTestRunner) String() string {
 	return r.Name()
 }
 
-func (r *ManifestDeployerTestRunner) Run() error {
+func (r *HelmDeployerTestRunner) Run() error {
 	for _, deployment := range r.testObjects.LandscaperDeployments {
 		virtualClient, err := r.createVirtualClusterClient(deployment)
 		if err != nil {
@@ -89,7 +88,7 @@ func (r *ManifestDeployerTestRunner) Run() error {
 	return nil
 }
 
-func (r *ManifestDeployerTestRunner) createVirtualClusterClient(deployment *lssv1alpha1.LandscaperDeployment) (client.Client, error) {
+func (r *HelmDeployerTestRunner) createVirtualClusterClient(deployment *lssv1alpha1.LandscaperDeployment) (client.Client, error) {
 	r.log.Info("creating virtual cluster client for deployment", "deploymentName", deployment.Name)
 
 	instance := &lssv1alpha1.Instance{}
@@ -105,29 +104,29 @@ func (r *ManifestDeployerTestRunner) createVirtualClusterClient(deployment *lssv
 	return virtualClient, nil
 }
 
-func (r *ManifestDeployerTestRunner) prepare(virtualClient client.Client) (string, error) {
+func (r *HelmDeployerTestRunner) prepare(virtualClient client.Client) (string, error) {
 	namespace := &corev1.Namespace{}
-	if err := r.clusterClients.TestCluster.Get(r.ctx, types.NamespacedName{Name: manifestTestNamespace}, namespace); err != nil {
+	if err := r.clusterClients.TestCluster.Get(r.ctx, types.NamespacedName{Name: helmTestNamespace}, namespace); err != nil {
 		if !apierrors.IsNotFound(err) {
-			r.log.Error(err, "failed to get test namespace", "namespace", manifestTestNamespace)
+			r.log.Error(err, "failed to get test namespace", "namespace", helmTestNamespace)
 			return "", err
 		}
 	} else {
-		r.log.Info("deleting namespace", "name", manifestTestNamespace)
-		if err := cliutil.DeleteNamespace(r.clusterClients.TestCluster, manifestTestNamespace, r.config.SleepTime, r.config.MaxRetries); err != nil {
-			r.log.Error(err, "failed to delete test namespace", "namespace", manifestTestNamespace)
+		r.log.Info("deleting namespace", "name", helmTestNamespace)
+		if err := cliutil.DeleteNamespace(r.clusterClients.TestCluster, helmTestNamespace, r.config.SleepTime, r.config.MaxRetries); err != nil {
+			r.log.Error(err, "failed to delete test namespace", "namespace", helmTestNamespace)
 			return "", err
 		}
 	}
 
 	namespace = &corev1.Namespace{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: manifestTestNamespace,
+			Name: helmTestNamespace,
 		},
 	}
-	r.log.Info("creating namespace in test cluster", "name", manifestTestNamespace)
+	r.log.Info("creating namespace in test cluster", "name", helmTestNamespace)
 	if err := r.clusterClients.TestCluster.Create(r.ctx, namespace); err != nil {
-		r.log.Error(err, "failed to create test namespace", "namespace", manifestTestNamespace)
+		r.log.Error(err, "failed to create test namespace", "namespace", helmTestNamespace)
 		return "", err
 	}
 
@@ -145,23 +144,33 @@ func (r *ManifestDeployerTestRunner) prepare(virtualClient client.Client) (strin
 	return namespace.Name, nil
 }
 
-func (r *ManifestDeployerTestRunner) createTarget(deployment *lssv1alpha1.LandscaperDeployment, virtualClient client.Client, virtualClusterNamespace string) error {
+func (r *HelmDeployerTestRunner) createTarget(deployment *lssv1alpha1.LandscaperDeployment, virtualClient client.Client, virtualClusterNamespace string) error {
 	r.log.Info("creating target for deployment", "deploymentName", deployment.Name)
-	if _, err := util.BuildKubernetesClusterTarget(r.ctx, virtualClient, r.config.TestClusterKubeconfig, manifestTestTargetName, virtualClusterNamespace); err != nil {
+	if _, err := util.BuildKubernetesClusterTarget(r.ctx, virtualClient, r.config.TestClusterKubeconfig, helmTestTargetName, virtualClusterNamespace); err != nil {
 		return fmt.Errorf("failed to create target: %w", err)
 	}
 	return nil
 }
 
-func (r *ManifestDeployerTestRunner) createInstallation(deployment *lssv1alpha1.LandscaperDeployment, virtualClient client.Client, virtualClusterNamespace string) error {
+func (r *HelmDeployerTestRunner) createInstallation(deployment *lssv1alpha1.LandscaperDeployment, virtualClient client.Client, virtualClusterNamespace string) error {
 	r.log.Info("creating installation for deployment",
 		"deploymentName", deployment.Name,
-		"installationName", manifestTestInstallationName,
+		"installationName", helmTestInstallationName,
 		"installationNamespace", virtualClusterNamespace)
+
+	release := map[string]interface{}{
+		"name":      helmTestConfigmapName,
+		"namespace": helmTestNamespace,
+	}
+
+	releaseBytes, err := json.Marshal(release)
+	if err != nil {
+		return fmt.Errorf("faield to marshal release import: %w", err)
+	}
 
 	installation := &lsv1alpha1.Installation{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      manifestTestInstallationName,
+			Name:      helmTestInstallationName,
 			Namespace: virtualClusterNamespace,
 			Annotations: map[string]string{
 				lsv1alpha1.OperationAnnotation: string(lsv1alpha1.ReconcileOperation),
@@ -175,10 +184,10 @@ func (r *ManifestDeployerTestRunner) createInstallation(deployment *lssv1alpha1.
 			},
 			ComponentDescriptor: &lsv1alpha1.ComponentDescriptorDefinition{
 				Reference: &lsv1alpha1.ComponentDescriptorReference{
-					ComponentName: manifestTestComponentName,
-					Version:       manifestTestComponentVersion,
+					ComponentName: helmTestComponentName,
+					Version:       helmTestComponentVersion,
 					RepositoryContext: cdv2.NewUnstructuredType(cdv2.OCIRegistryType, map[string]interface{}{
-						"baseUrl": manifestTestRepositoryContext,
+						"baseUrl": helmTestRepositoryContext,
 					}),
 				},
 			},
@@ -186,12 +195,21 @@ func (r *ManifestDeployerTestRunner) createInstallation(deployment *lssv1alpha1.
 				Targets: []lsv1alpha1.TargetImport{
 					{
 						Name:   "cluster",
-						Target: fmt.Sprintf("#%s", manifestTestTargetName),
+						Target: fmt.Sprintf("#%s", helmTestTargetName),
 					},
 				},
 			},
 			ImportDataMappings: map[string]lsv1alpha1.AnyJSON{
-				"configmapName": lssutils.StringToAnyJSON(manifestTestConfigmapName),
+				"release":    lsv1alpha1.NewAnyJSON(releaseBytes),
+				"testDataIn": lssutils.StringToAnyJSON("helmTest"),
+			},
+			Exports: lsv1alpha1.InstallationExports{
+				Data: []lsv1alpha1.DataExport{
+					{
+						Name:    "testDataOut",
+						DataRef: "do-testdata-out",
+					},
+				},
 			},
 		},
 		Status: lsv1alpha1.InstallationStatus{},
@@ -204,20 +222,20 @@ func (r *ManifestDeployerTestRunner) createInstallation(deployment *lssv1alpha1.
 	return nil
 }
 
-func (r *ManifestDeployerTestRunner) verifyInstallation(deployment *lssv1alpha1.LandscaperDeployment, virtualClient client.Client, virtualClusterNamespace string) error {
+func (r *HelmDeployerTestRunner) verifyInstallation(deployment *lssv1alpha1.LandscaperDeployment, virtualClient client.Client, virtualClusterNamespace string) error {
 	r.log.Info("verifying installation for deployment",
 		"deploymentName", deployment.Name,
-		"installationName", manifestTestInstallationName,
+		"installationName", helmTestInstallationName,
 		"installationNamespace", virtualClusterNamespace)
 
 	timeout, err := cliutil.CheckAndWaitUntilLandscaperInstallationSucceeded(
 		virtualClient,
-		types.NamespacedName{Name: manifestTestInstallationName, Namespace: virtualClusterNamespace},
+		types.NamespacedName{Name: helmTestInstallationName, Namespace: virtualClusterNamespace},
 		r.config.SleepTime, r.config.MaxRetries)
 
 	if err != nil || timeout {
 		installation := &lsv1alpha1.Installation{}
-		if err := virtualClient.Get(r.ctx, types.NamespacedName{Name: manifestTestInstallationName, Namespace: virtualClusterNamespace}, installation); err == nil {
+		if err := virtualClient.Get(r.ctx, types.NamespacedName{Name: helmTestInstallationName, Namespace: virtualClusterNamespace}, installation); err == nil {
 			r.log.Error(fmt.Errorf("installation failed"), "installation", "last error", installation.Status.LastError)
 		}
 	}
@@ -230,7 +248,7 @@ func (r *ManifestDeployerTestRunner) verifyInstallation(deployment *lssv1alpha1.
 	}
 
 	configMap := &corev1.ConfigMap{}
-	if err := r.clusterClients.TestCluster.Get(r.ctx, types.NamespacedName{Name: manifestTestConfigmapName, Namespace: manifestTestNamespace}, configMap); err != nil {
+	if err := r.clusterClients.TestCluster.Get(r.ctx, types.NamespacedName{Name: helmTestConfigmapName, Namespace: helmTestNamespace}, configMap); err != nil {
 		return fmt.Errorf("failed to get deployed configmap: %w", err)
 	}
 	return nil
