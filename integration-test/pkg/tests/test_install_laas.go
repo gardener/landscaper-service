@@ -13,13 +13,11 @@ import (
 
 	"github.com/go-logr/logr"
 
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/types"
-	"sigs.k8s.io/controller-runtime/pkg/client"
-
 	cdv2 "github.com/gardener/component-spec/bindings-go/apis/v2"
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	cliutil "github.com/gardener/landscapercli/pkg/util"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/types"
 
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	lssutils "github.com/gardener/landscaper-service/pkg/utils"
@@ -27,28 +25,39 @@ import (
 )
 
 type InstallLAASTestRunner struct {
-	ctx         context.Context
-	log         logr.Logger
-	kclient     client.Client
-	config      *test.TestConfig
-	target      *lsv1alpha1.Target
-	testObjects *test.SharedTestObjects
+	ctx            context.Context
+	log            logr.Logger
+	config         *test.TestConfig
+	clusterClients *test.ClusterClients
+	clusterTargets *test.ClusterTargets
+	testObjects    *test.SharedTestObjects
 }
 
 func (r *InstallLAASTestRunner) Init(
-	ctx context.Context, log logr.Logger,
-	kclient client.Client, config *test.TestConfig,
-	target *lsv1alpha1.Target, testObjects *test.SharedTestObjects) {
+	ctx context.Context, log logr.Logger, config *test.TestConfig,
+	clusterClients *test.ClusterClients, clusterTargets *test.ClusterTargets, testObjects *test.SharedTestObjects) {
 	r.ctx = ctx
 	r.log = log.WithName(r.Name())
-	r.kclient = kclient
 	r.config = config
-	r.target = target
+	r.clusterClients = clusterClients
+	r.clusterTargets = clusterTargets
 	r.testObjects = testObjects
 }
 
 func (r *InstallLAASTestRunner) Name() string {
 	return "InstallLAAS"
+}
+
+func (r *InstallLAASTestRunner) Description() string {
+	description := `This test installs the Landscaper-As-A-Service controller component.
+The test succeeds when the installation is in phase succeeded before the timeout expires.
+Otherwise the test fails.
+`
+	return description
+}
+
+func (r *InstallLAASTestRunner) String() string {
+	return r.Name()
 }
 
 func (r *InstallLAASTestRunner) Run() error {
@@ -68,7 +77,7 @@ func (r *InstallLAASTestRunner) Run() error {
 func (r *InstallLAASTestRunner) createServiceTargetConfig() error {
 	serviceTargetConfig := &lssv1alpha1.ServiceTargetConfig{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      "default-target",
+			Name:      r.clusterTargets.LaasCluster.Name,
 			Namespace: r.config.LaasNamespace,
 			Labels: map[string]string{
 				lsscore.ServiceTargetConfigVisibleLabelName: "true",
@@ -80,7 +89,7 @@ func (r *InstallLAASTestRunner) createServiceTargetConfig() error {
 			Priority:     0,
 			SecretRef: lssv1alpha1.SecretReference{
 				ObjectReference: lssv1alpha1.ObjectReference{
-					Name:      r.target.Name,
+					Name:      r.clusterTargets.LaasCluster.Name,
 					Namespace: r.config.LaasNamespace,
 				},
 				Key: "kubeconfig",
@@ -88,8 +97,8 @@ func (r *InstallLAASTestRunner) createServiceTargetConfig() error {
 		},
 	}
 
-	if err := r.kclient.Create(r.ctx, serviceTargetConfig); err != nil {
-		return fmt.Errorf("failed to create service target config: %w", err)
+	if err := r.clusterClients.TestCluster.Create(r.ctx, serviceTargetConfig); err != nil {
+		return fmt.Errorf("failed to create service hostingTarget config: %w", err)
 	}
 
 	r.testObjects.ServiceTargetConfigs[types.NamespacedName{Name: serviceTargetConfig.Name, Namespace: serviceTargetConfig.Namespace}.String()] = serviceTargetConfig
@@ -138,7 +147,7 @@ func (r *InstallLAASTestRunner) createInstallation() error {
 				Targets: []lsv1alpha1.TargetImport{
 					{
 						Name:   "targetCluster",
-						Target: fmt.Sprintf("#%s", r.target.Name),
+						Target: fmt.Sprintf("#%s", r.clusterTargets.HostingCluster.Name),
 					},
 				},
 			},
@@ -150,13 +159,13 @@ func (r *InstallLAASTestRunner) createInstallation() error {
 		},
 	}
 
-	if err := r.kclient.Create(r.ctx, installation); err != nil {
+	if err := r.clusterClients.TestCluster.Create(r.ctx, installation); err != nil {
 		return fmt.Errorf("failed to create installation: %w", err)
 	}
 
-	timeout, err := cliutil.CheckAndWaitUntilLandscaperInstallationSucceeded(r.kclient, types.NamespacedName{Name: installation.Name, Namespace: installation.Namespace}, r.config.SleepTime, r.config.MaxRetries)
+	timeout, err := cliutil.CheckAndWaitUntilLandscaperInstallationSucceeded(r.clusterClients.TestCluster, types.NamespacedName{Name: installation.Name, Namespace: installation.Namespace}, r.config.SleepTime, r.config.MaxRetries)
 	if err != nil || timeout {
-		if err := r.kclient.Get(r.ctx, types.NamespacedName{Name: installation.Name, Namespace: installation.Namespace}, installation); err == nil {
+		if err := r.clusterClients.TestCluster.Get(r.ctx, types.NamespacedName{Name: installation.Name, Namespace: installation.Namespace}, installation); err == nil {
 			r.log.Error(fmt.Errorf("installation failed"), "installation", "last error", installation.Status.LastError)
 		}
 	}
