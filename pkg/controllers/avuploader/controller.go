@@ -12,9 +12,9 @@ import (
 	"io"
 	"net/http"
 
-	apierrors "k8s.io/apimachinery/pkg/api/errors"
-
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 
 	"github.com/go-logr/logr"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -84,7 +84,7 @@ func constructAvsRequest(availabilityCollection lssv1alpha1.AvailabilityCollecti
 	// Overall status is derrived if len(failedInstances) > 0
 	failedInstances := []AvsInstance{}
 	for _, instanceStatus := range availabilityCollection.Status.Instances {
-		if instanceStatus.Status == FAILED {
+		if instanceStatus.Status == string(lsv1alpha1.LsHealthCheckStatusFailed) {
 			avsInstance := AvsInstance{
 				InstanceId:   instanceStatus.Name,
 				Name:         instanceStatus.Name,
@@ -94,7 +94,7 @@ func constructAvsRequest(availabilityCollection lssv1alpha1.AvailabilityCollecti
 			failedInstances = append(failedInstances, avsInstance)
 		}
 	}
-	if availabilityCollection.Status.Self.Status == FAILED {
+	if availabilityCollection.Status.Self.Status == string(lsv1alpha1.LsHealthCheckStatusFailed) {
 		avsInstance := AvsInstance{
 			InstanceId:   "Self",
 			Name:         "Self",
@@ -169,7 +169,5 @@ type AvsInstance struct {
 	Status       int    `json:"status"`
 }
 
-const FAILED string = "Failed"
-const OK string = "Ok"
 const AVS_STATUS_DOWN = 0
 const AVS_STATUS_UP = 1

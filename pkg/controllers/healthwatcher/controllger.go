@@ -193,18 +193,15 @@ func (c *Controller) getLsHealthCheckFromSelfLandscaper(namespace string) lssv1a
 	return availabilityInstance
 }
 
-const FAILED string = "Failed"
-const OK string = "Ok"
-
 func logFailedInstances(logger logr.Logger, availabilityCollection lssv1alpha1.AvailabilityCollection) {
 	failedInstances := []lssv1alpha1.AvailabilityInstance{}
 
 	for _, inst := range availabilityCollection.Status.Instances {
-		if inst.Status == FAILED {
+		if inst.Status == string(lsv1alpha1.LsHealthCheckStatusFailed) {
 			failedInstances = append(failedInstances, inst)
 		}
 	}
-	if availabilityCollection.Status.Self.Status == FAILED {
+	if availabilityCollection.Status.Self.Status == string(lsv1alpha1.LsHealthCheckStatusFailed) {
 		failedInstances = append(failedInstances, availabilityCollection.Status.Self)
 	}
 	if len(failedInstances) > 0 {
@@ -213,7 +210,7 @@ func logFailedInstances(logger logr.Logger, availabilityCollection lssv1alpha1.A
 }
 
 func setAvailabilityInstanceStatusToFailed(availabilityInstance *lssv1alpha1.AvailabilityInstance, failedReason string) {
-	availabilityInstance.Status = FAILED
+	availabilityInstance.Status = string(lsv1alpha1.LsHealthCheckStatusFailed)
 	availabilityInstance.FailedReason = failedReason
 }
 
