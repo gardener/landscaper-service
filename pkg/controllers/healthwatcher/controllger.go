@@ -137,7 +137,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 		//collect lshealthcheck
 		lsHealthchecks := &lsv1alpha1.LsHealthCheckList{}
-		err = targetClient.List(context.TODO(), lsHealthchecks, client.InNamespace(targetClusterNamespace))
+		err = targetClient.List(ctx, lsHealthchecks, client.InNamespace(targetClusterNamespace))
 		if err != nil {
 			if apierrors.IsNotFound(err) {
 				c.Log().V(5).Info(err.Error())
@@ -153,7 +153,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 		transferLsHealthCheckStatusToAvailabilityInstance(&availabilityInstance, lsHealthchecks, c.Config().AvailabilityMonitoring.LSHealthCheckTimeout.Duration)
 		availabilityCollection.Status.Instances = append(availabilityCollection.Status.Instances, availabilityInstance)
 	}
-	availabilityCollection.Status.Self = c.getLsHealthCheckFromSelfLandscaper(c.Config().AvailabilityMonitoring.SelfLandscaperNamespace)
+	availabilityCollection.Status.Self = c.getLsHealthCheckFromSelfLandscaper(ctx, c.Config().AvailabilityMonitoring.SelfLandscaperNamespace)
 	availabilityCollection.Status.ObservedGeneration = availabilityCollection.ObjectMeta.Generation
 	availabilityCollection.Status.LastRun = v1.NewTime(time.Now())
 
@@ -169,7 +169,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 }
 
-func (c *Controller) getLsHealthCheckFromSelfLandscaper(namespace string) lssv1alpha1.AvailabilityInstance {
+func (c *Controller) getLsHealthCheckFromSelfLandscaper(ctx context.Context, namespace string) lssv1alpha1.AvailabilityInstance {
 	availabilityInstance := lssv1alpha1.AvailabilityInstance{
 		ObjectReference: lssv1alpha1.ObjectReference{
 			Name:      "self",
@@ -179,7 +179,7 @@ func (c *Controller) getLsHealthCheckFromSelfLandscaper(namespace string) lssv1a
 
 	//collect lshealthcheck
 	lsHealthchecks := &lsv1alpha1.LsHealthCheckList{}
-	err := c.Client().List(context.TODO(), lsHealthchecks, client.InNamespace(namespace))
+	err := c.Client().List(ctx, lsHealthchecks, client.InNamespace(namespace))
 	if err != nil {
 		if apierrors.IsNotFound(err) {
 			c.Log().V(5).Info(err.Error())
