@@ -1,9 +1,11 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
   "definitions": {},
+  "description": "AvailabilityInstance contains the availability status for one instance.",
   "properties": {
     "failedReason": {
       "default": "",
+      "description": "FailedReason is the reason the status is in failed.",
       "type": "string"
     },
     "name": {
@@ -18,6 +20,7 @@
     },
     "status": {
       "default": "",
+      "description": "Status is the availability status of the instance.",
       "type": "string"
     }
   },

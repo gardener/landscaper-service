@@ -11,7 +11,7 @@ import (
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// AvailabilityCollection contains a list of AvailabilityCollection
+// AvailabilityCollectionList contains a list of AvailabilityCollection
 type AvailabilityCollectionList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
@@ -35,10 +35,11 @@ type AvailabilityCollection struct {
 	Status AvailabilityCollectionStatus `json:"status"`
 }
 
+// AvailabilityCollectionStatus contains the status for the AvailabilityCollection.
 type AvailabilityCollectionStatus struct {
 	// metadata.generation observed by the HealthWatcher controller.
-	// Used to distingish between a necessary reconcile (scheduled or spec change)
-	// and unneccessary reconcile (status change)
+	// Used to distinguish between a necessary reconcile (scheduled or spec change)
+	// and unnecessary reconcile (status change)
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
 	// LastRun is the last time, the HealthWatcher collected all instance status.
@@ -54,12 +55,16 @@ type AvailabilityCollectionStatus struct {
 	Self AvailabilityInstance `json:"self"`
 }
 
+// AvailabilityInstance contains the availability status for one instance.
 type AvailabilityInstance struct {
 	ObjectReference `json:",inline"`
-	Status          string `json:"status"`
-	FailedReason    string `json:"failedReason"`
+	// Status is the availability status of the instance.
+	Status string `json:"status"`
+	// FailedReason is the reason the status is in failed.
+	FailedReason string `json:"failedReason"`
 }
 
+// AvailabilityCollectionSpec contains the spec for the AvailabilityCollection.
 type AvailabilityCollectionSpec struct {
 	// InstanceRefs specifies all instances to monitor
 	InstanceRefs []ObjectReference `json:"instanceRefs"`

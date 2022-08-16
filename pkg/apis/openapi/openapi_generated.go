@@ -359,7 +359,7 @@ func schema_pkg_apis_core_v1alpha1_AvailabilityCollectionList(ref common.Referen
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
-				Description: "AvailabilityCollection contains a list of AvailabilityCollection",
+				Description: "AvailabilityCollectionList contains a list of AvailabilityCollection",
 				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
 					"kind": {
@@ -408,7 +408,8 @@ func schema_pkg_apis_core_v1alpha1_AvailabilityCollectionSpec(ref common.Referen
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
-				Type: []string{"object"},
+				Description: "AvailabilityCollectionSpec contains the spec for the AvailabilityCollection.",
+				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
 					"instanceRefs": {
 						SchemaProps: spec.SchemaProps{
@@ -437,11 +438,12 @@ func schema_pkg_apis_core_v1alpha1_AvailabilityCollectionStatus(ref common.Refer
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
-				Type: []string{"object"},
+				Description: "AvailabilityCollectionStatus contains the status for the AvailabilityCollection.",
+				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
 					"observedGeneration": {
 						SchemaProps: spec.SchemaProps{
-							Description: "metadata.generation observed by the HealthWatcher controller. Used to distingish between a necessary reconcile (scheduled or spec change) and unneccessary reconcile (status change)",
+							Description: "metadata.generation observed by the HealthWatcher controller. Used to distinguish between a necessary reconcile (scheduled or spec change) and unnecessary reconcile (status change)",
 							Type:        []string{"integer"},
 							Format:      "int64",
 						},
@@ -494,7 +496,8 @@ func schema_pkg_apis_core_v1alpha1_AvailabilityInstance(ref common.ReferenceCall
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
-				Type: []string{"object"},
+				Description: "AvailabilityInstance contains the availability status for one instance.",
+				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
 					"name": {
 						SchemaProps: spec.SchemaProps{
@@ -514,16 +517,18 @@ func schema_pkg_apis_core_v1alpha1_AvailabilityInstance(ref common.ReferenceCall
 					},
 					"status": {
 						SchemaProps: spec.SchemaProps{
-							Default: "",
-							Type:    []string{"string"},
-							Format:  "",
+							Description: "Status is the availability status of the instance.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
 						},
 					},
 					"failedReason": {
 						SchemaProps: spec.SchemaProps{
-							Default: "",
-							Type:    []string{"string"},
-							Format:  "",
+							Description: "FailedReason is the reason the status is in failed.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
 						},
 					},
 				},
