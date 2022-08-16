@@ -87,7 +87,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 			},
 		}
 
-		//get refered installation
+		//get referred installation
 		if instance.Status.InstallationRef == nil || instance.Status.InstallationRef.Name == "" || instance.Status.InstallationRef.Namespace == "" {
 			continue
 		}
