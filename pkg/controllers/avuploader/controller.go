@@ -82,7 +82,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 func constructAvsRequest(availabilityCollection lssv1alpha1.AvailabilityCollection) AvsRequest {
 	//Fill failedInstances with all failed. A failed instance will create an instance outage. If this instance is not in the array anymore, instance outage is resolved
-	// Overall status is derrived if len(failedInstances) > 0
+	// Overall status is derived if len(failedInstances) > 0
 	failedInstances := []AvsInstance{}
 	for _, instanceStatus := range availabilityCollection.Status.Instances {
 		if instanceStatus.Status == string(lsv1alpha1.LsHealthCheckStatusFailed) {
@@ -106,12 +106,12 @@ func constructAvsRequest(availabilityCollection lssv1alpha1.AvailabilityCollecti
 	}
 
 	status := AVS_STATUS_UP
-	outageReson := ""
+	outageReason := ""
 	if len(failedInstances) > 0 {
 		status = AVS_STATUS_DOWN
 		//include self landscaper (--> +1 )
 		totalNumberOfMonitoredLandscapers := len(availabilityCollection.Status.Instances) + 1
-		outageReson = fmt.Sprintf("%d/%d monitored landscaper down", len(failedInstances), totalNumberOfMonitoredLandscapers)
+		outageReason = fmt.Sprintf("%d/%d monitored landscaper down", len(failedInstances), totalNumberOfMonitoredLandscapers)
 	}
 
 	request := AvsRequest{
@@ -120,7 +120,7 @@ func constructAvsRequest(availabilityCollection lssv1alpha1.AvailabilityCollecti
 		ResponseStatusCode: 200,
 		Instances:          failedInstances,
 		Status:             status,
-		OutageReason:       outageReson,
+		OutageReason:       outageReason,
 	}
 	return request
 }
@@ -154,21 +154,35 @@ func doAvsRequest(request AvsRequest, url string, apiKey string) error {
 	return nil
 }
 
+// AvsRequest contains the structure for a request to avs to push availability information.
 type AvsRequest struct {
-	Timestamp          int64         `json:"timestamp"`
-	ResponseTime       int           `json:"responseTime"`
-	ResponseStatusCode int           `json:"responseStatusCode"`
-	OutageReason       string        `json:"outageReason"`
-	Status             int           `json:"status"`
-	Instances          []AvsInstance `json:"instances"`
-}
-
-type AvsInstance struct {
-	InstanceId   string `json:"instanceId"`
-	Name         string `json:"name"`
+	// Timestamp is the timestamp the data was collected. Must be newer than the one in the last request.
+	Timestamp int64 `json:"timestamp"`
+	// Response time is the time the availability check took.
+	ResponseTime int `json:"responseTime"`
+	// ResponseStatusCode is the http response code received from the service that is av monitored.
+	ResponseStatusCode int `json:"responseStatusCode"`
+	// OutageReason is the reason the av monitored service is unavailable.
 	OutageReason string `json:"outageReason"`
-	Status       int    `json:"status"`
+	// Status is the availability status for the service: 0 = DOWN, 1 = UP.
+	Status int `json:"status"`
+	// Instances allow to give an av status for multiple instances. If one of the instances is DOWN, the overall status is DOWN.
+	Instances []AvsInstance `json:"instances"`
 }
 
-const AVS_STATUS_DOWN = 0
-const AVS_STATUS_UP = 1
+// AvsInstance is a status of a single monitored instance.
+type AvsInstance struct {
+	// InstanceId is the id of the monitored instance.
+	InstanceId string `json:"instanceId"`
+	// Name is a name for the instance.
+	Name string `json:"name"`
+	// OutageReason is the reason this instance is unavailable.
+	OutageReason string `json:"outageReason"`
+	// Status is the availability status for the instance: 0 = DOWN, 1 = UP.
+	Status int `json:"status"`
+}
+
+const (
+	AVS_STATUS_DOWN = 0
+	AVS_STATUS_UP   = 1
+)
