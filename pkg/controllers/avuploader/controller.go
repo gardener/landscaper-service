@@ -12,9 +12,10 @@ import (
 	"io"
 	"net/http"
 
-	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
+
+	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 
 	"github.com/go-logr/logr"
 	"k8s.io/apimachinery/pkg/runtime"

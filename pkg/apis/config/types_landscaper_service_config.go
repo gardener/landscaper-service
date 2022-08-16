@@ -20,6 +20,7 @@ type LandscaperServiceConfiguration struct {
 	//+optional
 	Metrics *MetricsConfiguration `json:"metrics,omitempty"`
 
+	//AvailabilityMonitoringConfiguration is the configuration for the availability monitoring of the provisioned landscaper
 	AvailabilityMonitoring AvailabilityMonitoringConfiguration `json:"availabilityMonitoring"`
 
 	// CrdManagement configures whether the landscaper controller should deploy the CRDs it needs into the cluster
@@ -30,20 +31,30 @@ type LandscaperServiceConfiguration struct {
 	LandscaperServiceComponent LandscaperServiceComponentConfiguration `json:"landscaperServiceComponent"`
 }
 
+//AvailabilityMonitoringConfiguration is the configuration for the availability monitoring of the provisioned landscaper
 type AvailabilityMonitoringConfiguration struct {
-	AvailabilityCollectionName      string `json:"availabilityCollectionName"`
+	//AvailabilityCollectionName is the name of the CR containing the av monitoring stati
+	AvailabilityCollectionName string `json:"availabilityCollectionName"`
+	//AvailabilityCollectionNamespace is the namespace of the CR containing the av monitoring stati
 	AvailabilityCollectionNamespace string `json:"availabilityCollectionNamespace"`
 
+	//AvailabilityServiceConfiguration configures an external AVS service
 	AvailabilityServiceConfiguration AvailabilityServiceConfiguration `json:"availabilityService"`
 
+	//SelfLandscaperNamespace defines the namespace of the landscaper in the core cluster to be monitored
 	SelfLandscaperNamespace string `json:"selfLandscaperNamespace"`
 
+	//PeriodicCheckInterval defines, how often the HealthWatcher controller collects the landscaper health information
 	PeriodicCheckInterval v1alpha1.Duration `json:"periodicCheckInterval"`
-	LSHealthCheckTimeout  v1alpha1.Duration `json:"lsHealthCheckTimeout"`
+	//LSHealthCheckTimeout defines the timeout, at which a previously available landscaper is unavailable if no updates occured
+	LSHealthCheckTimeout v1alpha1.Duration `json:"lsHealthCheckTimeout"`
 }
 
+//AvailabilityServiceConfiguration configures an external AVS service
 type AvailabilityServiceConfiguration struct {
-	Url    string `json:"url"`
+	//Url is the full url to the AVS
+	Url string `json:"url"`
+	//ApiKey is the api key for the AVS
 	ApiKey string `json:"apiKey"`
 }
 
