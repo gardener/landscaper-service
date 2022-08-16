@@ -15,7 +15,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 
 	lssinstall "github.com/gardener/landscaper-service/pkg/apis/core/install"
-	"github.com/gardener/landscaper-service/pkg/controllers/availabilitymonitorregistrationcontroller"
+	"github.com/gardener/landscaper-service/pkg/controllers/avmonitorregistration"
 	"github.com/gardener/landscaper-service/pkg/controllers/avuploader"
 	"github.com/gardener/landscaper-service/pkg/controllers/healthwatcher"
 
@@ -90,7 +90,7 @@ func (o *options) run(ctx context.Context) error {
 	if err := servicetargetconfigsctrl.AddControllerToManager(ctrlLogger, mgr, o.Config); err != nil {
 		return fmt.Errorf("unable to setup service target configs controller: %w", err)
 	}
-	if err := availabilitymonitorregistrationcontroller.AddControllerToManager(ctx, ctrlLogger, mgr, o.Config); err != nil {
+	if err := avmonitorregistration.AddControllerToManager(ctx, ctrlLogger, mgr, o.Config); err != nil {
 		return fmt.Errorf("unable to setup availabilitymonitorregistrationcontroller controller: %w", err)
 	}
 	if err := healthwatcher.AddControllerToManager(ctx, ctrlLogger, mgr, o.Config); err != nil {
