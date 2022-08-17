@@ -33,6 +33,26 @@ imports:
       type: integer
       format: int32
 
+  - name: availabiliyMonitoring
+    required: false
+    type: object
+    properties:
+      selfLandscaperNamespace:
+        type: string
+      periodicCheckInterval:
+        type: string
+      lsHealthCheckTimeout:
+        type: string
+
+  - name: AVSConfiguration
+    required: false
+    type: object
+    properties:
+      url:
+        type: string
+      apiKey:
+        type: string
+
   - name: registryPullSecrets
     required: false
     type: data
