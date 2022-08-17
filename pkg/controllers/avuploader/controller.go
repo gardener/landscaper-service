@@ -42,7 +42,9 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	ctx = logr.NewContext(ctx, log)
 	log.V(5).Info("reconcile", "availabilityCollection", req.NamespacedName)
 
-	if c.Config().AvailabilityMonitoring.AvailabilityServiceConfiguration.Url == "" || c.Config().AvailabilityMonitoring.AvailabilityServiceConfiguration.ApiKey == "" {
+	if c.Config().AvailabilityMonitoring.AvailabilityServiceConfiguration == nil ||
+		c.Config().AvailabilityMonitoring.AvailabilityServiceConfiguration.Url == "" ||
+		c.Config().AvailabilityMonitoring.AvailabilityServiceConfiguration.ApiKey == "" {
 		log.V(5).Info("av service not configured")
 		return reconcile.Result{}, nil
 	}

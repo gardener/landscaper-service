@@ -39,7 +39,7 @@ type AvailabilityMonitoringConfiguration struct {
 	AvailabilityCollectionNamespace string `json:"availabilityCollectionNamespace"`
 
 	//AvailabilityServiceConfiguration configures an external AVS service
-	AvailabilityServiceConfiguration AvailabilityServiceConfiguration `json:"availabilityService"`
+	AvailabilityServiceConfiguration *AvailabilityServiceConfiguration `json:"availabilityService"`
 
 	//SelfLandscaperNamespace defines the namespace of the landscaper in the core cluster to be monitored
 	SelfLandscaperNamespace string `json:"selfLandscaperNamespace"`

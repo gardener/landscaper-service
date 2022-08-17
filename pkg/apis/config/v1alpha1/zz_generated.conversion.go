@@ -93,9 +93,7 @@ func RegisterConversions(s *runtime.Scheme) error {
 func autoConvert_v1alpha1_AvailabilityMonitoringConfiguration_To_config_AvailabilityMonitoringConfiguration(in *AvailabilityMonitoringConfiguration, out *config.AvailabilityMonitoringConfiguration, s conversion.Scope) error {
 	out.AvailabilityCollectionName = in.AvailabilityCollectionName
 	out.AvailabilityCollectionNamespace = in.AvailabilityCollectionNamespace
-	if err := Convert_v1alpha1_AvailabilityServiceConfiguration_To_config_AvailabilityServiceConfiguration(&in.AvailabilityServiceConfiguration, &out.AvailabilityServiceConfiguration, s); err != nil {
-		return err
-	}
+	out.AvailabilityServiceConfiguration = (*config.AvailabilityServiceConfiguration)(unsafe.Pointer(in.AvailabilityServiceConfiguration))
 	out.SelfLandscaperNamespace = in.SelfLandscaperNamespace
 	out.PeriodicCheckInterval = in.PeriodicCheckInterval
 	out.LSHealthCheckTimeout = in.LSHealthCheckTimeout
@@ -110,9 +108,7 @@ func Convert_v1alpha1_AvailabilityMonitoringConfiguration_To_config_Availability
 func autoConvert_config_AvailabilityMonitoringConfiguration_To_v1alpha1_AvailabilityMonitoringConfiguration(in *config.AvailabilityMonitoringConfiguration, out *AvailabilityMonitoringConfiguration, s conversion.Scope) error {
 	out.AvailabilityCollectionName = in.AvailabilityCollectionName
 	out.AvailabilityCollectionNamespace = in.AvailabilityCollectionNamespace
-	if err := Convert_config_AvailabilityServiceConfiguration_To_v1alpha1_AvailabilityServiceConfiguration(&in.AvailabilityServiceConfiguration, &out.AvailabilityServiceConfiguration, s); err != nil {
-		return err
-	}
+	out.AvailabilityServiceConfiguration = (*AvailabilityServiceConfiguration)(unsafe.Pointer(in.AvailabilityServiceConfiguration))
 	out.SelfLandscaperNamespace = in.SelfLandscaperNamespace
 	out.PeriodicCheckInterval = in.PeriodicCheckInterval
 	out.LSHealthCheckTimeout = in.LSHealthCheckTimeout
