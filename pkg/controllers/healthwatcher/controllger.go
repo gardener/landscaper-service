@@ -15,7 +15,6 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/types"
 	apitypes "k8s.io/apimachinery/pkg/types"
 
 	"k8s.io/client-go/kubernetes"
@@ -92,7 +91,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 			continue
 		}
 		installation := &lsv1alpha1.Installation{}
-		if err := c.Client().Get(ctx, types.NamespacedName{Name: instance.Status.InstallationRef.Name, Namespace: instance.Status.InstallationRef.Namespace}, installation); err != nil {
+		if err := c.Client().Get(ctx, apitypes.NamespacedName{Name: instance.Status.InstallationRef.Name, Namespace: instance.Status.InstallationRef.Namespace}, installation); err != nil {
 			if apierrors.IsNotFound(err) {
 				c.Log().V(5).Info(err.Error())
 				continue
@@ -246,14 +245,14 @@ func getKubeClientFromServiceTargetConfig(ctx context.Context, name string, name
 		return nil, errors.New("name or namespace of serviceTargetConfig is empty")
 	}
 	serviceTargetConfig := &lssv1alpha1.ServiceTargetConfig{}
-	if err := client.Get(ctx, types.NamespacedName{Name: name, Namespace: namespace}, serviceTargetConfig); err != nil {
+	if err := client.Get(ctx, apitypes.NamespacedName{Name: name, Namespace: namespace}, serviceTargetConfig); err != nil {
 		if apierrors.IsNotFound(err) {
 			return nil, fmt.Errorf("failed loading ServiceTargetConfig %s:%s - not found: %w", name, namespace, err)
 		}
 		return nil, fmt.Errorf("could not load ServiceTargetConfig from instance reference: %w", err)
 	}
 	secretWithKubeconf := &corev1.Secret{}
-	if err := client.Get(ctx, types.NamespacedName{Name: serviceTargetConfig.Spec.SecretRef.Name, Namespace: serviceTargetConfig.Spec.SecretRef.Namespace}, secretWithKubeconf); err != nil {
+	if err := client.Get(ctx, apitypes.NamespacedName{Name: serviceTargetConfig.Spec.SecretRef.Name, Namespace: serviceTargetConfig.Spec.SecretRef.Namespace}, secretWithKubeconf); err != nil {
 		if apierrors.IsNotFound(err) {
 			return nil, fmt.Errorf("failed loading secret %s:%s for ServiceTargetConfig %s:%s - not found: %w", serviceTargetConfig.Spec.SecretRef.Name, serviceTargetConfig.Spec.SecretRef.Namespace, name, namespace, err)
 		}
