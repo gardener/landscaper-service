@@ -7,11 +7,15 @@ package util
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"fmt"
 	"io/ioutil"
 	"path"
 	"strings"
 	"time"
+
+	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/client-go/tools/clientcmd"
 
 	"github.com/go-logr/logr"
 
@@ -352,7 +356,7 @@ func DeleteVirtualClusterNamespaces(ctx context.Context, log logr.Logger, kclien
 }
 
 // BuildKubernetesClusterTarget builds a landscaper target of the given kubeconfig in the given namespace.
-func BuildKubernetesClusterTarget(ctx context.Context, kclient client.Client, kubeConfig, namespace string) (*lsv1alpha1.Target, error) {
+func BuildKubernetesClusterTarget(ctx context.Context, kclient client.Client, kubeConfig, name, namespace string) (*lsv1alpha1.Target, error) {
 	kubeConfigContent, err := ioutil.ReadFile(kubeConfig)
 	if err != nil {
 		return nil, fmt.Errorf("cannot read kubeconfig: %w", err)
@@ -360,7 +364,7 @@ func BuildKubernetesClusterTarget(ctx context.Context, kclient client.Client, ku
 
 	secret := &corev1.Secret{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      "default-target",
+			Name:      name,
 			Namespace: namespace,
 		},
 		Type: corev1.SecretTypeOpaque,
@@ -376,7 +380,7 @@ func BuildKubernetesClusterTarget(ctx context.Context, kclient client.Client, ku
 	targetConfig := map[string]interface{}{
 		"kubeconfig": map[string]interface{}{
 			"secretRef": map[string]interface{}{
-				"name":      "default-target",
+				"name":      name,
 				"namespace": namespace,
 				"key":       "kubeconfig",
 			},
@@ -390,7 +394,7 @@ func BuildKubernetesClusterTarget(ctx context.Context, kclient client.Client, ku
 
 	target := &lsv1alpha1.Target{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      "default-target",
+			Name:      name,
 			Namespace: namespace,
 		},
 		Spec: lsv1alpha1.TargetSpec{
@@ -447,4 +451,31 @@ func BuildLandscaperContext(ctx context.Context, kclient client.Client, registry
 	}
 
 	return nil
+}
+
+func BuildKubeClientForInstance(instance *lssv1alpha1.Instance, scheme *runtime.Scheme) (client.Client, error) {
+	kubeconfig, err := base64.StdEncoding.DecodeString(instance.Status.ClusterKubeconfig)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode kubeconfig of instance %q: %w", instance.Name, err)
+	}
+
+	clientCfg, err := clientcmd.Load(kubeconfig)
+	if err != nil {
+		return nil, fmt.Errorf("failed to load kubeconfig of instance %q: %w", instance.Name, err)
+	}
+
+	loader := clientcmd.NewDefaultClientConfig(*clientCfg, nil)
+	restConfig, err := loader.ClientConfig()
+	if err != nil {
+		return nil, fmt.Errorf("failed to load rest config of instance %q: %err", instance.Name, err)
+	}
+
+	client, err := client.New(restConfig, client.Options{
+		Scheme: scheme,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed create client for instance %q: %err", instance.Name, err)
+	}
+
+	return client, nil
 }

@@ -19,6 +19,7 @@ import (
 
 	"github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 
+	lsscore "github.com/gardener/landscaper-service/pkg/apis/core"
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	lsserrors "github.com/gardener/landscaper-service/pkg/apis/errors"
 	"github.com/gardener/landscaper-service/pkg/utils"
@@ -125,11 +126,11 @@ func (c *Controller) mutateInstance(ctx context.Context, log logr.Logger, deploy
 func (c *Controller) findServiceTargetConfig(ctx context.Context, log logr.Logger, deployment *lssv1alpha1.LandscaperDeployment) (*lssv1alpha1.ServiceTargetConfig, error) {
 	serviceTargetConfigs := &lssv1alpha1.ServiceTargetConfigList{}
 	selectorBuilder := strings.Builder{}
-	selectorBuilder.WriteString(fmt.Sprintf("%s=true", lssv1alpha1.ServiceTargetConfigVisibleLabelName))
+	selectorBuilder.WriteString(fmt.Sprintf("%s=true", lsscore.ServiceTargetConfigVisibleLabelName))
 
 	if len(deployment.Spec.Region) > 0 {
 		log.V(5).Info("region filter active", "region", deployment.Spec.Region)
-		selectorBuilder.WriteString(fmt.Sprintf(",%s=%s", lssv1alpha1.ServiceTargetConfigRegionLabelName, deployment.Spec.Region))
+		selectorBuilder.WriteString(fmt.Sprintf(",%s=%s", lsscore.ServiceTargetConfigRegionLabelName, deployment.Spec.Region))
 	}
 
 	labelSelector, _ := labels.Parse(selectorBuilder.String())

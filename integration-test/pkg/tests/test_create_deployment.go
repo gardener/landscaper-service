@@ -6,46 +6,54 @@ package tests
 
 import (
 	"context"
-	"crypto/sha1"
-	"encoding/hex"
 	"fmt"
+	"math/rand"
 
 	"github.com/go-logr/logr"
 
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/types"
-	"sigs.k8s.io/controller-runtime/pkg/client"
-
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	cliutil "github.com/gardener/landscapercli/pkg/util"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/types"
 
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	"github.com/gardener/landscaper-service/test/integration/pkg/test"
 )
 
 type CreateDeploymentRunner struct {
-	ctx         context.Context
-	log         logr.Logger
-	kclient     client.Client
-	config      *test.TestConfig
-	target      *lsv1alpha1.Target
-	testObjects *test.SharedTestObjects
+	ctx            context.Context
+	log            logr.Logger
+	config         *test.TestConfig
+	clusterClients *test.ClusterClients
+	clusterTargets *test.ClusterTargets
+	testObjects    *test.SharedTestObjects
 }
 
 func (r *CreateDeploymentRunner) Init(
-	ctx context.Context, log logr.Logger,
-	kclient client.Client, config *test.TestConfig,
-	target *lsv1alpha1.Target, testObjects *test.SharedTestObjects) {
+	ctx context.Context, log logr.Logger, config *test.TestConfig,
+	clusterClients *test.ClusterClients, clusterTargets *test.ClusterTargets, testObjects *test.SharedTestObjects) {
 	r.ctx = ctx
 	r.log = log.WithName(r.Name())
-	r.kclient = kclient
 	r.config = config
-	r.target = target
+	r.clusterClients = clusterClients
+	r.clusterTargets = clusterTargets
 	r.testObjects = testObjects
 }
 
 func (r *CreateDeploymentRunner) Name() string {
 	return "CreateDeployment"
+}
+
+func (r *CreateDeploymentRunner) Description() string {
+	description := `This test creates a Landscaper deployment for a tenant and waits until
+the corresponding installation has succeeded. If the installation is in phase succeeded before the test timeout has expired,
+the test succeeds, otherwise the test has failed.
+`
+	return description
+}
+
+func (r *CreateDeploymentRunner) String() string {
+	return r.Name()
 }
 
 func (r *CreateDeploymentRunner) Run() error {
@@ -63,7 +71,7 @@ func (r *CreateDeploymentRunner) createDeployment() error {
 			Namespace: r.config.TestNamespace,
 		},
 		Spec: lssv1alpha1.LandscaperDeploymentSpec{
-			TenantId: createTenantId("test-tenant"),
+			TenantId: createTenantId(),
 			Purpose:  "integration-test",
 			LandscaperConfiguration: lssv1alpha1.LandscaperConfiguration{
 				Deployers: []string{
@@ -74,14 +82,14 @@ func (r *CreateDeploymentRunner) createDeployment() error {
 		},
 	}
 
-	if err := r.kclient.Create(r.ctx, deployment); err != nil {
+	if err := r.clusterClients.TestCluster.Create(r.ctx, deployment); err != nil {
 		return fmt.Errorf("failed to create deployment: %w", err)
 	}
 
 	r.log.Info("waiting for instance being created")
 
 	timeout, err := cliutil.CheckConditionPeriodically(func() (bool, error) {
-		if err := r.kclient.Get(r.ctx, types.NamespacedName{Name: deployment.Name, Namespace: deployment.Namespace}, deployment); err != nil {
+		if err := r.clusterClients.TestCluster.Get(r.ctx, types.NamespacedName{Name: deployment.Name, Namespace: deployment.Namespace}, deployment); err != nil {
 			return false, err
 		}
 
@@ -104,7 +112,7 @@ func (r *CreateDeploymentRunner) createDeployment() error {
 	r.log.Info("waiting for installation being created")
 
 	timeout, err = cliutil.CheckConditionPeriodically(func() (bool, error) {
-		if err := r.kclient.Get(
+		if err := r.clusterClients.TestCluster.Get(
 			r.ctx,
 			types.NamespacedName{Name: deployment.Status.InstanceRef.Name, Namespace: deployment.Status.InstanceRef.Namespace},
 			instance); err != nil {
@@ -129,14 +137,14 @@ func (r *CreateDeploymentRunner) createDeployment() error {
 	r.log.Info("waiting for installation being succeeded")
 
 	timeout, err = cliutil.CheckAndWaitUntilLandscaperInstallationSucceeded(
-		r.kclient,
+		r.clusterClients.TestCluster,
 		types.NamespacedName{Name: instance.Status.InstallationRef.Name, Namespace: instance.Status.InstallationRef.Namespace},
 		r.config.SleepTime,
 		r.config.MaxRetries*10)
 
 	if err != nil || timeout {
 		installation := &lsv1alpha1.Installation{}
-		if err := r.kclient.Get(r.ctx, types.NamespacedName{Name: instance.Status.InstallationRef.Name, Namespace: instance.Status.InstallationRef.Namespace}, installation); err == nil {
+		if err := r.clusterClients.TestCluster.Get(r.ctx, types.NamespacedName{Name: instance.Status.InstallationRef.Name, Namespace: instance.Status.InstallationRef.Namespace}, installation); err == nil {
 			r.log.Error(fmt.Errorf("installation failed"), "installation", "last error", installation.Status.LastError)
 		}
 	}
@@ -153,8 +161,8 @@ func (r *CreateDeploymentRunner) createDeployment() error {
 	return nil
 }
 
-func createTenantId(name string) string {
-	h := sha1.New()
-	id := h.Sum([]byte(name))
-	return fmt.Sprintf("vc-%s", hex.EncodeToString(id[:4]))
+func createTenantId() string {
+	low := 10000
+	high := 99999
+	return fmt.Sprintf("vc-%d", low+rand.Intn(high-low))
 }

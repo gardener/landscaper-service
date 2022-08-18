@@ -14,7 +14,8 @@ then
 fi
 
 PROJECT_ROOT="$(dirname $0)/.."
-TARGET_CLUSTER="laas-integration-test"
+TEST_CLUSTER="laas-integration-test"
+HOSTING_CLUSTER="laas-integration-test-target"
 TARGET_CLUSTER_PROVIDER="gcp"
 LAAS_REPOSITORY="eu.gcr.io/sap-se-gcr-k8s-private/cnudie/gardener/development"
 LAAS_VERSION="$(${PROJECT_ROOT}/hack/get-version.sh)"
@@ -22,7 +23,8 @@ REPO_AUTH_URL="https://eu.gcr.io"
 REPO_CTX_BASE_URL="eu.gcr.io/sap-se-gcr-k8s-private"
 
 export PROJECT_ROOT
-export TARGET_CLUSTER
+export TEST_CLUSTER
+export HOSTING_CLUSTER
 export TARGET_CLUSTER_PROVIDER
 export LAAS_VERSION
 export LAAS_REPOSITORY

@@ -6,9 +6,10 @@ package tests
 
 import (
 	"context"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
+
+	"github.com/gardener/landscaper-service/test/integration/pkg/util"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
@@ -16,7 +17,6 @@ import (
 
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
-	"k8s.io/client-go/tools/clientcmd"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
@@ -27,28 +27,40 @@ import (
 )
 
 type VerifyDeploymentRunner struct {
-	ctx         context.Context
-	log         logr.Logger
-	kclient     client.Client
-	config      *test.TestConfig
-	target      *lsv1alpha1.Target
-	testObjects *test.SharedTestObjects
+	ctx            context.Context
+	log            logr.Logger
+	config         *test.TestConfig
+	clusterClients *test.ClusterClients
+	clusterTargets *test.ClusterTargets
+	testObjects    *test.SharedTestObjects
 }
 
 func (r *VerifyDeploymentRunner) Init(
-	ctx context.Context, log logr.Logger,
-	kclient client.Client, config *test.TestConfig,
-	target *lsv1alpha1.Target, testObjects *test.SharedTestObjects) {
+	ctx context.Context, log logr.Logger, config *test.TestConfig,
+	clusterClients *test.ClusterClients, clusterTargets *test.ClusterTargets, testObjects *test.SharedTestObjects) {
 	r.ctx = ctx
 	r.log = log.WithName(r.Name())
-	r.kclient = kclient
 	r.config = config
-	r.target = target
+	r.clusterClients = clusterClients
+	r.clusterTargets = clusterTargets
 	r.testObjects = testObjects
 }
 
 func (r *VerifyDeploymentRunner) Name() string {
 	return "VerifyDeployment"
+}
+
+func (r *VerifyDeploymentRunner) Description() string {
+	description := `
+This test verifies that a tenant Landscaper deployment has been installed correctly.
+The test succeeds when all required pods (api server, etcd, landscaper ...) are running in the tenant namespace and
+the connection to the virtual cluster can be established. Otherwise the test fails.
+`
+	return description
+}
+
+func (r *VerifyDeploymentRunner) String() string {
+	return r.Name()
 }
 
 func (r *VerifyDeploymentRunner) Run() error {
@@ -62,7 +74,7 @@ func (r *VerifyDeploymentRunner) Run() error {
 
 func (r *VerifyDeploymentRunner) verifyDeployment(deployment *lssv1alpha1.LandscaperDeployment) error {
 	instance := &lssv1alpha1.Instance{}
-	if err := r.kclient.Get(
+	if err := r.clusterClients.TestCluster.Get(
 		r.ctx,
 		types.NamespacedName{Name: deployment.Status.InstanceRef.Name, Namespace: deployment.Status.InstanceRef.Namespace},
 		instance); err != nil {
@@ -70,7 +82,7 @@ func (r *VerifyDeploymentRunner) verifyDeployment(deployment *lssv1alpha1.Landsc
 	}
 
 	installation := &lsv1alpha1.Installation{}
-	if err := r.kclient.Get(
+	if err := r.clusterClients.TestCluster.Get(
 		r.ctx,
 		types.NamespacedName{Name: instance.Status.InstallationRef.Name, Namespace: instance.Status.InstallationRef.Namespace},
 		installation); err != nil {
@@ -115,7 +127,7 @@ func (r *VerifyDeploymentRunner) verifyPods(namespace string, numDeployers int) 
 
 	podList := &corev1.PodList{}
 	timeout, err := cliutil.CheckConditionPeriodically(func() (bool, error) {
-		if err := r.kclient.List(r.ctx, podList, &client.ListOptions{Namespace: namespace}); err != nil {
+		if err := r.clusterClients.HostingCluster.List(r.ctx, podList, &client.ListOptions{Namespace: namespace}); err != nil {
 			return false, fmt.Errorf("failed to list pods in namespace %q: %w", namespace, err)
 		}
 		if len(podList.Items) >= (len(expectedPods) + numDeployers) {
@@ -134,7 +146,7 @@ func (r *VerifyDeploymentRunner) verifyPods(namespace string, numDeployers int) 
 	r.log.Info("waiting for pods to become running")
 
 	timeout, err = cliutil.CheckConditionPeriodically(func() (bool, error) {
-		if err := r.kclient.List(r.ctx, podList, &client.ListOptions{Namespace: namespace}); err != nil {
+		if err := r.clusterClients.HostingCluster.List(r.ctx, podList, &client.ListOptions{Namespace: namespace}); err != nil {
 			return false, fmt.Errorf("failed to list pods in namespace %q: %w", namespace, err)
 		}
 
@@ -161,7 +173,7 @@ func (r *VerifyDeploymentRunner) verifyKubeconfig(instance *lssv1alpha1.Instance
 	r.log.Info("verifying kubeconfig for instance", "name", instance.Name)
 
 	timeout, err := cliutil.CheckConditionPeriodically(func() (bool, error) {
-		if err := r.kclient.Get(r.ctx, types.NamespacedName{Name: instance.Name, Namespace: instance.Namespace}, instance); err != nil {
+		if err := r.clusterClients.TestCluster.Get(r.ctx, types.NamespacedName{Name: instance.Name, Namespace: instance.Namespace}, instance); err != nil {
 			return false, err
 		}
 
@@ -175,27 +187,9 @@ func (r *VerifyDeploymentRunner) verifyKubeconfig(instance *lssv1alpha1.Instance
 		return fmt.Errorf("error while reading ClusterKubeconfig for instance %q: %w", instance.Name, err)
 	}
 
-	kubeconfig, err := base64.StdEncoding.DecodeString(instance.Status.ClusterKubeconfig)
+	virtualClient, err := util.BuildKubeClientForInstance(instance, test.Scheme())
 	if err != nil {
-		return fmt.Errorf("failed to decode kubeconfig of instance %q: %w", instance.Name, err)
-	}
-
-	laasClientCfg, err := clientcmd.Load(kubeconfig)
-	if err != nil {
-		return fmt.Errorf("failed to load kubeconfig of instance %q: %w", instance.Name, err)
-	}
-
-	loader := clientcmd.NewDefaultClientConfig(*laasClientCfg, nil)
-	laasRestConfig, err := loader.ClientConfig()
-	if err != nil {
-		return fmt.Errorf("failed to load rest config of instance %q: %err", instance.Name, err)
-	}
-
-	laasClient, err := client.New(laasRestConfig, client.Options{
-		Scheme: test.Scheme(),
-	})
-	if err != nil {
-		return fmt.Errorf("failed create client for instance %q: %err", instance.Name, err)
+		return err
 	}
 
 	namespace := &corev1.Namespace{
@@ -204,12 +198,12 @@ func (r *VerifyDeploymentRunner) verifyKubeconfig(instance *lssv1alpha1.Instance
 		},
 	}
 
-	if err := laasClient.Create(r.ctx, namespace); err != nil {
+	if err := virtualClient.Create(r.ctx, namespace); err != nil {
 		return fmt.Errorf("failed to create namespace on cluster for instance %q: %w", instance.Name, err)
 	}
 
 	installationList := &lsv1alpha1.InstallationList{}
-	if err := laasClient.List(r.ctx, installationList, &client.ListOptions{Namespace: namespace.Name}); err != nil {
+	if err := virtualClient.List(r.ctx, installationList, &client.ListOptions{Namespace: namespace.Name}); err != nil {
 		return fmt.Errorf("failed to list installations on cluster for instance %q: %w", instance.Name, err)
 	}
 

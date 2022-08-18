@@ -7,6 +7,8 @@ package landscaperdeployments
 import (
 	"context"
 
+	"sigs.k8s.io/controller-runtime/pkg/reconcile"
+
 	"github.com/go-logr/logr"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
@@ -27,6 +29,6 @@ func AddControllerToManager(ctx context.Context, logger logr.Logger, mgr manager
 		For(&v1alpha1.LandscaperDeployment{}).
 		Owns(&v1alpha1.LandscaperDeployment{}).
 		Owns(&v1alpha1.Instance{}).
-		WithLogger(log).
+		WithLogConstructor(func(r *reconcile.Request) logr.Logger { return log }).
 		Complete(ctrl)
 }

@@ -15,36 +15,44 @@ import (
 	"github.com/go-logr/logr"
 
 	corev1 "k8s.io/api/core/v1"
-	"sigs.k8s.io/controller-runtime/pkg/client"
-
-	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 
 	"github.com/gardener/landscaper-service/test/integration/pkg/test"
 )
 
 type VerifyDeleteRunner struct {
-	ctx         context.Context
-	log         logr.Logger
-	kclient     client.Client
-	config      *test.TestConfig
-	target      *lsv1alpha1.Target
-	testObjects *test.SharedTestObjects
+	ctx            context.Context
+	log            logr.Logger
+	config         *test.TestConfig
+	clusterClients *test.ClusterClients
+	clusterTargets *test.ClusterTargets
+	testObjects    *test.SharedTestObjects
 }
 
 func (r *VerifyDeleteRunner) Init(
-	ctx context.Context, log logr.Logger,
-	kclient client.Client, config *test.TestConfig,
-	target *lsv1alpha1.Target, testObjects *test.SharedTestObjects) {
+	ctx context.Context, log logr.Logger, config *test.TestConfig,
+	clusterClients *test.ClusterClients, clusterTargets *test.ClusterTargets, testObjects *test.SharedTestObjects) {
 	r.ctx = ctx
 	r.log = log.WithName(r.Name())
-	r.kclient = kclient
 	r.config = config
-	r.target = target
+	r.clusterClients = clusterClients
+	r.clusterTargets = clusterTargets
 	r.testObjects = testObjects
 }
 
 func (r *VerifyDeleteRunner) Name() string {
-	return "VerifyDelete"
+	return "VerifyDeploymentDeleted"
+}
+
+func (r *VerifyDeleteRunner) Description() string {
+	description := `This test verifies that a tenant Landscaper deployment has been uninstalled and deleted correctly.
+This test succeeds when the virtual-cluster-namespace of the tenant Landscaper deployment has been deleted before the
+timeout expires. Otherwise the test fails.
+`
+	return description
+}
+
+func (r *VerifyDeleteRunner) String() string {
+	return r.Name()
 }
 
 func (r *VerifyDeleteRunner) Run() error {
@@ -57,11 +65,11 @@ func (r *VerifyDeleteRunner) Run() error {
 }
 
 func (r *VerifyDeleteRunner) verifyNamespace(namespaceName string) error {
-	r.log.Info("verifying namespace", "name", namespaceName)
+	r.log.Info("verifying namespace being deleted", "name", namespaceName)
 
 	timeout, err := cliutil.CheckConditionPeriodically(func() (bool, error) {
 		namespace := &corev1.Namespace{}
-		if err := r.kclient.Get(r.ctx, types.NamespacedName{Name: namespaceName}, namespace); err != nil {
+		if err := r.clusterClients.HostingCluster.Get(r.ctx, types.NamespacedName{Name: namespaceName}, namespace); err != nil {
 			if k8serrors.IsNotFound(err) {
 				return true, nil
 			} else {
@@ -70,7 +78,7 @@ func (r *VerifyDeleteRunner) verifyNamespace(namespaceName string) error {
 		}
 
 		return false, nil
-	}, r.config.SleepTime, r.config.MaxRetries)
+	}, r.config.SleepTime, r.config.MaxRetries*5)
 
 	if timeout {
 		return fmt.Errorf("timeout while waiting for namespace %q being deleted", namespaceName)

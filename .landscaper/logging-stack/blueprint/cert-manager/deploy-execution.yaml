@@ -1,0 +1,46 @@
+deployItems:
+  - name: cert-manager
+    type: landscaper.gardener.cloud/helm
+    target:
+      name: {{ .imports.targetCluster.metadata.name }}
+      namespace: {{ .imports.targetCluster.metadata.namespace }}
+    config:
+      apiVersion: helm.deployer.landscaper.gardener.cloud/v1alpha1
+      kind: ProviderConfiguration
+      updateStrategy: patch
+      name: cert-manager
+      namespace: {{ .imports.namespace }}
+
+      chart:
+        {{ $chartResource := getResource .cd "name" "cert-manager-chart" }}
+        ref: {{ $chartResource.access.imageReference }}
+
+      values:
+        installCRDs: true
+
+        image:
+          {{ $certManagerControllerResource := getResource .cd "name" "cert-manager-controller" }}
+          {{ $certManagerControllerImage := parseOCIRef $certManagerControllerResource.access.imageReference }}
+          repository: {{ index $certManagerControllerImage 0 }}
+          digest: {{ index $certManagerControllerImage 1 }}
+
+        webhook:
+          image:
+            {{ $certManagerWebhookResource := getResource .cd "name" "cert-manager-webhook" }}
+            {{ $certManagerWebhookImage := parseOCIRef $certManagerWebhookResource.access.imageReference }}
+            repository: {{ index $certManagerWebhookImage 0 }}
+            digest: {{ index $certManagerWebhookImage 1 }}
+
+        cainjector:
+          image:
+            {{ $certManagerCAInjectorResource := getResource .cd "name" "cert-manager-cainjector" }}
+            {{ $certManagerCAInjectorImage := parseOCIRef $certManagerCAInjectorResource.access.imageReference }}
+            repository: {{ index $certManagerCAInjectorImage 0 }}
+            digest: {{ index $certManagerCAInjectorImage 1 }}
+
+        startupapicheck:
+          image:
+            {{ $certManagerCTLResource := getResource .cd "name" "cert-manager-ctl" }}
+            {{ $certManagerCTLImage := parseOCIRef $certManagerCTLResource.access.imageReference }}
+              repository: {{ index $certManagerCTLImage 0 }}
+              digest: {{ index $certManagerCTLImage 1 }}

@@ -210,6 +210,10 @@ func (c *Controller) reconcileInstallation(ctx context.Context, log logr.Logger,
 	if instance.Status.InstallationRef != nil && !instance.Status.InstallationRef.IsEmpty() {
 		installation.Name = instance.Status.InstallationRef.Name
 		installation.Namespace = instance.Status.InstallationRef.Namespace
+
+		if err := c.Client().Get(ctx, instance.Status.InstallationRef.NamespacedName(), installation); err != nil {
+			return fmt.Errorf("unable to get installation: %w", err)
+		}
 	}
 
 	_, err := kubernetes.CreateOrUpdate(ctx, c.Client(), installation, func() error {
@@ -247,6 +251,9 @@ func (c *Controller) reconcileInstallation(ctx context.Context, log logr.Logger,
 // mutateInstallation creates or updates the installation for an instance.
 func (c *Controller) mutateInstallation(ctx context.Context, log logr.Logger, installation *lsv1alpha1.Installation, instance *lssv1alpha1.Instance) error {
 	log.Info("Create/Update installation for instance")
+
+	// create a copy of the current installation spec for deciding whether a reconcile-annotation has to be set.
+	oldInstallationSpec := installation.Spec.DeepCopy()
 
 	if err := controllerutil.SetControllerReference(instance, installation, c.Scheme()); err != nil {
 		return fmt.Errorf("unable to set owner reference for installation: %w", err)
@@ -315,7 +322,50 @@ func (c *Controller) mutateInstallation(ctx context.Context, log logr.Logger, in
 		},
 	}
 
+	if !deepEqualInstallationSpec(oldInstallationSpec, installation.Spec.DeepCopy()) {
+		// set reconcile annotation to start/update the installation
+		log.Info("Setting reconcile operation annotation")
+		if installation.Annotations == nil {
+			installation.Annotations = make(map[string]string)
+		}
+		installation.Annotations[lsv1alpha1.OperationAnnotation] = string(lsv1alpha1.ReconcileOperation)
+	}
+
 	return nil
+}
+
+// deepEqualInstallationSpec tests whether two landscaper service installation specs are equal
+func deepEqualInstallationSpec(specA, specB *lsv1alpha1.InstallationSpec) bool {
+	landscaperConfigA := make(map[string]interface{})
+	if err := json.Unmarshal(specA.ImportDataMappings[lsinstallation.LandscaperConfigImportName].RawMessage, &landscaperConfigA); err != nil {
+		return false
+	}
+	landscaperConfigB := make(map[string]interface{})
+	if err := json.Unmarshal(specB.ImportDataMappings[lsinstallation.LandscaperConfigImportName].RawMessage, &landscaperConfigB); err != nil {
+		return false
+	}
+	if !reflect.DeepEqual(landscaperConfigA, landscaperConfigB) {
+		return false
+	}
+
+	registryConfigA := make(map[string]interface{})
+	if err := json.Unmarshal(specA.ImportDataMappings[lsinstallation.RegistryConfigImportName].RawMessage, &registryConfigA); err != nil {
+		return false
+	}
+	registryConfigB := make(map[string]interface{})
+	if err := json.Unmarshal(specA.ImportDataMappings[lsinstallation.RegistryConfigImportName].RawMessage, &registryConfigB); err != nil {
+		return false
+	}
+	if !reflect.DeepEqual(registryConfigA, registryConfigB) {
+		return false
+	}
+
+	delete(specA.ImportDataMappings, lsinstallation.LandscaperConfigImportName)
+	delete(specB.ImportDataMappings, lsinstallation.LandscaperConfigImportName)
+	delete(specA.ImportDataMappings, lsinstallation.RegistryConfigImportName)
+	delete(specB.ImportDataMappings, lsinstallation.RegistryConfigImportName)
+
+	return reflect.DeepEqual(specA, specB)
 }
 
 // handleExports tries to find the exports of the installation and update the instance status accordingly.
