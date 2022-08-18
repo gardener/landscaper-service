@@ -28,5 +28,5 @@ func NewCrdManager(log logr.Logger, mgr manager.Manager, config config.CrdManage
 		DeployCustomResourceDefinitions: config.DeployCustomResourceDefinitions,
 		ForceUpdate:                     config.ForceUpdate,
 	}
-	return crdmanager.NewCrdManager(log, mgr, crdConfig, &importedCrdFS, embedFSCrdRootDir)
+	return crdmanager.NewCrdManager(mgr, crdConfig, &importedCrdFS, embedFSCrdRootDir)
 }

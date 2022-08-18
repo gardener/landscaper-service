@@ -9,34 +9,23 @@ import (
 	"fmt"
 
 	cliutil "github.com/gardener/landscapercli/pkg/util"
+	corev1 "k8s.io/api/core/v1"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
 
-	"github.com/go-logr/logr"
-
-	corev1 "k8s.io/api/core/v1"
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 
 	"github.com/gardener/landscaper-service/test/integration/pkg/test"
 )
 
 type VerifyDeleteRunner struct {
-	ctx            context.Context
-	log            logr.Logger
-	config         *test.TestConfig
-	clusterClients *test.ClusterClients
-	clusterTargets *test.ClusterTargets
-	testObjects    *test.SharedTestObjects
+	test.BaseTestRunner
 }
 
 func (r *VerifyDeleteRunner) Init(
-	ctx context.Context, log logr.Logger, config *test.TestConfig,
+	ctx context.Context, config *test.TestConfig,
 	clusterClients *test.ClusterClients, clusterTargets *test.ClusterTargets, testObjects *test.SharedTestObjects) {
-	r.ctx = ctx
-	r.log = log.WithName(r.Name())
-	r.config = config
-	r.clusterClients = clusterClients
-	r.clusterTargets = clusterTargets
-	r.testObjects = testObjects
+	r.BaseInit(r.Name(), ctx, config, clusterClients, clusterTargets, testObjects)
 }
 
 func (r *VerifyDeleteRunner) Name() string {
@@ -56,7 +45,7 @@ func (r *VerifyDeleteRunner) String() string {
 }
 
 func (r *VerifyDeleteRunner) Run() error {
-	for _, namespace := range r.testObjects.HostingClusterNamespaces {
+	for _, namespace := range r.GetTestObjects().HostingClusterNamespaces {
 		if err := r.verifyNamespace(namespace); err != nil {
 			return err
 		}
@@ -65,11 +54,13 @@ func (r *VerifyDeleteRunner) Run() error {
 }
 
 func (r *VerifyDeleteRunner) verifyNamespace(namespaceName string) error {
-	r.log.Info("verifying namespace being deleted", "name", namespaceName)
+	logger, _ := logging.FromContextOrNew(r.GetCtx(), nil)
+
+	logger.Info("verifying namespace being deleted", "name", namespaceName)
 
 	timeout, err := cliutil.CheckConditionPeriodically(func() (bool, error) {
 		namespace := &corev1.Namespace{}
-		if err := r.clusterClients.HostingCluster.Get(r.ctx, types.NamespacedName{Name: namespaceName}, namespace); err != nil {
+		if err := r.GetClusterClients().HostingCluster.Get(r.GetCtx(), types.NamespacedName{Name: namespaceName}, namespace); err != nil {
 			if k8serrors.IsNotFound(err) {
 				return true, nil
 			} else {
@@ -78,7 +69,7 @@ func (r *VerifyDeleteRunner) verifyNamespace(namespaceName string) error {
 		}
 
 		return false, nil
-	}, r.config.SleepTime, r.config.MaxRetries*5)
+	}, r.GetConfig().SleepTime, r.GetConfig().MaxRetries*5)
 
 	if timeout {
 		return fmt.Errorf("timeout while waiting for namespace %q being deleted", namespaceName)

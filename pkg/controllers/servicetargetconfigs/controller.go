@@ -7,13 +7,15 @@ package servicetargetconfigs
 import (
 	"context"
 
-	kutils "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
-	"github.com/go-logr/logr"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
+
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
+
+	kutils "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 
 	coreconfig "github.com/gardener/landscaper-service/pkg/apis/config"
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
@@ -23,26 +25,27 @@ import (
 // Controller is the servicetargetconfig controller
 type Controller struct {
 	operation.Operation
+	log logging.Logger
 }
 
 // NewController returns a new servicetargetconfig controller
-func NewController(log logr.Logger, c client.Client, scheme *runtime.Scheme, config *coreconfig.LandscaperServiceConfiguration) (reconcile.Reconciler, error) {
-	ctrl := &Controller{}
-	op := operation.NewOperation(log, c, scheme, config)
+func NewController(logger logging.Logger, c client.Client, scheme *runtime.Scheme, config *coreconfig.LandscaperServiceConfiguration) (reconcile.Reconciler, error) {
+	ctrl := &Controller{
+		log: logger,
+	}
+	op := operation.NewOperation(c, scheme, config)
 	ctrl.Operation = *op
 	return ctrl, nil
 }
 
 // Reconcile reconciles requests for servicetargetconfigs
 func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reconcile.Result, error) {
-	log := c.Log().WithValues("servicetargetconfig", req.NamespacedName.String())
-	ctx = logr.NewContext(ctx, log)
-	log.V(5).Info("reconcile", "resource", req.NamespacedName)
+	logger, ctx := c.log.StartReconcileAndAddToContext(ctx, req)
 
 	config := &lssv1alpha1.ServiceTargetConfig{}
 	if err := c.Client().Get(ctx, req.NamespacedName, config); err != nil {
 		if apierrors.IsNotFound(err) {
-			c.Log().V(5).Info(err.Error())
+			logger.Info(err.Error())
 			return reconcile.Result{}, nil
 		}
 		return reconcile.Result{}, err
@@ -76,5 +79,5 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 	}
 
-	return reconcile.Result{}, c.reconcile(ctx, log, config)
+	return reconcile.Result{}, c.reconcile(ctx, config)
 }

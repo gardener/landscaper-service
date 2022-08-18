@@ -9,35 +9,25 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/go-logr/logr"
-
-	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
-	cliutil "github.com/gardener/landscapercli/pkg/util"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
+
+	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
+	cliutil "github.com/gardener/landscapercli/pkg/util"
 
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	"github.com/gardener/landscaper-service/test/integration/pkg/test"
 )
 
 type CreateDeploymentRunner struct {
-	ctx            context.Context
-	log            logr.Logger
-	config         *test.TestConfig
-	clusterClients *test.ClusterClients
-	clusterTargets *test.ClusterTargets
-	testObjects    *test.SharedTestObjects
+	test.BaseTestRunner
 }
 
 func (r *CreateDeploymentRunner) Init(
-	ctx context.Context, log logr.Logger, config *test.TestConfig,
+	ctx context.Context, config *test.TestConfig,
 	clusterClients *test.ClusterClients, clusterTargets *test.ClusterTargets, testObjects *test.SharedTestObjects) {
-	r.ctx = ctx
-	r.log = log.WithName(r.Name())
-	r.config = config
-	r.clusterClients = clusterClients
-	r.clusterTargets = clusterTargets
-	r.testObjects = testObjects
+	r.BaseInit(r.Name(), ctx, config, clusterClients, clusterTargets, testObjects)
 }
 
 func (r *CreateDeploymentRunner) Name() string {
@@ -57,7 +47,8 @@ func (r *CreateDeploymentRunner) String() string {
 }
 
 func (r *CreateDeploymentRunner) Run() error {
-	r.log.Info("creating landscaper deployment")
+	logger, _ := logging.FromContextOrNew(r.GetCtx(), nil)
+	logger.Info("creating landscaper deployment")
 	if err := r.createDeployment(); err != nil {
 		return err
 	}
@@ -65,10 +56,12 @@ func (r *CreateDeploymentRunner) Run() error {
 }
 
 func (r *CreateDeploymentRunner) createDeployment() error {
+	logger, _ := logging.FromContextOrNew(r.GetCtx(), nil)
+
 	deployment := &lssv1alpha1.LandscaperDeployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "test",
-			Namespace: r.config.TestNamespace,
+			Namespace: r.GetConfig().TestNamespace,
 		},
 		Spec: lssv1alpha1.LandscaperDeploymentSpec{
 			TenantId: createTenantId(),
@@ -82,14 +75,14 @@ func (r *CreateDeploymentRunner) createDeployment() error {
 		},
 	}
 
-	if err := r.clusterClients.TestCluster.Create(r.ctx, deployment); err != nil {
+	if err := r.GetClusterClients().TestCluster.Create(r.GetCtx(), deployment); err != nil {
 		return fmt.Errorf("failed to create deployment: %w", err)
 	}
 
-	r.log.Info("waiting for instance being created")
+	logger.Info("waiting for instance being created")
 
 	timeout, err := cliutil.CheckConditionPeriodically(func() (bool, error) {
-		if err := r.clusterClients.TestCluster.Get(r.ctx, types.NamespacedName{Name: deployment.Name, Namespace: deployment.Namespace}, deployment); err != nil {
+		if err := r.GetClusterClients().TestCluster.Get(r.GetCtx(), types.NamespacedName{Name: deployment.Name, Namespace: deployment.Namespace}, deployment); err != nil {
 			return false, err
 		}
 
@@ -98,7 +91,7 @@ func (r *CreateDeploymentRunner) createDeployment() error {
 		}
 
 		return false, nil
-	}, r.config.SleepTime, r.config.MaxRetries)
+	}, r.GetConfig().SleepTime, r.GetConfig().MaxRetries)
 
 	if err != nil {
 		return fmt.Errorf("failed to wait for instance being created: %w", err)
@@ -109,11 +102,11 @@ func (r *CreateDeploymentRunner) createDeployment() error {
 
 	instance := &lssv1alpha1.Instance{}
 
-	r.log.Info("waiting for installation being created")
+	logger.Info("waiting for installation being created")
 
 	timeout, err = cliutil.CheckConditionPeriodically(func() (bool, error) {
-		if err := r.clusterClients.TestCluster.Get(
-			r.ctx,
+		if err := r.GetClusterClients().TestCluster.Get(
+			r.GetCtx(),
 			types.NamespacedName{Name: deployment.Status.InstanceRef.Name, Namespace: deployment.Status.InstanceRef.Namespace},
 			instance); err != nil {
 
@@ -125,7 +118,7 @@ func (r *CreateDeploymentRunner) createDeployment() error {
 		}
 
 		return false, nil
-	}, r.config.SleepTime, r.config.MaxRetries)
+	}, r.GetConfig().SleepTime, r.GetConfig().MaxRetries)
 
 	if err != nil {
 		return fmt.Errorf("failed to wait for installation being created: %w", err)
@@ -134,18 +127,18 @@ func (r *CreateDeploymentRunner) createDeployment() error {
 		return fmt.Errorf("timeout while wating for installation being created")
 	}
 
-	r.log.Info("waiting for installation being succeeded")
+	logger.Info("waiting for installation being succeeded")
 
 	timeout, err = cliutil.CheckAndWaitUntilLandscaperInstallationSucceeded(
-		r.clusterClients.TestCluster,
+		r.GetClusterClients().TestCluster,
 		types.NamespacedName{Name: instance.Status.InstallationRef.Name, Namespace: instance.Status.InstallationRef.Namespace},
-		r.config.SleepTime,
-		r.config.MaxRetries*10)
+		r.GetConfig().SleepTime,
+		r.GetConfig().MaxRetries*10)
 
 	if err != nil || timeout {
 		installation := &lsv1alpha1.Installation{}
-		if err := r.clusterClients.TestCluster.Get(r.ctx, types.NamespacedName{Name: instance.Status.InstallationRef.Name, Namespace: instance.Status.InstallationRef.Namespace}, installation); err == nil {
-			r.log.Error(fmt.Errorf("installation failed"), "installation", "last error", installation.Status.LastError)
+		if err := r.GetClusterClients().TestCluster.Get(r.GetCtx(), types.NamespacedName{Name: instance.Status.InstallationRef.Name, Namespace: instance.Status.InstallationRef.Namespace}, installation); err == nil {
+			logger.Error(fmt.Errorf("installation failed"), "installation", "last error", installation.Status.LastError)
 		}
 	}
 
@@ -156,7 +149,7 @@ func (r *CreateDeploymentRunner) createDeployment() error {
 		return fmt.Errorf("waiting for installation of landscaper deployment %s timed out", deployment.Name)
 	}
 
-	r.testObjects.LandscaperDeployments[types.NamespacedName{Name: deployment.Name, Namespace: deployment.Namespace}.String()] = deployment
+	r.GetTestObjects().LandscaperDeployments[types.NamespacedName{Name: deployment.Name, Namespace: deployment.Namespace}.String()] = deployment
 
 	return nil
 }

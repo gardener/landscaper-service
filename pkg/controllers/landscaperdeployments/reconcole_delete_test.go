@@ -8,11 +8,12 @@ import (
 	"context"
 	"time"
 
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
 	kutil "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
-	"github.com/go-logr/logr"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
@@ -33,8 +34,8 @@ var _ = Describe("Delete", func() {
 
 	BeforeEach(func() {
 		ctx = context.Background()
-		op = operation.NewOperation(logr.Discard(), testenv.Client, envtest.LandscaperServiceScheme, testutils.DefaultControllerConfiguration())
-		ctrl = deploymentscontroller.NewTestActuator(*op)
+		op = operation.NewOperation(testenv.Client, envtest.LandscaperServiceScheme, testutils.DefaultControllerConfiguration())
+		ctrl = deploymentscontroller.NewTestActuator(*op, logging.Discard())
 	})
 
 	AfterEach(func() {

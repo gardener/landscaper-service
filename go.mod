@@ -4,8 +4,8 @@ go 1.18
 
 require (
 	github.com/gardener/component-spec/bindings-go v0.0.66
-	github.com/gardener/landscaper/apis v0.29.0
-	github.com/gardener/landscaper/controller-utils v0.29.0
+	github.com/gardener/landscaper/apis v0.30.0
+	github.com/gardener/landscaper/controller-utils v0.30.0
 	github.com/go-logr/logr v1.2.3
 	github.com/google/uuid v1.1.2
 	github.com/onsi/ginkgo v1.16.5
@@ -34,7 +34,7 @@ require (
 	github.com/felixge/httpsnoop v1.0.1 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
-	github.com/go-logr/zapr v1.2.0 // indirect
+	github.com/go-logr/zapr v1.2.3 // indirect
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect
 	github.com/go-openapi/jsonreference v0.20.0 // indirect
 	github.com/go-openapi/swag v0.19.15 // indirect

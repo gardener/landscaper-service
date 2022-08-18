@@ -8,33 +8,23 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/go-logr/logr"
-
 	cliutil "github.com/gardener/landscapercli/pkg/util"
 	"k8s.io/apimachinery/pkg/types"
+
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	"github.com/gardener/landscaper-service/test/integration/pkg/test"
 )
 
 type DeleteDeploymentRunner struct {
-	ctx            context.Context
-	log            logr.Logger
-	config         *test.TestConfig
-	clusterClients *test.ClusterClients
-	clusterTargets *test.ClusterTargets
-	testObjects    *test.SharedTestObjects
+	test.BaseTestRunner
 }
 
 func (r *DeleteDeploymentRunner) Init(
-	ctx context.Context, log logr.Logger, config *test.TestConfig,
+	ctx context.Context, config *test.TestConfig,
 	clusterClients *test.ClusterClients, clusterTargets *test.ClusterTargets, testObjects *test.SharedTestObjects) {
-	r.ctx = ctx
-	r.log = log.WithName(r.Name())
-	r.config = config
-	r.clusterClients = clusterClients
-	r.clusterTargets = clusterTargets
-	r.testObjects = testObjects
+	r.BaseInit(r.Name(), ctx, config, clusterClients, clusterTargets, testObjects)
 }
 
 func (r *DeleteDeploymentRunner) Name() string {
@@ -55,7 +45,7 @@ func (r *DeleteDeploymentRunner) String() string {
 }
 
 func (r *DeleteDeploymentRunner) Run() error {
-	for _, deployment := range r.testObjects.LandscaperDeployments {
+	for _, deployment := range r.GetTestObjects().LandscaperDeployments {
 		if err := r.deleteDeployment(deployment); err != nil {
 			return err
 		}
@@ -64,17 +54,18 @@ func (r *DeleteDeploymentRunner) Run() error {
 }
 
 func (r *DeleteDeploymentRunner) deleteDeployment(deployment *lssv1alpha1.LandscaperDeployment) error {
-	r.log.Info("deleting deployment", "name", deployment.Name)
+	logger, _ := logging.FromContextOrNew(r.GetCtx(), nil)
+	logger.Info("deleting deployment", "name", deployment.Name)
 
-	if err := r.clusterClients.TestCluster.Delete(r.ctx, deployment); err != nil {
+	if err := r.GetClusterClients().TestCluster.Delete(r.GetCtx(), deployment); err != nil {
 		return fmt.Errorf("failed to delete deployment %q: %w", deployment.Name, err)
 	}
 
-	r.log.Info("waiting for deployment to be deleted", "name", deployment.Name)
+	logger.Info("waiting for deployment to be deleted", "name", deployment.Name)
 	timeout, err := cliutil.CheckAndWaitUntilObjectNotExistAnymore(
-		r.clusterClients.TestCluster,
+		r.GetClusterClients().TestCluster,
 		types.NamespacedName{Name: deployment.Name, Namespace: deployment.Namespace}, deployment,
-		r.config.SleepTime, r.config.MaxRetries*5)
+		r.GetConfig().SleepTime, r.GetConfig().MaxRetries*5)
 
 	if err != nil {
 		return fmt.Errorf("failed to wait for deployment %q to be deleted: %w", deployment.Name, err)

@@ -7,11 +7,12 @@ package landscaperdeployments_test
 import (
 	"context"
 
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
 	kutil "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
-	"github.com/go-logr/logr"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 
@@ -176,8 +177,8 @@ var _ = Describe("Reconcile", func() {
 
 	BeforeEach(func() {
 		ctx = context.Background()
-		op = operation.NewOperation(logr.Discard(), testenv.Client, envtest.LandscaperServiceScheme, testutils.DefaultControllerConfiguration())
-		ctrl = deploymentscontroller.NewTestActuator(*op)
+		op = operation.NewOperation(testenv.Client, envtest.LandscaperServiceScheme, testutils.DefaultControllerConfiguration())
+		ctrl = deploymentscontroller.NewTestActuator(*op, logging.Discard())
 	})
 
 	AfterEach(func() {

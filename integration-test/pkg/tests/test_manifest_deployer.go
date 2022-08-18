@@ -8,15 +8,16 @@ import (
 	"context"
 	"fmt"
 
-	cdv2 "github.com/gardener/component-spec/bindings-go/apis/v2"
-	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
-	cliutil "github.com/gardener/landscapercli/pkg/util"
-	"github.com/go-logr/logr"
 	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+
+	cdv2 "github.com/gardener/component-spec/bindings-go/apis/v2"
+	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
+	cliutil "github.com/gardener/landscapercli/pkg/util"
 
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	lssutils "github.com/gardener/landscaper-service/pkg/utils"
@@ -35,23 +36,13 @@ const (
 )
 
 type ManifestDeployerTestRunner struct {
-	ctx            context.Context
-	log            logr.Logger
-	config         *test.TestConfig
-	clusterClients *test.ClusterClients
-	clusterTargets *test.ClusterTargets
-	testObjects    *test.SharedTestObjects
+	test.BaseTestRunner
 }
 
 func (r *ManifestDeployerTestRunner) Init(
-	ctx context.Context, log logr.Logger, config *test.TestConfig,
+	ctx context.Context, config *test.TestConfig,
 	clusterClients *test.ClusterClients, clusterTargets *test.ClusterTargets, testObjects *test.SharedTestObjects) {
-	r.ctx = ctx
-	r.log = log.WithName(r.Name())
-	r.config = config
-	r.clusterClients = clusterClients
-	r.clusterTargets = clusterTargets
-	r.testObjects = testObjects
+	r.BaseInit(r.Name(), ctx, config, clusterClients, clusterTargets, testObjects)
 }
 
 func (r *ManifestDeployerTestRunner) Name() string {
@@ -71,7 +62,7 @@ func (r *ManifestDeployerTestRunner) String() string {
 }
 
 func (r *ManifestDeployerTestRunner) Run() error {
-	for _, deployment := range r.testObjects.LandscaperDeployments {
+	for _, deployment := range r.GetTestObjects().LandscaperDeployments {
 		virtualClient, err := r.createVirtualClusterClient(deployment)
 		if err != nil {
 			return err
@@ -94,10 +85,12 @@ func (r *ManifestDeployerTestRunner) Run() error {
 }
 
 func (r *ManifestDeployerTestRunner) createVirtualClusterClient(deployment *lssv1alpha1.LandscaperDeployment) (client.Client, error) {
-	r.log.Info("creating virtual cluster client for deployment", "deploymentName", deployment.Name)
+	logger, _ := logging.FromContextOrNew(r.GetCtx(), nil)
+
+	logger.Info("creating virtual cluster client for deployment", "deploymentName", deployment.Name)
 
 	instance := &lssv1alpha1.Instance{}
-	if err := r.clusterClients.TestCluster.Get(r.ctx, deployment.Status.InstanceRef.NamespacedName(), instance); err != nil {
+	if err := r.GetClusterClients().TestCluster.Get(r.GetCtx(), deployment.Status.InstanceRef.NamespacedName(), instance); err != nil {
 		return nil, fmt.Errorf("failed to get instance for deployment: %w", err)
 	}
 
@@ -110,16 +103,18 @@ func (r *ManifestDeployerTestRunner) createVirtualClusterClient(deployment *lssv
 }
 
 func (r *ManifestDeployerTestRunner) prepare(virtualClient client.Client) (string, error) {
+	logger, _ := logging.FromContextOrNew(r.GetCtx(), nil)
+
 	namespace := &corev1.Namespace{}
-	if err := r.clusterClients.TestCluster.Get(r.ctx, types.NamespacedName{Name: manifestTestNamespace}, namespace); err != nil {
+	if err := r.GetClusterClients().TestCluster.Get(r.GetCtx(), types.NamespacedName{Name: manifestTestNamespace}, namespace); err != nil {
 		if !apierrors.IsNotFound(err) {
-			r.log.Error(err, "failed to get test namespace", "namespace", manifestTestNamespace)
+			logger.Error(err, "failed to get test namespace", "namespace", manifestTestNamespace)
 			return "", err
 		}
 	} else {
-		r.log.Info("deleting namespace", "name", manifestTestNamespace)
-		if err := cliutil.DeleteNamespace(r.clusterClients.TestCluster, manifestTestNamespace, r.config.SleepTime, r.config.MaxRetries); err != nil {
-			r.log.Error(err, "failed to delete test namespace", "namespace", manifestTestNamespace)
+		logger.Info("deleting namespace", "name", manifestTestNamespace)
+		if err := cliutil.DeleteNamespace(r.GetClusterClients().TestCluster, manifestTestNamespace, r.GetConfig().SleepTime, r.GetConfig().MaxRetries); err != nil {
+			logger.Error(err, "failed to delete test namespace", "namespace", manifestTestNamespace)
 			return "", err
 		}
 	}
@@ -129,9 +124,9 @@ func (r *ManifestDeployerTestRunner) prepare(virtualClient client.Client) (strin
 			Name: manifestTestNamespace,
 		},
 	}
-	r.log.Info("creating namespace in test cluster", "name", manifestTestNamespace)
-	if err := r.clusterClients.TestCluster.Create(r.ctx, namespace); err != nil {
-		r.log.Error(err, "failed to create test namespace", "namespace", manifestTestNamespace)
+	logger.Info("creating namespace in test cluster", "name", manifestTestNamespace)
+	if err := r.GetClusterClients().TestCluster.Create(r.GetCtx(), namespace); err != nil {
+		logger.Error(err, "failed to create test namespace", "namespace", manifestTestNamespace)
 		return "", err
 	}
 
@@ -140,9 +135,9 @@ func (r *ManifestDeployerTestRunner) prepare(virtualClient client.Client) (strin
 			GenerateName: "manifest-test-",
 		},
 	}
-	r.log.Info("creating namespace in virtual cluster", "generateName", namespace.GenerateName)
-	if err := virtualClient.Create(r.ctx, namespace); err != nil {
-		r.log.Error(err, "failed to create namespace in virtual cluster", "generateName", namespace.GenerateName)
+	logger.Info("creating namespace in virtual cluster", "generateName", namespace.GenerateName)
+	if err := virtualClient.Create(r.GetCtx(), namespace); err != nil {
+		logger.Error(err, "failed to create namespace in virtual cluster", "generateName", namespace.GenerateName)
 		return "", err
 	}
 
@@ -150,15 +145,19 @@ func (r *ManifestDeployerTestRunner) prepare(virtualClient client.Client) (strin
 }
 
 func (r *ManifestDeployerTestRunner) createTarget(deployment *lssv1alpha1.LandscaperDeployment, virtualClient client.Client, virtualClusterNamespace string) error {
-	r.log.Info("creating target for deployment", "deploymentName", deployment.Name)
-	if _, err := util.BuildKubernetesClusterTarget(r.ctx, virtualClient, r.config.TestClusterKubeconfig, manifestTestTargetName, virtualClusterNamespace); err != nil {
+	logger, _ := logging.FromContextOrNew(r.GetCtx(), nil)
+
+	logger.Info("creating target for deployment", "deploymentName", deployment.Name)
+	if _, err := util.BuildKubernetesClusterTarget(r.GetCtx(), virtualClient, r.GetConfig().TestClusterKubeconfig, manifestTestTargetName, virtualClusterNamespace); err != nil {
 		return fmt.Errorf("failed to create target: %w", err)
 	}
 	return nil
 }
 
 func (r *ManifestDeployerTestRunner) createInstallation(deployment *lssv1alpha1.LandscaperDeployment, virtualClient client.Client, virtualClusterNamespace string) error {
-	r.log.Info("creating installation for deployment",
+	logger, _ := logging.FromContextOrNew(r.GetCtx(), nil)
+
+	logger.Info("creating installation for deployment",
 		"deploymentName", deployment.Name,
 		"installationName", manifestTestInstallationName,
 		"installationNamespace", virtualClusterNamespace)
@@ -201,7 +200,7 @@ func (r *ManifestDeployerTestRunner) createInstallation(deployment *lssv1alpha1.
 		Status: lsv1alpha1.InstallationStatus{},
 	}
 
-	if err := virtualClient.Create(r.ctx, installation); err != nil {
+	if err := virtualClient.Create(r.GetCtx(), installation); err != nil {
 		return fmt.Errorf("failed to create installation: %w", err)
 	}
 
@@ -209,7 +208,9 @@ func (r *ManifestDeployerTestRunner) createInstallation(deployment *lssv1alpha1.
 }
 
 func (r *ManifestDeployerTestRunner) verifyInstallation(deployment *lssv1alpha1.LandscaperDeployment, virtualClient client.Client, virtualClusterNamespace string) error {
-	r.log.Info("verifying installation for deployment",
+	logger, _ := logging.FromContextOrNew(r.GetCtx(), nil)
+
+	logger.Info("verifying installation for deployment",
 		"deploymentName", deployment.Name,
 		"installationName", manifestTestInstallationName,
 		"installationNamespace", virtualClusterNamespace)
@@ -217,12 +218,12 @@ func (r *ManifestDeployerTestRunner) verifyInstallation(deployment *lssv1alpha1.
 	timeout, err := cliutil.CheckAndWaitUntilLandscaperInstallationSucceeded(
 		virtualClient,
 		types.NamespacedName{Name: manifestTestInstallationName, Namespace: virtualClusterNamespace},
-		r.config.SleepTime, r.config.MaxRetries)
+		r.GetConfig().SleepTime, r.GetConfig().MaxRetries)
 
 	if err != nil || timeout {
 		installation := &lsv1alpha1.Installation{}
-		if err := virtualClient.Get(r.ctx, types.NamespacedName{Name: manifestTestInstallationName, Namespace: virtualClusterNamespace}, installation); err == nil {
-			r.log.Error(fmt.Errorf("installation failed"), "installation", "last error", installation.Status.LastError)
+		if err := virtualClient.Get(r.GetCtx(), types.NamespacedName{Name: manifestTestInstallationName, Namespace: virtualClusterNamespace}, installation); err == nil {
+			logger.Error(fmt.Errorf("installation failed"), "installation", "last error", installation.Status.LastError)
 		}
 	}
 
@@ -234,7 +235,7 @@ func (r *ManifestDeployerTestRunner) verifyInstallation(deployment *lssv1alpha1.
 	}
 
 	configMap := &corev1.ConfigMap{}
-	if err := r.clusterClients.TestCluster.Get(r.ctx, types.NamespacedName{Name: manifestTestConfigmapName, Namespace: manifestTestNamespace}, configMap); err != nil {
+	if err := r.GetClusterClients().TestCluster.Get(r.GetCtx(), types.NamespacedName{Name: manifestTestConfigmapName, Namespace: manifestTestNamespace}, configMap); err != nil {
 		return fmt.Errorf("failed to get deployed configmap: %w", err)
 	}
 	return nil

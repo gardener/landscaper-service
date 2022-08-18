@@ -14,10 +14,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
+	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
+
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/tools/clientcmd"
-
-	"github.com/go-logr/logr"
 
 	admissionv1 "k8s.io/api/admissionregistration/v1"
 	appsv1 "k8s.io/api/apps/v1"
@@ -75,7 +76,9 @@ func GetLandscaperVersion(repoRootDir string) (string, error) {
 }
 
 // ForceDeleteInstallations calls landscaper-cli force delete on the given namespace.
-func ForceDeleteInstallations(ctx context.Context, log logr.Logger, kclient client.Client, kubeConfig, namespace string) error {
+func ForceDeleteInstallations(ctx context.Context, kclient client.Client, kubeConfig, namespace string) error {
+	logger, _ := logging.FromContextOrNew(ctx, nil)
+
 	installationList := &lsv1alpha1.InstallationList{}
 	if err := kclient.List(ctx, installationList, &client.ListOptions{Namespace: namespace}); err != nil {
 		return err
@@ -89,7 +92,7 @@ func ForceDeleteInstallations(ctx context.Context, log logr.Logger, kclient clie
 			return err
 		}
 
-		log.Info("Deleting installation", "name", installation.Name)
+		logger.Info("Deleting installation", "name", installation.Name)
 		forceDeleteCommand := cliinstallations.NewForceDeleteCommand(ctx)
 		forceDeleteCommand.SetArgs([]string{
 			installation.Name,
@@ -107,14 +110,16 @@ func ForceDeleteInstallations(ctx context.Context, log logr.Logger, kclient clie
 }
 
 // CleanupLaasResources tries to remove all landscaper deployments, instances and service target configs in the given namespace.
-func CleanupLaasResources(ctx context.Context, log logr.Logger, kclient client.Client, namespace string, sleepTime time.Duration, maxRetries int) error {
+func CleanupLaasResources(ctx context.Context, kclient client.Client, namespace string, sleepTime time.Duration, maxRetries int) error {
+	logger, ctx := logging.FromContextOrNew(ctx, nil)
+
 	deploymentList := &lssv1alpha1.LandscaperDeploymentList{}
 	if err := kclient.List(ctx, deploymentList, &client.ListOptions{Namespace: namespace}); err != nil {
 		return fmt.Errorf("failed to list landscaper deployments: %w", err)
 	}
 
 	for _, deployment := range deploymentList.Items {
-		log.Info("Deleting landscaper deployment", "name", deployment.Name)
+		logger.Info("Deleting landscaper deployment", lc.KeyResource, types.NamespacedName{Name: deployment.Name, Namespace: deployment.Namespace}.String())
 		if err := kclient.Delete(ctx, &deployment); err != nil {
 			if !k8serrors.IsNotFound(err) {
 				return fmt.Errorf("failed to delete landscaper deployment %q: %w", deployment.Name, err)
@@ -136,7 +141,7 @@ func CleanupLaasResources(ctx context.Context, log logr.Logger, kclient client.C
 	}
 
 	for _, serviceTargetConfig := range serviceTargetConfigList.Items {
-		log.Info("Deleting service target config", "name", serviceTargetConfig.Name)
+		logger.Info("Deleting service target config", lc.KeyResource, types.NamespacedName{Name: serviceTargetConfig.Name, Namespace: serviceTargetConfig.Namespace}.String())
 		if err := kclient.Delete(ctx, &serviceTargetConfig); err != nil {
 			if !k8serrors.IsNotFound(err) {
 				return fmt.Errorf("failed to delete service target config %q: %w", serviceTargetConfig.Name, err)
@@ -289,7 +294,9 @@ func DeleteValidatingWebhookConfiguration(ctx context.Context, kclient client.Cl
 }
 
 // DeleteVirtualClusterNamespaces tries to delete all virtual cluster namespaces in the cluster.
-func DeleteVirtualClusterNamespaces(ctx context.Context, log logr.Logger, kclient client.Client, sleepTime time.Duration, maxRetries int) error {
+func DeleteVirtualClusterNamespaces(ctx context.Context, kclient client.Client, sleepTime time.Duration, maxRetries int) error {
+	logger, ctx := logging.FromContextOrNew(ctx, nil)
+
 	namespaces := &corev1.NamespaceList{}
 
 	if err := kclient.List(ctx, namespaces); err != nil {
@@ -298,7 +305,7 @@ func DeleteVirtualClusterNamespaces(ctx context.Context, log logr.Logger, kclien
 
 	for _, namespace := range namespaces.Items {
 		if strings.HasPrefix(namespace.Name, "vc-") {
-			log.Info("pruning namespace", "name", namespace.Name)
+			logger.Info("pruning namespace", lc.KeyResource, namespace.Name)
 
 			if err := RemoveFinalizerLandscaperResources(ctx, kclient, namespace.Name); err != nil {
 				return fmt.Errorf("failed to remove finalizers for landscaper resources in namespace %q: %w", namespace.Name, err)
@@ -344,7 +351,7 @@ func DeleteVirtualClusterNamespaces(ctx context.Context, log logr.Logger, kclien
 				return fmt.Errorf("failed to delete persistent volume clains in namespace %q: %w", namespace.Name, err)
 			}
 
-			log.Info("deleting namespace", "name", namespace.Name)
+			logger.Info("deleting namespace", lc.KeyResource, namespace.Name)
 			err := cliutil.DeleteNamespace(kclient, namespace.Name, sleepTime, maxRetries)
 			if err != nil {
 				return fmt.Errorf("failed to delete namespace %q: %w", namespace.Name, err)

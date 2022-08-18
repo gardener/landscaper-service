@@ -5,10 +5,9 @@ go 1.18
 require (
 	github.com/gardener/component-spec/bindings-go v0.0.66
 	github.com/gardener/landscaper-service v0.0.0-00010101000000-000000000000
-	github.com/gardener/landscaper/apis v0.29.0
-	github.com/gardener/landscaper/controller-utils v0.29.0
+	github.com/gardener/landscaper/apis v0.30.0
+	github.com/gardener/landscaper/controller-utils v0.30.0
 	github.com/gardener/landscapercli v0.19.0
-	github.com/go-logr/logr v1.2.3
 	k8s.io/api v0.24.3
 	k8s.io/apimachinery v0.24.3
 	k8s.io/client-go v0.24.3
@@ -30,6 +29,7 @@ require (
 	github.com/gardener/component-cli v0.44.0 // indirect
 	github.com/gardener/landscaper v0.29.0 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
+	github.com/go-logr/logr v1.2.3 // indirect
 	github.com/go-logr/zapr v1.2.3 // indirect
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect
 	github.com/go-openapi/jsonreference v0.20.0 // indirect
