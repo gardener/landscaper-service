@@ -123,6 +123,7 @@ func Convert_config_AvailabilityMonitoringConfiguration_To_v1alpha1_Availability
 func autoConvert_v1alpha1_AvailabilityServiceConfiguration_To_config_AvailabilityServiceConfiguration(in *AvailabilityServiceConfiguration, out *config.AvailabilityServiceConfiguration, s conversion.Scope) error {
 	out.Url = in.Url
 	out.ApiKey = in.ApiKey
+	out.Timeout = in.Timeout
 	return nil
 }
 
@@ -134,6 +135,7 @@ func Convert_v1alpha1_AvailabilityServiceConfiguration_To_config_AvailabilitySer
 func autoConvert_config_AvailabilityServiceConfiguration_To_v1alpha1_AvailabilityServiceConfiguration(in *config.AvailabilityServiceConfiguration, out *AvailabilityServiceConfiguration, s conversion.Scope) error {
 	out.Url = in.Url
 	out.ApiKey = in.ApiKey
+	out.Timeout = in.Timeout
 	return nil
 }
 

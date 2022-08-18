@@ -34,6 +34,7 @@ landscaperservice:
   #   AVSConfiguration:
   #     url:
   #     apiKey:
+  #     timeout:
 
 
 image: {}

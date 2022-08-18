@@ -133,5 +133,6 @@ landscaperServiceComponent:
     availabilityService:
       url: {{ .Values.landscaperservice.availabiliyMonitoring.AVSConfiguration.url}}
       apiKey: {{ .Values.landscaperservice.availabiliyMonitoring.AVSConfiguration.apiKey }}
+      timeout: {{ .Values.landscaperservice.availabiliyMonitoring.AVSConfiguration.timeout | default "30s" }}
     {{- end }}
 {{- end }}

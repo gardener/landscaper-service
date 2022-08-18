@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -66,7 +67,8 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 	request := constructAvsRequest(*availabilityCollection)
 
-	err := doAvsRequest(request, c.Config().AvailabilityMonitoring.AvailabilityServiceConfiguration.Url, c.Config().AvailabilityMonitoring.AvailabilityServiceConfiguration.ApiKey)
+	err := doAvsRequest(request, c.Config().AvailabilityMonitoring.AvailabilityServiceConfiguration.Url, c.Config().AvailabilityMonitoring.AvailabilityServiceConfiguration.ApiKey,
+		c.Config().AvailabilityMonitoring.AvailabilityServiceConfiguration.Timeout)
 	if err != nil {
 		return reconcile.Result{}, err
 	}
@@ -127,12 +129,18 @@ func constructAvsRequest(availabilityCollection lssv1alpha1.AvailabilityCollecti
 	return request
 }
 
-func doAvsRequest(request AvsRequest, url string, apiKey string) error {
+func doAvsRequest(request AvsRequest, url string, apiKey string, timeoutConfig string) error {
 	body, err := json.Marshal(request)
 	if err != nil {
 		return fmt.Errorf("avs upload post payload json marhsal failed: %w", err)
 	}
+	timeout, err := time.ParseDuration(timeoutConfig)
+	if err != nil {
+		return fmt.Errorf("cant parse timeout config for http request: %w", err)
+	}
+
 	client := &http.Client{}
+	client.Timeout = timeout
 	avsreq, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
 	if err != nil {
 		return fmt.Errorf("avs upload request build failed: %w", err)

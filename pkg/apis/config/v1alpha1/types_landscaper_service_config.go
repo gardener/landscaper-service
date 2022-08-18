@@ -56,6 +56,8 @@ type AvailabilityServiceConfiguration struct {
 	Url string `json:"url"`
 	//ApiKey is the api key for the AVS
 	ApiKey string `json:"apiKey"`
+	//Timeout is the timeout for the AVS request
+	Timeout string `json:"timeout"`
 }
 
 // MetricsConfiguration allows to configure how metrics are exposed
