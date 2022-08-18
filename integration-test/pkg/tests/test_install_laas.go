@@ -146,7 +146,7 @@ func (r *InstallLAASTestRunner) createInstallation() error {
 			},
 			ImportDataMappings: map[string]lsv1alpha1.AnyJSON{
 				"namespace":           lssutils.StringToAnyJSON(r.GetConfig().LaasNamespace),
-				"verbosity":           lssutils.IntToAnyJSON(5),
+				"verbosity":           lssutils.StringToAnyJSON("debug"),
 				"registryPullSecrets": lsv1alpha1.NewAnyJSON(registryPullSecretsRaw),
 			},
 		},
