@@ -10,6 +10,7 @@ import (
 	"github.com/go-logr/logr"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
+	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	coreconfig "github.com/gardener/landscaper-service/pkg/apis/config"
 	"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
@@ -25,6 +26,6 @@ func AddControllerToManager(ctx context.Context, logger logr.Logger, mgr manager
 
 	return builder.ControllerManagedBy(mgr).
 		For(&v1alpha1.AvailabilityCollection{}).
-		WithLogger(log).
+		WithLogConstructor(func(r *reconcile.Request) logr.Logger { return log }).
 		Complete(ctrl)
 }
