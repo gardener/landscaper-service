@@ -298,6 +298,7 @@ func (c *Controller) mutateInstallation(ctx context.Context, installation *lsv1a
 
 	landscaperConfig := lsinstallation.NewLandscaperConfig()
 	landscaperConfig.Deployers = instance.Spec.LandscaperConfiguration.Deployers
+	landscaperConfig.Landscaper.Verbosity = logging.INFO.String()
 	landscaperConfigRaw, err := landscaperConfig.ToAnyJSON()
 	if err != nil {
 		return fmt.Errorf("unable to marshal landscaper config: %w", err)
