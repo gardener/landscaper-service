@@ -24,7 +24,9 @@ type BaseTestRunner struct {
 // BaseInit initializes the test runner.
 func (r *BaseTestRunner) BaseInit(name string, ctx context.Context, config *test.TestConfig,
 	clusterClients *test.ClusterClients, clusterTargets *test.ClusterTargets, testObjects *test.SharedTestObjects) {
-	_, r.ctx = logging.FromContextOrNew(ctx, []interface{}{"testName", name})
+	logger, ctx := logging.FromContextOrNew(ctx, nil)
+	logger = logger.WithName(name)
+	r.ctx = logging.NewContext(ctx, logger)
 	r.config = config
 	r.clusterClients = clusterClients
 	r.clusterTargets = clusterTargets
