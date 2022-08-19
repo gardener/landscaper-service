@@ -8,32 +8,22 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/go-logr/logr"
-
-	cliutil "github.com/gardener/landscapercli/pkg/util"
 	"k8s.io/apimachinery/pkg/types"
+
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
+	cliutil "github.com/gardener/landscapercli/pkg/util"
 
 	"github.com/gardener/landscaper-service/test/integration/pkg/test"
 )
 
 type UninstallLAASTestRunner struct {
-	ctx            context.Context
-	log            logr.Logger
-	config         *test.TestConfig
-	clusterClients *test.ClusterClients
-	clusterTargets *test.ClusterTargets
-	testObjects    *test.SharedTestObjects
+	BaseTestRunner
 }
 
 func (r *UninstallLAASTestRunner) Init(
-	ctx context.Context, log logr.Logger, config *test.TestConfig,
+	ctx context.Context, config *test.TestConfig,
 	clusterClients *test.ClusterClients, clusterTargets *test.ClusterTargets, testObjects *test.SharedTestObjects) {
-	r.ctx = ctx
-	r.log = log.WithName(r.Name())
-	r.config = config
-	r.clusterClients = clusterClients
-	r.clusterTargets = clusterTargets
-	r.testObjects = testObjects
+	r.BaseInit(r.Name(), ctx, config, clusterClients, clusterTargets, testObjects)
 }
 
 func (r *UninstallLAASTestRunner) Name() string {
@@ -52,12 +42,14 @@ func (r *UninstallLAASTestRunner) String() string {
 }
 
 func (r *UninstallLAASTestRunner) Run() error {
-	r.log.Info("deleting laas service target config")
+	logger, _ := logging.FromContextOrNew(r.ctx, nil)
+
+	logger.Info("deleting laas service target config")
 	if err := r.deleteServiceTargetConfig(); err != nil {
 		return err
 	}
 
-	r.log.Info("deleting laas installation")
+	logger.Info("deleting laas installation")
 	if err := r.deleteInstallation(); err != nil {
 		return err
 	}

@@ -9,39 +9,28 @@ import (
 	"encoding/json"
 	"fmt"
 
-	lsscore "github.com/gardener/landscaper-service/pkg/apis/core"
-
-	"github.com/go-logr/logr"
-
 	cdv2 "github.com/gardener/component-spec/bindings-go/apis/v2"
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	cliutil "github.com/gardener/landscapercli/pkg/util"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
+
+	lsscore "github.com/gardener/landscaper-service/pkg/apis/core"
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	lssutils "github.com/gardener/landscaper-service/pkg/utils"
 	"github.com/gardener/landscaper-service/test/integration/pkg/test"
 )
 
 type InstallLAASTestRunner struct {
-	ctx            context.Context
-	log            logr.Logger
-	config         *test.TestConfig
-	clusterClients *test.ClusterClients
-	clusterTargets *test.ClusterTargets
-	testObjects    *test.SharedTestObjects
+	BaseTestRunner
 }
 
 func (r *InstallLAASTestRunner) Init(
-	ctx context.Context, log logr.Logger, config *test.TestConfig,
+	ctx context.Context, config *test.TestConfig,
 	clusterClients *test.ClusterClients, clusterTargets *test.ClusterTargets, testObjects *test.SharedTestObjects) {
-	r.ctx = ctx
-	r.log = log.WithName(r.Name())
-	r.config = config
-	r.clusterClients = clusterClients
-	r.clusterTargets = clusterTargets
-	r.testObjects = testObjects
+	r.BaseInit(r.Name(), ctx, config, clusterClients, clusterTargets, testObjects)
 }
 
 func (r *InstallLAASTestRunner) Name() string {
@@ -61,12 +50,14 @@ func (r *InstallLAASTestRunner) String() string {
 }
 
 func (r *InstallLAASTestRunner) Run() error {
-	r.log.Info("creating installation")
+	logger, _ := logging.FromContextOrNew(r.ctx, nil)
+
+	logger.Info("creating installation")
 	if err := r.createInstallation(); err != nil {
 		return err
 	}
 
-	r.log.Info("creating service target config")
+	logger.Info("creating service target config")
 	if err := r.createServiceTargetConfig(); err != nil {
 		return err
 	}
@@ -107,6 +98,8 @@ func (r *InstallLAASTestRunner) createServiceTargetConfig() error {
 }
 
 func (r *InstallLAASTestRunner) createInstallation() error {
+	logger, _ := logging.FromContextOrNew(r.ctx, nil)
+
 	registryPullSecrets := []lssv1alpha1.ObjectReference{
 		{
 			Name:      "laas",
@@ -153,7 +146,7 @@ func (r *InstallLAASTestRunner) createInstallation() error {
 			},
 			ImportDataMappings: map[string]lsv1alpha1.AnyJSON{
 				"namespace":           lssutils.StringToAnyJSON(r.config.LaasNamespace),
-				"verbosity":           lssutils.IntToAnyJSON(5),
+				"verbosity":           lssutils.StringToAnyJSON(logging.DEBUG.String()),
 				"registryPullSecrets": lsv1alpha1.NewAnyJSON(registryPullSecretsRaw),
 			},
 		},
@@ -163,10 +156,12 @@ func (r *InstallLAASTestRunner) createInstallation() error {
 		return fmt.Errorf("failed to create installation: %w", err)
 	}
 
-	timeout, err := cliutil.CheckAndWaitUntilLandscaperInstallationSucceeded(r.clusterClients.TestCluster, types.NamespacedName{Name: installation.Name, Namespace: installation.Namespace}, r.config.SleepTime, r.config.MaxRetries)
+	timeout, err := cliutil.CheckAndWaitUntilLandscaperInstallationSucceeded(r.clusterClients.TestCluster,
+		types.NamespacedName{Name: installation.Name, Namespace: installation.Namespace},
+		r.config.SleepTime, r.config.MaxRetries)
 	if err != nil || timeout {
 		if err := r.clusterClients.TestCluster.Get(r.ctx, types.NamespacedName{Name: installation.Name, Namespace: installation.Namespace}, installation); err == nil {
-			r.log.Error(fmt.Errorf("installation failed"), "installation", "last error", installation.Status.LastError)
+			logger.Error(fmt.Errorf("installation failed"), "installation", "last error", installation.Status.LastError)
 		}
 	}
 

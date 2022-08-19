@@ -10,7 +10,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/go-logr/logr"
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
+	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
+	"k8s.io/apimachinery/pkg/types"
 
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/util/sets"
@@ -26,9 +28,8 @@ import (
 )
 
 // reconcile reconciles a landscaper deployment
-func (c *Controller) reconcile(ctx context.Context, log logr.Logger, deployment *lssv1alpha1.LandscaperDeployment) error {
+func (c *Controller) reconcile(ctx context.Context, deployment *lssv1alpha1.LandscaperDeployment) error {
 	currOp := "Reconcile"
-	log.Info("Reconcile deployment", "name", deployment.GetName(), "namespace", deployment.GetNamespace())
 
 	// reconcile instance
 	instance := &lssv1alpha1.Instance{}
@@ -40,7 +41,7 @@ func (c *Controller) reconcile(ctx context.Context, log logr.Logger, deployment 
 	}
 
 	_, err := kubernetes.CreateOrUpdate(ctx, c.Client(), instance, func() error {
-		return c.mutateInstance(ctx, log, deployment, instance)
+		return c.mutateInstance(ctx, deployment, instance)
 	})
 
 	if err != nil {
@@ -80,8 +81,15 @@ func (c *Controller) reconcile(ctx context.Context, log logr.Logger, deployment 
 }
 
 // mutateInstance creates/updates the instance for a landscaper deployment
-func (c *Controller) mutateInstance(ctx context.Context, log logr.Logger, deployment *lssv1alpha1.LandscaperDeployment, instance *lssv1alpha1.Instance) error {
-	log.Info("Create/Update instance for deployment", "name", deployment.GetName(), "namespace", deployment.GetNamespace())
+func (c *Controller) mutateInstance(ctx context.Context, deployment *lssv1alpha1.LandscaperDeployment, instance *lssv1alpha1.Instance) error {
+	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(deployment).String()},
+		lc.KeyMethod, "mutateInstance")
+
+	if len(deployment.Name) > 0 {
+		logger.Info("Updating instance", lc.KeyResource, client.ObjectKeyFromObject(instance).String())
+	} else {
+		logger.Info("Creating instance", lc.KeyResource, types.NamespacedName{Name: instance.GenerateName, Namespace: instance.Namespace}.String())
+	}
 
 	if err := controllerutil.SetControllerReference(deployment, instance, c.Scheme()); err != nil {
 		return fmt.Errorf("unable to set controller reference for instance: %w", err)
@@ -89,7 +97,7 @@ func (c *Controller) mutateInstance(ctx context.Context, log logr.Logger, deploy
 
 	if len(instance.Spec.ServiceTargetConfigRef.Name) == 0 {
 		// try to find a service target configuration that can be used for this landscaper deployment
-		serviceTargetConf, err := c.findServiceTargetConfig(ctx, log, deployment)
+		serviceTargetConf, err := c.findServiceTargetConfig(ctx, deployment)
 		if err != nil {
 			return err
 		}
@@ -123,13 +131,15 @@ func (c *Controller) mutateInstance(ctx context.Context, log logr.Logger, deploy
 }
 
 // findServiceTargetConfig tries to find a service target configuration that applies to the deployment requirements and has capacity available.
-func (c *Controller) findServiceTargetConfig(ctx context.Context, log logr.Logger, deployment *lssv1alpha1.LandscaperDeployment) (*lssv1alpha1.ServiceTargetConfig, error) {
+func (c *Controller) findServiceTargetConfig(ctx context.Context, deployment *lssv1alpha1.LandscaperDeployment) (*lssv1alpha1.ServiceTargetConfig, error) {
+	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(deployment).String()})
+
 	serviceTargetConfigs := &lssv1alpha1.ServiceTargetConfigList{}
 	selectorBuilder := strings.Builder{}
 	selectorBuilder.WriteString(fmt.Sprintf("%s=true", lsscore.ServiceTargetConfigVisibleLabelName))
 
 	if len(deployment.Spec.Region) > 0 {
-		log.V(5).Info("region filter active", "region", deployment.Spec.Region)
+		logger.Info("region filter active", "serviceTargetConfigRegion", deployment.Spec.Region)
 		selectorBuilder.WriteString(fmt.Sprintf(",%s=%s", lsscore.ServiceTargetConfigRegionLabelName, deployment.Spec.Region))
 	}
 

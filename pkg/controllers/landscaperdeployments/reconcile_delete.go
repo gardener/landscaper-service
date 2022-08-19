@@ -8,17 +8,19 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/go-logr/logr"
-
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
+
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
+	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
 
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	lsserrors "github.com/gardener/landscaper-service/pkg/apis/errors"
 )
 
 // handleDelete handles the deletion of a landscaper deployment.
-func (c *Controller) handleDelete(ctx context.Context, log logr.Logger, deployment *lssv1alpha1.LandscaperDeployment) error {
+func (c *Controller) handleDelete(ctx context.Context, deployment *lssv1alpha1.LandscaperDeployment) error {
 	var (
 		err             error
 		currOp          = "Delete"
@@ -26,7 +28,7 @@ func (c *Controller) handleDelete(ctx context.Context, log logr.Logger, deployme
 	)
 
 	if deployment.Status.InstanceRef != nil && !deployment.Status.InstanceRef.IsEmpty() {
-		removeFinalizer, err = c.ensureDeleteInstanceForDeployment(ctx, log, deployment)
+		removeFinalizer, err = c.ensureDeleteInstanceForDeployment(ctx, deployment)
 		if err != nil {
 			return err
 		}
@@ -45,8 +47,11 @@ func (c *Controller) handleDelete(ctx context.Context, log logr.Logger, deployme
 }
 
 // ensureDeleteInstanceForDeployment ensures that the instance referenced by this deployment is deleted.
-func (c *Controller) ensureDeleteInstanceForDeployment(ctx context.Context, log logr.Logger, deployment *lssv1alpha1.LandscaperDeployment) (bool, error) {
-	log.Info("Delete instance for landscaper deployment")
+func (c *Controller) ensureDeleteInstanceForDeployment(ctx context.Context, deployment *lssv1alpha1.LandscaperDeployment) (bool, error) {
+	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(deployment).String()},
+		lc.KeyMethod, "ensureDeleteInstanceForDeployment")
+
+	logger.Info("Delete instance for landscaper deployment", lc.KeyResource, deployment.Status.InstanceRef.NamespacedName())
 	instance := &lssv1alpha1.Instance{}
 
 	if err := c.Client().Get(ctx, deployment.Status.InstanceRef.NamespacedName(), instance); err != nil {

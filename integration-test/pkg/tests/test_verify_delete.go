@@ -9,34 +9,23 @@ import (
 	"fmt"
 
 	cliutil "github.com/gardener/landscapercli/pkg/util"
+	corev1 "k8s.io/api/core/v1"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
 
-	"github.com/go-logr/logr"
-
-	corev1 "k8s.io/api/core/v1"
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 
 	"github.com/gardener/landscaper-service/test/integration/pkg/test"
 )
 
 type VerifyDeleteRunner struct {
-	ctx            context.Context
-	log            logr.Logger
-	config         *test.TestConfig
-	clusterClients *test.ClusterClients
-	clusterTargets *test.ClusterTargets
-	testObjects    *test.SharedTestObjects
+	BaseTestRunner
 }
 
 func (r *VerifyDeleteRunner) Init(
-	ctx context.Context, log logr.Logger, config *test.TestConfig,
+	ctx context.Context, config *test.TestConfig,
 	clusterClients *test.ClusterClients, clusterTargets *test.ClusterTargets, testObjects *test.SharedTestObjects) {
-	r.ctx = ctx
-	r.log = log.WithName(r.Name())
-	r.config = config
-	r.clusterClients = clusterClients
-	r.clusterTargets = clusterTargets
-	r.testObjects = testObjects
+	r.BaseInit(r.Name(), ctx, config, clusterClients, clusterTargets, testObjects)
 }
 
 func (r *VerifyDeleteRunner) Name() string {
@@ -65,7 +54,9 @@ func (r *VerifyDeleteRunner) Run() error {
 }
 
 func (r *VerifyDeleteRunner) verifyNamespace(namespaceName string) error {
-	r.log.Info("verifying namespace being deleted", "name", namespaceName)
+	logger, _ := logging.FromContextOrNew(r.ctx, nil)
+
+	logger.Info("verifying namespace being deleted", "name", namespaceName)
 
 	timeout, err := cliutil.CheckConditionPeriodically(func() (bool, error) {
 		namespace := &corev1.Namespace{}

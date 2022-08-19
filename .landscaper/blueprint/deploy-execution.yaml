@@ -45,7 +45,7 @@ deployItems:
             pullPolicy: IfNotPresent
 
         landscaperservice:
-          verbosity: {{ .imports.verbosity | default 2 }}
+          verbosity: {{ .imports.verbosity | default "info" }}
 
           crdManagement:
             deployCrd: true

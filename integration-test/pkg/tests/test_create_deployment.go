@@ -9,35 +9,25 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/go-logr/logr"
-
-	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
-	cliutil "github.com/gardener/landscapercli/pkg/util"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
+
+	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
+	cliutil "github.com/gardener/landscapercli/pkg/util"
 
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	"github.com/gardener/landscaper-service/test/integration/pkg/test"
 )
 
 type CreateDeploymentRunner struct {
-	ctx            context.Context
-	log            logr.Logger
-	config         *test.TestConfig
-	clusterClients *test.ClusterClients
-	clusterTargets *test.ClusterTargets
-	testObjects    *test.SharedTestObjects
+	BaseTestRunner
 }
 
 func (r *CreateDeploymentRunner) Init(
-	ctx context.Context, log logr.Logger, config *test.TestConfig,
+	ctx context.Context, config *test.TestConfig,
 	clusterClients *test.ClusterClients, clusterTargets *test.ClusterTargets, testObjects *test.SharedTestObjects) {
-	r.ctx = ctx
-	r.log = log.WithName(r.Name())
-	r.config = config
-	r.clusterClients = clusterClients
-	r.clusterTargets = clusterTargets
-	r.testObjects = testObjects
+	r.BaseInit(r.Name(), ctx, config, clusterClients, clusterTargets, testObjects)
 }
 
 func (r *CreateDeploymentRunner) Name() string {
@@ -57,7 +47,8 @@ func (r *CreateDeploymentRunner) String() string {
 }
 
 func (r *CreateDeploymentRunner) Run() error {
-	r.log.Info("creating landscaper deployment")
+	logger, _ := logging.FromContextOrNew(r.ctx, nil)
+	logger.Info("creating landscaper deployment")
 	if err := r.createDeployment(); err != nil {
 		return err
 	}
@@ -65,6 +56,8 @@ func (r *CreateDeploymentRunner) Run() error {
 }
 
 func (r *CreateDeploymentRunner) createDeployment() error {
+	logger, _ := logging.FromContextOrNew(r.ctx, nil)
+
 	deployment := &lssv1alpha1.LandscaperDeployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "test",
@@ -86,7 +79,7 @@ func (r *CreateDeploymentRunner) createDeployment() error {
 		return fmt.Errorf("failed to create deployment: %w", err)
 	}
 
-	r.log.Info("waiting for instance being created")
+	logger.Info("waiting for instance being created")
 
 	timeout, err := cliutil.CheckConditionPeriodically(func() (bool, error) {
 		if err := r.clusterClients.TestCluster.Get(r.ctx, types.NamespacedName{Name: deployment.Name, Namespace: deployment.Namespace}, deployment); err != nil {
@@ -109,7 +102,7 @@ func (r *CreateDeploymentRunner) createDeployment() error {
 
 	instance := &lssv1alpha1.Instance{}
 
-	r.log.Info("waiting for installation being created")
+	logger.Info("waiting for installation being created")
 
 	timeout, err = cliutil.CheckConditionPeriodically(func() (bool, error) {
 		if err := r.clusterClients.TestCluster.Get(
@@ -134,7 +127,7 @@ func (r *CreateDeploymentRunner) createDeployment() error {
 		return fmt.Errorf("timeout while wating for installation being created")
 	}
 
-	r.log.Info("waiting for installation being succeeded")
+	logger.Info("waiting for installation being succeeded")
 
 	timeout, err = cliutil.CheckAndWaitUntilLandscaperInstallationSucceeded(
 		r.clusterClients.TestCluster,
@@ -145,7 +138,7 @@ func (r *CreateDeploymentRunner) createDeployment() error {
 	if err != nil || timeout {
 		installation := &lsv1alpha1.Installation{}
 		if err := r.clusterClients.TestCluster.Get(r.ctx, types.NamespacedName{Name: instance.Status.InstallationRef.Name, Namespace: instance.Status.InstallationRef.Namespace}, installation); err == nil {
-			r.log.Error(fmt.Errorf("installation failed"), "installation", "last error", installation.Status.LastError)
+			logger.Error(fmt.Errorf("installation failed"), "installation", "last error", installation.Status.LastError)
 		}
 	}
 

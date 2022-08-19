@@ -5,7 +5,6 @@
 package operation
 
 import (
-	"github.com/go-logr/logr"
 	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
@@ -14,8 +13,6 @@ import (
 
 // Operation is the base type for all controller types.
 type Operation struct {
-	// log is the logger instance.
-	log logr.Logger
 	// client is the kubernetes client instance
 	client client.Client
 	// scheme is the controller manager scheme used for serializing and deserializing objects.
@@ -25,18 +22,12 @@ type Operation struct {
 }
 
 // NewOperation creates a new Operation for the given values.
-func NewOperation(log logr.Logger, c client.Client, scheme *runtime.Scheme, config *coreconfig.LandscaperServiceConfiguration) *Operation {
+func NewOperation(c client.Client, scheme *runtime.Scheme, config *coreconfig.LandscaperServiceConfiguration) *Operation {
 	return &Operation{
-		log:    log,
 		client: c,
 		scheme: scheme,
 		config: config,
 	}
-}
-
-// Log returns a logging instance
-func (o *Operation) Log() logr.Logger {
-	return o.log
 }
 
 // Client returns a controller runtime client.Registry

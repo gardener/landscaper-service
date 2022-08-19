@@ -8,12 +8,14 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
+	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/errors"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
-	"github.com/go-logr/logr"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
@@ -23,7 +25,7 @@ import (
 )
 
 // handleDelete handles the deletion of instances
-func (c *Controller) handleDelete(ctx context.Context, log logr.Logger, instance *lssv1alpha1.Instance) error {
+func (c *Controller) handleDelete(ctx context.Context, instance *lssv1alpha1.Instance) error {
 	var (
 		err                 error
 		curOp               = "Delete"
@@ -33,7 +35,7 @@ func (c *Controller) handleDelete(ctx context.Context, log logr.Logger, instance
 	)
 
 	if instance.Status.InstallationRef != nil && !instance.Status.InstallationRef.IsEmpty() {
-		if installationDeleted, err = c.ensureDeleteInstallationForInstance(ctx, log, instance); err != nil {
+		if installationDeleted, err = c.ensureDeleteInstallationForInstance(ctx, instance); err != nil {
 			return lsserrors.NewWrappedError(err, curOp, "DeleteInstallation", err.Error())
 		}
 	}
@@ -43,7 +45,7 @@ func (c *Controller) handleDelete(ctx context.Context, log logr.Logger, instance
 	}
 
 	if instance.Status.TargetRef != nil && !instance.Status.TargetRef.IsEmpty() {
-		if targetDeleted, err = c.ensureDeleteTargetForInstance(ctx, log, instance); err != nil {
+		if targetDeleted, err = c.ensureDeleteTargetForInstance(ctx, instance); err != nil {
 			return lsserrors.NewWrappedError(err, curOp, "DeleteTarget", err.Error())
 		}
 	}
@@ -53,7 +55,7 @@ func (c *Controller) handleDelete(ctx context.Context, log logr.Logger, instance
 	}
 
 	if instance.Status.ContextRef != nil && !instance.Status.ContextRef.IsEmpty() {
-		if contextDeleted, err = c.ensureDeleteContextForInstance(ctx, log, instance); err != nil {
+		if contextDeleted, err = c.ensureDeleteContextForInstance(ctx, instance); err != nil {
 			return lsserrors.NewWrappedError(err, curOp, "DeleteContext", err.Error())
 		}
 	}
@@ -86,8 +88,11 @@ func (c *Controller) handleDelete(ctx context.Context, log logr.Logger, instance
 }
 
 // ensureDeleteInstallationForInstance ensures that the installation for an instance is deleted
-func (c *Controller) ensureDeleteInstallationForInstance(ctx context.Context, log logr.Logger, instance *lssv1alpha1.Instance) (bool, error) {
-	log.Info("Delete installation for instance")
+func (c *Controller) ensureDeleteInstallationForInstance(ctx context.Context, instance *lssv1alpha1.Instance) (bool, error) {
+	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(instance).String()},
+		lc.KeyMethod, "ensureDeleteInstallationForInstance")
+
+	logger.Info("Delete installation for instance", lc.KeyResource, instance.Status.InstallationRef.NamespacedName())
 	installation := &lsv1alpha1.Installation{}
 
 	if err := c.Client().Get(ctx, instance.Status.InstallationRef.NamespacedName(), installation); err != nil {
@@ -112,8 +117,11 @@ func (c *Controller) ensureDeleteInstallationForInstance(ctx context.Context, lo
 }
 
 // ensureDeleteTargetForInstance ensures that the target for an instance is deleted
-func (c *Controller) ensureDeleteTargetForInstance(ctx context.Context, log logr.Logger, instance *lssv1alpha1.Instance) (bool, error) {
-	log.Info("Delete target for instance")
+func (c *Controller) ensureDeleteTargetForInstance(ctx context.Context, instance *lssv1alpha1.Instance) (bool, error) {
+	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(instance).String()},
+		lc.KeyMethod, "ensureDeleteTargetForInstance")
+
+	logger.Info("Delete target for instance", lc.KeyResource, instance.Status.TargetRef.NamespacedName())
 	target := &lsv1alpha1.Target{}
 
 	if err := c.Client().Get(ctx, instance.Status.TargetRef.NamespacedName(), target); err != nil {
@@ -138,8 +146,11 @@ func (c *Controller) ensureDeleteTargetForInstance(ctx context.Context, log logr
 }
 
 // ensureDeleteContextForInstance ensures that the context for an instance is deleted
-func (c *Controller) ensureDeleteContextForInstance(ctx context.Context, log logr.Logger, instance *lssv1alpha1.Instance) (bool, error) {
-	log.Info("Delete context for instance")
+func (c *Controller) ensureDeleteContextForInstance(ctx context.Context, instance *lssv1alpha1.Instance) (bool, error) {
+	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(instance).String()},
+		lc.KeyMethod, "ensureDeleteContextForInstance")
+
+	logger.Info("Delete context for instance", lc.KeyResource, instance.Status.ContextRef.NamespacedName())
 	landscaperContext := &lsv1alpha1.Context{}
 
 	if err := c.Client().Get(ctx, instance.Status.ContextRef.NamespacedName(), landscaperContext); err != nil {
@@ -154,7 +165,7 @@ func (c *Controller) ensureDeleteContextForInstance(ctx context.Context, log log
 		}
 	}
 
-	if err := c.deleteSecretsForContext(ctx, log, landscaperContext); err != nil {
+	if err := c.deleteSecretsForContext(ctx, landscaperContext); err != nil {
 		return false, err
 	}
 
@@ -167,13 +178,17 @@ func (c *Controller) ensureDeleteContextForInstance(ctx context.Context, log log
 	return false, nil
 }
 
-func (c *Controller) deleteSecretsForContext(ctx context.Context, log logr.Logger, landscaperContext *lsv1alpha1.Context) error {
-	log.Info("Delete secrets for context")
+func (c *Controller) deleteSecretsForContext(ctx context.Context, landscaperContext *lsv1alpha1.Context) error {
+	logger, ctx := logging.FromContextOrNew(ctx, nil)
+
 	errs := make([]error, 0)
 
 	for _, secretRef := range landscaperContext.RegistryPullSecrets {
+		key := types.NamespacedName{Name: secretRef.Name, Namespace: landscaperContext.Namespace}
+		logger.Info("Delete secrets for context", lc.KeyResource, key.String())
+
 		secret := &corev1.Secret{}
-		if err := c.Client().Get(ctx, types.NamespacedName{Name: secretRef.Name, Namespace: landscaperContext.Namespace}, secret); err != nil {
+		if err := c.Client().Get(ctx, key, secret); err != nil {
 			if !apierrors.IsNotFound(err) {
 				errs = append(errs, fmt.Errorf("unable to get secret \"%s\" for context: %w", secretRef.Name, err))
 			}

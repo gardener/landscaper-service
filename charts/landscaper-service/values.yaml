@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 landscaperservice:
-  verbosity: 2
+  verbosity: info
 
   #  metrics:
   #    port: 8080

@@ -9,41 +9,28 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/gardener/landscaper-service/test/integration/pkg/util"
-
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
-	"github.com/go-logr/logr"
-
 	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 	cliutil "github.com/gardener/landscapercli/pkg/util"
 
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	"github.com/gardener/landscaper-service/test/integration/pkg/test"
+	"github.com/gardener/landscaper-service/test/integration/pkg/util"
 )
 
 type VerifyDeploymentRunner struct {
-	ctx            context.Context
-	log            logr.Logger
-	config         *test.TestConfig
-	clusterClients *test.ClusterClients
-	clusterTargets *test.ClusterTargets
-	testObjects    *test.SharedTestObjects
+	BaseTestRunner
 }
 
 func (r *VerifyDeploymentRunner) Init(
-	ctx context.Context, log logr.Logger, config *test.TestConfig,
+	ctx context.Context, config *test.TestConfig,
 	clusterClients *test.ClusterClients, clusterTargets *test.ClusterTargets, testObjects *test.SharedTestObjects) {
-	r.ctx = ctx
-	r.log = log.WithName(r.Name())
-	r.config = config
-	r.clusterClients = clusterClients
-	r.clusterTargets = clusterTargets
-	r.testObjects = testObjects
+	r.BaseInit(r.Name(), ctx, config, clusterClients, clusterTargets, testObjects)
 }
 
 func (r *VerifyDeploymentRunner) Name() string {
@@ -114,6 +101,8 @@ func (r *VerifyDeploymentRunner) verifyDeployment(deployment *lssv1alpha1.Landsc
 }
 
 func (r *VerifyDeploymentRunner) verifyPods(namespace string, numDeployers int) error {
+	logger, _ := logging.FromContextOrNew(r.ctx, nil)
+
 	expectedPods := []string{
 		"landscaper-controller",
 		"landscaper-webhooks",
@@ -123,7 +112,7 @@ func (r *VerifyDeploymentRunner) verifyPods(namespace string, numDeployers int) 
 		"controller-manager,",
 	}
 
-	r.log.Info("waiting for pods to be created")
+	logger.Info("waiting for pods to be created")
 
 	podList := &corev1.PodList{}
 	timeout, err := cliutil.CheckConditionPeriodically(func() (bool, error) {
@@ -143,7 +132,7 @@ func (r *VerifyDeploymentRunner) verifyPods(namespace string, numDeployers int) 
 		return fmt.Errorf("incomplete number pods in namespace %q, expected %d, actual %d", namespace, len(expectedPods)+numDeployers, len(podList.Items))
 	}
 
-	r.log.Info("waiting for pods to become running")
+	logger.Info("waiting for pods to become running")
 
 	timeout, err = cliutil.CheckConditionPeriodically(func() (bool, error) {
 		if err := r.clusterClients.HostingCluster.List(r.ctx, podList, &client.ListOptions{Namespace: namespace}); err != nil {
@@ -170,7 +159,9 @@ func (r *VerifyDeploymentRunner) verifyPods(namespace string, numDeployers int) 
 }
 
 func (r *VerifyDeploymentRunner) verifyKubeconfig(instance *lssv1alpha1.Instance) error {
-	r.log.Info("verifying kubeconfig for instance", "name", instance.Name)
+	logger, _ := logging.FromContextOrNew(r.ctx, nil)
+
+	logger.Info("verifying kubeconfig for instance", "name", instance.Name)
 
 	timeout, err := cliutil.CheckConditionPeriodically(func() (bool, error) {
 		if err := r.clusterClients.TestCluster.Get(r.ctx, types.NamespacedName{Name: instance.Name, Namespace: instance.Namespace}, instance); err != nil {
