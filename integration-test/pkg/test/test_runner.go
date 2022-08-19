@@ -9,7 +9,6 @@ import (
 	"fmt"
 
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
-	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 	"k8s.io/client-go/tools/clientcmd"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
@@ -95,41 +94,4 @@ type TestRunner interface {
 	Description() string
 	String() string
 	Run() error
-}
-
-type BaseTestRunner struct {
-	ctx            context.Context
-	config         *TestConfig
-	clusterClients *ClusterClients
-	clusterTargets *ClusterTargets
-	testObjects    *SharedTestObjects
-}
-
-func (r *BaseTestRunner) BaseInit(name string, ctx context.Context, config *TestConfig,
-	clusterClients *ClusterClients, clusterTargets *ClusterTargets, testObjects *SharedTestObjects) {
-	_, r.ctx = logging.FromContextOrNew(ctx, []interface{}{"testName", name})
-	r.config = config
-	r.clusterClients = clusterClients
-	r.clusterTargets = clusterTargets
-	r.testObjects = testObjects
-}
-
-func (r *BaseTestRunner) GetCtx() context.Context {
-	return r.ctx
-}
-
-func (r *BaseTestRunner) GetConfig() *TestConfig {
-	return r.config
-}
-
-func (r *BaseTestRunner) GetClusterClients() *ClusterClients {
-	return r.clusterClients
-}
-
-func (r *BaseTestRunner) GetClusterTargets() *ClusterTargets {
-	return r.clusterTargets
-}
-
-func (r *BaseTestRunner) GetTestObjects() *SharedTestObjects {
-	return r.testObjects
 }

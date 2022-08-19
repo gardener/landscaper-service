@@ -17,7 +17,7 @@ import (
 )
 
 type UninstallLAASTestRunner struct {
-	test.BaseTestRunner
+	BaseTestRunner
 }
 
 func (r *UninstallLAASTestRunner) Init(
@@ -42,7 +42,7 @@ func (r *UninstallLAASTestRunner) String() string {
 }
 
 func (r *UninstallLAASTestRunner) Run() error {
-	logger, _ := logging.FromContextOrNew(r.GetCtx(), nil)
+	logger, _ := logging.FromContextOrNew(r.ctx, nil)
 
 	logger.Info("deleting laas service target config")
 	if err := r.deleteServiceTargetConfig(); err != nil {
@@ -58,9 +58,9 @@ func (r *UninstallLAASTestRunner) Run() error {
 }
 
 func (r *UninstallLAASTestRunner) deleteServiceTargetConfig() error {
-	serviceTargetConfig := r.GetTestObjects().ServiceTargetConfigs[types.NamespacedName{Name: r.GetClusterTargets().LaasCluster.Name, Namespace: r.GetConfig().LaasNamespace}.String()]
+	serviceTargetConfig := r.testObjects.ServiceTargetConfigs[types.NamespacedName{Name: r.clusterTargets.LaasCluster.Name, Namespace: r.config.LaasNamespace}.String()]
 
-	if err := r.GetClusterClients().TestCluster.Delete(r.GetCtx(), serviceTargetConfig); err != nil {
+	if err := r.clusterClients.TestCluster.Delete(r.ctx, serviceTargetConfig); err != nil {
 		return fmt.Errorf("failed to delete service hostingTarget config: %w", err)
 	}
 
@@ -68,18 +68,18 @@ func (r *UninstallLAASTestRunner) deleteServiceTargetConfig() error {
 }
 
 func (r *UninstallLAASTestRunner) deleteInstallation() error {
-	installation := r.GetTestObjects().Installations[types.NamespacedName{Name: "laas", Namespace: r.GetConfig().LaasNamespace}.String()]
+	installation := r.testObjects.Installations[types.NamespacedName{Name: "laas", Namespace: r.config.LaasNamespace}.String()]
 
-	if err := r.GetClusterClients().TestCluster.Delete(r.GetCtx(), installation); err != nil {
+	if err := r.clusterClients.TestCluster.Delete(r.ctx, installation); err != nil {
 		return fmt.Errorf("failed to delete laas installation: %w", err)
 	}
 
 	timeout, err := cliutil.CheckAndWaitUntilObjectNotExistAnymore(
-		r.GetClusterClients().TestCluster,
+		r.clusterClients.TestCluster,
 		types.NamespacedName{Name: installation.Name, Namespace: installation.Namespace},
 		installation,
-		r.GetConfig().SleepTime,
-		r.GetConfig().MaxRetries)
+		r.config.SleepTime,
+		r.config.MaxRetries)
 
 	if err != nil {
 		return fmt.Errorf("failed to wait for laas installation to be deleted: %w", err)

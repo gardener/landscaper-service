@@ -21,7 +21,7 @@ import (
 )
 
 type CreateDeploymentRunner struct {
-	test.BaseTestRunner
+	BaseTestRunner
 }
 
 func (r *CreateDeploymentRunner) Init(
@@ -47,7 +47,7 @@ func (r *CreateDeploymentRunner) String() string {
 }
 
 func (r *CreateDeploymentRunner) Run() error {
-	logger, _ := logging.FromContextOrNew(r.GetCtx(), nil)
+	logger, _ := logging.FromContextOrNew(r.ctx, nil)
 	logger.Info("creating landscaper deployment")
 	if err := r.createDeployment(); err != nil {
 		return err
@@ -56,12 +56,12 @@ func (r *CreateDeploymentRunner) Run() error {
 }
 
 func (r *CreateDeploymentRunner) createDeployment() error {
-	logger, _ := logging.FromContextOrNew(r.GetCtx(), nil)
+	logger, _ := logging.FromContextOrNew(r.ctx, nil)
 
 	deployment := &lssv1alpha1.LandscaperDeployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "test",
-			Namespace: r.GetConfig().TestNamespace,
+			Namespace: r.config.TestNamespace,
 		},
 		Spec: lssv1alpha1.LandscaperDeploymentSpec{
 			TenantId: createTenantId(),
@@ -75,14 +75,14 @@ func (r *CreateDeploymentRunner) createDeployment() error {
 		},
 	}
 
-	if err := r.GetClusterClients().TestCluster.Create(r.GetCtx(), deployment); err != nil {
+	if err := r.clusterClients.TestCluster.Create(r.ctx, deployment); err != nil {
 		return fmt.Errorf("failed to create deployment: %w", err)
 	}
 
 	logger.Info("waiting for instance being created")
 
 	timeout, err := cliutil.CheckConditionPeriodically(func() (bool, error) {
-		if err := r.GetClusterClients().TestCluster.Get(r.GetCtx(), types.NamespacedName{Name: deployment.Name, Namespace: deployment.Namespace}, deployment); err != nil {
+		if err := r.clusterClients.TestCluster.Get(r.ctx, types.NamespacedName{Name: deployment.Name, Namespace: deployment.Namespace}, deployment); err != nil {
 			return false, err
 		}
 
@@ -91,7 +91,7 @@ func (r *CreateDeploymentRunner) createDeployment() error {
 		}
 
 		return false, nil
-	}, r.GetConfig().SleepTime, r.GetConfig().MaxRetries)
+	}, r.config.SleepTime, r.config.MaxRetries)
 
 	if err != nil {
 		return fmt.Errorf("failed to wait for instance being created: %w", err)
@@ -105,8 +105,8 @@ func (r *CreateDeploymentRunner) createDeployment() error {
 	logger.Info("waiting for installation being created")
 
 	timeout, err = cliutil.CheckConditionPeriodically(func() (bool, error) {
-		if err := r.GetClusterClients().TestCluster.Get(
-			r.GetCtx(),
+		if err := r.clusterClients.TestCluster.Get(
+			r.ctx,
 			types.NamespacedName{Name: deployment.Status.InstanceRef.Name, Namespace: deployment.Status.InstanceRef.Namespace},
 			instance); err != nil {
 
@@ -118,7 +118,7 @@ func (r *CreateDeploymentRunner) createDeployment() error {
 		}
 
 		return false, nil
-	}, r.GetConfig().SleepTime, r.GetConfig().MaxRetries)
+	}, r.config.SleepTime, r.config.MaxRetries)
 
 	if err != nil {
 		return fmt.Errorf("failed to wait for installation being created: %w", err)
@@ -130,14 +130,14 @@ func (r *CreateDeploymentRunner) createDeployment() error {
 	logger.Info("waiting for installation being succeeded")
 
 	timeout, err = cliutil.CheckAndWaitUntilLandscaperInstallationSucceeded(
-		r.GetClusterClients().TestCluster,
+		r.clusterClients.TestCluster,
 		types.NamespacedName{Name: instance.Status.InstallationRef.Name, Namespace: instance.Status.InstallationRef.Namespace},
-		r.GetConfig().SleepTime,
-		r.GetConfig().MaxRetries*10)
+		r.config.SleepTime,
+		r.config.MaxRetries*10)
 
 	if err != nil || timeout {
 		installation := &lsv1alpha1.Installation{}
-		if err := r.GetClusterClients().TestCluster.Get(r.GetCtx(), types.NamespacedName{Name: instance.Status.InstallationRef.Name, Namespace: instance.Status.InstallationRef.Namespace}, installation); err == nil {
+		if err := r.clusterClients.TestCluster.Get(r.ctx, types.NamespacedName{Name: instance.Status.InstallationRef.Name, Namespace: instance.Status.InstallationRef.Namespace}, installation); err == nil {
 			logger.Error(fmt.Errorf("installation failed"), "installation", "last error", installation.Status.LastError)
 		}
 	}
@@ -149,7 +149,7 @@ func (r *CreateDeploymentRunner) createDeployment() error {
 		return fmt.Errorf("waiting for installation of landscaper deployment %s timed out", deployment.Name)
 	}
 
-	r.GetTestObjects().LandscaperDeployments[types.NamespacedName{Name: deployment.Name, Namespace: deployment.Namespace}.String()] = deployment
+	r.testObjects.LandscaperDeployments[types.NamespacedName{Name: deployment.Name, Namespace: deployment.Namespace}.String()] = deployment
 
 	return nil
 }

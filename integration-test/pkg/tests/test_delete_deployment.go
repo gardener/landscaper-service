@@ -18,7 +18,7 @@ import (
 )
 
 type DeleteDeploymentRunner struct {
-	test.BaseTestRunner
+	BaseTestRunner
 }
 
 func (r *DeleteDeploymentRunner) Init(
@@ -45,7 +45,7 @@ func (r *DeleteDeploymentRunner) String() string {
 }
 
 func (r *DeleteDeploymentRunner) Run() error {
-	for _, deployment := range r.GetTestObjects().LandscaperDeployments {
+	for _, deployment := range r.testObjects.LandscaperDeployments {
 		if err := r.deleteDeployment(deployment); err != nil {
 			return err
 		}
@@ -54,18 +54,18 @@ func (r *DeleteDeploymentRunner) Run() error {
 }
 
 func (r *DeleteDeploymentRunner) deleteDeployment(deployment *lssv1alpha1.LandscaperDeployment) error {
-	logger, _ := logging.FromContextOrNew(r.GetCtx(), nil)
+	logger, _ := logging.FromContextOrNew(r.ctx, nil)
 	logger.Info("deleting deployment", "name", deployment.Name)
 
-	if err := r.GetClusterClients().TestCluster.Delete(r.GetCtx(), deployment); err != nil {
+	if err := r.clusterClients.TestCluster.Delete(r.ctx, deployment); err != nil {
 		return fmt.Errorf("failed to delete deployment %q: %w", deployment.Name, err)
 	}
 
 	logger.Info("waiting for deployment to be deleted", "name", deployment.Name)
 	timeout, err := cliutil.CheckAndWaitUntilObjectNotExistAnymore(
-		r.GetClusterClients().TestCluster,
+		r.clusterClients.TestCluster,
 		types.NamespacedName{Name: deployment.Name, Namespace: deployment.Namespace}, deployment,
-		r.GetConfig().SleepTime, r.GetConfig().MaxRetries*5)
+		r.config.SleepTime, r.config.MaxRetries*5)
 
 	if err != nil {
 		return fmt.Errorf("failed to wait for deployment %q to be deleted: %w", deployment.Name, err)

@@ -19,7 +19,7 @@ import (
 )
 
 type UpdateDeploymentRunner struct {
-	test.BaseTestRunner
+	BaseTestRunner
 }
 
 func (r *UpdateDeploymentRunner) Init(
@@ -45,7 +45,7 @@ func (r *UpdateDeploymentRunner) String() string {
 }
 
 func (r *UpdateDeploymentRunner) Run() error {
-	for _, deployment := range r.GetTestObjects().LandscaperDeployments {
+	for _, deployment := range r.testObjects.LandscaperDeployments {
 		if err := r.updateDeployment(deployment); err != nil {
 			return err
 		}
@@ -55,18 +55,18 @@ func (r *UpdateDeploymentRunner) Run() error {
 }
 
 func (r *UpdateDeploymentRunner) updateDeployment(deployment *lssv1alpha1.LandscaperDeployment) error {
-	logger, _ := logging.FromContextOrNew(r.GetCtx(), nil)
+	logger, _ := logging.FromContextOrNew(r.ctx, nil)
 
 	logger.Info("updating deployment", "name", deployment.Name)
 	deployment.Spec.LandscaperConfiguration.Deployers = append(deployment.Spec.LandscaperConfiguration.Deployers, "container")
 
-	if err := r.GetClusterClients().TestCluster.Update(r.GetCtx(), deployment); err != nil {
+	if err := r.clusterClients.TestCluster.Update(r.ctx, deployment); err != nil {
 		return fmt.Errorf("failed to update deployment %q: %w", deployment.Name, err)
 	}
 
 	instance := &lssv1alpha1.Instance{}
-	if err := r.GetClusterClients().TestCluster.Get(
-		r.GetCtx(),
+	if err := r.clusterClients.TestCluster.Get(
+		r.ctx,
 		types.NamespacedName{Name: deployment.Status.InstanceRef.Name, Namespace: deployment.Status.InstanceRef.Namespace},
 		instance); err != nil {
 		return fmt.Errorf("failed to retrieve instance for deployment %q: %w", deployment.Name, err)
@@ -78,10 +78,10 @@ func (r *UpdateDeploymentRunner) updateDeployment(deployment *lssv1alpha1.Landsc
 	logger.Info("waiting for installation being succeeded")
 
 	timeout, err := cliutil.CheckAndWaitUntilLandscaperInstallationSucceeded(
-		r.GetClusterClients().TestCluster,
+		r.clusterClients.TestCluster,
 		types.NamespacedName{Name: instance.Status.InstallationRef.Name, Namespace: instance.Status.InstallationRef.Namespace},
-		r.GetConfig().SleepTime,
-		r.GetConfig().MaxRetries*10)
+		r.config.SleepTime,
+		r.config.MaxRetries*10)
 
 	if err != nil {
 		return fmt.Errorf("installation for landscaper deployment %s failed: %w", deployment.Name, err)
@@ -90,6 +90,6 @@ func (r *UpdateDeploymentRunner) updateDeployment(deployment *lssv1alpha1.Landsc
 		return fmt.Errorf("waiting for installation of landscaper deployment %s timed out", deployment.Name)
 	}
 
-	r.GetTestObjects().LandscaperDeployments[types.NamespacedName{Name: deployment.Name, Namespace: deployment.Namespace}.String()] = deployment
+	r.testObjects.LandscaperDeployments[types.NamespacedName{Name: deployment.Name, Namespace: deployment.Namespace}.String()] = deployment
 	return nil
 }

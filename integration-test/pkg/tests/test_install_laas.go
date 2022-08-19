@@ -24,7 +24,7 @@ import (
 )
 
 type InstallLAASTestRunner struct {
-	test.BaseTestRunner
+	BaseTestRunner
 }
 
 func (r *InstallLAASTestRunner) Init(
@@ -50,7 +50,7 @@ func (r *InstallLAASTestRunner) String() string {
 }
 
 func (r *InstallLAASTestRunner) Run() error {
-	logger, _ := logging.FromContextOrNew(r.GetCtx(), nil)
+	logger, _ := logging.FromContextOrNew(r.ctx, nil)
 
 	logger.Info("creating installation")
 	if err := r.createInstallation(); err != nil {
@@ -68,42 +68,42 @@ func (r *InstallLAASTestRunner) Run() error {
 func (r *InstallLAASTestRunner) createServiceTargetConfig() error {
 	serviceTargetConfig := &lssv1alpha1.ServiceTargetConfig{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      r.GetClusterTargets().LaasCluster.Name,
-			Namespace: r.GetConfig().LaasNamespace,
+			Name:      r.clusterTargets.LaasCluster.Name,
+			Namespace: r.config.LaasNamespace,
 			Labels: map[string]string{
 				lsscore.ServiceTargetConfigVisibleLabelName: "true",
 				lsscore.ServiceTargetConfigRegionLabelName:  "eu",
 			},
 		},
 		Spec: lssv1alpha1.ServiceTargetConfigSpec{
-			ProviderType: r.GetConfig().ProviderType,
+			ProviderType: r.config.ProviderType,
 			Priority:     0,
 			SecretRef: lssv1alpha1.SecretReference{
 				ObjectReference: lssv1alpha1.ObjectReference{
-					Name:      r.GetClusterTargets().LaasCluster.Name,
-					Namespace: r.GetConfig().LaasNamespace,
+					Name:      r.clusterTargets.LaasCluster.Name,
+					Namespace: r.config.LaasNamespace,
 				},
 				Key: "kubeconfig",
 			},
 		},
 	}
 
-	if err := r.GetClusterClients().TestCluster.Create(r.GetCtx(), serviceTargetConfig); err != nil {
+	if err := r.clusterClients.TestCluster.Create(r.ctx, serviceTargetConfig); err != nil {
 		return fmt.Errorf("failed to create service hostingTarget config: %w", err)
 	}
 
-	r.GetTestObjects().ServiceTargetConfigs[types.NamespacedName{Name: serviceTargetConfig.Name, Namespace: serviceTargetConfig.Namespace}.String()] = serviceTargetConfig
+	r.testObjects.ServiceTargetConfigs[types.NamespacedName{Name: serviceTargetConfig.Name, Namespace: serviceTargetConfig.Namespace}.String()] = serviceTargetConfig
 
 	return nil
 }
 
 func (r *InstallLAASTestRunner) createInstallation() error {
-	logger, _ := logging.FromContextOrNew(r.GetCtx(), nil)
+	logger, _ := logging.FromContextOrNew(r.ctx, nil)
 
 	registryPullSecrets := []lssv1alpha1.ObjectReference{
 		{
 			Name:      "laas",
-			Namespace: r.GetConfig().LaasNamespace,
+			Namespace: r.config.LaasNamespace,
 		},
 	}
 
@@ -115,7 +115,7 @@ func (r *InstallLAASTestRunner) createInstallation() error {
 	installation := &lsv1alpha1.Installation{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "laas",
-			Namespace: r.GetConfig().LaasNamespace,
+			Namespace: r.config.LaasNamespace,
 			Annotations: map[string]string{
 				lsv1alpha1.OperationAnnotation: string(lsv1alpha1.ReconcileOperation),
 			},
@@ -125,10 +125,10 @@ func (r *InstallLAASTestRunner) createInstallation() error {
 			ComponentDescriptor: &lsv1alpha1.ComponentDescriptorDefinition{
 				Reference: &lsv1alpha1.ComponentDescriptorReference{
 					RepositoryContext: cdv2.NewUnstructuredType(cdv2.OCIRegistryType, map[string]interface{}{
-						"baseUrl": r.GetConfig().LaasRepository,
+						"baseUrl": r.config.LaasRepository,
 					}),
-					ComponentName: r.GetConfig().LaasComponent,
-					Version:       r.GetConfig().LaasVersion,
+					ComponentName: r.config.LaasComponent,
+					Version:       r.config.LaasVersion,
 				},
 			},
 			Blueprint: lsv1alpha1.BlueprintDefinition{
@@ -140,27 +140,27 @@ func (r *InstallLAASTestRunner) createInstallation() error {
 				Targets: []lsv1alpha1.TargetImport{
 					{
 						Name:   "targetCluster",
-						Target: fmt.Sprintf("#%s", r.GetClusterTargets().HostingCluster.Name),
+						Target: fmt.Sprintf("#%s", r.clusterTargets.HostingCluster.Name),
 					},
 				},
 			},
 			ImportDataMappings: map[string]lsv1alpha1.AnyJSON{
-				"namespace":           lssutils.StringToAnyJSON(r.GetConfig().LaasNamespace),
-				"verbosity":           lssutils.StringToAnyJSON("debug"),
+				"namespace":           lssutils.StringToAnyJSON(r.config.LaasNamespace),
+				"verbosity":           lssutils.StringToAnyJSON(logging.DEBUG.String()),
 				"registryPullSecrets": lsv1alpha1.NewAnyJSON(registryPullSecretsRaw),
 			},
 		},
 	}
 
-	if err := r.GetClusterClients().TestCluster.Create(r.GetCtx(), installation); err != nil {
+	if err := r.clusterClients.TestCluster.Create(r.ctx, installation); err != nil {
 		return fmt.Errorf("failed to create installation: %w", err)
 	}
 
-	timeout, err := cliutil.CheckAndWaitUntilLandscaperInstallationSucceeded(r.GetClusterClients().TestCluster,
+	timeout, err := cliutil.CheckAndWaitUntilLandscaperInstallationSucceeded(r.clusterClients.TestCluster,
 		types.NamespacedName{Name: installation.Name, Namespace: installation.Namespace},
-		r.GetConfig().SleepTime, r.GetConfig().MaxRetries)
+		r.config.SleepTime, r.config.MaxRetries)
 	if err != nil || timeout {
-		if err := r.GetClusterClients().TestCluster.Get(r.GetCtx(), types.NamespacedName{Name: installation.Name, Namespace: installation.Namespace}, installation); err == nil {
+		if err := r.clusterClients.TestCluster.Get(r.ctx, types.NamespacedName{Name: installation.Name, Namespace: installation.Namespace}, installation); err == nil {
 			logger.Error(fmt.Errorf("installation failed"), "installation", "last error", installation.Status.LastError)
 		}
 	}
@@ -172,7 +172,7 @@ func (r *InstallLAASTestRunner) createInstallation() error {
 		return fmt.Errorf("waiting for installation timed out")
 	}
 
-	r.GetTestObjects().Installations[types.NamespacedName{Name: installation.Name, Namespace: installation.Namespace}.String()] = installation
+	r.testObjects.Installations[types.NamespacedName{Name: installation.Name, Namespace: installation.Namespace}.String()] = installation
 
 	return nil
 }
