@@ -188,7 +188,7 @@ func (c *Controller) getLsHealthCheckFromSelfLandscaper(ctx context.Context, nam
 		c.Log().V(5).Info(fmt.Sprintf("could not load lshealthcheck from cluster: %s", err.Error()))
 		setAvailabilityInstanceStatusToFailed(&availabilityInstance, "failed retrieving lshealthcheck cr")
 	}
-	transferLsHealthCheckStatusToAvailabilityInstance(&availabilityInstance, lsHealthchecks, time.Minute*5)
+	transferLsHealthCheckStatusToAvailabilityInstance(&availabilityInstance, lsHealthchecks, c.Config().AvailabilityMonitoring.LSHealthCheckTimeout.Duration)
 	return availabilityInstance
 }
 
@@ -224,6 +224,7 @@ func transferLsHealthCheckStatusToAvailabilityInstance(availabilityInstance *lss
 		setAvailabilityInstanceStatusToFailed(availabilityInstance, fmt.Sprintf("timeout - last update time not recent enough (timeout %s)", timeout.String()))
 	} else {
 		availabilityInstance.Status = string(healthCheck.Status)
+		availabilityInstance.FailedReason = healthCheck.Description
 	}
 }
 
