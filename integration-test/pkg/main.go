@@ -157,8 +157,8 @@ func runTestSuite(ctx context.Context, clusterClients *test.ClusterClients, clus
 	copy(testsNotRun, integrationTests)
 
 	logger.Info("following tests will be run")
-	for _, runner := range integrationTests {
-		logger.Info("test", "name", runner.Name(), "description", runner.Description())
+	for i, runner := range integrationTests {
+		logger.Info(fmt.Sprintf("[%d] name: %s, description:\n%s", i, runner.Name(), runner.Description()))
 	}
 
 	for _, runner := range integrationTests {

@@ -38,8 +38,7 @@ func (r *VerifyDeploymentRunner) Name() string {
 }
 
 func (r *VerifyDeploymentRunner) Description() string {
-	description := `
-This test verifies that a tenant Landscaper deployment has been installed correctly.
+	description := `This test verifies that a tenant Landscaper deployment has been installed correctly.
 The test succeeds when all required pods (api server, etcd, landscaper ...) are running in the tenant namespace and
 the connection to the virtual cluster can be established. Otherwise the test fails.
 `
