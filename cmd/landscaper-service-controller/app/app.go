@@ -9,10 +9,12 @@ import (
 	"fmt"
 	"os"
 
-	lsinstall "github.com/gardener/landscaper/apis/core/install"
 	"github.com/spf13/cobra"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
+
+	lsinstall "github.com/gardener/landscaper/apis/core/install"
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 
 	lssinstall "github.com/gardener/landscaper-service/pkg/apis/core/install"
 	instancesctrl "github.com/gardener/landscaper-service/pkg/controllers/instances"
@@ -64,13 +66,8 @@ func (o *options) run(ctx context.Context) error {
 		return fmt.Errorf("unable to setup manager: %w", err)
 	}
 
-	crdmgr, err := crdmanager.NewCrdManager(ctrl.Log.WithName("setup").WithName("CRDManager"), mgr, o.Config.CrdManagement)
-	if err != nil {
-		return fmt.Errorf("unable to setup CRD manager: %w", err)
-	}
-
-	if err := crdmgr.EnsureCRDs(ctx); err != nil {
-		return fmt.Errorf("failed to handle CRDs: %w", err)
+	if err := o.ensureCRDs(ctx, mgr); err != nil {
+		return err
 	}
 
 	lssinstall.Install(mgr.GetScheme())
@@ -92,5 +89,19 @@ func (o *options) run(ctx context.Context) error {
 		o.Log.Error(err, "error while running manager")
 		os.Exit(1)
 	}
+	return nil
+}
+
+func (o *options) ensureCRDs(ctx context.Context, mgr manager.Manager) error {
+	ctx = logging.NewContext(ctx, logging.Wrap(ctrl.Log.WithName("crdManager")))
+	crdmgr, err := crdmanager.NewCrdManager(mgr, o.Config.CrdManagement)
+	if err != nil {
+		return fmt.Errorf("unable to setup CRD manager: %w", err)
+	}
+
+	if err := crdmgr.EnsureCRDs(ctx); err != nil {
+		return fmt.Errorf("failed to handle CRDs: %w", err)
+	}
+
 	return nil
 }
