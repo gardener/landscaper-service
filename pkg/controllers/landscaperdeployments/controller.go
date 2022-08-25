@@ -33,6 +33,9 @@ type Controller struct {
 	log logging.Logger
 
 	UniqueIDFunc func() string
+
+	ReconcileFunc    func(ctx context.Context, deployment *lssv1alpha1.LandscaperDeployment) error
+	HandleDeleteFunc func(ctx context.Context, deployment *lssv1alpha1.LandscaperDeployment) error
 }
 
 // NewUniqueID creates a new unique id string with a length of 8.
@@ -54,6 +57,8 @@ func NewController(logger logging.Logger, c client.Client, scheme *runtime.Schem
 		log:          logger,
 		UniqueIDFunc: defaultUniqueIdFunc,
 	}
+	ctrl.ReconcileFunc = ctrl.reconcile
+	ctrl.HandleDeleteFunc = ctrl.handleDelete
 	op := operation.NewOperation(c, scheme, config)
 	ctrl.Operation = *op
 	return ctrl, nil
@@ -66,6 +71,8 @@ func NewTestActuator(op operation.Operation, logger logging.Logger) *Controller 
 		log:          logger,
 		UniqueIDFunc: defaultUniqueIdFunc,
 	}
+	ctrl.ReconcileFunc = ctrl.reconcile
+	ctrl.HandleDeleteFunc = ctrl.handleDelete
 	return ctrl
 }
 
@@ -104,11 +111,11 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 	// reconcile delete
 	if !deployment.DeletionTimestamp.IsZero() {
-		return reconcile.Result{}, errHdl(ctx, c.handleDelete(ctx, deployment))
+		return reconcile.Result{}, errHdl(ctx, c.HandleDeleteFunc(ctx, deployment))
 	}
 
 	// reconcile
-	return reconcile.Result{}, errHdl(ctx, c.reconcile(ctx, deployment))
+	return reconcile.Result{}, errHdl(ctx, c.ReconcileFunc(ctx, deployment))
 }
 
 // handleErrorFunc updates the error status of a landscaper deployment

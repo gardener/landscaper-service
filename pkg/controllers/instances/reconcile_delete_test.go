@@ -6,12 +6,13 @@ package instances_test
 
 import (
 	"context"
+	"fmt"
 	"time"
+
+	lsserrors "github.com/gardener/landscaper-service/pkg/apis/errors"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	kutil "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
@@ -26,7 +27,7 @@ import (
 var _ = Describe("Delete", func() {
 	var (
 		op    *operation.Operation
-		ctrl  reconcile.Reconciler
+		ctrl  *instancescontroller.Controller
 		ctx   context.Context
 		state *envtest.State
 	)
@@ -133,5 +134,50 @@ var _ = Describe("Delete", func() {
 
 		Expect(testenv.WaitForObjectToBeDeleted(ctx, regpullsecret1, 5*time.Second)).To(Succeed())
 		Expect(testenv.WaitForObjectToBeDeleted(ctx, regpullsecret2, 5*time.Second)).To(Succeed())
+	})
+
+	It("should handle delete errors", func() {
+		var (
+			err       error
+			operation = "Delete"
+			reason    = "failed to delete"
+			message   = "error message"
+		)
+
+		state, err = testenv.InitResources(ctx, "./testdata/delete/test4")
+		Expect(err).ToNot(HaveOccurred())
+
+		instance := state.GetInstance("test")
+
+		ctrl.HandleDeleteFunc = func(ctx context.Context, deployment *lssv1alpha1.Instance) error {
+			return lsserrors.NewWrappedError(fmt.Errorf(reason), operation, reason, message)
+		}
+
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
+
+		Expect(testenv.Client.Delete(ctx, instance)).To(Succeed())
+
+		testutils.ShouldNotReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
+
+		Expect(instance.Status.LastError).ToNot(BeNil())
+		Expect(instance.Status.LastError.Operation).To(Equal(operation))
+		Expect(instance.Status.LastError.Reason).To(Equal(reason))
+		Expect(instance.Status.LastError.Message).To(Equal(message))
+		Expect(instance.Status.LastError.LastUpdateTime.Time).Should(BeTemporally("==", instance.Status.LastError.LastTransitionTime.Time))
+
+		time.Sleep(2 * time.Second)
+
+		message = "error message updated"
+
+		testutils.ShouldNotReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
+
+		Expect(instance.Status.LastError).ToNot(BeNil())
+		Expect(instance.Status.LastError.Operation).To(Equal(operation))
+		Expect(instance.Status.LastError.Reason).To(Equal(reason))
+		Expect(instance.Status.LastError.Message).To(Equal(message))
+		Expect(instance.Status.LastError.LastUpdateTime.Time).Should(BeTemporally(">", instance.Status.LastError.LastTransitionTime.Time))
 	})
 })

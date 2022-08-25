@@ -8,18 +8,19 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
+
+	lsserrors "github.com/gardener/landscaper-service/pkg/apis/errors"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	corev1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/types"
-	"sigs.k8s.io/controller-runtime/pkg/reconcile"
-
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	kutil "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
+	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/types"
 
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	lsinstallation "github.com/gardener/landscaper-service/pkg/apis/installation"
@@ -33,7 +34,7 @@ import (
 var _ = Describe("Reconcile", func() {
 	var (
 		op    *operation.Operation
-		ctrl  reconcile.Reconciler
+		ctrl  *instancescontroller.Controller
 		ctx   context.Context
 		state *envtest.State
 	)
@@ -243,5 +244,47 @@ var _ = Describe("Reconcile", func() {
 
 		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: installation.Name, Namespace: installation.Namespace}, installation)).To(Succeed())
 		Expect(installation.Annotations).To(BeNil())
+	})
+
+	It("should handle reconcile errors", func() {
+		var (
+			err       error
+			operation = "Reconcile"
+			reason    = "failed to reconcile"
+			message   = "error message"
+		)
+
+		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test3")
+		Expect(err).ToNot(HaveOccurred())
+
+		instance := state.GetInstance("test")
+
+		ctrl.ReconcileFunc = func(ctx context.Context, deployment *lssv1alpha1.Instance) error {
+			return lsserrors.NewWrappedError(fmt.Errorf(reason), operation, reason, message)
+		}
+
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
+		testutils.ShouldNotReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
+
+		Expect(instance.Status.LastError).ToNot(BeNil())
+		Expect(instance.Status.LastError.Operation).To(Equal(operation))
+		Expect(instance.Status.LastError.Reason).To(Equal(reason))
+		Expect(instance.Status.LastError.Message).To(Equal(message))
+		Expect(instance.Status.LastError.LastUpdateTime.Time).Should(BeTemporally("==", instance.Status.LastError.LastTransitionTime.Time))
+
+		time.Sleep(2 * time.Second)
+
+		message = "error message updated"
+
+		testutils.ShouldNotReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
+
+		Expect(instance.Status.LastError).ToNot(BeNil())
+		Expect(instance.Status.LastError.Operation).To(Equal(operation))
+		Expect(instance.Status.LastError.Reason).To(Equal(reason))
+		Expect(instance.Status.LastError.Message).To(Equal(message))
+		Expect(instance.Status.LastError.LastUpdateTime.Time).Should(BeTemporally(">", instance.Status.LastError.LastTransitionTime.Time))
 	})
 })
