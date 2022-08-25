@@ -17,7 +17,7 @@ import (
 	"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 )
 
-// AddControllerToManager adds the landscaperdeployments controller to the manager
+// AddControllerToManager adds the controller to the manager
 func AddControllerToManager(logger logging.Logger, mgr manager.Manager, config *coreconfig.LandscaperServiceConfiguration) error {
 	log := logger.Reconciles("serviceTargetConfig", "ServiceTargetConfig")
 	ctrl, err := NewController(log, mgr.GetClient(), mgr.GetScheme(), config)
