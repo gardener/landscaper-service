@@ -29,6 +29,9 @@ import (
 type Controller struct {
 	operation.Operation
 	log logging.Logger
+
+	ReconcileFunc    func(ctx context.Context, deployment *lssv1alpha1.Instance) error
+	HandleDeleteFunc func(ctx context.Context, deployment *lssv1alpha1.Instance) error
 }
 
 // NewController returns a new instances controller
@@ -36,6 +39,8 @@ func NewController(logger logging.Logger, c client.Client, scheme *runtime.Schem
 	ctrl := &Controller{
 		log: logger,
 	}
+	ctrl.ReconcileFunc = ctrl.reconcile
+	ctrl.HandleDeleteFunc = ctrl.handleDelete
 	op := operation.NewOperation(c, scheme, config)
 	ctrl.Operation = *op
 	return ctrl, nil
@@ -47,6 +52,8 @@ func NewTestActuator(op operation.Operation, logger logging.Logger) *Controller 
 		Operation: op,
 		log:       logger,
 	}
+	ctrl.ReconcileFunc = ctrl.reconcile
+	ctrl.HandleDeleteFunc = ctrl.handleDelete
 	return ctrl
 }
 
@@ -85,11 +92,11 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 	// reconcile delete
 	if !instance.DeletionTimestamp.IsZero() {
-		return reconcile.Result{}, errHdl(ctx, c.handleDelete(ctx, instance))
+		return reconcile.Result{}, errHdl(ctx, c.HandleDeleteFunc(ctx, instance))
 	}
 
 	// reconcile
-	return reconcile.Result{}, errHdl(ctx, c.reconcile(ctx, instance))
+	return reconcile.Result{}, errHdl(ctx, c.ReconcileFunc(ctx, instance))
 }
 
 // handleErrorFunc updates the error status of an instance
