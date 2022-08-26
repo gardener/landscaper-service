@@ -89,7 +89,9 @@ deployItems:
                     Name                kubernetes
                     Match               kube.*
                     Kube_URL            https://kubernetes.default.svc.cluster.local:443
-                    Merge_Log           Off
+                    Merge_Log           On
+                    Merge_Log_Key       log_processed
+                    Keep_Log            On
                     K8S-Logging.Parser  On
                     K8S-Logging.Exclude On
                     Labels              Off
@@ -133,9 +135,6 @@ deployItems:
                     Time_Key    time
                     Time_Format %Y-%m-%dT%H:%M:%S.%L
                     Time_Keep   On
-                    # Command      |  Decoder | Field | Optional Action
-                    # =============|==================|=================
-                    Decode_Field_As   escaped    log
 
                 [PARSER]
                     Name        syslog

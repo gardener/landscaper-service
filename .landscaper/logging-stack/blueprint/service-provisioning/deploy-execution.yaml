@@ -10,7 +10,7 @@ deployItems:
       name: service-provisioning
       updateStrategy: update
       manifests:
-        - policy: manage
+        - policy: immutable
           manifest:
             apiVersion: services.cloud.sap.com/v1
             kind: ServiceInstance
@@ -26,7 +26,7 @@ deployItems:
 {{ toYaml .imports.serviceInstanceParameters | indent 16 }}
               {{ end }}
 
-        - policy: manage
+        - policy: immutable
           manifest:
             apiVersion: services.cloud.sap.com/v1
             kind: ServiceBinding
@@ -42,83 +42,53 @@ deployItems:
 {{ toYaml .imports.serviceBindingParameters | indent 16 }}
               {{ end }}
 
-        - policy: manage
-          manifest:
-            apiVersion: v1
-            kind: ConfigMap
-            metadata:
-              name: {{ .imports.name }}-service-binding-secret-ref
-              namespace: {{ .imports.namespace }}
-            data:
-              name: {{ .imports.name }}-service-binding-secret
-              namespace: {{ .imports.namespace }}
-
       exports:
         defaultTimeout: 20m
         exports:
           - key: fluentdEndpoint
-            jsonPath: ".data"
+            jsonPath: ".data.Fluentd-endpoint"
             fromResource:
               apiVersion: v1
-              kind: ConfigMap
-              name: {{ .imports.name }}-service-binding-secret-ref
-              namespace: {{ .imports.namespace }}
-            fromObjectRef:
-              apiVersion: v1
               kind: Secret
-              jsonPath: ".data.Fluentd-endpoint"
+              name: {{ .imports.name }}-service-binding-secret
+              namespace: {{ .imports.namespace }}
+
           - key: fluentdUsername
-            jsonPath: ".data"
+            jsonPath: ".data.Fluentd-username"
             fromResource:
               apiVersion: v1
-              kind: ConfigMap
-              name: {{ .imports.name }}-service-binding-secret-ref
-              namespace: {{ .imports.namespace }}
-            fromObjectRef:
-              apiVersion: v1
               kind: Secret
-              jsonPath: ".data.Fluentd-username"
+              name: {{ .imports.name }}-service-binding-secret
+              namespace: {{ .imports.namespace }}
+
           - key: fluentdPassword
-            jsonPath: ".data"
+            jsonPath: ".data.Fluentd-password"
             fromResource:
               apiVersion: v1
-              kind: ConfigMap
-              name: {{ .imports.name }}-service-binding-secret-ref
-              namespace: {{ .imports.namespace }}
-            fromObjectRef:
-              apiVersion: v1
               kind: Secret
-              jsonPath: ".data.Fluentd-password"
+              name: {{ .imports.name }}-service-binding-secret
+              namespace: {{ .imports.namespace }}
+
           - key: kibanaEndpoint
-            jsonPath: ".data"
+            jsonPath: ".data.Kibana-endpoint"
             fromResource:
               apiVersion: v1
-              kind: ConfigMap
-              name: {{ .imports.name }}-service-binding-secret-ref
-              namespace: {{ .imports.namespace }}
-            fromObjectRef:
-              apiVersion: v1
               kind: Secret
-              jsonPath: ".data.Kibana-endpoint"
+              name: {{ .imports.name }}-service-binding-secret
+              namespace: {{ .imports.namespace }}
+
           - key: kibanaUsername
-            jsonPath: ".data"
+            jsonPath: ".data.Kibana-username"
             fromResource:
               apiVersion: v1
-              kind: ConfigMap
-              name: {{ .imports.name }}-service-binding-secret-ref
-              namespace: {{ .imports.namespace }}
-            fromObjectRef:
-              apiVersion: v1
               kind: Secret
-              jsonPath: ".data.Kibana-username"
+              name: {{ .imports.name }}-service-binding-secret
+              namespace: {{ .imports.namespace }}
+
           - key: kibanaPassword
-            jsonPath: ".data"
+            jsonPath: ".data.Kibana-password"
             fromResource:
               apiVersion: v1
-              kind: ConfigMap
-              name: {{ .imports.name }}-service-binding-secret-ref
-              namespace: {{ .imports.namespace }}
-            fromObjectRef:
-              apiVersion: v1
               kind: Secret
-              jsonPath: ".data.Kibana-password"
+              name: {{ .imports.name }}-service-binding-secret
+              namespace: {{ .imports.namespace }}
