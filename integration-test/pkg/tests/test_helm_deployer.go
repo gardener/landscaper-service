@@ -133,7 +133,7 @@ func (r *HelmDeployerTestRunner) prepare(virtualClient client.Client) (string, e
 
 	namespace = &corev1.Namespace{
 		ObjectMeta: metav1.ObjectMeta{
-			GenerateName: "manifest-test-",
+			GenerateName: "helm-test-",
 		},
 	}
 	logger.Info("creating namespace in virtual cluster", "generateName", namespace.GenerateName)
