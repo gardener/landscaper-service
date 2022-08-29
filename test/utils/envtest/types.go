@@ -36,6 +36,10 @@ var (
 	TargetGVK schema.GroupVersionKind
 	// ContextGVK is the GVK for contexts.
 	ContextGVK schema.GroupVersionKind
+	// AvailabilityCollectionGVK is the GVK for AvailabilityCollection.
+	AvailabilityCollectionGVK schema.GroupVersionKind
+	// LsHealthCheckGVK is the GVK for LsHealthCheck.
+	LsHealthCheckGVK schema.GroupVersionKind
 )
 
 func init() {
@@ -58,5 +62,9 @@ func init() {
 	TargetGVK, err = apiutil.GVKForObject(&lsv1alpha1.Target{}, LandscaperServiceScheme)
 	utilruntime.Must(err)
 	ContextGVK, err = apiutil.GVKForObject(&lsv1alpha1.Context{}, LandscaperServiceScheme)
+	utilruntime.Must(err)
+	AvailabilityCollectionGVK, err = apiutil.GVKForObject(&lssv1alpha1.AvailabilityCollection{}, LandscaperServiceScheme)
+	utilruntime.Must(err)
+	LsHealthCheckGVK, err = apiutil.GVKForObject(&lsv1alpha1.LsHealthCheck{}, LandscaperServiceScheme)
 	utilruntime.Must(err)
 }

@@ -7,8 +7,10 @@ package utils
 import (
 	"context"
 	"encoding/json"
+	"time"
 
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
+	v1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 
 	"github.com/gardener/landscaper-service/pkg/apis/config"
 
@@ -47,6 +49,13 @@ func DefaultControllerConfiguration() *config.LandscaperServiceConfiguration {
 		LandscaperServiceComponent: config.LandscaperServiceComponentConfiguration{
 			Name:    "github.com/gardener/landscaper/landscaper-service",
 			Version: "v1.1.1",
+		},
+		AvailabilityMonitoring: config.AvailabilityMonitoringConfiguration{
+			AvailabilityCollectionName:      "availability",
+			AvailabilityCollectionNamespace: "laas-system",
+			SelfLandscaperNamespace:         "landscaper",
+			PeriodicCheckInterval:           v1alpha1.Duration{Duration: time.Minute * 1},
+			LSHealthCheckTimeout:            v1alpha1.Duration{Duration: time.Minute * 5},
 		},
 	}
 	repositoryContext, err := json.Marshal(map[string]interface{}{

@@ -487,7 +487,7 @@ func schema_pkg_apis_core_v1alpha1_AvailabilityCollectionStatus(ref common.Refer
 						},
 					},
 				},
-				Required: []string{"lastRun", "lastReported", "instances", "self"},
+				Required: []string{"instances", "self"},
 			},
 		},
 		Dependencies: []string{

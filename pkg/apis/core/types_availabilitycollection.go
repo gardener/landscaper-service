@@ -42,9 +42,11 @@ type AvailabilityCollectionStatus struct {
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
 	// LastRun is the last time, the HealthWatcher collected all instance status.
+	// +optional
 	LastRun metav1.Time `json:"lastRun"`
 
 	// LastReported is the last time, the AV Uploader uploaded all instance status. Prevents multi upload of the same status.
+	// +optional
 	LastReported metav1.Time `json:"lastReported"`
 
 	// Instances collects the status for all instances specified in spec.instanceRefs

@@ -113,8 +113,6 @@ spec:
                 - failedReason
                 type: object
             required:
-            - lastRun
-            - lastReported
             - instances
             - self
             type: object
