@@ -35,13 +35,29 @@ import (
 
 type Controller struct {
 	operation.Operation
+	kubeClientExtractor ServiceTargetConfigKubeClientExtractorInterface
+}
+
+// ServiceTargetConfigKubeClientExtractorInterface implements functionality to create a kubeclient from a servive target config ref
+type ServiceTargetConfigKubeClientExtractorInterface interface {
+	GetKubeClientFromServiceTargetConfig(ctx context.Context, name string, namespace string, client client.Client) (client.Client, error)
 }
 
 func NewController(log logr.Logger, c client.Client, scheme *runtime.Scheme, config *coreconfig.LandscaperServiceConfiguration) (reconcile.Reconciler, error) {
 	ctrl := &Controller{}
 	op := operation.NewOperation(log, c, scheme, config)
 	ctrl.Operation = *op
+	ctrl.kubeClientExtractor = &ServiceTargetConfigKubeClientExtractor{}
 	return ctrl, nil
+}
+
+// NewTestActuator creates a new controller for testing purposes.
+func NewTestActuator(op operation.Operation, kubeClientExtractor ServiceTargetConfigKubeClientExtractorInterface) *Controller {
+	ctrl := &Controller{
+		Operation:           op,
+		kubeClientExtractor: kubeClientExtractor,
+	}
+	return ctrl
 }
 
 func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reconcile.Result, error) {
@@ -109,16 +125,16 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 			continue
 		}
 
-		//check that target exists
-		if instance.Status.TargetRef == nil || instance.Status.TargetRef.Name == "" || instance.Status.TargetRef.Namespace == "" {
-			c.Log().V(5).Info(fmt.Sprintf("instance %s:%s does not have a target ref", instance.Namespace, instance.Name))
-			setAvailabilityInstanceStatusToFailed(&availabilityInstance, "instance does not have a target ref")
+		//check that servicetargetconfref exists exists
+		if instance.Spec.ServiceTargetConfigRef.Name == "" || instance.Spec.ServiceTargetConfigRef.Namespace == "" {
+			c.Log().V(5).Info(fmt.Sprintf("instance %s:%s does not have a ServiceTargetConfig ref", instance.Namespace, instance.Name))
+			setAvailabilityInstanceStatusToFailed(&availabilityInstance, "instance does not have a ServiceTargetConfigRef")
 			availabilityCollection.Status.Instances = append(availabilityCollection.Status.Instances, availabilityInstance)
 			continue
 		}
 
 		//get kubeconfig from secret referenced in ServiceTargetConfig so a credential rotation is automatically handled
-		targetClient, err := getKubeClientFromServiceTargetConfig(ctx, instance.Spec.ServiceTargetConfigRef.Name, instance.Spec.ServiceTargetConfigRef.Namespace, c.Client())
+		targetClient, err := c.kubeClientExtractor.GetKubeClientFromServiceTargetConfig(ctx, instance.Spec.ServiceTargetConfigRef.Name, instance.Spec.ServiceTargetConfigRef.Namespace, c.Client())
 		if err != nil {
 			c.Log().V(5).Info(err.Error())
 			setAvailabilityInstanceStatusToFailed(&availabilityInstance, "could not create k8s client from target config")
@@ -240,8 +256,9 @@ func extractTargetClusterNamespaceFromInstallation(inst lsv1alpha1.Installation)
 	return targetClusterNamespace, nil
 }
 
-func getKubeClientFromServiceTargetConfig(ctx context.Context, name string, namespace string, client client.Client) (client.Client, error) {
-	//get kubeClient for instance over servicetargetconf secret (TODO: build a client cache for targets)
+type ServiceTargetConfigKubeClientExtractor struct{}
+
+func (e *ServiceTargetConfigKubeClientExtractor) GetKubeClientFromServiceTargetConfig(ctx context.Context, name string, namespace string, client client.Client) (client.Client, error) {
 	if name == "" || namespace == "" {
 		return nil, errors.New("name or namespace of serviceTargetConfig is empty")
 	}

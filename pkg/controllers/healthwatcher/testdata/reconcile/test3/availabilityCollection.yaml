@@ -1,0 +1,18 @@
+# SPDX-FileCopyrightText: 2022 "SAP SE or an SAP affiliate company and Gardener contributors"
+#
+# SPDX-License-Identifier: Apache-2.0
+
+apiVersion: landscaper-service.gardener.cloud/v1alpha1
+kind: AvailabilityCollection
+metadata:
+  name: "availability3"
+  namespace: {{ .Namespace }}
+spec:
+  instanceRefs: 
+    - name: instance1
+      namespace: {{ .Namespace }}
+    - name: instance2
+      namespace: {{ .Namespace }}
+
+status:
+  instances: []

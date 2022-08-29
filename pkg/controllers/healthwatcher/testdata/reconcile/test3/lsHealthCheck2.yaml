@@ -1,0 +1,11 @@
+# SPDX-FileCopyrightText: 2022 "SAP SE or an SAP affiliate company and Gardener contributors"
+#
+# SPDX-License-Identifier: Apache-2.0
+
+apiVersion: landscaper.gardener.cloud/v1alpha1
+kind: LsHealthCheck
+lastUpdateTime: "2022-08-23T13:46:33Z"
+metadata:
+  name: default
+  namespace: instance2namespace-{{ .Namespace }}
+status: Ok
