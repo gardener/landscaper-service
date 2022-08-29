@@ -53,14 +53,14 @@ deployItems:
 
           availabiliyMonitoring:
             availabilityCollectionName: availability
-            selfLandscaperNamespace: {{ (.imports.availabiliyMonitoring).selfLandscaperNamespace | default landscaper }}
-            periodicCheckInterval: {{ (.imports.availabiliyMonitoring).periodicCheckInterval | default 1m }}
-            lsHealthCheckTimeout: {{ (.imports.availabiliyMonitoring).lsHealthCheckTimeout | default 5m }}
+            selfLandscaperNamespace: {{ (.imports.availabiliyMonitoring).selfLandscaperNamespace | default "landscaper" }}
+            periodicCheckInterval: {{ (.imports.availabiliyMonitoring).periodicCheckInterval | default "1m" }}
+            lsHealthCheckTimeout: {{ (.imports.availabiliyMonitoring).lsHealthCheckTimeout | default "5m" }}
             {{- if .imports.AVSConfiguration }}
             AVSConfiguration:
               url: {{ .imports.AVSConfiguration.url }}
               apiKey: {{ .imports.AVSConfiguration.apiKey }}
-              timeout: {{ {{ .imports.AVSConfiguration.apiKey.timeout | default 30s }}
+              timeout: {{ {{ .imports.AVSConfiguration.apiKey.timeout | default "30s" }}
             {{-end }}
           landscaperServiceComponent:
             name: {{ $landscaperServiceComponentName }}
