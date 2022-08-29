@@ -10,9 +10,10 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
+	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
+
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	"github.com/gardener/landscaper-service/test/utils/envtest"
-	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 
 	avuploader "github.com/gardener/landscaper-service/pkg/controllers/avuploader"
 )
