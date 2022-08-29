@@ -48,4 +48,9 @@ func SetDefaults_AvailabilityMonitoringConfiguration(obj *AvailabilityMonitoring
 	if obj.LSHealthCheckTimeout.Duration == 0 {
 		obj.LSHealthCheckTimeout.Duration = time.Minute * 5
 	}
+	if obj.AvailabilityServiceConfiguration != nil {
+		if obj.AvailabilityServiceConfiguration.Timeout == "" {
+			obj.AvailabilityServiceConfiguration.Timeout = "30s"
+		}
+	}
 }
