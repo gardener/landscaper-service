@@ -35,7 +35,7 @@ imports:
 
   - name: availabiliyMonitoring
     required: false
-    type: object
+    type: data
     properties:
       selfLandscaperNamespace:
         type: string
@@ -46,7 +46,7 @@ imports:
 
   - name: AVSConfiguration
     required: false
-    type: object
+    type: data
     properties:
       url:
         type: string
