@@ -33,6 +33,14 @@ func NewController(log logr.Logger, c client.Client, scheme *runtime.Scheme, con
 	return ctrl, nil
 }
 
+// NewTestActuator creates a new controller for testing purposes.
+func NewTestActuator(op operation.Operation) *Controller {
+	ctrl := &Controller{
+		Operation: op,
+	}
+	return ctrl
+}
+
 func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reconcile.Result, error) {
 	log := c.Log().WithValues("instance", req.NamespacedName.String())
 	ctx = logr.NewContext(ctx, log)
@@ -64,7 +72,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 				c.Log().V(5).Info(err.Error())
 				continue
 			}
-			c.Log().V(5).Info(fmt.Sprintf("could not load installation from installation reference: %w", err))
+			c.Log().V(5).Info(fmt.Sprintf("could not load installation from installation reference: %s", err.Error()))
 			continue
 		}
 		//check if installation not progressing
