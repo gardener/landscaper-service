@@ -13,9 +13,10 @@ import (
 
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
+
 	"github.com/gardener/landscaper-service/pkg/operation"
 	"github.com/gardener/landscaper-service/test/utils/envtest"
-	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 
