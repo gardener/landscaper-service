@@ -12,14 +12,12 @@ import (
 	"os"
 	"text/template"
 
-	apierrors "k8s.io/apimachinery/pkg/api/errors"
-
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
-	"github.com/gardener/landscaper/controller-utils/pkg/logger"
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 	cliquickstart "github.com/gardener/landscapercli/cmd/quickstart"
 	cliutil "github.com/gardener/landscapercli/pkg/util"
-	"github.com/go-logr/logr"
 	corev1 "k8s.io/api/core/v1"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -71,12 +69,12 @@ func run() error {
 	ctx := context.Background()
 	defer ctx.Done()
 
-	log, err := logger.NewCliLogger()
+	log, err := logging.NewCliLogger()
 	if err != nil {
 		return err
 	}
 
-	logger.SetLogger(log)
+	ctx = logging.NewContext(ctx, log)
 
 	log.Info("running integration test with flags",
 		"LAAS Component", config.LaasComponent,
@@ -95,12 +93,12 @@ func run() error {
 	}
 
 	log.Info("========== Uninstalling Landscaper ==========")
-	if err := uninstallLandscaper(ctx, log, clusterClients.TestCluster, config); err != nil {
+	if err := uninstallLandscaper(ctx, clusterClients.TestCluster, config); err != nil {
 		return err
 	}
 
 	log.Info("========== Cleaning up before test ==========")
-	if err := cleanupResources(ctx, log, clusterClients.TestCluster, clusterClients.HostingCluster, config); err != nil {
+	if err := cleanupResources(ctx, clusterClients.TestCluster, clusterClients.HostingCluster, config); err != nil {
 		return err
 	}
 
@@ -139,12 +137,14 @@ func run() error {
 		return fmt.Errorf("cannot build landscaper context: %w", err)
 	}
 
-	return runTestSuite(ctx, log, clusterClients, clusterTargets, config)
+	return runTestSuite(ctx, clusterClients, clusterTargets, config)
 }
 
 // runTestSuite runs the tests defined in integrationTests
-func runTestSuite(ctx context.Context, log logr.Logger, clusterClients *test.ClusterClients, clusterTarget *test.ClusterTargets, config *test.TestConfig) error {
-	log.Info("========== Running test suite ==========")
+func runTestSuite(ctx context.Context, clusterClients *test.ClusterClients, clusterTarget *test.ClusterTargets, config *test.TestConfig) error {
+	logger, ctx := logging.FromContextOrNew(ctx, nil)
+
+	logger.Info("========== Running test suite ==========")
 	testObjects := &test.SharedTestObjects{
 		Installations:            make(map[string]*lsv1alpha1.Installation),
 		ServiceTargetConfigs:     make(map[string]*lssv1alpha1.ServiceTargetConfig),
@@ -156,36 +156,40 @@ func runTestSuite(ctx context.Context, log logr.Logger, clusterClients *test.Clu
 	testsNotRun := make([]test.TestRunner, len(integrationTests))
 	copy(testsNotRun, integrationTests)
 
-	log.Info("following tests will be run")
-	for _, runner := range integrationTests {
-		log.Info("test", "name", runner.Name(), "description", runner.Description())
+	logger.Info("following tests will be run")
+	for i, runner := range integrationTests {
+		logger.Info(fmt.Sprintf("[%d] name: %s, description:\n%s", i, runner.Name(), runner.Description()))
 	}
 
 	for _, runner := range integrationTests {
 		testsNotRun = testsNotRun[1:]
-		log.Info("********** running test", "name", runner.Name())
-		runner.Init(ctx, log, config, clusterClients, clusterTarget, testObjects)
+		logger.Info("********** running test", "name", runner.Name())
+		runner.Init(ctx, config, clusterClients, clusterTarget, testObjects)
 		if err := runner.Run(); err != nil {
-			return logTestSummary(log, succeededTests, testsNotRun, err, runner)
+			return logTestSummary(ctx, succeededTests, testsNotRun, err, runner)
 		}
 		succeededTests = append(succeededTests, runner)
 	}
 
-	return logTestSummary(log, succeededTests, testsNotRun, nil, nil)
+	return logTestSummary(ctx, succeededTests, testsNotRun, nil, nil)
 }
 
-func logTestSummary(log logr.Logger, succeededTests, testsNotRun []test.TestRunner, err error, failedTest test.TestRunner) error {
-	log.Info("==========  Test summary ==========")
-	log.Info("successful tests", "tests", fmt.Sprintf("%v", succeededTests), "total", fmt.Sprintf("%d/%d", len(succeededTests), len(integrationTests)))
-	log.Info("tests not run", "tests", fmt.Sprintf("%v", testsNotRun), "total", fmt.Sprintf("%d/%d", len(testsNotRun), len(integrationTests)))
+func logTestSummary(ctx context.Context, succeededTests, testsNotRun []test.TestRunner, err error, failedTest test.TestRunner) error {
+	logger, _ := logging.FromContextOrNew(ctx, nil)
+
+	logger.Info("==========  Test summary ==========")
+	logger.Info("successful tests", "tests", fmt.Sprintf("%v", succeededTests), "total", fmt.Sprintf("%d/%d", len(succeededTests), len(integrationTests)))
+	logger.Info("tests not run", "tests", fmt.Sprintf("%v", testsNotRun), "total", fmt.Sprintf("%d/%d", len(testsNotRun), len(integrationTests)))
 	if err != nil {
-		log.Error(err, "error while running test", "name", failedTest.Name())
+		logger.Error(err, "error while running test", "name", failedTest.Name())
 	}
 	return err
 }
 
 // uninstallLandscaper uninstalls the landscaper including the namespace it is installed in
-func uninstallLandscaper(ctx context.Context, log logr.Logger, kclient client.Client, config *test.TestConfig) error {
+func uninstallLandscaper(ctx context.Context, kclient client.Client, config *test.TestConfig) error {
+	logger, _ := logging.FromContextOrNew(ctx, nil)
+
 	landscaperNamespace := &corev1.Namespace{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: config.LandscaperNamespace,
@@ -219,7 +223,7 @@ func uninstallLandscaper(ctx context.Context, log logr.Logger, kclient client.Cl
 		return err
 	}
 
-	if err := util.ForceDeleteInstallations(ctx, log, kclient, config.TestClusterKubeconfig, config.LandscaperNamespace); err != nil {
+	if err := util.ForceDeleteInstallations(ctx, kclient, config.TestClusterKubeconfig, config.LandscaperNamespace); err != nil {
 		return err
 	}
 
@@ -227,7 +231,7 @@ func uninstallLandscaper(ctx context.Context, log logr.Logger, kclient client.Cl
 		return err
 	}
 
-	log.Info("Waiting for resources to be deleted on the K8s cluster...")
+	logger.Info("Waiting for resources to be deleted on the K8s cluster...")
 	namespace := &corev1.Namespace{}
 	timeout, err := cliutil.CheckAndWaitUntilObjectNotExistAnymore(kclient, types.NamespacedName{Name: config.LandscaperNamespace}, namespace, config.SleepTime, config.MaxRetries)
 
@@ -247,7 +251,7 @@ func buildLandscaperValues(namespace string) ([]byte, error) {
 	const valuesTemplate = `
 landscaper:
   landscaper:
-    verbosity: 10
+    verbosity: debug
     registryConfig: # contains optional oci secrets
       allowPlainHttpRegistries: true
       secrets: {}
@@ -259,13 +263,13 @@ landscaper:
       Deployers:
         container:
           deployer:
-            verbosityLevel: 10
+            verbosityLevel: debug
         helm:
           deployer:
-            verbosityLevel: 10
+            verbosityLevel: debug
         manifest:
           deployer:
-            verbosityLevel: 10
+            verbosityLevel: debug
     deployerManagement:
       namespace: {{ .Namespace }}
       agent:
@@ -334,7 +338,7 @@ func installLandscaper(ctx context.Context, config *test.TestConfig) error {
 
 // cleanupResources removes all landscaper and laas resource in the laas and test namespace.
 // It also tries to remove all virtual cluster namespaces that are still present in the cluster.
-func cleanupResources(ctx context.Context, log logr.Logger, hostingClient, laasClient client.Client, config *test.TestConfig) error {
+func cleanupResources(ctx context.Context, hostingClient, laasClient client.Client, config *test.TestConfig) error {
 	// LAAS Namespace
 	if err := util.DeleteValidatingWebhookConfiguration(ctx, hostingClient, "landscaper-service-validation-webhook", config.LaasNamespace); err != nil {
 		return err
@@ -348,7 +352,7 @@ func cleanupResources(ctx context.Context, log logr.Logger, hostingClient, laasC
 		return err
 	}
 
-	if err := util.CleanupLaasResources(ctx, log, hostingClient, config.LaasNamespace, config.SleepTime, config.MaxRetries); err != nil {
+	if err := util.CleanupLaasResources(ctx, hostingClient, config.LaasNamespace, config.SleepTime, config.MaxRetries); err != nil {
 		return err
 	}
 
@@ -361,7 +365,7 @@ func cleanupResources(ctx context.Context, log logr.Logger, hostingClient, laasC
 		return err
 	}
 
-	if err := util.CleanupLaasResources(ctx, log, hostingClient, config.TestNamespace, config.SleepTime, config.MaxRetries); err != nil {
+	if err := util.CleanupLaasResources(ctx, hostingClient, config.TestNamespace, config.SleepTime, config.MaxRetries); err != nil {
 		return err
 	}
 
@@ -373,7 +377,7 @@ func cleanupResources(ctx context.Context, log logr.Logger, hostingClient, laasC
 		return err
 	}
 
-	if err := util.DeleteVirtualClusterNamespaces(ctx, log, laasClient, config.SleepTime, config.MaxRetries); err != nil {
+	if err := util.DeleteVirtualClusterNamespaces(ctx, laasClient, config.SleepTime, config.MaxRetries); err != nil {
 		return err
 	}
 

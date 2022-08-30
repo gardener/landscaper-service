@@ -11,8 +11,8 @@ import (
 	"os"
 	"path/filepath"
 
-	webhookcert "github.com/gardener/landscaper/controller-utils/pkg/webhook"
 	"github.com/spf13/cobra"
+
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
@@ -20,6 +20,9 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	ctrlwebhook "sigs.k8s.io/controller-runtime/pkg/webhook"
+
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
+	webhookcert "github.com/gardener/landscaper/controller-utils/pkg/webhook"
 
 	"github.com/gardener/landscaper-service/pkg/apis/core/install"
 	"github.com/gardener/landscaper-service/pkg/version"
@@ -64,7 +67,7 @@ func (o *options) run(ctx context.Context) error {
 			o.log.Error(err, "unable to send health response")
 		}
 	}))
-	ctrl.SetLogger(o.log)
+	ctrl.SetLogger(o.log.Logr())
 
 	restConfig := ctrl.GetConfigOrDie()
 	scheme := runtime.NewScheme()
@@ -93,12 +96,15 @@ func registerWebhooks(ctx context.Context,
 	kubeClient client.Client,
 	scheme *runtime.Scheme,
 	o *options) error {
-	webhookLogger := ctrl.Log.WithName("webhook").WithName("validation")
+
+	webhookLogger := logging.Wrap(ctrl.Log.WithName("webhook").WithName("validation"))
+	ctx = logging.NewContext(ctx, webhookLogger)
+
 	webhookConfigurationName := "landscaper-service-validation-webhook"
 	// noop if all webhooks are disabled
 	if len(o.webhook.enabledWebhooks) == 0 {
 		webhookLogger.Info("Validation disabled")
-		return webhook.DeleteValidatingWebhookConfiguration(ctx, kubeClient, webhookConfigurationName, webhookLogger)
+		return webhook.DeleteValidatingWebhookConfiguration(ctx, kubeClient, webhookConfigurationName)
 	}
 
 	webhookLogger.Info("Validation enabled")
@@ -140,11 +146,11 @@ func registerWebhooks(ctx context.Context,
 	webhookLogger.Info("Enabling validation", "resources", webhookedResourcesLog)
 
 	// create/update/delete ValidatingWebhookConfiguration
-	if err := webhook.UpdateValidatingWebhookConfiguration(ctx, kubeClient, wo, webhookLogger); err != nil {
+	if err := webhook.UpdateValidatingWebhookConfiguration(ctx, kubeClient, wo); err != nil {
 		return err
 	}
 	// register webhooks
-	if err := webhook.RegisterWebhooks(webhookLogger, webhookServer, kubeClient, scheme, wo); err != nil {
+	if err := webhook.RegisterWebhooks(ctx, webhookServer, kubeClient, scheme, wo); err != nil {
 		return err
 	}
 

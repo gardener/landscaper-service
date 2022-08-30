@@ -7,11 +7,12 @@ package webhook_test
 import (
 	"context"
 
-	"github.com/go-logr/logr"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 
 	lsscore "github.com/gardener/landscaper-service/pkg/apis/core"
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
@@ -41,7 +42,7 @@ var _ = Describe("ServiceTargetConfig", func() {
 
 	BeforeEach(func() {
 		var err error
-		validator, err = webhook.ValidatorFromResourceType(logr.Discard(), testenv.Client, envtest.LandscaperServiceScheme, webhook.ServiceTargetConfigsResourceType)
+		validator, err = webhook.ValidatorFromResourceType(logging.Discard(), testenv.Client, envtest.LandscaperServiceScheme, webhook.ServiceTargetConfigsResourceType)
 		Expect(err).ToNot(HaveOccurred())
 
 		ctx = context.Background()

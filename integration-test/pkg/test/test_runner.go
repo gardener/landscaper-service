@@ -9,7 +9,6 @@ import (
 	"fmt"
 
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
-	"github.com/go-logr/logr"
 	"k8s.io/client-go/tools/clientcmd"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
@@ -84,9 +83,13 @@ func NewClusterTargets(ctx context.Context, kclient client.Client, config *TestC
 	}, nil
 }
 
+const (
+	KeyTestName = "testName"
+)
+
 // A TestRunner implements an integration test.
 type TestRunner interface {
-	Init(ctx context.Context, log logr.Logger, config *TestConfig, clusterEndpoints *ClusterClients, clusterTargets *ClusterTargets, testObjects *SharedTestObjects)
+	Init(ctx context.Context, config *TestConfig, clusterEndpoints *ClusterClients, clusterTargets *ClusterTargets, testObjects *SharedTestObjects)
 	Name() string
 	Description() string
 	String() string

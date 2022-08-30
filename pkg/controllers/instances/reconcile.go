@@ -11,14 +11,17 @@ import (
 	"reflect"
 	"strings"
 
-	cdv2 "github.com/gardener/component-spec/bindings-go/apis/v2"
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	"github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
-	"github.com/go-logr/logr"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
+
+	cdv2 "github.com/gardener/component-spec/bindings-go/apis/v2"
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
+	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
 
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	"github.com/gardener/landscaper-service/pkg/apis/errors"
@@ -34,18 +37,18 @@ var (
 )
 
 // reconcile reconciles an instance.
-func (c *Controller) reconcile(ctx context.Context, log logr.Logger, instance *lssv1alpha1.Instance) error {
+func (c *Controller) reconcile(ctx context.Context, instance *lssv1alpha1.Instance) error {
 	currOp := "Reconcile"
 
-	if err := c.reconcileContext(ctx, log, instance); err != nil {
+	if err := c.reconcileContext(ctx, instance); err != nil {
 		return errors.NewWrappedError(err, currOp, "ReconcileContextFailed", err.Error())
 	}
 
-	if err := c.reconcileTarget(ctx, log, instance); err != nil {
+	if err := c.reconcileTarget(ctx, instance); err != nil {
 		return errors.NewWrappedError(err, currOp, "ReconcileTargetFailed", err.Error())
 	}
 
-	if err := c.reconcileInstallation(ctx, log, instance); err != nil {
+	if err := c.reconcileInstallation(ctx, instance); err != nil {
 		return errors.NewWrappedError(err, currOp, "ReconcileInstallationFailed", err.Error())
 	}
 
@@ -53,7 +56,7 @@ func (c *Controller) reconcile(ctx context.Context, log logr.Logger, instance *l
 }
 
 // reconcileContext reconciles the context for an instance.
-func (c *Controller) reconcileContext(ctx context.Context, log logr.Logger, instance *lssv1alpha1.Instance) error {
+func (c *Controller) reconcileContext(ctx context.Context, instance *lssv1alpha1.Instance) error {
 	landscaperContext := &lsv1alpha1.Context{}
 	landscaperContext.GenerateName = fmt.Sprintf("%s-", instance.GetName())
 	landscaperContext.Namespace = instance.GetNamespace()
@@ -64,7 +67,7 @@ func (c *Controller) reconcileContext(ctx context.Context, log logr.Logger, inst
 	}
 
 	_, err := kubernetes.CreateOrUpdate(ctx, c.Client(), landscaperContext, func() error {
-		return c.mutateContext(ctx, log, landscaperContext, instance)
+		return c.mutateContext(ctx, landscaperContext, instance)
 	})
 
 	if err != nil {
@@ -86,7 +89,16 @@ func (c *Controller) reconcileContext(ctx context.Context, log logr.Logger, inst
 }
 
 // mutateTarget creates or updates the context for an instance.
-func (c *Controller) mutateContext(ctx context.Context, _ logr.Logger, context *lsv1alpha1.Context, instance *lssv1alpha1.Instance) error {
+func (c *Controller) mutateContext(ctx context.Context, context *lsv1alpha1.Context, instance *lssv1alpha1.Instance) error {
+	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(instance).String()},
+		lc.KeyMethod, "mutateContext")
+
+	if len(context.Name) > 0 {
+		logger.Info("Updating context", lc.KeyResource, client.ObjectKeyFromObject(context).String())
+	} else {
+		logger.Info("Creating context", lc.KeyResource, types.NamespacedName{Name: context.GenerateName, Namespace: context.Namespace}.String())
+	}
+
 	repositoryContext := &cdv2.UnstructuredTypedObject{}
 	err := json.Unmarshal(c.Config().LandscaperServiceComponent.RepositoryContext.RawMessage, repositoryContext)
 
@@ -126,7 +138,7 @@ func (c *Controller) mutateContext(ctx context.Context, _ logr.Logger, context *
 }
 
 // reconcileTarget reconciles the target for an instance.
-func (c *Controller) reconcileTarget(ctx context.Context, log logr.Logger, instance *lssv1alpha1.Instance) error {
+func (c *Controller) reconcileTarget(ctx context.Context, instance *lssv1alpha1.Instance) error {
 	target := &lsv1alpha1.Target{}
 	target.GenerateName = fmt.Sprintf("%s-", instance.GetName())
 	target.Namespace = instance.GetNamespace()
@@ -137,7 +149,7 @@ func (c *Controller) reconcileTarget(ctx context.Context, log logr.Logger, insta
 	}
 
 	_, err := kubernetes.CreateOrUpdate(ctx, c.Client(), target, func() error {
-		return c.mutateTarget(ctx, log, target, instance)
+		return c.mutateTarget(ctx, target, instance)
 	})
 
 	if err != nil {
@@ -159,8 +171,15 @@ func (c *Controller) reconcileTarget(ctx context.Context, log logr.Logger, insta
 }
 
 // mutateTarget creates or updates the target for an instance.
-func (c *Controller) mutateTarget(ctx context.Context, log logr.Logger, target *lsv1alpha1.Target, instance *lssv1alpha1.Instance) error {
-	log.Info("Create/Update target for instance")
+func (c *Controller) mutateTarget(ctx context.Context, target *lsv1alpha1.Target, instance *lssv1alpha1.Instance) error {
+	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(instance).String()},
+		lc.KeyMethod, "mutateTarget")
+
+	if len(target.Name) > 0 {
+		logger.Info("Updating target", lc.KeyResource, client.ObjectKeyFromObject(target).String())
+	} else {
+		logger.Info("Creating target", lc.KeyResource, types.NamespacedName{Name: target.GenerateName, Namespace: target.Namespace}.String())
+	}
 
 	if err := controllerutil.SetControllerReference(instance, target, c.Scheme()); err != nil {
 		return fmt.Errorf("unable to set controller reference for target: %w", err)
@@ -202,7 +221,7 @@ func (c *Controller) mutateTarget(ctx context.Context, log logr.Logger, target *
 }
 
 // reconcileInstallation reconciles the installation for an instance
-func (c *Controller) reconcileInstallation(ctx context.Context, log logr.Logger, instance *lssv1alpha1.Instance) error {
+func (c *Controller) reconcileInstallation(ctx context.Context, instance *lssv1alpha1.Instance) error {
 	installation := &lsv1alpha1.Installation{}
 	installation.GenerateName = fmt.Sprintf("%s-", instance.GetName())
 	installation.Namespace = instance.GetNamespace()
@@ -217,7 +236,7 @@ func (c *Controller) reconcileInstallation(ctx context.Context, log logr.Logger,
 	}
 
 	_, err := kubernetes.CreateOrUpdate(ctx, c.Client(), installation, func() error {
-		return c.mutateInstallation(ctx, log, installation, instance)
+		return c.mutateInstallation(ctx, installation, instance)
 	})
 
 	if err != nil {
@@ -235,7 +254,7 @@ func (c *Controller) reconcileInstallation(ctx context.Context, log logr.Logger,
 		Version: installation.Spec.ComponentDescriptor.Reference.Version,
 	}
 
-	if err := c.handleExports(ctx, log, instance, installation); err != nil {
+	if err := c.handleExports(ctx, instance, installation); err != nil {
 		return err
 	}
 
@@ -249,8 +268,15 @@ func (c *Controller) reconcileInstallation(ctx context.Context, log logr.Logger,
 }
 
 // mutateInstallation creates or updates the installation for an instance.
-func (c *Controller) mutateInstallation(ctx context.Context, log logr.Logger, installation *lsv1alpha1.Installation, instance *lssv1alpha1.Instance) error {
-	log.Info("Create/Update installation for instance")
+func (c *Controller) mutateInstallation(ctx context.Context, installation *lsv1alpha1.Installation, instance *lssv1alpha1.Instance) error {
+	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(instance).String()},
+		lc.KeyMethod, "mutateInstallation")
+
+	if len(installation.Name) > 0 {
+		logger.Info("Updating installation", lc.KeyResource, client.ObjectKeyFromObject(installation).String())
+	} else {
+		logger.Info("Creating installation", lc.KeyResource, types.NamespacedName{Name: installation.GenerateName, Namespace: installation.Namespace}.String())
+	}
 
 	// create a copy of the current installation spec for deciding whether a reconcile-annotation has to be set.
 	oldInstallationSpec := installation.Spec.DeepCopy()
@@ -272,6 +298,7 @@ func (c *Controller) mutateInstallation(ctx context.Context, log logr.Logger, in
 
 	landscaperConfig := lsinstallation.NewLandscaperConfig()
 	landscaperConfig.Deployers = instance.Spec.LandscaperConfiguration.Deployers
+	landscaperConfig.Landscaper.Verbosity = logging.INFO.String()
 	landscaperConfigRaw, err := landscaperConfig.ToAnyJSON()
 	if err != nil {
 		return fmt.Errorf("unable to marshal landscaper config: %w", err)
@@ -324,7 +351,7 @@ func (c *Controller) mutateInstallation(ctx context.Context, log logr.Logger, in
 
 	if !deepEqualInstallationSpec(oldInstallationSpec, installation.Spec.DeepCopy()) {
 		// set reconcile annotation to start/update the installation
-		log.Info("Setting reconcile operation annotation")
+		logger.Info("Setting reconcile operation annotation")
 		if installation.Annotations == nil {
 			installation.Annotations = make(map[string]string)
 		}
@@ -369,7 +396,10 @@ func deepEqualInstallationSpec(specA, specB *lsv1alpha1.InstallationSpec) bool {
 }
 
 // handleExports tries to find the exports of the installation and update the instance status accordingly.
-func (c *Controller) handleExports(ctx context.Context, log logr.Logger, instance *lssv1alpha1.Instance, installation *lsv1alpha1.Installation) error {
+func (c *Controller) handleExports(ctx context.Context, instance *lssv1alpha1.Instance, installation *lsv1alpha1.Installation) error {
+	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(instance).String()},
+		lc.KeyMethod, "handleExports")
+
 	dataObjects := &lsv1alpha1.DataObjectList{}
 	selectorBuilder := strings.Builder{}
 
@@ -389,7 +419,8 @@ func (c *Controller) handleExports(ctx context.Context, log logr.Logger, instanc
 	}
 
 	if len(dataObjects.Items) > 0 {
-		log.Info("found export data object for cluster kubeconfig", "resource", dataObjects.Items[0].GetName())
+		logger.Info("found export data object for cluster kubeconfig",
+			lc.KeyResource, types.NamespacedName{Name: dataObjects.Items[0].Name, Namespace: dataObjects.Items[0].Namespace}.String())
 		if err := json.Unmarshal(dataObjects.Items[0].Data.RawMessage, &instance.Status.ClusterKubeconfig); err != nil {
 			return fmt.Errorf("unable to unmarshal ClusterKubeconfig: %w", err)
 		}
@@ -411,7 +442,8 @@ func (c *Controller) handleExports(ctx context.Context, log logr.Logger, instanc
 	}
 
 	if len(dataObjects.Items) > 0 {
-		log.Info("found export data object for cluster endpoint", "resource", dataObjects.Items[0].GetName())
+		logger.Info("found export data object for cluster endpoint",
+			lc.KeyResource, types.NamespacedName{Name: dataObjects.Items[0].Name, Namespace: dataObjects.Items[0].Namespace}.String())
 		if err := json.Unmarshal(dataObjects.Items[0].Data.RawMessage, &instance.Status.ClusterEndpoint); err != nil {
 			return fmt.Errorf("unable to unmarshal ClusterEndpoint: %w", err)
 		}

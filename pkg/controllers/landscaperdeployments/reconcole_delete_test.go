@@ -6,15 +6,18 @@ package landscaperdeployments_test
 
 import (
 	"context"
+	"fmt"
 	"time"
+
+	lsserrors "github.com/gardener/landscaper-service/pkg/apis/errors"
+
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
 	kutil "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
-	"github.com/go-logr/logr"
 	"k8s.io/apimachinery/pkg/types"
-	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	deploymentscontroller "github.com/gardener/landscaper-service/pkg/controllers/landscaperdeployments"
@@ -26,15 +29,15 @@ import (
 var _ = Describe("Delete", func() {
 	var (
 		op    *operation.Operation
-		ctrl  reconcile.Reconciler
+		ctrl  *deploymentscontroller.Controller
 		ctx   context.Context
 		state *envtest.State
 	)
 
 	BeforeEach(func() {
 		ctx = context.Background()
-		op = operation.NewOperation(logr.Discard(), testenv.Client, envtest.LandscaperServiceScheme, testutils.DefaultControllerConfiguration())
-		ctrl = deploymentscontroller.NewTestActuator(*op)
+		op = operation.NewOperation(testenv.Client, envtest.LandscaperServiceScheme, testutils.DefaultControllerConfiguration())
+		ctrl = deploymentscontroller.NewTestActuator(*op, logging.Discard())
 	})
 
 	AfterEach(func() {
@@ -84,5 +87,50 @@ var _ = Describe("Delete", func() {
 
 		Expect(testenv.WaitForObjectToBeDeleted(ctx, deployment, 5*time.Second)).To(Succeed())
 		Expect(testenv.WaitForObjectToBeDeleted(ctx, instance, 5*time.Second)).To(Succeed())
+	})
+
+	It("should handle delete errors", func() {
+		var (
+			err       error
+			operation = "Delete"
+			reason    = "failed to delete"
+			message   = "error message"
+		)
+
+		state, err = testenv.InitResources(ctx, "./testdata/delete/test2")
+		Expect(err).ToNot(HaveOccurred())
+
+		deployment := state.GetDeployment("test")
+
+		ctrl.HandleDeleteFunc = func(ctx context.Context, deployment *lssv1alpha1.LandscaperDeployment) error {
+			return lsserrors.NewWrappedError(fmt.Errorf(reason), operation, reason, message)
+		}
+
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(deployment))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(deployment), deployment)).To(Succeed())
+
+		Expect(testenv.Client.Delete(ctx, deployment)).To(Succeed())
+
+		testutils.ShouldNotReconcile(ctx, ctrl, testutils.RequestFromObject(deployment))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(deployment), deployment)).To(Succeed())
+
+		Expect(deployment.Status.LastError).ToNot(BeNil())
+		Expect(deployment.Status.LastError.Operation).To(Equal(operation))
+		Expect(deployment.Status.LastError.Reason).To(Equal(reason))
+		Expect(deployment.Status.LastError.Message).To(Equal(message))
+		Expect(deployment.Status.LastError.LastUpdateTime.Time).Should(BeTemporally("==", deployment.Status.LastError.LastTransitionTime.Time))
+
+		time.Sleep(2 * time.Second)
+
+		message = "error message updated"
+
+		testutils.ShouldNotReconcile(ctx, ctrl, testutils.RequestFromObject(deployment))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(deployment), deployment)).To(Succeed())
+
+		Expect(deployment.Status.LastError).ToNot(BeNil())
+		Expect(deployment.Status.LastError.Operation).To(Equal(operation))
+		Expect(deployment.Status.LastError.Reason).To(Equal(reason))
+		Expect(deployment.Status.LastError.Message).To(Equal(message))
+		Expect(deployment.Status.LastError.LastUpdateTime.Time).Should(BeTemporally(">", deployment.Status.LastError.LastTransitionTime.Time))
 	})
 })

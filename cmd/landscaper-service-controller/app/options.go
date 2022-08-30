@@ -7,7 +7,10 @@ package app
 import (
 	"context"
 	goflag "flag"
+
 	"io/ioutil"
+
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
@@ -16,16 +19,14 @@ import (
 	configinstall "github.com/gardener/landscaper-service/pkg/apis/config/install"
 	"github.com/gardener/landscaper-service/pkg/apis/config/v1alpha1"
 
-	"github.com/gardener/landscaper/controller-utils/pkg/logger"
-	"github.com/go-logr/logr"
 	flag "github.com/spf13/pflag"
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
 // options holds the landscaper service controller options
 type options struct {
-	Log        logr.Logger // Log is the logger instance
-	ConfigPath string      // ConfigPath is the path to the configuration file
+	Log        logging.Logger // Log is the logger instance
+	ConfigPath string         // ConfigPath is the path to the configuration file
 
 	Config *config.LandscaperServiceConfiguration // Config is the parsed configuration
 }
@@ -38,19 +39,18 @@ func NewOptions() *options {
 // AddFlags adds flags passed via command line
 func (o *options) AddFlags(fs *flag.FlagSet) {
 	fs.StringVar(&o.ConfigPath, "config", "", "Specify the path to the configuration file")
-	logger.InitFlags(fs)
+	logging.InitFlags(fs)
 	flag.CommandLine.AddGoFlagSet(goflag.CommandLine)
 }
 
 // Complete initializes the options instance and validates flags
 func (o *options) Complete(ctx context.Context) error {
-	log, err := logger.New(nil)
+	log, err := logging.GetLogger()
 	if err != nil {
 		return err
 	}
-	o.Log = log.WithName("setup")
-	logger.SetLogger(log)
-	ctrl.SetLogger(log)
+	o.Log = log
+	ctrl.SetLogger(log.Logr())
 
 	o.Config, err = o.parseConfigurationFile(ctx)
 	if err != nil {

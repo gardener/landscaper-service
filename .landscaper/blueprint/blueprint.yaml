@@ -30,8 +30,7 @@ imports:
     required: true
     type: data
     schema:
-      type: integer
-      format: int32
+      type: string
 
   - name: availabiliyMonitoring
     required: false

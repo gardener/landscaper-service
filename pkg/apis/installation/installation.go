@@ -7,6 +7,8 @@ package installation
 import (
 	"encoding/json"
 
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
+
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 )
 
@@ -24,7 +26,7 @@ const (
 	// ReplicasDefault is the default number of replicas for the landscaper controller deployment.
 	ReplicasDefault = 1
 	// VerbosityDefault is the default verbose level for the landscaper controller deployment.
-	VerbosityDefault = 2
+	VerbosityDefault = logging.INFO
 	// WebhooksServicePortDefault is the default service port for the landscaper webhooks server deployment.
 	WebhooksServicePortDefault = 9443
 
@@ -94,7 +96,7 @@ func (r *RegistryConfig) ToAnyJSON() (*lsv1alpha1.AnyJSON, error) {
 // Landscaper specifies the landscaper controller configuration.
 type Landscaper struct {
 	// Verbosity defines the logging verbosity level.
-	Verbosity int `json:"verbosity,omitempty"`
+	Verbosity string `json:"verbosity,omitempty"`
 	// Replicas defines the number of replicas for the landscaper controller deployment.
 	Replicas int `json:"replicas,omitempty"`
 }
@@ -123,7 +125,7 @@ type LandscaperConfig struct {
 func NewLandscaperConfig() *LandscaperConfig {
 	c := &LandscaperConfig{
 		Landscaper: Landscaper{
-			Verbosity: VerbosityDefault,
+			Verbosity: VerbosityDefault.String(),
 			Replicas:  ReplicasDefault,
 		},
 		Webhooks: Webhooks{

@@ -10,8 +10,7 @@ import (
 	"math"
 	"strings"
 
-	"github.com/gardener/landscaper/controller-utils/pkg/logger"
-	"github.com/go-logr/logr"
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 	flag "github.com/spf13/pflag"
 	"k8s.io/apimachinery/pkg/util/validation/field"
 
@@ -41,12 +40,12 @@ func defaultWebhookedResources() map[string]webhook.WebhookedResourceDefinition 
 
 // Options holds the landscaper service webhook options
 type options struct {
-	log                         logr.Logger // Log is the logger instance
-	port                        int         // port where the webhook server is running
-	disabledWebhooks            string      // lists disabled webhooks as a comma-separated string
-	webhookServiceNamespaceName string      // webhook service namespace and name in the format <namespace>/<name>
-	webhookServicePort          int32       // port of the webhook service
-	certificatesNamespace       string      // the namespace in which the webhook credentials are being created/updated
+	log                         logging.Logger // Log is the logger instance
+	port                        int            // port where the webhook server is running
+	disabledWebhooks            string         // lists disabled webhooks as a comma-separated string
+	webhookServiceNamespaceName string         // webhook service namespace and name in the format <namespace>/<name>
+	webhookServicePort          int32          // port of the webhook service
+	certificatesNamespace       string         // the namespace in which the webhook credentials are being created/updated
 
 	webhook webhookOptions
 }
@@ -73,19 +72,18 @@ func (o *options) AddFlags(fs *flag.FlagSet) {
 	fs.StringVar(&o.disabledWebhooks, "disable-webhooks", "", "Specify validation webhooks that should be disabled ('all' to disable validation completely)")
 	fs.StringVar(&o.webhookServiceNamespaceName, "webhook-service", "", "Specify namespace and name of the webhook service (format: <namespace>/<name>)")
 	fs.Int32Var(&o.webhookServicePort, "webhook-service-port", 9443, "Specify the port of the webhook service")
-	logger.InitFlags(fs)
+	logging.InitFlags(fs)
 
 	flag.CommandLine.AddGoFlagSet(goflag.CommandLine)
 }
 
 // Complete initializes the options instance and validates flags
 func (o *options) Complete() error {
-	log, err := logger.New(nil)
+	log, err := logging.GetLogger()
 	if err != nil {
 		return err
 	}
-	o.log = log.WithName("setup")
-	logger.SetLogger(log)
+	o.log = log
 
 	err = o.validate() // validate options
 	if err != nil {

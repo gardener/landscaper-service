@@ -6,12 +6,17 @@ package landscaperdeployments_test
 
 import (
 	"context"
+	"fmt"
+	"time"
+
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
+
+	lsserrors "github.com/gardener/landscaper-service/pkg/apis/errors"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
 	kutil "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
-	"github.com/go-logr/logr"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 
@@ -176,8 +181,8 @@ var _ = Describe("Reconcile", func() {
 
 	BeforeEach(func() {
 		ctx = context.Background()
-		op = operation.NewOperation(logr.Discard(), testenv.Client, envtest.LandscaperServiceScheme, testutils.DefaultControllerConfiguration())
-		ctrl = deploymentscontroller.NewTestActuator(*op)
+		op = operation.NewOperation(testenv.Client, envtest.LandscaperServiceScheme, testutils.DefaultControllerConfiguration())
+		ctrl = deploymentscontroller.NewTestActuator(*op, logging.Discard())
 	})
 
 	AfterEach(func() {
@@ -304,5 +309,47 @@ var _ = Describe("Reconcile", func() {
 		Expect(err).ToNot(HaveOccurred())
 
 		Expect(instance.Spec.ID).To(Equal(uniqueId))
+	})
+
+	It("should handle reconcile errors", func() {
+		var (
+			err       error
+			operation = "Reconcile"
+			reason    = "failed to reconcile"
+			message   = "error message"
+		)
+
+		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test5")
+		Expect(err).ToNot(HaveOccurred())
+
+		deployment := state.GetDeployment("test")
+
+		ctrl.ReconcileFunc = func(ctx context.Context, deployment *lssv1alpha1.LandscaperDeployment) error {
+			return lsserrors.NewWrappedError(fmt.Errorf(reason), operation, reason, message)
+		}
+
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(deployment))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(deployment), deployment)).To(Succeed())
+		testutils.ShouldNotReconcile(ctx, ctrl, testutils.RequestFromObject(deployment))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(deployment), deployment)).To(Succeed())
+
+		Expect(deployment.Status.LastError).ToNot(BeNil())
+		Expect(deployment.Status.LastError.Operation).To(Equal(operation))
+		Expect(deployment.Status.LastError.Reason).To(Equal(reason))
+		Expect(deployment.Status.LastError.Message).To(Equal(message))
+		Expect(deployment.Status.LastError.LastUpdateTime.Time).Should(BeTemporally("==", deployment.Status.LastError.LastTransitionTime.Time))
+
+		time.Sleep(2 * time.Second)
+
+		message = "error message updated"
+
+		testutils.ShouldNotReconcile(ctx, ctrl, testutils.RequestFromObject(deployment))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(deployment), deployment)).To(Succeed())
+
+		Expect(deployment.Status.LastError).ToNot(BeNil())
+		Expect(deployment.Status.LastError.Operation).To(Equal(operation))
+		Expect(deployment.Status.LastError.Reason).To(Equal(reason))
+		Expect(deployment.Status.LastError.Message).To(Equal(message))
+		Expect(deployment.Status.LastError.LastUpdateTime.Time).Should(BeTemporally(">", deployment.Status.LastError.LastTransitionTime.Time))
 	})
 })
