@@ -61,7 +61,7 @@ deployItems:
               url: {{ .imports.AVSConfiguration.url }}
               apiKey: {{ .imports.AVSConfiguration.apiKey }}
               timeout: {{ .imports.AVSConfiguration.apiKey.timeout | default "30s" }}
-            {{-end }}
+            {{- end }}
           landscaperServiceComponent:
             name: {{ $landscaperServiceComponentName }}
             version: {{ $landscaperServiceComponentVersion }}
