@@ -5,8 +5,6 @@
 package healthwatcher
 
 import (
-	"context"
-
 	"github.com/go-logr/logr"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
@@ -14,11 +12,12 @@ import (
 
 	coreconfig "github.com/gardener/landscaper-service/pkg/apis/config"
 	"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 )
 
 // AddControllerToManager adds the HealthWatcher controller to the manager
-func AddControllerToManager(ctx context.Context, logger logr.Logger, mgr manager.Manager, config *coreconfig.LandscaperServiceConfiguration) error {
-	log := logger.WithName("HealthWatcher")
+func AddControllerToManager(logger logging.Logger, mgr manager.Manager, config *coreconfig.LandscaperServiceConfiguration) error {
+	log := logger.Reconciles("HealthWatcher", "AvailabilityCollection")
 	ctrl, err := NewController(log, mgr.GetClient(), mgr.GetScheme(), config)
 	if err != nil {
 		return err
@@ -26,6 +25,6 @@ func AddControllerToManager(ctx context.Context, logger logr.Logger, mgr manager
 
 	return builder.ControllerManagedBy(mgr).
 		For(&v1alpha1.AvailabilityCollection{}).
-		WithLogConstructor(func(r *reconcile.Request) logr.Logger { return log }).
+		WithLogConstructor(func(r *reconcile.Request) logr.Logger { return log.Logr() }).
 		Complete(ctrl)
 }

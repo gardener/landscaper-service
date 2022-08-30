@@ -14,11 +14,11 @@ import (
 	"time"
 
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 
-	"github.com/go-logr/logr"
 	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
@@ -29,32 +29,34 @@ import (
 
 type Controller struct {
 	operation.Operation
+	log logging.Logger
 }
 
-func NewController(log logr.Logger, c client.Client, scheme *runtime.Scheme, config *coreconfig.LandscaperServiceConfiguration) (reconcile.Reconciler, error) {
-	ctrl := &Controller{}
-	op := operation.NewOperation(log, c, scheme, config)
+func NewController(logger logging.Logger, c client.Client, scheme *runtime.Scheme, config *coreconfig.LandscaperServiceConfiguration) (reconcile.Reconciler, error) {
+	ctrl := &Controller{
+		log: logger,
+	}
+	op := operation.NewOperation(c, scheme, config)
 	ctrl.Operation = *op
 	return ctrl, nil
 }
 
 // NewTestActuator creates a new controller for testing purposes.
-func NewTestActuator(op operation.Operation) *Controller {
+func NewTestActuator(op operation.Operation, logger logging.Logger) *Controller {
 	ctrl := &Controller{
 		Operation: op,
+		log:       logger,
 	}
 	return ctrl
 }
 
 func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reconcile.Result, error) {
-	log := c.Log().WithValues("availabilityCollection", req.NamespacedName.String())
-	ctx = logr.NewContext(ctx, log)
-	log.V(5).Info("reconcile", "availabilityCollection", req.NamespacedName)
+	logger, ctx := c.log.StartReconcileAndAddToContext(ctx, req)
 
 	if c.Config().AvailabilityMonitoring.AvailabilityServiceConfiguration == nil ||
 		c.Config().AvailabilityMonitoring.AvailabilityServiceConfiguration.Url == "" ||
 		c.Config().AvailabilityMonitoring.AvailabilityServiceConfiguration.ApiKey == "" {
-		log.V(5).Info("av service not configured")
+		logger.Info("av service not configured")
 		return reconcile.Result{}, nil
 	}
 
@@ -62,7 +64,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	availabilityCollection := &lssv1alpha1.AvailabilityCollection{}
 	if err := c.Client().Get(ctx, req.NamespacedName, availabilityCollection); err != nil {
 		if apierrors.IsNotFound(err) {
-			c.Log().V(5).Info(err.Error())
+			logger.Info(err.Error())
 			return reconcile.Result{}, nil
 		}
 		return reconcile.Result{}, err

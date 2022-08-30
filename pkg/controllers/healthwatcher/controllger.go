@@ -12,6 +12,7 @@ import (
 	"time"
 
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -24,7 +25,6 @@ import (
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	"github.com/gardener/landscaper-service/pkg/apis/installation"
 
-	"github.com/go-logr/logr"
 	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
@@ -35,6 +35,7 @@ import (
 
 type Controller struct {
 	operation.Operation
+	log                 logging.Logger
 	kubeClientExtractor ServiceTargetConfigKubeClientExtractorInterface
 }
 
@@ -43,33 +44,35 @@ type ServiceTargetConfigKubeClientExtractorInterface interface {
 	GetKubeClientFromServiceTargetConfig(ctx context.Context, name string, namespace string, client client.Client) (client.Client, error)
 }
 
-func NewController(log logr.Logger, c client.Client, scheme *runtime.Scheme, config *coreconfig.LandscaperServiceConfiguration) (reconcile.Reconciler, error) {
-	ctrl := &Controller{}
-	op := operation.NewOperation(log, c, scheme, config)
+func NewController(logger logging.Logger, c client.Client, scheme *runtime.Scheme, config *coreconfig.LandscaperServiceConfiguration) (reconcile.Reconciler, error) {
+	ctrl := &Controller{
+		log: logger,
+	}
+
+	op := operation.NewOperation(c, scheme, config)
 	ctrl.Operation = *op
 	ctrl.kubeClientExtractor = &ServiceTargetConfigKubeClientExtractor{}
 	return ctrl, nil
 }
 
 // NewTestActuator creates a new controller for testing purposes.
-func NewTestActuator(op operation.Operation, kubeClientExtractor ServiceTargetConfigKubeClientExtractorInterface) *Controller {
+func NewTestActuator(op operation.Operation, kubeClientExtractor ServiceTargetConfigKubeClientExtractorInterface, logger logging.Logger) *Controller {
 	ctrl := &Controller{
 		Operation:           op,
+		log:                 logger,
 		kubeClientExtractor: kubeClientExtractor,
 	}
 	return ctrl
 }
 
 func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reconcile.Result, error) {
-	log := c.Log().WithValues("availabilityCollection", req.NamespacedName.String())
-	ctx = logr.NewContext(ctx, log)
-	log.V(5).Info("reconcile", "availabilityCollection", req.NamespacedName)
+	logger, ctx := c.log.StartReconcileAndAddToContext(ctx, req)
 
 	//get availabilityCollection
 	availabilityCollection := &lssv1alpha1.AvailabilityCollection{}
 	if err := c.Client().Get(ctx, req.NamespacedName, availabilityCollection); err != nil {
 		if apierrors.IsNotFound(err) {
-			c.Log().V(5).Info(err.Error())
+			logger.Info(err.Error())
 			return reconcile.Result{}, nil
 		}
 		return reconcile.Result{}, err
@@ -89,7 +92,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 		instance := &lssv1alpha1.Instance{}
 		if err := c.Client().Get(ctx, apitypes.NamespacedName{Name: instanceRefToWatch.Name, Namespace: instanceRefToWatch.Namespace}, instance); err != nil {
 			if apierrors.IsNotFound(err) {
-				c.Log().V(5).Info(err.Error())
+				logger.Info(err.Error())
 				return reconcile.Result{}, nil
 			}
 			return reconcile.Result{}, err
@@ -109,10 +112,10 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 		installation := &lsv1alpha1.Installation{}
 		if err := c.Client().Get(ctx, apitypes.NamespacedName{Name: instance.Status.InstallationRef.Name, Namespace: instance.Status.InstallationRef.Namespace}, installation); err != nil {
 			if apierrors.IsNotFound(err) {
-				c.Log().V(5).Info(err.Error())
+				logger.Info(err.Error())
 				continue
 			}
-			c.Log().V(5).Info(fmt.Sprintf("could not load installation from installation reference: %s", err.Error()))
+			logger.Info(fmt.Sprintf("could not load installation from installation reference: %s", err.Error()))
 			setAvailabilityInstanceStatusToFailed(&availabilityInstance, "could not load installation from installation reference")
 			availabilityCollection.Status.Instances = append(availabilityCollection.Status.Instances, availabilityInstance)
 			continue
@@ -120,14 +123,13 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 		//check if installation is not progressing
 		if installation.Status.Phase == lsv1alpha1.ComponentPhaseProgressing {
-			c.Log().V(5).Info(fmt.Sprintf("installation %s:%s for instance %s:%s is progressing, not health check monitoring", installation.Namespace, installation.Name, instance.Namespace, instance.Name))
-			//TODO: write out installation progressing as status
+			logger.Info(fmt.Sprintf("installation %s:%s for instance %s:%s is progressing, not health check monitoring", installation.Namespace, installation.Name, instance.Namespace, instance.Name))
 			continue
 		}
 
 		//check that servicetargetconfref exists exists
 		if instance.Spec.ServiceTargetConfigRef.Name == "" || instance.Spec.ServiceTargetConfigRef.Namespace == "" {
-			c.Log().V(5).Info(fmt.Sprintf("instance %s:%s does not have a ServiceTargetConfig ref", instance.Namespace, instance.Name))
+			logger.Info(fmt.Sprintf("instance %s:%s does not have a ServiceTargetConfig ref", instance.Namespace, instance.Name))
 			setAvailabilityInstanceStatusToFailed(&availabilityInstance, "instance does not have a ServiceTargetConfigRef")
 			availabilityCollection.Status.Instances = append(availabilityCollection.Status.Instances, availabilityInstance)
 			continue
@@ -136,7 +138,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 		//get kubeconfig from secret referenced in ServiceTargetConfig so a credential rotation is automatically handled
 		targetClient, err := c.kubeClientExtractor.GetKubeClientFromServiceTargetConfig(ctx, instance.Spec.ServiceTargetConfigRef.Name, instance.Spec.ServiceTargetConfigRef.Namespace, c.Client())
 		if err != nil {
-			c.Log().V(5).Info(err.Error())
+			logger.Info(err.Error())
 			setAvailabilityInstanceStatusToFailed(&availabilityInstance, "could not create k8s client from target config")
 			availabilityCollection.Status.Instances = append(availabilityCollection.Status.Instances, availabilityInstance)
 			continue
@@ -144,7 +146,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 		targetClusterNamespace, err := extractTargetClusterNamespaceFromInstallation(*installation)
 		if err != nil {
-			c.Log().V(5).Info(err.Error())
+			logger.Info(err.Error())
 			setAvailabilityInstanceStatusToFailed(&availabilityInstance, "could not read target cluster namespace from installation")
 			availabilityCollection.Status.Instances = append(availabilityCollection.Status.Instances, availabilityInstance)
 			continue
@@ -155,11 +157,11 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 		err = targetClient.List(ctx, lsHealthchecks, client.InNamespace(targetClusterNamespace))
 		if err != nil {
 			if apierrors.IsNotFound(err) {
-				c.Log().V(5).Info(err.Error())
+				logger.Info(err.Error())
 				setAvailabilityInstanceStatusToFailed(&availabilityInstance, "lsHealthCheck not found on target")
 				continue
 			}
-			c.Log().V(5).Info(fmt.Sprintf("could not load lshealthcheck from cluster: %s", err.Error()))
+			logger.Info(fmt.Sprintf("could not load lshealthcheck from cluster: %s", err.Error()))
 			setAvailabilityInstanceStatusToFailed(&availabilityInstance, "failed retrieving lshealthcheck cr")
 			availabilityCollection.Status.Instances = append(availabilityCollection.Status.Instances, availabilityInstance)
 			continue
@@ -172,7 +174,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	availabilityCollection.Status.ObservedGeneration = availabilityCollection.ObjectMeta.Generation
 	availabilityCollection.Status.LastRun = v1.NewTime(time.Now())
 
-	logFailedInstances(c.Log(), *availabilityCollection)
+	logFailedInstances(logger, *availabilityCollection)
 
 	//write to status
 	if err := c.Client().Status().Update(ctx, availabilityCollection); err != nil {
@@ -197,18 +199,18 @@ func (c *Controller) getLsHealthCheckFromSelfLandscaper(ctx context.Context, nam
 	err := c.Client().List(ctx, lsHealthchecks, client.InNamespace(namespace))
 	if err != nil {
 		if apierrors.IsNotFound(err) {
-			c.Log().V(5).Info(err.Error())
+			c.log.Info(err.Error())
 			setAvailabilityInstanceStatusToFailed(&availabilityInstance, "lsHealthCheck not found on target")
 
 		}
-		c.Log().V(5).Info(fmt.Sprintf("could not load lshealthcheck from cluster: %s", err.Error()))
+		c.log.Info(fmt.Sprintf("could not load lshealthcheck from cluster: %s", err.Error()))
 		setAvailabilityInstanceStatusToFailed(&availabilityInstance, "failed retrieving lshealthcheck cr")
 	}
 	transferLsHealthCheckStatusToAvailabilityInstance(&availabilityInstance, lsHealthchecks, c.Config().AvailabilityMonitoring.LSHealthCheckTimeout.Duration)
 	return availabilityInstance
 }
 
-func logFailedInstances(logger logr.Logger, availabilityCollection lssv1alpha1.AvailabilityCollection) {
+func logFailedInstances(logger logging.Logger, availabilityCollection lssv1alpha1.AvailabilityCollection) {
 	failedInstances := []lssv1alpha1.AvailabilityInstance{}
 
 	for _, inst := range availabilityCollection.Status.Instances {

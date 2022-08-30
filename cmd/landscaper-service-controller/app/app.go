@@ -87,13 +87,13 @@ func (o *options) run(ctx context.Context) error {
 	if err := servicetargetconfigsctrl.AddControllerToManager(ctrlLogger, mgr, o.Config); err != nil {
 		return fmt.Errorf("unable to setup service target configs controller: %w", err)
 	}
-	if err := avmonitorregistration.AddControllerToManager(ctx, ctrlLogger, mgr, o.Config); err != nil {
+	if err := avmonitorregistration.AddControllerToManager(ctrlLogger, mgr, o.Config); err != nil {
 		return fmt.Errorf("unable to setup availabilitymonitorregistrationcontroller controller: %w", err)
 	}
-	if err := healthwatcher.AddControllerToManager(ctx, ctrlLogger, mgr, o.Config); err != nil {
+	if err := healthwatcher.AddControllerToManager(ctrlLogger, mgr, o.Config); err != nil {
 		return fmt.Errorf("unable to setup healthwatcher controller: %w", err)
 	}
-	if err := avuploader.AddControllerToManager(ctx, ctrlLogger, mgr, o.Config); err != nil {
+	if err := avuploader.AddControllerToManager(ctrlLogger, mgr, o.Config); err != nil {
 		return fmt.Errorf("unable to setup avuploader controller: %w", err)
 	}
 

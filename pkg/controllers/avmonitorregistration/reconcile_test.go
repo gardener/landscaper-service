@@ -11,11 +11,11 @@ import (
 	. "github.com/onsi/gomega"
 	"k8s.io/apimachinery/pkg/types"
 
-	"github.com/go-logr/logr"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	"github.com/gardener/landscaper-service/pkg/operation"
 	"github.com/gardener/landscaper-service/test/utils/envtest"
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 
@@ -33,8 +33,8 @@ var _ = Describe("Reconcile", func() {
 
 	BeforeEach(func() {
 		ctx = context.Background()
-		op = operation.NewOperation(logr.Discard(), testenv.Client, envtest.LandscaperServiceScheme, testutils.DefaultControllerConfiguration())
-		ctrl = avmonitorregistration.NewTestActuator(*op)
+		op = operation.NewOperation(testenv.Client, envtest.LandscaperServiceScheme, testutils.DefaultControllerConfiguration())
+		ctrl = avmonitorregistration.NewTestActuator(*op, logging.Discard())
 	})
 
 	AfterEach(func() {

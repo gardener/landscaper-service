@@ -10,7 +10,7 @@ import (
 
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	"github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
-	"github.com/go-logr/logr"
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
@@ -24,27 +24,29 @@ import (
 
 type Controller struct {
 	operation.Operation
+	log logging.Logger
 }
 
-func NewController(log logr.Logger, c client.Client, scheme *runtime.Scheme, config *coreconfig.LandscaperServiceConfiguration) (reconcile.Reconciler, error) {
-	ctrl := &Controller{}
-	op := operation.NewOperation(log, c, scheme, config)
+func NewController(logger logging.Logger, c client.Client, scheme *runtime.Scheme, config *coreconfig.LandscaperServiceConfiguration) (reconcile.Reconciler, error) {
+	ctrl := &Controller{
+		log: logger,
+	}
+	op := operation.NewOperation(c, scheme, config)
 	ctrl.Operation = *op
 	return ctrl, nil
 }
 
 // NewTestActuator creates a new controller for testing purposes.
-func NewTestActuator(op operation.Operation) *Controller {
+func NewTestActuator(op operation.Operation, logger logging.Logger) *Controller {
 	ctrl := &Controller{
 		Operation: op,
+		log:       logger,
 	}
 	return ctrl
 }
 
 func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reconcile.Result, error) {
-	log := c.Log().WithValues("instance", req.NamespacedName.String())
-	ctx = logr.NewContext(ctx, log)
-	log.V(5).Info("reconcile", "resource", req.NamespacedName)
+	logger, ctx := c.log.StartReconcileAndAddToContext(ctx, req)
 
 	availabilityCollection := &lssv1alpha1.AvailabilityCollection{}
 	availabilityCollection.Name = c.Operation.Config().AvailabilityMonitoring.AvailabilityCollectionName
@@ -53,7 +55,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	instances := &lssv1alpha1.InstanceList{}
 	if err := c.Client().List(ctx, instances); err != nil {
 		if apierrors.IsNotFound(err) {
-			c.Log().V(5).Info(err.Error())
+			logger.Info(err.Error())
 			return reconcile.Result{}, nil
 		}
 		return reconcile.Result{}, err
@@ -69,15 +71,15 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 		installation := &lsv1alpha1.Installation{}
 		if err := c.Client().Get(ctx, types.NamespacedName{Name: instance.Status.InstallationRef.Name, Namespace: instance.Status.InstallationRef.Namespace}, installation); err != nil {
 			if apierrors.IsNotFound(err) {
-				c.Log().V(5).Info(err.Error())
+				logger.Info(err.Error())
 				continue
 			}
-			c.Log().V(5).Info(fmt.Sprintf("could not load installation from installation reference: %s", err.Error()))
+			logger.Info(fmt.Sprintf("could not load installation from installation reference: %s", err.Error()))
 			continue
 		}
 		//check if installation not progressing
 		if installation.Status.Phase == lsv1alpha1.ComponentPhaseProgressing {
-			c.Log().V(5).Info(fmt.Sprintf("installation %s:%s for instance %s:%s is progressing, not health check monitoring", installation.Namespace, installation.Name, instance.Namespace, instance.Name))
+			logger.Info(fmt.Sprintf("installation %s:%s for instance %s:%s is progressing, not health check monitoring", installation.Namespace, installation.Name, instance.Namespace, instance.Name))
 			continue
 		}
 
