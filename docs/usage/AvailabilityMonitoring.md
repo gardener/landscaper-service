@@ -24,7 +24,7 @@ Each `LsHealthCheck` resource has a `LastRun` timestamp. A configureable timeout
 
 ### AVUploader
 
-The AVUploader runs on `AvailabilityCollection` status change (so every time the HealthWatcher updates the status or at least the `LastRun` field) and uploads the availability to the AV Service. One AV monitoring covers all provided landscapers of one LaaS, therefore une unavaiable landscaper will result in a DOWN reporting for this LaaS. Additionally, all failed instances will be reported to AV Service and can be seen in the dashboard.
+The AVUploader runs on `AvailabilityCollection` status change (so every time the HealthWatcher updates the status or at least the `LastRun` field) and uploads the availability to the AV Service. One AV monitoring covers all provided landscapers of one LaaS, therefore one unavaiable landscaper will result in a DOWN reporting for this LaaS. Additionally, all failed instances will be reported to AV Service and can be seen in the dashboard.
 
 ## Configuration
 
