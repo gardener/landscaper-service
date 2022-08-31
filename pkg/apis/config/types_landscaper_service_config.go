@@ -33,9 +33,9 @@ type LandscaperServiceConfiguration struct {
 
 //AvailabilityMonitoringConfiguration is the configuration for the availability monitoring of the provisioned landscaper
 type AvailabilityMonitoringConfiguration struct {
-	//AvailabilityCollectionName is the name of the CR containing the av monitoring stati
+	//AvailabilityCollectionName is the name of the CR containing the av monitoring statuses
 	AvailabilityCollectionName string `json:"availabilityCollectionName"`
-	//AvailabilityCollectionNamespace is the namespace of the CR containing the av monitoring stati
+	//AvailabilityCollectionNamespace is the namespace of the CR containing the av monitoring statuses
 	AvailabilityCollectionNamespace string `json:"availabilityCollectionNamespace"`
 
 	//AvailabilityServiceConfiguration configures an external AVS service
