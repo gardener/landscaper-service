@@ -4,9 +4,9 @@ Availability Monitoring of the LaaS monitors landscaper instances and notifies i
 
 ## Architecture
 
-Each landscaper periodically writes its own availability status in a custom resource `LsHealthCheck`. For the overall availability status, this CR have to be collected and aggregated.
+Each landscaper periodically writes its own availability status in a custom resource `LsHealthCheck`. For the overall availability status, this CR has to be collected and aggregated.
 
-The monitoring consists of one additional custom resource `AvailabilityCollection` to aggregate all availability stati. Its spec contains a list of all `Instances` of customer landscapers that should be monitored. The status field contains the collected stati from the `LsHealthCheck` of the landscaper instance. This CR is used by multiple controller as shown below.
+The monitoring consists of one additional custom resource `AvailabilityCollection` to aggregate all availability statuses. Its spec contains a list of all `Instances` of customer landscapers that should be monitored. The status field contains the collected statuses from the `LsHealthCheck` of the landscaper instance. This CR is used by multiple controller as shown below.
 
 ![diagram for availability monitoring](images/availabilityMonitoring.png)
 
@@ -19,7 +19,7 @@ The first controller `AvailabilityMonitorRegistrationController` reconciles on `
 
 ### Healthwatcher
 
-The `HealthWatcher` controller runs on `AvailabilityCollection` spec change or periodically and collects all availability stati from the `LsHealthCheck` resources. Additionally, the status from the landscaper on the same core cluster is collected to ensure laas operability.
+The `HealthWatcher` controller runs on `AvailabilityCollection` spec change or periodically and collects all availability statuses from the `LsHealthCheck` resources. Additionally, the status from the landscaper on the same core cluster is collected to ensure laas operability.
 Each `LsHealthCheck` resource has a `LastRun` timestamp. A configureable timeout may set the status for the landscaper to `Failed`, if the `LastRun` field is too old. Failed checks will be logged.
 
 ### AVUploader
