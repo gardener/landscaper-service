@@ -18,6 +18,8 @@ import (
 // Public to allow building arbitrary schemes.
 // All generated defaulters are covering - they call all nested defaulters.
 func RegisterDefaults(scheme *runtime.Scheme) error {
+	scheme.AddTypeDefaultingFunc(&AvailabilityCollection{}, func(obj interface{}) { SetObjectDefaults_AvailabilityCollection(obj.(*AvailabilityCollection)) })
+	scheme.AddTypeDefaultingFunc(&AvailabilityCollectionList{}, func(obj interface{}) { SetObjectDefaults_AvailabilityCollectionList(obj.(*AvailabilityCollectionList)) })
 	scheme.AddTypeDefaultingFunc(&Instance{}, func(obj interface{}) { SetObjectDefaults_Instance(obj.(*Instance)) })
 	scheme.AddTypeDefaultingFunc(&InstanceList{}, func(obj interface{}) { SetObjectDefaults_InstanceList(obj.(*InstanceList)) })
 	scheme.AddTypeDefaultingFunc(&LandscaperDeployment{}, func(obj interface{}) { SetObjectDefaults_LandscaperDeployment(obj.(*LandscaperDeployment)) })
@@ -25,6 +27,17 @@ func RegisterDefaults(scheme *runtime.Scheme) error {
 	scheme.AddTypeDefaultingFunc(&ServiceTargetConfig{}, func(obj interface{}) { SetObjectDefaults_ServiceTargetConfig(obj.(*ServiceTargetConfig)) })
 	scheme.AddTypeDefaultingFunc(&ServiceTargetConfigList{}, func(obj interface{}) { SetObjectDefaults_ServiceTargetConfigList(obj.(*ServiceTargetConfigList)) })
 	return nil
+}
+
+func SetObjectDefaults_AvailabilityCollection(in *AvailabilityCollection) {
+	SetDefaults_AvailabilityCollection(in)
+}
+
+func SetObjectDefaults_AvailabilityCollectionList(in *AvailabilityCollectionList) {
+	for i := range in.Items {
+		a := &in.Items[i]
+		SetObjectDefaults_AvailabilityCollection(a)
+	}
 }
 
 func SetObjectDefaults_Instance(in *Instance) {

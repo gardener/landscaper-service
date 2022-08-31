@@ -39,6 +39,7 @@ var (
 		OutputDir: "../../pkg/crdmanager/crdresources",
 
 		Definitions: []lsschema.CustomResourceDefinition{
+			AvailabilityCollectionDefinition,
 			LandscaperDeploymentDefinition,
 			InstanceDefinition,
 			ServiceTargetConfigDefinition,
@@ -55,7 +56,10 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 		&Instance{},
 		&InstanceList{},
 		&ServiceTargetConfig{},
-		&ServiceTargetConfigList{})
+		&ServiceTargetConfigList{},
+		&AvailabilityCollection{},
+		&AvailabilityCollectionList{},
+	)
 
 	if err := RegisterConversions(scheme); err != nil {
 		return err

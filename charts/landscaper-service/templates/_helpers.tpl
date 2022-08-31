@@ -123,4 +123,16 @@ landscaperServiceComponent:
   registryPullSecrets:
 {{ toYaml .Values.landscaperservice.landscaperServiceComponent.registryPullSecrets | indent 4 }}
 {{- end }}
+  availabilityMonitoring:
+    availabilityCollectionName: {{ ((.Values.landscaperservice.availabiliyMonitoring).availabilityCollectionName) | default "availability" }}
+    availabilityCollectionNamespace: {{ .Release.Namespace }}
+    selfLandscaperNamespace: {{ ((.Values.landscaperservice.availabiliyMonitoring).selfLandscaperNamespace) | default "landscaper" }}
+    periodicCheckInterval: {{ ((.Values.landscaperservice.availabiliyMonitoring).periodicCheckInterval) | default "1m" }}
+    lsHealthCheckTimeout: {{ ((.Values.landscaperservice.availabiliyMonitoring).lsHealthCheckTimeout) | default "5m" }}
+    {{- if (.Values.landscaperservice.availabiliyMonitoring).AVSConfiguration }}
+    availabilityService:
+      url: {{ .Values.landscaperservice.availabiliyMonitoring.AVSConfiguration.url}}
+      apiKey: {{ .Values.landscaperservice.availabiliyMonitoring.AVSConfiguration.apiKey }}
+      timeout: {{ .Values.landscaperservice.availabiliyMonitoring.AVSConfiguration.timeout | default "30s" }}
+    {{- end }}
 {{- end }}

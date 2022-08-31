@@ -399,6 +399,19 @@ func (e *Environment) decodeAndAppendLSSObject(data []byte, objects []client.Obj
 			return nil, fmt.Errorf("unable to decode file as context: %w", err)
 		}
 		return append(objects, context), nil
+	case AvailabilityCollectionGVK.Kind:
+		availabilityCollection := &lssv1alpha1.AvailabilityCollection{}
+		if _, _, err := decoder.Decode(data, nil, availabilityCollection); err != nil {
+			return nil, fmt.Errorf("unable to decode file as availability collection: %w", err)
+		}
+		return append(objects, availabilityCollection), nil
+	case LsHealthCheckGVK.Kind:
+		lshealthcheck := &lsv1alpha1.LsHealthCheck{}
+		if _, _, err := decoder.Decode(data, nil, lshealthcheck); err != nil {
+			return nil, fmt.Errorf("unable to decode file as  lshealthcheck: %w", err)
+		}
+		return append(objects, lshealthcheck), nil
+
 	default:
 		return objects, nil
 	}

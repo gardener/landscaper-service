@@ -32,19 +32,25 @@ type State struct {
 	Targets map[string]*lsv1alpha1.Target
 	// Contexts contains all contexts in this test environment
 	Contexts map[string]*lsv1alpha1.Context
+	// AvailabilityCollections contains all availabilityCollections in this test environment
+	AvailabilityCollections map[string]*lssv1alpha1.AvailabilityCollection
+	// LsHealthChecks contains all LsHealthCheck in this test environment
+	LsHealthChecks map[string]*lsv1alpha1.LsHealthCheck
 }
 
 // NewState creates a new state.
 func NewState(namespace string) *State {
 	return &State{
-		Namespace:     namespace,
-		Deployments:   make(map[string]*lssv1alpha1.LandscaperDeployment),
-		Instances:     make(map[string]*lssv1alpha1.Instance),
-		Configs:       make(map[string]*lssv1alpha1.ServiceTargetConfig),
-		Secrets:       make(map[string]*corev1.Secret),
-		Installations: make(map[string]*lsv1alpha1.Installation),
-		Targets:       make(map[string]*lsv1alpha1.Target),
-		Contexts:      make(map[string]*lsv1alpha1.Context),
+		Namespace:               namespace,
+		Deployments:             make(map[string]*lssv1alpha1.LandscaperDeployment),
+		Instances:               make(map[string]*lssv1alpha1.Instance),
+		Configs:                 make(map[string]*lssv1alpha1.ServiceTargetConfig),
+		Secrets:                 make(map[string]*corev1.Secret),
+		Installations:           make(map[string]*lsv1alpha1.Installation),
+		Targets:                 make(map[string]*lsv1alpha1.Target),
+		Contexts:                make(map[string]*lsv1alpha1.Context),
+		AvailabilityCollections: make(map[string]*lssv1alpha1.AvailabilityCollection),
+		LsHealthChecks:          make(map[string]*lsv1alpha1.LsHealthCheck),
 	}
 }
 
@@ -83,6 +89,21 @@ func (s *State) GetContext(name string) *lsv1alpha1.Context {
 	return s.Contexts[s.Namespace+"/"+name]
 }
 
+// GetAvailabilityCollectionretrieves a AvailabilityCollection by the given name
+func (s *State) GetAvailabilityCollection(name string) *lssv1alpha1.AvailabilityCollection {
+	return s.AvailabilityCollections[s.Namespace+"/"+name]
+}
+
+// GetLsHealthCheck a LsHealthCheck by the given name
+func (s *State) GetLsHealthCheck(name string) *lsv1alpha1.LsHealthCheck {
+	return s.LsHealthChecks[s.Namespace+"/"+name]
+}
+
+// GetLsHealthCheckInNamespace a LsHealthCheck by the given name in the given namespace
+func (s *State) GetLsHealthCheckInNamespace(name string, namespace string) *lsv1alpha1.LsHealthCheck {
+	return s.LsHealthChecks[namespace+"/"+name]
+}
+
 // AddObject adds a client.Object to the state.
 func (s *State) AddObject(object client.Object) {
 	switch o := object.(type) {
@@ -106,5 +127,9 @@ func (s *State) AddObject(object client.Object) {
 		s.Targets[types.NamespacedName{Name: o.Name, Namespace: o.Namespace}.String()] = o.DeepCopy()
 	case *lsv1alpha1.Context:
 		s.Contexts[types.NamespacedName{Name: o.Name, Namespace: o.Namespace}.String()] = o.DeepCopy()
+	case *lssv1alpha1.AvailabilityCollection:
+		s.AvailabilityCollections[types.NamespacedName{Name: o.Name, Namespace: o.Namespace}.String()] = o.DeepCopy()
+	case *lsv1alpha1.LsHealthCheck:
+		s.LsHealthChecks[types.NamespacedName{Name: o.Name, Namespace: o.Namespace}.String()] = o.DeepCopy()
 	}
 }

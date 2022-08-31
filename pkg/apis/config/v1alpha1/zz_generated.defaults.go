@@ -26,5 +26,6 @@ func RegisterDefaults(scheme *runtime.Scheme) error {
 
 func SetObjectDefaults_LandscaperServiceConfiguration(in *LandscaperServiceConfiguration) {
 	SetDefaults_LandscaperServiceConfiguration(in)
+	SetDefaults_AvailabilityMonitoringConfiguration(&in.AvailabilityMonitoring)
 	SetDefaults_CrdManagementConfiguration(&in.CrdManagement)
 }

@@ -26,3 +26,6 @@ func SetDefaults_LandscaperDeployment(_ *LandscaperDeployment) {
 // SetDefaults_Instance sets the default values for Instance objects
 func SetDefaults_Instance(_ *Instance) {
 }
+
+func SetDefaults_AvailabilityCollection(_ *AvailabilityCollection) {
+}

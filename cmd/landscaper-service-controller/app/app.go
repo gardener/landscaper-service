@@ -17,6 +17,10 @@ import (
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 
 	lssinstall "github.com/gardener/landscaper-service/pkg/apis/core/install"
+	"github.com/gardener/landscaper-service/pkg/controllers/avmonitorregistration"
+	"github.com/gardener/landscaper-service/pkg/controllers/avuploader"
+	"github.com/gardener/landscaper-service/pkg/controllers/healthwatcher"
+
 	instancesctrl "github.com/gardener/landscaper-service/pkg/controllers/instances"
 	landscaperdeploymentsctrl "github.com/gardener/landscaper-service/pkg/controllers/landscaperdeployments"
 	servicetargetconfigsctrl "github.com/gardener/landscaper-service/pkg/controllers/servicetargetconfigs"
@@ -82,6 +86,15 @@ func (o *options) run(ctx context.Context) error {
 	}
 	if err := servicetargetconfigsctrl.AddControllerToManager(ctrlLogger, mgr, o.Config); err != nil {
 		return fmt.Errorf("unable to setup service target configs controller: %w", err)
+	}
+	if err := avmonitorregistration.AddControllerToManager(ctrlLogger, mgr, o.Config); err != nil {
+		return fmt.Errorf("unable to setup availabilitymonitorregistrationcontroller controller: %w", err)
+	}
+	if err := healthwatcher.AddControllerToManager(ctrlLogger, mgr, o.Config); err != nil {
+		return fmt.Errorf("unable to setup healthwatcher controller: %w", err)
+	}
+	if err := avuploader.AddControllerToManager(ctrlLogger, mgr, o.Config); err != nil {
+		return fmt.Errorf("unable to setup avuploader controller: %w", err)
 	}
 
 	o.Log.Info("starting the controllers")
