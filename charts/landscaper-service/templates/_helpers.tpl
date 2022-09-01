@@ -123,16 +123,17 @@ landscaperServiceComponent:
   registryPullSecrets:
 {{ toYaml .Values.landscaperservice.landscaperServiceComponent.registryPullSecrets | indent 4 }}
 {{- end }}
-  availabilityMonitoring:
-    availabilityCollectionName: {{ ((.Values.landscaperservice.availabilityMonitoring).availabilityCollectionName) | default "availability" }}
-    availabilityCollectionNamespace: {{ .Release.Namespace }}
-    selfLandscaperNamespace: {{ ((.Values.landscaperservice.availabilityMonitoring).selfLandscaperNamespace) | default "landscaper" }}
-    periodicCheckInterval: {{ ((.Values.landscaperservice.availabilityMonitoring).periodicCheckInterval) | default "1m" }}
-    lsHealthCheckTimeout: {{ ((.Values.landscaperservice.availabilityMonitoring).lsHealthCheckTimeout) | default "5m" }}
-    {{- if (.Values.landscaperservice.availabilityMonitoring).AVSConfiguration }}
-    availabilityService:
-      url: {{ .Values.landscaperservice.availabilityMonitoring.AVSConfiguration.url}}
-      apiKey: {{ .Values.landscaperservice.availabilityMonitoring.AVSConfiguration.apiKey }}
-      timeout: {{ .Values.landscaperservice.availabilityMonitoring.AVSConfiguration.timeout | default "30s" }}
-    {{- end }}
+
+availabilityMonitoring:
+  availabilityCollectionName: {{ ((.Values.landscaperservice.availabilityMonitoring).availabilityCollectionName) | default "availability" }}
+  availabilityCollectionNamespace: {{ .Release.Namespace }}
+  selfLandscaperNamespace: {{ ((.Values.landscaperservice.availabilityMonitoring).selfLandscaperNamespace) | default "landscaper" }}
+  periodicCheckInterval: {{ ((.Values.landscaperservice.availabilityMonitoring).periodicCheckInterval) | default "1m" }}
+  lsHealthCheckTimeout: {{ ((.Values.landscaperservice.availabilityMonitoring).lsHealthCheckTimeout) | default "5m" }}
+  {{- if (.Values.landscaperservice.availabilityMonitoring).AVSConfiguration }}
+  availabilityService:
+    url: {{ .Values.landscaperservice.availabilityMonitoring.AVSConfiguration.url}}
+    apiKey: {{ .Values.landscaperservice.availabilityMonitoring.AVSConfiguration.apiKey }}
+    timeout: {{ .Values.landscaperservice.availabilityMonitoring.AVSConfiguration.timeout | default "30s" }}
+  {{- end }}
 {{- end }}
