@@ -35,24 +35,28 @@ imports:
   - name: availabiliyMonitoring
     required: false
     type: data
-    properties:
-      selfLandscaperNamespace:
-        type: string
-      periodicCheckInterval:
-        type: string
-      lsHealthCheckTimeout:
-        type: string
+    schema:
+      type: object
+      properties:
+        selfLandscaperNamespace:
+          type: string
+        periodicCheckInterval:
+          type: string
+        lsHealthCheckTimeout:
+          type: string
 
   - name: AVSConfiguration
     required: false
     type: data
-    properties:
-      url:
-        type: string
-      apiKey:
-        type: string
-      timeout:
-        type: string
+    schema:
+      type: object
+      properties:
+        url:
+          type: string
+        apiKey:
+          type: string
+        timeout:
+          type: string
 
   - name: registryPullSecrets
     required: false
