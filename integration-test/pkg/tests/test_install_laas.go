@@ -112,6 +112,28 @@ func (r *InstallLAASTestRunner) createInstallation() error {
 		return fmt.Errorf("failed to marshal registry pull secrets: %w", err)
 	}
 
+	availabilityMonitoring := map[string]interface{}{
+		"selfLandscaperNamespace": r.config.LandscaperNamespace,
+		"periodicCheckInterval":   "1m",
+		"lsHealthCheckTimeout":    "3m",
+	}
+
+	availabilityMonitoringRaw, err := json.Marshal(availabilityMonitoring)
+	if err != nil {
+		return fmt.Errorf("failed to marshal availability monitoring: %w", err)
+	}
+
+	avsConfiguration := map[string]interface{}{
+		"url":     "https://127.0.0.1:5555",
+		"apiKey":  "dummy",
+		"timeout": "1s",
+	}
+
+	avsConfigurationRaw, err := json.Marshal(avsConfiguration)
+	if err != nil {
+		return fmt.Errorf("failed to marshal avs configuration: %w", err)
+	}
+
 	installation := &lsv1alpha1.Installation{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "laas",
@@ -145,9 +167,11 @@ func (r *InstallLAASTestRunner) createInstallation() error {
 				},
 			},
 			ImportDataMappings: map[string]lsv1alpha1.AnyJSON{
-				"namespace":           lssutils.StringToAnyJSON(r.config.LaasNamespace),
-				"verbosity":           lssutils.StringToAnyJSON(logging.DEBUG.String()),
-				"registryPullSecrets": lsv1alpha1.NewAnyJSON(registryPullSecretsRaw),
+				"namespace":              lssutils.StringToAnyJSON(r.config.LaasNamespace),
+				"verbosity":              lssutils.StringToAnyJSON(logging.DEBUG.String()),
+				"registryPullSecrets":    lsv1alpha1.NewAnyJSON(registryPullSecretsRaw),
+				"availabilityMonitoring": lsv1alpha1.NewAnyJSON(availabilityMonitoringRaw),
+				"AVSConfiguration":       lsv1alpha1.NewAnyJSON(avsConfigurationRaw),
 			},
 		},
 	}

@@ -26,7 +26,7 @@ landscaperservice:
     # secrets need to be in the docker credentials format: see https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
     registryPullSecrets: []
 
-  # availabiliyMonitoring:
+  # availabilityMonitoring:
   #   availabilityCollectionName: availability
   #   selfLandscaperNamespace: landscaper
   #   periodicCheckInterval: 1m

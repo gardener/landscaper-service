@@ -124,15 +124,15 @@ landscaperServiceComponent:
 {{ toYaml .Values.landscaperservice.landscaperServiceComponent.registryPullSecrets | indent 4 }}
 {{- end }}
   availabilityMonitoring:
-    availabilityCollectionName: {{ ((.Values.landscaperservice.availabiliyMonitoring).availabilityCollectionName) | default "availability" }}
+    availabilityCollectionName: {{ ((.Values.landscaperservice.availabilityMonitoring).availabilityCollectionName) | default "availability" }}
     availabilityCollectionNamespace: {{ .Release.Namespace }}
-    selfLandscaperNamespace: {{ ((.Values.landscaperservice.availabiliyMonitoring).selfLandscaperNamespace) | default "landscaper" }}
-    periodicCheckInterval: {{ ((.Values.landscaperservice.availabiliyMonitoring).periodicCheckInterval) | default "1m" }}
-    lsHealthCheckTimeout: {{ ((.Values.landscaperservice.availabiliyMonitoring).lsHealthCheckTimeout) | default "5m" }}
-    {{- if (.Values.landscaperservice.availabiliyMonitoring).AVSConfiguration }}
+    selfLandscaperNamespace: {{ ((.Values.landscaperservice.availabilityMonitoring).selfLandscaperNamespace) | default "landscaper" }}
+    periodicCheckInterval: {{ ((.Values.landscaperservice.availabilityMonitoring).periodicCheckInterval) | default "1m" }}
+    lsHealthCheckTimeout: {{ ((.Values.landscaperservice.availabilityMonitoring).lsHealthCheckTimeout) | default "5m" }}
+    {{- if (.Values.landscaperservice.availabilityMonitoring).AVSConfiguration }}
     availabilityService:
-      url: {{ .Values.landscaperservice.availabiliyMonitoring.AVSConfiguration.url}}
-      apiKey: {{ .Values.landscaperservice.availabiliyMonitoring.AVSConfiguration.apiKey }}
-      timeout: {{ .Values.landscaperservice.availabiliyMonitoring.AVSConfiguration.timeout | default "30s" }}
+      url: {{ .Values.landscaperservice.availabilityMonitoring.AVSConfiguration.url}}
+      apiKey: {{ .Values.landscaperservice.availabilityMonitoring.AVSConfiguration.apiKey }}
+      timeout: {{ .Values.landscaperservice.availabilityMonitoring.AVSConfiguration.timeout | default "30s" }}
     {{- end }}
 {{- end }}
