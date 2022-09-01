@@ -32,7 +32,7 @@ imports:
     schema:
       type: string
 
-  - name: availabiliyMonitoring
+  - name: availabilityMonitoring
     required: false
     type: data
     schema:
