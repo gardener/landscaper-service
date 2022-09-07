@@ -77,6 +77,8 @@ landscaper-service:
           next_version_callback: '.ci/next_version'
           git_tags:
           - ref_template: 'refs/tags/{VERSION}'
+        scheduling:
+          suppress_parallel_execution: true
       steps:
         run_integration_test:
           depends:
