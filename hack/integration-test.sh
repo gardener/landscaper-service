@@ -5,6 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 set -e
+set -o pipefail
 
 apk add --no-cache --no-progress bash
 
