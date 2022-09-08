@@ -23,6 +23,7 @@ LAAS_REPOSITORY="eu.gcr.io/gardener-project/development"
 LAAS_VERSION="$(${PROJECT_ROOT}/hack/get-version.sh)"
 REPO_AUTH_URL="https://eu.gcr.io"
 REPO_CTX_BASE_URL="eu.gcr.io/sap-se-gcr-k8s-private"
+FULL_INTEGRATION_TEST_PATH="$(realpath $INTEGRATION_TEST_PATH)"
 
 export PROJECT_ROOT
 export TEST_CLUSTER
@@ -32,16 +33,12 @@ export LAAS_VERSION
 export LAAS_REPOSITORY
 export REPO_AUTH_URL
 export REPO_CTX_BASE_URL
+export FULL_INTEGRATION_TEST_PATH
 
 
 if ! command -v curl &> /dev/null
 then
     apk add -q --no-cache --no-progress curl openssl
-fi
-
-if ! command -v unbuffer &> /dev/null
-then
-    apk add -q --no-cache --no-progress expect
 fi
 
 if ! command -v python3 &> /dev/null
@@ -75,6 +72,6 @@ pip3 install -q --upgrade pip
 echo "Running pip3 install gardener-cicd-libs"
 pip3 install -q gardener-cicd-libs
 
-FULL_INTEGRATION_TEST_PATH="$(realpath $INTEGRATION_TEST_PATH)"
-unbuffer python3 -u "${PROJECT_ROOT}/hack/integration-test.py" 2>&1 | tee $FULL_INTEGRATION_TEST_PATH/integration_test.log
-sync
+export PYTHONUNBUFFERED=x
+"${PROJECT_ROOT}/hack/integration-test.py"
+ls -la "${FULL_INTEGRATION_TEST_PATH}/integration_test.log"
