@@ -73,5 +73,6 @@ echo "Running pip3 install gardener-cicd-libs"
 pip3 install -q gardener-cicd-libs
 
 export PYTHONUNBUFFERED=x
-"${PROJECT_ROOT}/hack/integration-test.py"
-ls -la "${FULL_INTEGRATION_TEST_PATH}/integration_test.log"
+"${PROJECT_ROOT}/hack/integration-test.py" | tee $FULL_INTEGRATION_TEST_PATH/integration_test.log
+unbuffer python3 "${PROJECT_ROOT}/hack/integration-test.py" 2>&1 | tee $FULL_INTEGRATION_TEST_PATH/integration_test.log
+sync

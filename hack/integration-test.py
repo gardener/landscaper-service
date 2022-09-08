@@ -13,7 +13,7 @@ import model.container_registry
 import oci.auth as oa
 
 from util import ctx
-from subprocess import Popen, PIPE, STDOUT
+from subprocess import run
 
 project_root = os.environ["PROJECT_ROOT"]
 test_cluster = os.environ["TEST_CLUSTER"]
@@ -23,9 +23,6 @@ laas_version = os.environ["LAAS_VERSION"]
 laas_repository = os.environ["LAAS_REPOSITORY"]
 repo_ctx_base_url = os.environ["REPO_CTX_BASE_URL"]
 repo_auth_url = os.environ["REPO_AUTH_URL"]
-output_path = os.environ["FULL_INTEGRATION_TEST_PATH"]
-
-output_path = os.path.join(output_path, "integration_test.log")
 
 factory = ctx().cfg_factory()
 print(f"Getting kubeconfig for {test_cluster}")
@@ -39,8 +36,7 @@ cr_conf = model.container_registry.find_config(repo_ctx_base_url, oa.Privileges.
 with (
     utils.TempFileAuto(prefix="test_cluster_kubeconfig_") as test_cluster_kubeconfig_temp_file,
     utils.TempFileAuto(prefix="hosting_cluster_kubeconfig_") as hosting_cluster_kubeconfig_temp_file,
-    utils.TempFileAuto(prefix="registry_auth_", suffix=".json") as registry_temp_file,
-    open(output_path, 'w') as log
+    utils.TempFileAuto(prefix="registry_auth_", suffix=".json") as registry_temp_file
 ):
     test_cluster_kubeconfig_temp_file.write(yaml.safe_dump(test_cluster_kubeconfig.kubeconfig()))
     test_cluster_kubeconfig_path = test_cluster_kubeconfig_temp_file.switch()
@@ -71,12 +67,7 @@ with (
     print(f"Running integration test with command: {' '.join(command)}")
 
     mod_path = os.path.join(project_root, "integration-test")
-    proc = Popen(command, stdout=PIPE, stderr=STDOUT, encoding='utf-8', cwd=mod_path)
+    run = run(command, cwd=mod_path)
 
-    while proc.poll() is None:
-        text = proc.stdout.readline()
-        log.write(text)
-        sys.stdout.write(text)
-
-    if proc.returncode != 0:
+    if run.returncode != 0:
         raise EnvironmentError("Integration test exited with errors")
