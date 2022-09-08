@@ -40,6 +40,9 @@ landscaperservice:
 image: {}
 
 controller:
+  # Overrides the controller container name. Default is "landscaper-service-controller".
+  containerName: landscaper-service-controller
+
   replicaCount: 1
   image:
     repository: eu.gcr.io/gardener-project/landscaper-service/landscaper-service-controller
@@ -48,6 +51,9 @@ controller:
     #tag: ""
 
 webhooksServer:
+  # Overrides the webhooks container name. Default is "landscaper-service-webhooks".
+  containerName: landscaper-service-webhooks
+
   replicaCount: 1
   image:
     repository: eu.gcr.io/gardener-project/landscaper-service/landscaper-service-webhooks-server

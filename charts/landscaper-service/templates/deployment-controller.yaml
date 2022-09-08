@@ -27,7 +27,7 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: {{ include "landscaper-service.controller.containerName" . }}
           securityContext:
             {{  toYaml .Values.securityContext | nindent 12 }}
           image: "{{ include "landscaper-service-controller-image" . }}"
