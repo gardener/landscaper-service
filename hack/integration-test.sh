@@ -41,6 +41,11 @@ then
     apk add -q --no-cache --no-progress curl openssl
 fi
 
+if ! command -v unbuffer &> /dev/null
+then
+    apk add -q --no-cache --no-progress expect
+fi
+
 if ! command -v python3 &> /dev/null
 then
     echo "Python3 could not be found"
