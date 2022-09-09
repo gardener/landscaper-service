@@ -23,7 +23,6 @@ LAAS_REPOSITORY="eu.gcr.io/gardener-project/development"
 LAAS_VERSION="$(${PROJECT_ROOT}/hack/get-version.sh)"
 REPO_AUTH_URL="https://eu.gcr.io"
 REPO_CTX_BASE_URL="eu.gcr.io/sap-se-gcr-k8s-private"
-FULL_INTEGRATION_TEST_PATH="$(realpath $INTEGRATION_TEST_PATH)"
 
 export PROJECT_ROOT
 export TEST_CLUSTER
@@ -72,8 +71,5 @@ pip3 install -q --upgrade pip
 echo "Running pip3 install gardener-cicd-libs"
 pip3 install -q gardener-cicd-libs
 
-set +e
-"${PROJECT_ROOT}/hack/integration-test.py" 2>&1 | tee "${FULL_INTEGRATION_TEST_PATH}/integration_test.log"
-status=$?
-sync
-[ $status -eq 0 ]  || exit 1
+
+"${PROJECT_ROOT}/hack/integration-test.py" 2>&1
