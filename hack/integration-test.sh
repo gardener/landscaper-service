@@ -5,6 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 set -e
+set -o pipefail
 
 apk add --no-cache --no-progress bash
 
@@ -72,7 +73,7 @@ echo "Running pip3 install gardener-cicd-libs"
 pip3 install -q gardener-cicd-libs
 
 set +e
-"${PROJECT_ROOT}/hack/integration-test.py"
+"${PROJECT_ROOT}/hack/integration-test.py" 2>&1 | tee "${FULL_INTEGRATION_TEST_PATH}/integration_test.log"
 status=$?
 sync
 [ $status -eq 0 ]  || exit 1
