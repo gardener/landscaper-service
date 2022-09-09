@@ -5,7 +5,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 set -e
-set -o pipefail
 
 apk add --no-cache --no-progress bash
 
@@ -41,11 +40,6 @@ then
     apk add -q --no-cache --no-progress curl openssl
 fi
 
-if ! command -v unbuffer &> /dev/null
-then
-    apk add -q --no-cache --no-progress expect
-fi
-
 if ! command -v python3 &> /dev/null
 then
     echo "Python3 could not be found"
@@ -77,7 +71,8 @@ pip3 install -q --upgrade pip
 echo "Running pip3 install gardener-cicd-libs"
 pip3 install -q gardener-cicd-libs
 
-export PYTHONUNBUFFERED=x
-"${PROJECT_ROOT}/hack/integration-test.py" | tee $FULL_INTEGRATION_TEST_PATH/integration_test.log
-unbuffer python3 "${PROJECT_ROOT}/hack/integration-test.py" 2>&1 | tee $FULL_INTEGRATION_TEST_PATH/integration_test.log
+set +e
+"${PROJECT_ROOT}/hack/integration-test.py"
+status=$?
 sync
+[ $status -eq 0 ]  || exit 1
