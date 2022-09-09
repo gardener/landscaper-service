@@ -40,7 +40,7 @@ with (
     utils.TempFileAuto(prefix="test_cluster_kubeconfig_") as test_cluster_kubeconfig_temp_file,
     utils.TempFileAuto(prefix="hosting_cluster_kubeconfig_") as hosting_cluster_kubeconfig_temp_file,
     utils.TempFileAuto(prefix="registry_auth_", suffix=".json") as registry_temp_file,
-    open(output_path, 'w') as log
+    open(output_path, 'w', 1) as log
 ):
     test_cluster_kubeconfig_temp_file.write(yaml.safe_dump(test_cluster_kubeconfig.kubeconfig()))
     test_cluster_kubeconfig_path = test_cluster_kubeconfig_temp_file.switch()
