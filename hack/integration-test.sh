@@ -28,11 +28,11 @@ export REPO_AUTH_URL
 export REPO_CTX_BASE_URL
 export FULL_INTEGRATION_TEST_PATH
 
-#set +e
-#unbuffer "${PROJECT_ROOT}/hack/integration-test.py" 2>&1 | tee "${FULL_INTEGRATION_TEST_PATH}/integration_test.log"
-#status=$?
-#sync || true
-#echo "integration test finished with status ${status}"
-#[ $status -eq 0 ]  || exit 1
+set +e
+unbuffer "${PROJECT_ROOT}/hack/integration-test.py" 2>&1 | tee "${FULL_INTEGRATION_TEST_PATH}/integration_test.log"
+status=$?
+sync || true
+echo "integration test finished with status ${status}"
+[ $status -eq 0 ]  || exit 1
 
-"${PROJECT_ROOT}/hack/integration-test.py"
+# "${PROJECT_ROOT}/hack/integration-test.py"
