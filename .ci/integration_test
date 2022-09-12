@@ -1,13 +1,6 @@
 #!/bin/sh
 
-set -o pipefail
-
 PROJECT_ROOT="$(dirname $0)/.."
-FULL_INTEGRATION_TEST_PATH="$(realpath $INTEGRATION_TEST_PATH)"
 
 echo "laas integration test"
-
-${PROJECT_ROOT}/hack/integration-test.sh 2>&1 | tee "${FULL_INTEGRATION_TEST_PATH}/integration_test.log"
-status=$?
-sync
-[ $status -eq 0 ]  || exit 1
+${PROJECT_ROOT}/hack/integration-test.sh
