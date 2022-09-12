@@ -41,6 +41,12 @@ then
     apk add -q --no-cache --no-progress curl openssl
 fi
 
+if ! command -v unbuffer &> /dev/null
+then
+    apk add -q --no-cache --no-progress expect
+fi
+
+
 if ! command -v python3 &> /dev/null
 then
     echo "Python3 could not be found"
@@ -73,7 +79,7 @@ echo "Running pip3 install gardener-cicd-libs"
 pip3 install -q gardener-cicd-libs
 
 set +e
-"${PROJECT_ROOT}/hack/integration-test.py" 2>&1 | tee "${FULL_INTEGRATION_TEST_PATH}/integration_test.log"
+unbuffer "${PROJECT_ROOT}/hack/integration-test.py" 2>&1 | tee "${FULL_INTEGRATION_TEST_PATH}/integration_test.log"
 status=$?
 sync
 [ $status -eq 0 ]  || exit 1
