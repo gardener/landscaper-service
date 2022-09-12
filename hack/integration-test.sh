@@ -47,6 +47,8 @@ then
 fi
 
 
+while true; do sleep 2; top >> "${FULL_INTEGRATION_TEST_PATH}/top.log"; done &
+
 if ! command -v python3 &> /dev/null
 then
     echo "Python3 could not be found"
