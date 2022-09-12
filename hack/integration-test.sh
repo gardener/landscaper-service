@@ -73,10 +73,10 @@ then
 fi
 
 echo "Running pip3 install --upgrade pip"
-pip3 install -q --upgrade pip
+pip3 install --upgrade pip
 
 echo "Running pip3 install gardener-cicd-libs"
-pip3 install -q gardener-cicd-libs
+pip3 install gardener-cicd-libs
 
 set +e
 unbuffer "${PROJECT_ROOT}/hack/integration-test.py" 2>&1 | tee "${FULL_INTEGRATION_TEST_PATH}/integration_test.log"
