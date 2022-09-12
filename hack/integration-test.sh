@@ -78,9 +78,11 @@ pip3 install --upgrade pip
 echo "Running pip3 install gardener-cicd-libs"
 pip3 install gardener-cicd-libs
 
-set +e
-unbuffer "${PROJECT_ROOT}/hack/integration-test.py" 2>&1 | tee "${FULL_INTEGRATION_TEST_PATH}/integration_test.log"
-status=$?
-sync || true
-echo "integration test finished with status ${status}"
-[ $status -eq 0 ]  || exit 1
+#set +e
+#unbuffer "${PROJECT_ROOT}/hack/integration-test.py" 2>&1 | tee "${FULL_INTEGRATION_TEST_PATH}/integration_test.log"
+#status=$?
+#sync || true
+#echo "integration test finished with status ${status}"
+#[ $status -eq 0 ]  || exit 1
+
+"${PROJECT_ROOT}/hack/integration-test.py"
