@@ -71,8 +71,8 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	//get availabilityCollection
 	availabilityCollection := &lssv1alpha1.AvailabilityCollection{}
 	if err := c.Client().Get(ctx, req.NamespacedName, availabilityCollection); err != nil {
+		logger.Info(err.Error())
 		if apierrors.IsNotFound(err) {
-			logger.Info(err.Error())
 			return reconcile.Result{}, nil
 		}
 		return reconcile.Result{}, err
@@ -81,6 +81,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	//dont run if spec has not changed and we are not in time yet
 	if availabilityCollection.ObjectMeta.Generation == availabilityCollection.Status.ObservedGeneration &&
 		time.Since(availabilityCollection.Status.LastRun.Time) < c.Operation.Config().AvailabilityMonitoring.PeriodicCheckInterval.Duration {
+		logger.Debug("skip reconcile since spec has not changed and periodic check interval is not in time yet")
 		return reconcile.Result{}, nil
 	}
 
@@ -91,8 +92,8 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 		//get instance
 		instance := &lssv1alpha1.Instance{}
 		if err := c.Client().Get(ctx, apitypes.NamespacedName{Name: instanceRefToWatch.Name, Namespace: instanceRefToWatch.Namespace}, instance); err != nil {
+			logger.Info(err.Error())
 			if apierrors.IsNotFound(err) {
-				logger.Info(err.Error())
 				return reconcile.Result{}, nil
 			}
 			return reconcile.Result{}, err
@@ -107,6 +108,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 		//get referred installation
 		if instance.Status.InstallationRef == nil || instance.Status.InstallationRef.Name == "" || instance.Status.InstallationRef.Namespace == "" {
+			logger.Debug("skip instance since installation ref is empty", instance.Name, instance.Namespace)
 			continue
 		}
 		installation := &lsv1alpha1.Installation{}
@@ -138,7 +140,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 		//get kubeconfig from secret referenced in ServiceTargetConfig so a credential rotation is automatically handled
 		targetClient, err := c.kubeClientExtractor.GetKubeClientFromServiceTargetConfig(ctx, instance.Spec.ServiceTargetConfigRef.Name, instance.Spec.ServiceTargetConfigRef.Namespace, c.Client())
 		if err != nil {
-			logger.Info(err.Error())
+			logger.Info("failed creating target client", err.Error())
 			setAvailabilityInstanceStatusToFailed(&availabilityInstance, "could not create k8s client from target config")
 			availabilityCollection.Status.Instances = append(availabilityCollection.Status.Instances, availabilityInstance)
 			continue
@@ -146,7 +148,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 		targetClusterNamespace, err := extractTargetClusterNamespaceFromInstallation(*installation)
 		if err != nil {
-			logger.Info(err.Error())
+			logger.Info("failed extracting target cluster namespace", err.Error())
 			setAvailabilityInstanceStatusToFailed(&availabilityInstance, "could not read target cluster namespace from installation")
 			availabilityCollection.Status.Instances = append(availabilityCollection.Status.Instances, availabilityInstance)
 			continue
@@ -156,12 +158,12 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 		lsHealthchecks := &lsv1alpha1.LsHealthCheckList{}
 		err = targetClient.List(ctx, lsHealthchecks, client.InNamespace(targetClusterNamespace))
 		if err != nil {
+			logger.Info("failed collecting lsHealtchCheck", err.Error(), instance.Name, instance.Namespace)
 			if apierrors.IsNotFound(err) {
-				logger.Info(err.Error())
 				setAvailabilityInstanceStatusToFailed(&availabilityInstance, "lsHealthCheck not found on target")
 				continue
 			}
-			logger.Info(fmt.Sprintf("could not load lshealthcheck from cluster: %s", err.Error()))
+			logger.Info("could not load lshealthcheck from cluster", err.Error(), instance.Name, instance.Namespace)
 			setAvailabilityInstanceStatusToFailed(&availabilityInstance, "failed retrieving lshealthcheck cr")
 			availabilityCollection.Status.Instances = append(availabilityCollection.Status.Instances, availabilityInstance)
 			continue
