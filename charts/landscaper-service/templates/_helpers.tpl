@@ -39,6 +39,22 @@ Create chart name and version as used by the chart label.
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
+{{- define "landscaper-service.controller.containerName" -}}
+{{- if .Values.controller.containerName -}}
+{{- .Values.controller.containerName | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- print "landscaper-service-controller" }}
+{{- end }}
+{{- end }}
+
+{{- define "landscaper-service.webhooks.containerName" -}}
+{{- if .Values.webhooksServer.containerName -}}
+{{- .Values.webhooksServer.containerName | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- print "landscaper-service-webhooks" }}
+{{- end }}
+{{- end }}
+
 {{/*
 Common labels
 */}}

@@ -33,12 +33,16 @@ deployItems:
         {{ $repositoryContextBaseUrl := $repositoryContext.baseUrl }}
 
         controller:
+          containerName: landscaper-service-controller
+
           image:
             repository: {{ $controllerImgRepo }}
             tag: {{ $controllerImgTag }}
             pullPolicy: IfNotPresent
 
         webhooksServer:
+          containerName: landscaper-service-webhooks
+
           image:
             repository: {{ $webhooksImgRepo }}
             tag: {{ $webhooksImgTag }}
