@@ -16,7 +16,6 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/types"
 	apitypes "k8s.io/apimachinery/pkg/types"
 
 	"k8s.io/client-go/kubernetes"
@@ -127,7 +126,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 		//check if installation is not progressing
 		if installation.Status.Phase == lsv1alpha1.ComponentPhaseProgressing {
-			logger.Debug("installation for instance is progressing, skip health check monitoring", lc.KeyResource, types.NamespacedName{Name: instance.Name, Namespace: instance.Namespace})
+			logger.Debug("installation for instance is progressing, skip health check monitoring", lc.KeyResource, client.ObjectKeyFromObject(installation), lc.KeyResource, client.ObjectKeyFromObject(instance))
 			continue
 		}
 
