@@ -6,7 +6,6 @@ package avmonitorregistration
 
 import (
 	"context"
-	"fmt"
 
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	"github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
@@ -20,6 +19,7 @@ import (
 	coreconfig "github.com/gardener/landscaper-service/pkg/apis/config"
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	"github.com/gardener/landscaper-service/pkg/operation"
+	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
 )
 
 type Controller struct {
@@ -54,8 +54,8 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 	instances := &lssv1alpha1.InstanceList{}
 	if err := c.Client().List(ctx, instances); err != nil {
+		logger.Error(err, "failed loading instances")
 		if apierrors.IsNotFound(err) {
-			logger.Info(err.Error())
 			return reconcile.Result{}, nil
 		}
 		return reconcile.Result{}, err
@@ -65,21 +65,18 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	for _, instance := range instances.Items {
 		//get refered installation
 		if instance.Status.InstallationRef == nil || instance.Status.InstallationRef.Name == "" || instance.Status.InstallationRef.Namespace == "" {
+			logger.Debug("skip instance since installation ref is empty", lc.KeyResource, types.NamespacedName{Name: instance.Name, Namespace: instance.Namespace})
 			continue
 		}
 		//get installation
 		installation := &lsv1alpha1.Installation{}
 		if err := c.Client().Get(ctx, types.NamespacedName{Name: instance.Status.InstallationRef.Name, Namespace: instance.Status.InstallationRef.Namespace}, installation); err != nil {
-			if apierrors.IsNotFound(err) {
-				logger.Info(err.Error())
-				continue
-			}
-			logger.Info(fmt.Sprintf("could not load installation from installation reference: %s", err.Error()))
+			logger.Error(err, "could not load installation from installation reference, skipping", lc.KeyResource, types.NamespacedName{Name: instance.Name, Namespace: instance.Namespace})
 			continue
 		}
 		//check if installation not progressing
 		if installation.Status.Phase == lsv1alpha1.ComponentPhaseProgressing {
-			logger.Info(fmt.Sprintf("installation %s:%s for instance %s:%s is progressing, not health check monitoring", installation.Namespace, installation.Name, instance.Namespace, instance.Name))
+			logger.Info("installation for instance is progressing, skip health check monitoring", lc.KeyResource, types.NamespacedName{Name: installation.Name, Namespace: installation.Namespace}, lc.KeyResource, types.NamespacedName{Name: instance.Name, Namespace: instance.Namespace})
 			continue
 		}
 
@@ -96,6 +93,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 		return nil
 	})
 	if err != nil {
+		logger.Error(err, "failed creating/updating AvailabilityCollection", client.ObjectKeyFromObject(availabilityCollection))
 		return reconcile.Result{}, err
 	}
 
