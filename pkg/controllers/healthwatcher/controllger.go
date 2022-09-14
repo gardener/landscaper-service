@@ -91,10 +91,11 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	availabilityCollection.Status.Instances = []lssv1alpha1.AvailabilityInstance{}
 
 	for _, instanceRefToWatch := range availabilityCollection.Spec.InstanceRefs {
+		logger, ctx := logging.FromContextOrNew(ctx, nil, "instance", apitypes.NamespacedName{Name: instanceRefToWatch.Name, Namespace: instanceRefToWatch.Namespace}.String())
 		//get instance
 		instance := &lssv1alpha1.Instance{}
 		if err := c.Client().Get(ctx, apitypes.NamespacedName{Name: instanceRefToWatch.Name, Namespace: instanceRefToWatch.Namespace}, instance); err != nil {
-			logger.Error(err, "failed loading instance", lc.KeyResource, apitypes.NamespacedName{Name: instanceRefToWatch.Name, Namespace: instanceRefToWatch.Namespace})
+			logger.Error(err, "failed loading instance")
 			if apierrors.IsNotFound(err) {
 				return reconcile.Result{}, nil
 			}
@@ -110,14 +111,14 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 		//get referred installation
 		if instance.Status.InstallationRef == nil || instance.Status.InstallationRef.Name == "" || instance.Status.InstallationRef.Namespace == "" {
-			logger.Debug("skip instance since installation ref is empty", lc.KeyResource, client.ObjectKeyFromObject(instance))
+			logger.Debug("skip instance since installation ref is empty")
 			continue
 		}
 		installation := &lsv1alpha1.Installation{}
 		if err := c.Client().Get(ctx, apitypes.NamespacedName{Name: instance.Status.InstallationRef.Name, Namespace: instance.Status.InstallationRef.Namespace}, installation); err != nil {
-			logger.Error(err, "could not load installation from installation reference", lc.KeyResource, client.ObjectKeyFromObject(instance))
+			logger.Error(err, "could not load installation from installation reference")
 			if apierrors.IsNotFound(err) {
-				logger.Error(err, "skipping instance monitoring", lc.KeyResource, client.ObjectKeyFromObject(instance))
+				logger.Error(err, "skipping instance monitoring")
 				continue
 			}
 			setAvailabilityInstanceStatusToFailed(&availabilityInstance, "could not load installation from installation reference")
@@ -127,13 +128,13 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 		//check if installation is not progressing
 		if installation.Status.Phase == lsv1alpha1.ComponentPhaseProgressing {
-			logger.Debug("installation for instance is progressing, skip health check monitoring", lc.KeyResource, client.ObjectKeyFromObject(installation), lc.KeyResource, client.ObjectKeyFromObject(instance))
+			logger.Debug("installation for instance is progressing, skip health check monitoring", lc.KeyResource, client.ObjectKeyFromObject(installation).String())
 			continue
 		}
 
 		//check that servicetargetconfref exists exists
 		if instance.Spec.ServiceTargetConfigRef.Name == "" || instance.Spec.ServiceTargetConfigRef.Namespace == "" {
-			logger.Info(fmt.Sprintf("instance %s:%s does not have a ServiceTargetConfig ref", instance.Namespace, instance.Name))
+			logger.Info("instance does not have a ServiceTargetConfig ref")
 			setAvailabilityInstanceStatusToFailed(&availabilityInstance, "instance does not have a ServiceTargetConfigRef")
 			availabilityCollection.Status.Instances = append(availabilityCollection.Status.Instances, availabilityInstance)
 			continue
@@ -142,7 +143,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 		//get kubeconfig from secret referenced in ServiceTargetConfig so a credential rotation is automatically handled
 		targetClient, err := c.kubeClientExtractor.GetKubeClientFromServiceTargetConfig(ctx, instance.Spec.ServiceTargetConfigRef.Name, instance.Spec.ServiceTargetConfigRef.Namespace, c.Client())
 		if err != nil {
-			logger.Error(err, "failed creating target client", lc.KeyResource, client.ObjectKeyFromObject(instance))
+			logger.Error(err, "failed creating target client")
 			setAvailabilityInstanceStatusToFailed(&availabilityInstance, "could not create k8s client from target config")
 			availabilityCollection.Status.Instances = append(availabilityCollection.Status.Instances, availabilityInstance)
 			continue
@@ -150,7 +151,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 		targetClusterNamespace, err := extractTargetClusterNamespaceFromInstallation(*installation)
 		if err != nil {
-			logger.Error(err, "failed extracting target cluster namespace", lc.KeyResource, client.ObjectKeyFromObject(instance))
+			logger.Error(err, "failed extracting target cluster namespace")
 			setAvailabilityInstanceStatusToFailed(&availabilityInstance, "could not read target cluster namespace from installation")
 			availabilityCollection.Status.Instances = append(availabilityCollection.Status.Instances, availabilityInstance)
 			continue
@@ -160,7 +161,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 		lsHealthchecks := &lsv1alpha1.LsHealthCheckList{}
 		err = targetClient.List(ctx, lsHealthchecks, client.InNamespace(targetClusterNamespace))
 		if err != nil {
-			logger.Error(err, "could not load lshealthcheck from cluster", lc.KeyResource, client.ObjectKeyFromObject(instance))
+			logger.Error(err, "could not load lshealthcheck from cluster")
 			if apierrors.IsNotFound(err) {
 				setAvailabilityInstanceStatusToFailed(&availabilityInstance, "lsHealthCheck not found on target")
 				continue

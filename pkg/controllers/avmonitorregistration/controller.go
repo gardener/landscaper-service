@@ -64,20 +64,22 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 	instanceRefsToMonitor := []lssv1alpha1.ObjectReference{}
 	for _, instance := range instances.Items {
+		logger, ctx := logging.FromContextOrNew(ctx, nil, "instance", types.NamespacedName{Name: instance.Name, Namespace: instance.Namespace}.String())
+
 		//get refered installation
 		if instance.Status.InstallationRef == nil || instance.Status.InstallationRef.Name == "" || instance.Status.InstallationRef.Namespace == "" {
-			logger.Debug("skip instance since installation ref is empty", lc.KeyResource, types.NamespacedName{Name: instance.Name, Namespace: instance.Namespace})
+			logger.Debug("skip instance since installation ref is empty")
 			continue
 		}
 		//get installation
 		installation := &lsv1alpha1.Installation{}
 		if err := c.Client().Get(ctx, types.NamespacedName{Name: instance.Status.InstallationRef.Name, Namespace: instance.Status.InstallationRef.Namespace}, installation); err != nil {
-			logger.Error(err, "could not load installation from installation reference, skipping", lc.KeyResource, types.NamespacedName{Name: instance.Name, Namespace: instance.Namespace})
+			logger.Error(err, "could not load installation from installation reference, skipping")
 			continue
 		}
 		//check if installation not progressing
 		if installation.Status.Phase == lsv1alpha1.ComponentPhaseProgressing {
-			logger.Info("installation for instance is progressing, skip health check monitoring", lc.KeyResource, client.ObjectKeyFromObject(installation), lc.KeyResource, types.NamespacedName{Name: instance.Name, Namespace: instance.Namespace})
+			logger.Info("installation for instance is progressing, skip health check monitoring", lc.KeyResource, client.ObjectKeyFromObject(installation).String())
 			continue
 		}
 
@@ -94,7 +96,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 		return nil
 	})
 	if err != nil {
-		logger.Error(err, "failed creating/updating AvailabilityCollection", client.ObjectKeyFromObject(availabilityCollection))
+		logger.Error(err, "failed creating/updating AvailabilityCollection", lc.KeyResource, client.ObjectKeyFromObject(availabilityCollection).String())
 		return reconcile.Result{}, err
 	}
 
