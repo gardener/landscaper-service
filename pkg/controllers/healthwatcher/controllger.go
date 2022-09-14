@@ -22,9 +22,10 @@ import (
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 
+	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
+
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	"github.com/gardener/landscaper-service/pkg/apis/installation"
-	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"

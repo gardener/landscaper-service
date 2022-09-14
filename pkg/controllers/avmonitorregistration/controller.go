@@ -16,10 +16,11 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
+	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
+
 	coreconfig "github.com/gardener/landscaper-service/pkg/apis/config"
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	"github.com/gardener/landscaper-service/pkg/operation"
-	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
 )
 
 type Controller struct {
