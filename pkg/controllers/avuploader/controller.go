@@ -63,8 +63,8 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	//get availabilityCollection
 	availabilityCollection := &lssv1alpha1.AvailabilityCollection{}
 	if err := c.Client().Get(ctx, req.NamespacedName, availabilityCollection); err != nil {
+		logger.Error(err, "failed loading AvailabilityCollection")
 		if apierrors.IsNotFound(err) {
-			logger.Info(err.Error())
 			return reconcile.Result{}, nil
 		}
 		return reconcile.Result{}, err
@@ -72,6 +72,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 	//do not run on spec updates or when status was already uploaded
 	if availabilityCollection.ObjectMeta.Generation != availabilityCollection.Status.ObservedGeneration || availabilityCollection.Status.LastRun == availabilityCollection.Status.LastReported {
+		logger.Debug("skip upload since spec changed or status was already uploaded")
 		return reconcile.Result{}, nil
 	}
 
@@ -80,6 +81,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	err := doAvsRequest(request, c.Config().AvailabilityMonitoring.AvailabilityServiceConfiguration.Url, c.Config().AvailabilityMonitoring.AvailabilityServiceConfiguration.ApiKey,
 		c.Config().AvailabilityMonitoring.AvailabilityServiceConfiguration.Timeout)
 	if err != nil {
+		logger.Error(err, "avs request failed")
 		return reconcile.Result{}, err
 	}
 
@@ -87,6 +89,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 	//write to status
 	if err := c.Client().Status().Update(ctx, availabilityCollection); err != nil {
+		logger.Error(err, "failed updating availabilityCollection LastReported status")
 		return reconcile.Result{}, fmt.Errorf("unable to update availability status: %w", err)
 	}
 
