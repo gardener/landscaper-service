@@ -108,4 +108,7 @@ require (
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
 
-replace github.com/go-openapi/jsonreference v0.19.5 => github.com/go-openapi/jsonreference v0.20.0
+replace (
+	github.com/emicklei/go-restful v2.9.5+incompatible => github.com/emicklei/go-restful v2.16.0+incompatible
+	github.com/go-openapi/jsonreference v0.19.5 => github.com/go-openapi/jsonreference v0.20.0
+)
