@@ -53,6 +53,7 @@ func NewTestActuator(op operation.Operation, logger logging.Logger) *Controller 
 func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reconcile.Result, error) {
 	logger, ctx := c.log.StartReconcileAndAddToContext(ctx, req)
 
+	logger.Debug("check if av service is configured")
 	if c.Config().AvailabilityMonitoring.AvailabilityServiceConfiguration == nil ||
 		c.Config().AvailabilityMonitoring.AvailabilityServiceConfiguration.Url == "" ||
 		c.Config().AvailabilityMonitoring.AvailabilityServiceConfiguration.ApiKey == "" {
@@ -61,6 +62,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	}
 
 	//get availabilityCollection
+	logger.Debug("fetch availabilityCollection")
 	availabilityCollection := &lssv1alpha1.AvailabilityCollection{}
 	if err := c.Client().Get(ctx, req.NamespacedName, availabilityCollection); err != nil {
 		logger.Error(err, "failed loading AvailabilityCollection")
@@ -71,6 +73,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	}
 
 	//do not run on spec updates or when status was already uploaded
+	logger.Debug("check if upload is required")
 	if availabilityCollection.ObjectMeta.Generation != availabilityCollection.Status.ObservedGeneration || availabilityCollection.Status.LastRun == availabilityCollection.Status.LastReported {
 		logger.Debug("skip upload since spec changed or status was already uploaded")
 		return reconcile.Result{}, nil
@@ -78,21 +81,25 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 	request := constructAvsRequest(*availabilityCollection)
 
+	logger.Debug("perform avs upload")
 	err := doAvsRequest(request, c.Config().AvailabilityMonitoring.AvailabilityServiceConfiguration.Url, c.Config().AvailabilityMonitoring.AvailabilityServiceConfiguration.ApiKey,
 		c.Config().AvailabilityMonitoring.AvailabilityServiceConfiguration.Timeout)
 	if err != nil {
 		logger.Error(err, "avs request failed")
 		return reconcile.Result{}, err
 	}
+	logger.Debug("avs upload done")
 
 	availabilityCollection.Status.LastReported = availabilityCollection.Status.LastRun
 
 	//write to status
+	logger.Debug("updating status")
 	if err := c.Client().Status().Update(ctx, availabilityCollection); err != nil {
 		logger.Error(err, "failed updating availabilityCollection LastReported status")
 		return reconcile.Result{}, fmt.Errorf("unable to update availability status: %w", err)
 	}
 
+	logger.Debug("reconcile completed successfully")
 	return reconcile.Result{}, nil
 
 }

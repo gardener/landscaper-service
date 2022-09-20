@@ -71,6 +71,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	logger, ctx := c.log.StartReconcileAndAddToContext(ctx, req)
 
 	//get availabilityCollection
+	logger.Debug("fetch availabilityCollection")
 	availabilityCollection := &lssv1alpha1.AvailabilityCollection{}
 	if err := c.Client().Get(ctx, req.NamespacedName, availabilityCollection); err != nil {
 		logger.Error(err, "failed loading AvailabilityCollection")
@@ -81,6 +82,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	}
 
 	//dont run if spec has not changed and we are not in time yet
+	logger.Debug("check if reconcile is required")
 	if availabilityCollection.ObjectMeta.Generation == availabilityCollection.Status.ObservedGeneration &&
 		time.Since(availabilityCollection.Status.LastRun.Time) < c.Operation.Config().AvailabilityMonitoring.PeriodicCheckInterval.Duration {
 		logger.Debug("skip reconcile since spec has not changed and periodic check interval is not in time yet")
@@ -92,7 +94,10 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 	for _, instanceRefToWatch := range availabilityCollection.Spec.InstanceRefs {
 		logger, ctx := logging.FromContextOrNew(ctx, nil, "instance", apitypes.NamespacedName{Name: instanceRefToWatch.Name, Namespace: instanceRefToWatch.Namespace}.String())
+		logger.Debug("checking health of instance")
+
 		//get instance
+		logger.Debug("fetch instance")
 		instance := &lssv1alpha1.Instance{}
 		if err := c.Client().Get(ctx, apitypes.NamespacedName{Name: instanceRefToWatch.Name, Namespace: instanceRefToWatch.Namespace}, instance); err != nil {
 			logger.Error(err, "failed loading instance")
@@ -110,6 +115,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 		}
 
 		//get referred installation
+		logger.Debug("fetch referred installation")
 		if instance.Status.InstallationRef == nil || instance.Status.InstallationRef.Name == "" || instance.Status.InstallationRef.Namespace == "" {
 			logger.Debug("skip instance since installation ref is empty")
 			continue
@@ -133,6 +139,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 		}
 
 		//check that servicetargetconfref exists exists
+		logger.Debug("check servcicetargetconfref existance")
 		if instance.Spec.ServiceTargetConfigRef.Name == "" || instance.Spec.ServiceTargetConfigRef.Namespace == "" {
 			logger.Info("instance does not have a ServiceTargetConfig ref")
 			setAvailabilityInstanceStatusToFailed(&availabilityInstance, "instance does not have a ServiceTargetConfigRef")
@@ -141,6 +148,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 		}
 
 		//get kubeconfig from secret referenced in ServiceTargetConfig so a credential rotation is automatically handled
+		logger.Debug("get target kubeClient from service target config")
 		targetClient, err := c.kubeClientExtractor.GetKubeClientFromServiceTargetConfig(ctx, instance.Spec.ServiceTargetConfigRef.Name, instance.Spec.ServiceTargetConfigRef.Namespace, c.Client())
 		if err != nil {
 			logger.Error(err, "failed creating target client")
@@ -148,7 +156,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 			availabilityCollection.Status.Instances = append(availabilityCollection.Status.Instances, availabilityInstance)
 			continue
 		}
-
+		logger.Debug("fetch target namespace from installation")
 		targetClusterNamespace, err := extractTargetClusterNamespaceFromInstallation(*installation)
 		if err != nil {
 			logger.Error(err, "failed extracting target cluster namespace")
@@ -158,6 +166,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 		}
 
 		//collect lshealthcheck
+		logger.Debug("collect lshealthcheck")
 		lsHealthchecks := &lsv1alpha1.LsHealthCheckList{}
 		err = targetClient.List(ctx, lsHealthchecks, client.InNamespace(targetClusterNamespace))
 		if err != nil {
@@ -173,6 +182,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 		transferLsHealthCheckStatusToAvailabilityInstance(&availabilityInstance, lsHealthchecks, c.Config().AvailabilityMonitoring.LSHealthCheckTimeout.Duration)
 		availabilityCollection.Status.Instances = append(availabilityCollection.Status.Instances, availabilityInstance)
+		logger.Debug("healthcheck of instance completed", "health", availabilityInstance.Status)
 	}
 	availabilityCollection.Status.Self = c.getLsHealthCheckFromSelfLandscaper(ctx, c.Config().AvailabilityMonitoring.SelfLandscaperNamespace)
 	availabilityCollection.Status.ObservedGeneration = availabilityCollection.ObjectMeta.Generation
@@ -181,12 +191,14 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	logFailedInstances(logger, *availabilityCollection)
 
 	//write to status
+	logger.Debug("updating status")
 	if err := c.Client().Status().Update(ctx, availabilityCollection); err != nil {
 		logger.Error(err, "unable to update AvailabilityCollection status")
 		return reconcile.Result{}, fmt.Errorf("unable to update availability collection: %w", err)
 	}
 
 	//Requeue to run again
+	logger.Debug("reconcile completed successfully. Requeue...")
 	return reconcile.Result{RequeueAfter: c.Config().AvailabilityMonitoring.PeriodicCheckInterval.Duration}, nil
 
 }
