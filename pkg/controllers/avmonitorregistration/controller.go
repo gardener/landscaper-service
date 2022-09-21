@@ -65,8 +65,10 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	instanceRefsToMonitor := []lssv1alpha1.ObjectReference{}
 	for _, instance := range instances.Items {
 		logger, ctx := logging.FromContextOrNew(ctx, nil, "instance", types.NamespacedName{Name: instance.Name, Namespace: instance.Namespace}.String())
+		logger.Debug("register instance")
 
 		//get refered installation
+		logger.Debug("fetch referred installation")
 		if instance.Status.InstallationRef == nil || instance.Status.InstallationRef.Name == "" || instance.Status.InstallationRef.Namespace == "" {
 			logger.Debug("skip instance since installation ref is empty")
 			continue
@@ -92,6 +94,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 		InstanceRefs: instanceRefsToMonitor,
 	}
 
+	logger.Debug("creating/updating spec", lc.KeyResource, client.ObjectKeyFromObject(availabilityCollection).String())
 	_, err := kubernetes.CreateOrUpdate(ctx, c.Client(), availabilityCollection, func() error {
 		return nil
 	})
@@ -100,5 +103,6 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 		return reconcile.Result{}, err
 	}
 
+	logger.Debug("reconcile completed successfully")
 	return reconcile.Result{}, nil
 }
