@@ -10,7 +10,6 @@ import (
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	"github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
-	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -56,9 +55,6 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	instances := &lssv1alpha1.InstanceList{}
 	if err := c.Client().List(ctx, instances); err != nil {
 		logger.Error(err, "failed loading instances")
-		if apierrors.IsNotFound(err) {
-			return reconcile.Result{}, nil
-		}
 		return reconcile.Result{}, err
 	}
 
