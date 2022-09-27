@@ -75,9 +75,6 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	availabilityCollection := &lssv1alpha1.AvailabilityCollection{}
 	if err := c.Client().Get(ctx, req.NamespacedName, availabilityCollection); err != nil {
 		logger.Error(err, "failed loading AvailabilityCollection")
-		if apierrors.IsNotFound(err) {
-			return reconcile.Result{}, nil
-		}
 		return reconcile.Result{}, err
 	}
 
@@ -86,7 +83,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	if availabilityCollection.ObjectMeta.Generation == availabilityCollection.Status.ObservedGeneration &&
 		time.Since(availabilityCollection.Status.LastRun.Time) < c.Operation.Config().AvailabilityMonitoring.PeriodicCheckInterval.Duration {
 		logger.Debug("skip reconcile since spec has not changed and periodic check interval is not in time yet")
-		return reconcile.Result{}, nil
+		return reconcile.Result{Requeue: true}, nil
 	}
 
 	//clean status
@@ -101,9 +98,6 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 		instance := &lssv1alpha1.Instance{}
 		if err := c.Client().Get(ctx, apitypes.NamespacedName{Name: instanceRefToWatch.Name, Namespace: instanceRefToWatch.Namespace}, instance); err != nil {
 			logger.Error(err, "failed loading instance")
-			if apierrors.IsNotFound(err) {
-				return reconcile.Result{}, nil
-			}
 			return reconcile.Result{}, err
 		}
 

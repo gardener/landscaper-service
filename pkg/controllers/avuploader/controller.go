@@ -15,7 +15,6 @@ import (
 
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
-	apierrors "k8s.io/apimachinery/pkg/api/errors"
 
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 
@@ -66,9 +65,6 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	availabilityCollection := &lssv1alpha1.AvailabilityCollection{}
 	if err := c.Client().Get(ctx, req.NamespacedName, availabilityCollection); err != nil {
 		logger.Error(err, "failed loading AvailabilityCollection")
-		if apierrors.IsNotFound(err) {
-			return reconcile.Result{}, nil
-		}
 		return reconcile.Result{}, err
 	}
 
