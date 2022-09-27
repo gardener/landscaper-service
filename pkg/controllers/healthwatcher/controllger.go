@@ -74,17 +74,14 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	availabilityCollection := &lssv1alpha1.AvailabilityCollection{}
 	if err := c.Client().Get(ctx, req.NamespacedName, availabilityCollection); err != nil {
 		logger.Error(err, "failed loading AvailabilityCollection")
-		if apierrors.IsNotFound(err) {
-			return reconcile.Result{}, nil
-		}
-		return reconcile.Result{}, err
+		return reconcile.Result{RequeueAfter: c.Config().AvailabilityMonitoring.PeriodicCheckInterval.Duration}, err
 	}
 
 	//dont run if spec has not changed and we are not in time yet
 	if availabilityCollection.ObjectMeta.Generation == availabilityCollection.Status.ObservedGeneration &&
 		time.Since(availabilityCollection.Status.LastRun.Time) < c.Operation.Config().AvailabilityMonitoring.PeriodicCheckInterval.Duration {
 		logger.Debug("skip reconcile since spec has not changed and periodic check interval is not in time yet")
-		return reconcile.Result{}, nil
+		return reconcile.Result{Requeue: true}, nil
 	}
 
 	//clean status
@@ -96,10 +93,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 		instance := &lssv1alpha1.Instance{}
 		if err := c.Client().Get(ctx, apitypes.NamespacedName{Name: instanceRefToWatch.Name, Namespace: instanceRefToWatch.Namespace}, instance); err != nil {
 			logger.Error(err, "failed loading instance")
-			if apierrors.IsNotFound(err) {
-				return reconcile.Result{}, nil
-			}
-			return reconcile.Result{}, err
+			return reconcile.Result{RequeueAfter: c.Config().AvailabilityMonitoring.PeriodicCheckInterval.Duration}, err
 		}
 
 		availabilityInstance := lssv1alpha1.AvailabilityInstance{
@@ -183,7 +177,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	//write to status
 	if err := c.Client().Status().Update(ctx, availabilityCollection); err != nil {
 		logger.Error(err, "unable to update AvailabilityCollection status")
-		return reconcile.Result{}, fmt.Errorf("unable to update availability collection: %w", err)
+		return reconcile.Result{RequeueAfter: c.Config().AvailabilityMonitoring.PeriodicCheckInterval.Duration}, fmt.Errorf("unable to update availability collection: %w", err)
 	}
 
 	//Requeue to run again
