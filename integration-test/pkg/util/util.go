@@ -362,8 +362,8 @@ func DeleteVirtualClusterNamespaces(ctx context.Context, kclient client.Client, 
 	return nil
 }
 
-// BuildKubernetesClusterTarget builds a landscaper target of the given kubeconfig in the given namespace.
-func BuildKubernetesClusterTarget(ctx context.Context, kclient client.Client, kubeConfig, name, namespace string) (*lsv1alpha1.Target, error) {
+// BuildKubernetesClusterTargetWithSecretRef builds a landscaper target of the given kubeconfig in the given namespace using a secret reference.
+func BuildKubernetesClusterTargetWithSecretRef(ctx context.Context, kclient client.Client, kubeConfig, name, namespace string) (*lsv1alpha1.Target, error) {
 	kubeConfigContent, err := ioutil.ReadFile(kubeConfig)
 	if err != nil {
 		return nil, fmt.Errorf("cannot read kubeconfig: %w", err)
@@ -392,6 +392,40 @@ func BuildKubernetesClusterTarget(ctx context.Context, kclient client.Client, ku
 				"key":       "kubeconfig",
 			},
 		},
+	}
+
+	targetConfigRaw, err := json.Marshal(targetConfig)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal target config: %w", err)
+	}
+
+	target := &lsv1alpha1.Target{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      name,
+			Namespace: namespace,
+		},
+		Spec: lsv1alpha1.TargetSpec{
+			Type:          lsv1alpha1.KubernetesClusterTargetType,
+			Configuration: lsv1alpha1.NewAnyJSON(targetConfigRaw),
+		},
+	}
+
+	if err := kclient.Create(ctx, target); err != nil {
+		return nil, fmt.Errorf("failed to create default target: %w", err)
+	}
+
+	return target, nil
+}
+
+// BuildKubernetesClusterTarget builds a landscaper target of the given kubeconfig in the given namespace.
+func BuildKubernetesClusterTarget(ctx context.Context, kclient client.Client, kubeConfig, name, namespace string) (*lsv1alpha1.Target, error) {
+	kubeConfigContent, err := ioutil.ReadFile(kubeConfig)
+	if err != nil {
+		return nil, fmt.Errorf("cannot read kubeconfig: %w", err)
+	}
+
+	targetConfig := map[string]interface{}{
+		"kubeconfig": string(kubeConfigContent),
 	}
 
 	targetConfigRaw, err := json.Marshal(targetConfig)
