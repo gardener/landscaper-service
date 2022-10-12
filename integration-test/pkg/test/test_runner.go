@@ -67,12 +67,12 @@ func NewClusterClients(config *TestConfig) (*ClusterClients, error) {
 }
 
 func NewClusterTargets(ctx context.Context, kclient client.Client, config *TestConfig) (*ClusterTargets, error) {
-	hostingClusterTarget, err := util.BuildKubernetesClusterTarget(ctx, kclient, config.TestClusterKubeconfig, "test-target", config.LaasNamespace)
+	hostingClusterTarget, err := util.BuildKubernetesClusterTargetWithSecretRef(ctx, kclient, config.TestClusterKubeconfig, "test-target", config.LaasNamespace)
 	if err != nil {
 		return nil, fmt.Errorf("cannot build hosting-cluster target: %w", err)
 	}
 
-	laasClusterTarget, err := util.BuildKubernetesClusterTarget(ctx, kclient, config.HostingClusterKubeconfig, "hosting-target", config.LaasNamespace)
+	laasClusterTarget, err := util.BuildKubernetesClusterTargetWithSecretRef(ctx, kclient, config.HostingClusterKubeconfig, "hosting-target", config.LaasNamespace)
 	if err != nil {
 		return nil, fmt.Errorf("cannot build hosting-cluster target: %w", err)
 	}
