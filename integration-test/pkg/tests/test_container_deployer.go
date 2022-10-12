@@ -26,7 +26,7 @@ import (
 )
 
 const (
-	containerTestNamespace         = "example"
+	containerTestNamespace         = "container-test"
 	containerTestTargetName        = "default-target"
 	containerTestInstallationName  = "container-test"
 	containerTestComponentName     = "github.com/gardener/landscaper-examples/container-deployer/container-1"

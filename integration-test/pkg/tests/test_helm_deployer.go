@@ -27,7 +27,7 @@ import (
 )
 
 const (
-	helmTestNamespace         = "example"
+	helmTestNamespace         = "helm-test"
 	helmTestTargetName        = "default-target"
 	helmTestInstallationName  = "helm-test"
 	helmTestComponentName     = "github.com/gardener/landscaper-examples/helm-deployer/helm-chart-1"

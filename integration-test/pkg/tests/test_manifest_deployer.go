@@ -26,7 +26,7 @@ import (
 )
 
 const (
-	manifestTestNamespace         = "example"
+	manifestTestNamespace         = "manifest-test"
 	manifestTestTargetName        = "default-target"
 	manifestTestInstallationName  = "manifest-test"
 	manifestTestComponentName     = "github.com/gardener/landscaper-examples/manifest-deployer/create-configmap"
