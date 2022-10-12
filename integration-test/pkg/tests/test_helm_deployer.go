@@ -149,7 +149,7 @@ func (r *HelmDeployerTestRunner) createTarget(deployment *lssv1alpha1.Landscaper
 	logger, _ := logging.FromContextOrNew(r.ctx, nil)
 
 	logger.Info("creating target for deployment", "deploymentName", deployment.Name)
-	if _, err := util.BuildKubernetesClusterTarget(r.ctx, virtualClient, r.config.TestClusterKubeconfig, helmTestTargetName, virtualClusterNamespace); err != nil {
+	if _, err := util.BuildKubernetesClusterTargetWithSecretRef(r.ctx, virtualClient, r.config.TestClusterKubeconfig, helmTestTargetName, virtualClusterNamespace); err != nil {
 		return fmt.Errorf("failed to create target: %w", err)
 	}
 	return nil
