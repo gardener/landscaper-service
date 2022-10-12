@@ -369,8 +369,29 @@ func BuildKubernetesClusterTarget(ctx context.Context, kclient client.Client, ku
 		return nil, fmt.Errorf("cannot read kubeconfig: %w", err)
 	}
 
+	secret := &corev1.Secret{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      name,
+			Namespace: namespace,
+		},
+		Type: corev1.SecretTypeOpaque,
+		StringData: map[string]string{
+			"kubeconfig": string(kubeConfigContent),
+		},
+	}
+
+	if err := kclient.Create(ctx, secret); err != nil {
+		return nil, fmt.Errorf("failed to create default target secret: %w", err)
+	}
+
 	targetConfig := map[string]interface{}{
-		"kubeconfig": string(kubeConfigContent),
+		"kubeconfig": map[string]interface{}{
+			"secretRef": map[string]interface{}{
+				"name":      name,
+				"namespace": namespace,
+				"key":       "kubeconfig",
+			},
+		},
 	}
 
 	targetConfigRaw, err := json.Marshal(targetConfig)
