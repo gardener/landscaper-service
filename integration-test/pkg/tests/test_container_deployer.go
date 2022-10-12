@@ -252,7 +252,7 @@ func (r *ContainerDeployerTestRunner) verifyInstallation(deployment *lssv1alpha1
 	timeout, err := cliutil.CheckAndWaitUntilLandscaperInstallationSucceeded(
 		virtualClient,
 		types.NamespacedName{Name: containerTestInstallationName, Namespace: virtualClusterNamespace},
-		r.config.SleepTime, r.config.MaxRetries)
+		r.config.SleepTime, r.config.MaxRetries*2)
 
 	if err != nil || timeout {
 		installation := &lsv1alpha1.Installation{}
