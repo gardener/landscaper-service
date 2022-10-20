@@ -1,6 +1,7 @@
 .idea
 .vscode
 .DS_Store
+.cache_ggshield
 
 **/*.report
 gen
