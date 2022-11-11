@@ -58,7 +58,6 @@ var _ = Describe("LandscaperDeployment", func() {
 					"manifest",
 				},
 			},
-			Region: "eu",
 		}
 
 		request := CreateAdmissionRequest(testObj)
@@ -78,7 +77,6 @@ var _ = Describe("LandscaperDeployment", func() {
 					"manifest",
 				},
 			},
-			Region: "eu",
 		}
 
 		request := CreateAdmissionRequest(testObj)
@@ -103,7 +101,6 @@ var _ = Describe("LandscaperDeployment", func() {
 					"manifest",
 				},
 			},
-			Region: "eu",
 		}
 
 		request := CreateAdmissionRequest(testObj)

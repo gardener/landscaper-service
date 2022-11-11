@@ -21,7 +21,6 @@ metadata:
 spec:
   tenantId: "tenant-1"
   purpose: "test"
-  region: "eu-west-1"
   landscaperConfiguration:
     deployers:
       - helm
@@ -40,13 +39,7 @@ The `spec.tenantId` field has to contain the globally unique identifier of the o
 
 ## Purpose
 
-The `spec.purpose` field should contain the human-readable purpose of the LandscaperDeployment. 
-
-
-## Region
-
-The `spec.region` field is optional and can be used to restrict the selected target kubernetes cluster to a specific geo-region.
-
+The `spec.purpose` field should contain the human-readable purpose of the LandscaperDeployment.
 
 ## Landscaper Configuration
 

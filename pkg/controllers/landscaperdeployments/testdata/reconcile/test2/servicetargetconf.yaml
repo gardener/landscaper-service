@@ -20,7 +20,6 @@ metadata:
   namespace: {{ .Namespace }}
   labels:
     config.landscaper-service.gardener.cloud/visible: "true"
-    config.landscaper-service.gardener.cloud/region: eu
 
 spec:
   providerType: gcp
@@ -30,6 +29,8 @@ spec:
     name: target
     namespace: {{ .Namespace }}
     key: kubeconfig
+
+  ingressDomain: "ingress.mycluster.external"
 ---
 apiVersion: landscaper-service.gardener.cloud/v1alpha1
 kind: ServiceTargetConfig
@@ -39,7 +40,6 @@ metadata:
   namespace: {{ .Namespace }}
   labels:
     config.landscaper-service.gardener.cloud/visible: "true"
-    config.landscaper-service.gardener.cloud/region: eu
 
 spec:
   providerType: gcp
@@ -49,6 +49,8 @@ spec:
     name: target
     namespace: {{ .Namespace }}
     key: kubeconfig
+
+  ingressDomain: "ingress.mycluster.external"
 ---
 apiVersion: landscaper-service.gardener.cloud/v1alpha1
 kind: ServiceTargetConfig
@@ -58,32 +60,32 @@ metadata:
   namespace: {{ .Namespace }}
   labels:
     config.landscaper-service.gardener.cloud/visible: "true"
-    config.landscaper-service.gardener.cloud/region: us
 
 spec:
-  providerType: gcp
   priority: 30
 
   secretRef:
     name: target
     namespace: {{ .Namespace }}
     key: kubeconfig
+
+  ingressDomain: "ingress.mycluster.external"
 ---
 apiVersion: landscaper-service.gardener.cloud/v1alpha1
 kind: ServiceTargetConfig
 
 metadata:
-  name: configt4
+  name: config4
   namespace: {{ .Namespace }}
   labels:
     config.landscaper-service.gardener.cloud/visible: "false"
-    config.landscaper-service.gardener.cloud/region: eu
 
 spec:
-  providerType: gcp
-  priority: 30
+  priority: 40
 
   secretRef:
     name: target
     namespace: {{ .Namespace }}
     key: kubeconfig
+
+  ingressDomain: "ingress.mycluster.external"

@@ -97,7 +97,7 @@ func (c *Controller) mutateInstance(ctx context.Context, deployment *lssv1alpha1
 
 	if len(instance.Spec.ServiceTargetConfigRef.Name) == 0 {
 		// try to find a service target configuration that can be used for this landscaper deployment
-		serviceTargetConf, err := c.findServiceTargetConfig(ctx, deployment)
+		serviceTargetConf, err := c.findServiceTargetConfig(ctx)
 		if err != nil {
 			return err
 		}
@@ -131,17 +131,10 @@ func (c *Controller) mutateInstance(ctx context.Context, deployment *lssv1alpha1
 }
 
 // findServiceTargetConfig tries to find a service target configuration that applies to the deployment requirements and has capacity available.
-func (c *Controller) findServiceTargetConfig(ctx context.Context, deployment *lssv1alpha1.LandscaperDeployment) (*lssv1alpha1.ServiceTargetConfig, error) {
-	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(deployment).String()})
-
+func (c *Controller) findServiceTargetConfig(ctx context.Context) (*lssv1alpha1.ServiceTargetConfig, error) {
 	serviceTargetConfigs := &lssv1alpha1.ServiceTargetConfigList{}
 	selectorBuilder := strings.Builder{}
 	selectorBuilder.WriteString(fmt.Sprintf("%s=true", lsscore.ServiceTargetConfigVisibleLabelName))
-
-	if len(deployment.Spec.Region) > 0 {
-		logger.Info("region filter active", "serviceTargetConfigRegion", deployment.Spec.Region)
-		selectorBuilder.WriteString(fmt.Sprintf(",%s=%s", lsscore.ServiceTargetConfigRegionLabelName, deployment.Spec.Region))
-	}
 
 	labelSelector, _ := labels.Parse(selectorBuilder.String())
 	listOptions := client.ListOptions{

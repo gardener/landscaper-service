@@ -152,4 +152,10 @@ availabilityMonitoring:
     apiKey: {{ .Values.landscaperservice.availabilityMonitoring.AVSConfiguration.apiKey }}
     timeout: {{ .Values.landscaperservice.availabilityMonitoring.AVSConfiguration.timeout | default "30s" }}
   {{- end }}
+
+gardenerConfiguration:
+{{ toYaml .Values.landscaperservice.gardener | indent 2 }}
+
+shootConfiguration:
+{{ toYaml .Values.landscaperservice.shootConfiguration | indent 2 }}
 {{- end }}

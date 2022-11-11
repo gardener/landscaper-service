@@ -38,19 +38,21 @@ func init() {
 
 // TestConfig contains all the configured flags of the integration test.
 type TestConfig struct {
-	TestClusterKubeconfig    string
-	HostingClusterKubeconfig string
-	RegistryPullSecrets      string
-	MaxRetries               int
-	SleepTime                time.Duration
-	LaasComponent            string
-	LaasVersion              string
-	LaasRepository           string
-	LandscaperNamespace      string
-	LaasNamespace            string
-	TestNamespace            string
-	LandscaperVersion        string
-	ProviderType             string
+	TestClusterKubeconfig            string
+	HostingClusterKubeconfig         string
+	GardenerServiceAccountKubeconfig string
+	GardenerProject                  string
+	ShootSecretBindingName           string
+	RegistryPullSecrets              string
+	MaxRetries                       int
+	SleepTime                        time.Duration
+	LaasComponent                    string
+	LaasVersion                      string
+	LaasRepository                   string
+	LandscaperNamespace              string
+	LaasNamespace                    string
+	TestNamespace                    string
+	LandscaperVersion                string
 }
 
 // ParseConfig parses the TestConfig from the command line arguments.
@@ -58,15 +60,17 @@ func ParseConfig() *TestConfig {
 	var (
 		testClusterKubeconfig,
 		hostingClusterKubeconfig,
+		gardenerServiceAccountKubeconfig,
 		registryPullSecrets,
 		laasComponent, laasVersion, LaasRepository,
-		landscaperNamespace, laasNamespace, testNamespace,
-		providerType string
+		landscaperNamespace, laasNamespace,
+		testNamespace string
 		maxRetries int
 	)
 
 	flag.StringVar(&testClusterKubeconfig, "kubeconfig", "", "path to the kubeconfig of the cluster")
 	flag.StringVar(&hostingClusterKubeconfig, "hosting-kubeconfig", "", "path to the kubeconfig of the hosting cluster")
+	flag.StringVar(&gardenerServiceAccountKubeconfig, "gardener-service-account-kubeconfig", "", "path to the kubeconfig of the hosting cluster")
 	flag.StringVar(&registryPullSecrets, "registry-secrets", "", "registry pull secrets")
 	flag.IntVar(&maxRetries, "max-retries", 10, "max retries (every 10s) for all waiting operations")
 	flag.StringVar(&laasVersion, "laas-version", "", "landscaper as a service version")
@@ -75,7 +79,6 @@ func ParseConfig() *TestConfig {
 	flag.StringVar(&landscaperNamespace, "landscaper-namespace", "ls-system", "name of the landscaper namespace")
 	flag.StringVar(&laasNamespace, "laas-namespace", "laas-system", "name of the landscaper as a service namespace")
 	flag.StringVar(&testNamespace, "test-namespace", "laas-test", "name of the landscaper as a service integration test namespace")
-	flag.StringVar(&providerType, "provider-type", "gcp", "the cloud provider of the provided hostingClusterKubeconfig")
 	flag.Parse()
 
 	if len(hostingClusterKubeconfig) == 0 {
@@ -83,18 +86,20 @@ func ParseConfig() *TestConfig {
 	}
 
 	return &TestConfig{
-		TestClusterKubeconfig:    testClusterKubeconfig,
-		HostingClusterKubeconfig: hostingClusterKubeconfig,
-		RegistryPullSecrets:      registryPullSecrets,
-		MaxRetries:               maxRetries,
-		SleepTime:                10 * time.Second,
-		LaasComponent:            laasComponent,
-		LaasVersion:              laasVersion,
-		LaasRepository:           LaasRepository,
-		LandscaperNamespace:      landscaperNamespace,
-		LaasNamespace:            laasNamespace,
-		TestNamespace:            testNamespace,
-		ProviderType:             providerType,
+		TestClusterKubeconfig:            testClusterKubeconfig,
+		HostingClusterKubeconfig:         hostingClusterKubeconfig,
+		GardenerServiceAccountKubeconfig: gardenerServiceAccountKubeconfig,
+		GardenerProject:                  "",
+		ShootSecretBindingName:           "",
+		RegistryPullSecrets:              registryPullSecrets,
+		MaxRetries:                       maxRetries,
+		SleepTime:                        10 * time.Second,
+		LaasComponent:                    laasComponent,
+		LaasVersion:                      laasVersion,
+		LaasRepository:                   LaasRepository,
+		LandscaperNamespace:              landscaperNamespace,
+		LaasNamespace:                    laasNamespace,
+		TestNamespace:                    testNamespace,
 	}
 }
 
@@ -104,6 +109,9 @@ func VerifyConfig(config *TestConfig) error {
 
 	if len(config.TestClusterKubeconfig) == 0 {
 		errorList = append(errorList, fmt.Errorf("flag \"kubeconfig\" may not be empty"))
+	}
+	if len(config.GardenerServiceAccountKubeconfig) == 0 {
+		errorList = append(errorList, fmt.Errorf("flag \"gardener-service-account-kubeconfig\" may not be empty"))
 	}
 	if len(config.RegistryPullSecrets) == 0 {
 		errorList = append(errorList, fmt.Errorf("flag \"registry-secrets\" may not be empty"))

@@ -13,8 +13,6 @@ const (
 	// If set to "true", any Landscaper Service deployment can be scheduled on this seed.
 	// If not set or set to "false", no new Landscaper Service deployments can be scheduled on this seed.
 	ServiceTargetConfigVisibleLabelName = "config.landscaper-service.gardener.cloud/visible"
-	// ServiceTargetConfigRegionLabelName label specifies the region in which the target cluster is located.
-	ServiceTargetConfigRegionLabelName = "config.landscaper-service.gardener.cloud/region"
 )
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
@@ -44,9 +42,6 @@ type ServiceTargetConfig struct {
 
 // ServiceTargetConfigSpec contains the specification for a ServiceTargetConfig.
 type ServiceTargetConfigSpec struct {
-	// ProviderType specifies the type of the underlying infrastructure provide.
-	ProviderType string `json:"providerType"`
-
 	// The Priority of this ServiceTargetConfig.
 	// SeedConfigs with a higher priority number will be preferred over lower numbers
 	// when scheduling new landscaper service installations.
@@ -54,6 +49,9 @@ type ServiceTargetConfigSpec struct {
 
 	// SecretRef references the secret that contains the kubeconfig of the target cluster.
 	SecretRef SecretReference `json:"secretRef"`
+
+	// IngressDomain is the ingress domain of the corresponding target cluster.
+	IngressDomain string `json:"ingressDomain"`
 }
 
 // ServiceTargetConfigStatus contains the status of a ServiceTargetConfig.

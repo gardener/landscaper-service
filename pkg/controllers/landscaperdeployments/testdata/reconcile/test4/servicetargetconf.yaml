@@ -20,13 +20,13 @@ metadata:
   namespace: {{ .Namespace }}
   labels:
     config.landscaper-service.gardener.cloud/visible: "true"
-    config.landscaper-service.gardener.cloud/region: eu
 
 spec:
-  providerType: gcp
   priority: 10
 
   secretRef:
     name: target
     namespace: {{ .Namespace }}
     key: kubeconfig
+
+  ingressDomain: "ingress.mycluster.external"

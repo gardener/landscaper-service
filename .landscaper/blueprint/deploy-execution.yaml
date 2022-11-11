@@ -66,6 +66,14 @@ deployItems:
               apiKey: {{ .imports.AVSConfiguration.apiKey }}
               timeout: {{ .imports.AVSConfiguration.timeout | default "30s" }}
 {{- end }}
+
+          gardener:
+{{ toYaml .imports.gardenerConfiguration | indent 12 }}
+
+          {{ $shootConfiguration := ( fromJson (toString (readFile "./shoot-config.json"))) }}
+          shootConfiguration:
+{{ toYaml $shootConfiguration | indent 12 }}
+
           landscaperServiceComponent:
             name: {{ $landscaperServiceComponentName }}
             version: {{ $landscaperServiceComponentVersion }}

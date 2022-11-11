@@ -54,3 +54,33 @@ func SetDefaults_AvailabilityMonitoringConfiguration(obj *AvailabilityMonitoring
 		}
 	}
 }
+
+// SetDefaults_ShootConfiguration sets the defaults for the shoot configuration.
+func SetDefaults_ShootConfiguration(obj *ShootConfiguration) {
+	maintenance := &obj.Maintenance
+
+	if maintenance.AutoUpdate.KubernetesVersion == nil {
+		obj.Maintenance.AutoUpdate.KubernetesVersion = pointer.BoolPtr(false)
+	}
+
+	if maintenance.AutoUpdate.MachineImageVersion == nil {
+		obj.Maintenance.AutoUpdate.MachineImageVersion = pointer.BoolPtr(false)
+	}
+	workers := &obj.Workers
+
+	if workers.Minimum == nil {
+		workers.Minimum = pointer.Int32(1)
+	}
+
+	if workers.Maximum == nil {
+		workers.Maximum = pointer.Int32(1)
+	}
+
+	if workers.MaxSurge == nil {
+		workers.MaxSurge = pointer.Int32(1)
+	}
+
+	if workers.MaxUnavailable == nil {
+		workers.MaxUnavailable = pointer.Int32(0)
+	}
+}

@@ -29,6 +29,12 @@ type LandscaperServiceConfiguration struct {
 
 	// LandscaperServiceComponent configures the landscaper component that is used by the landscaper service controller.
 	LandscaperServiceComponent LandscaperServiceComponentConfiguration `json:"landscaperServiceComponent"`
+
+	// GardenerConfiguration is the gardener specific configuration required for shoot management.
+	GardenerConfiguration GardenerConfiguration `json:"gardenerConfiguration"`
+
+	// ShootConfiguration is the specification to the gardener shoots.
+	ShootConfiguration ShootConfiguration `json:"shootConfiguration"`
 }
 
 //AvailabilityMonitoringConfiguration is the configuration for the availability monitoring of the provisioned landscaper
@@ -90,4 +96,16 @@ type LandscaperServiceComponentConfiguration struct {
 	// RegistryPullSecrets can be used to specify secrets that are needed to access the repository context.
 	// +optional
 	RegistryPullSecrets []corev1.SecretReference `json:"registryPullSecrets,omitempty"`
+}
+
+// GardenerConfiguration is the gardener specific configuration required for shoot management.
+type GardenerConfiguration struct {
+	// ServiceAccountKubeconfig is the reference to the secret containing the service account kubeconfig.
+	ServiceAccountKubeconfig v1alpha1.SecretReference `json:"serviceAccountKubeconfig"`
+
+	// ProjectName is the name of gardener project.
+	ProjectName string `json:"projectName"`
+
+	// ShootSecretBindingName is the secret binding which is used to allocate resources for shoots.
+	ShootSecretBindingName string `json:"shootSecretBindingName"`
 }

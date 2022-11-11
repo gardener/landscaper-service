@@ -211,7 +211,7 @@ var _ = Describe("Reconcile", func() {
 		Expect(err).ToNot(HaveOccurred())
 
 		deployment := state.GetDeployment("test")
-		config := state.GetConfig("config2")
+		config := state.GetConfig("config3")
 
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(deployment))
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(deployment), deployment)).To(Succeed())
@@ -222,7 +222,7 @@ var _ = Describe("Reconcile", func() {
 		instance := &lssv1alpha1.Instance{}
 		err = testenv.Client.Get(ctx, types.NamespacedName{Name: deployment.Status.InstanceRef.Name, Namespace: deployment.Status.InstanceRef.Namespace}, instance)
 		Expect(err).ToNot(HaveOccurred())
-		Expect(instance.Spec.ServiceTargetConfigRef.Name).To(Equal("config2"))
+		Expect(instance.Spec.ServiceTargetConfigRef.Name).To(Equal("config3"))
 		Expect(instance.Spec.LandscaperConfiguration).To(Equal(deployment.Spec.LandscaperConfiguration))
 		Expect(instance.Spec.TenantId).To(Equal(deployment.Spec.TenantId))
 		Expect(instance.Spec.ID).To(MatchRegexp("[a-f0-9]+"))

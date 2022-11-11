@@ -38,7 +38,6 @@ kubectl apply -f secret.yaml
 The secret that was just created, is then referenced in a ServiceTargetConfig.
 The `spec.secretRef` field contains the name, the namespace of the secret and the key that contains the kubeconfig.
 The visibility label `config.landscaper-service.gardener.cloud/visible` needs to be set with the value `"true"`.
-The label `config.landscaper-service.gardener.cloud/region` is optional and can be used by LandscaperDeployments for selecting a target cluster with a specific geo-region.
 
 :warning: Attention: It is important that the `spec.providerType` matches the infrastructure provider type of the targeted kubernetes cluster.
 
@@ -53,10 +52,8 @@ metadata:
   namespace: laas-system
   labels:
     config.landscaper-service.gardener.cloud/visible: "true"
-    config.landscaper-service.gardener.cloud/region: "eu"
 
 spec:
-  providerType: gcp
   priority: 10
 
   secretRef:
@@ -72,6 +69,6 @@ kubectl apply -f servicetargetconfig.yaml
 ```sh
 kubectl -n laas-system get servicetargetconfigs.landscaper-service.gardener.cloud
 
-NAME      PROVIDERTYPE   REGION   VISIBLE   PRIORITY   AGE
-default   gcp            eu       true      10         1h10m
+NAME      VISIBLE   PRIORITY   AGE
+default   true      10         1h10m
 ```
