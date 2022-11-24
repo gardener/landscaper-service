@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"time"
 
 	cdv2 "github.com/gardener/component-spec/bindings-go/apis/v2"
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
+	"github.com/gardener/landscaper/apis/core/v1alpha1/targettypes"
 	"github.com/gardener/landscaper/apis/mediatype"
 	corev1 "k8s.io/api/core/v1"
 	k8sErrors "k8s.io/apimachinery/pkg/api/errors"
@@ -213,23 +214,7 @@ func gracefullyDeleteNamespace(k8sClient client.Client, namespace string, sleepT
 	return false, nil
 }
 
-func BuildKubernetesClusterTarget(name, namespace, kubeconfigPath string) (*lsv1alpha1.Target, error) {
-	kubeconfigContent, err := ioutil.ReadFile(kubeconfigPath)
-	if err != nil {
-		return nil, fmt.Errorf("cannot read kubeconfig: %w", err)
-	}
-
-	config := lsv1alpha1.KubernetesClusterTargetConfig{
-		Kubeconfig: lsv1alpha1.ValueRef{
-			StrVal: pointer.StringPtr(string(kubeconfigContent)),
-		},
-	}
-
-	marshalledConfig, err := json.Marshal(config)
-	if err != nil {
-		return nil, fmt.Errorf("%w", err)
-	}
-
+func BuildTargetWithContent(name, namespace string, targetType lsv1alpha1.TargetType, content []byte, secretName string) (*lsv1alpha1.Target, *corev1.Secret) {
 	target := &lsv1alpha1.Target{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: lsv1alpha1.SchemeGroupVersion.String(),
@@ -240,14 +225,65 @@ func BuildKubernetesClusterTarget(name, namespace, kubeconfigPath string) (*lsv1
 			Namespace: namespace,
 		},
 		Spec: lsv1alpha1.TargetSpec{
-			Type: lsv1alpha1.KubernetesClusterTargetType,
-			Configuration: lsv1alpha1.AnyJSON{
-				RawMessage: marshalledConfig,
-			},
+			Type: targetType,
 		},
 	}
 
-	return target, nil
+	var secret *corev1.Secret
+	secretKeyName := "config"
+	if secretName != "" {
+		secret = &corev1.Secret{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: corev1.SchemeGroupVersion.String(),
+				Kind:       "Secret",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      secretName,
+				Namespace: namespace,
+			},
+			Data: map[string][]byte{
+				secretKeyName: content,
+			},
+		}
+		target.Spec.SecretRef = &lsv1alpha1.LocalSecretReference{
+			Name: secretName,
+			Key:  secretKeyName,
+		}
+	} else {
+		target.Spec.Configuration = lsv1alpha1.NewAnyJSONPointer(content)
+	}
+
+	return target, secret
+}
+
+func BuildKubernetesClusterTarget(name, namespace, kubeconfigPath, secretName string) (*lsv1alpha1.Target, *corev1.Secret, error) {
+	marshalledConfig, err := GetKubernetesClusterTargetContent(kubeconfigPath)
+	if err != nil {
+		return nil, nil, err
+	}
+	target, secret := BuildTargetWithContent(name, namespace, targettypes.KubernetesClusterTargetType, marshalledConfig, secretName)
+
+	return target, secret, nil
+}
+
+func GetKubernetesClusterTargetContent(kubeconfigPath string) ([]byte, error) {
+	kubeconfigContent, err := os.ReadFile(kubeconfigPath)
+	if err != nil {
+		return nil, fmt.Errorf("cannot read kubeconfig: %w", err)
+	}
+
+	config := targettypes.KubernetesClusterTargetConfig{
+		Kubeconfig: targettypes.ValueRef{
+			StrVal: pointer.StringPtr(string(kubeconfigContent)),
+		},
+	}
+
+	marshalledConfig, err := json.Marshal(config)
+	if err != nil {
+		return nil, fmt.Errorf("%w", err)
+	}
+
+	return marshalledConfig, nil
 }
 
 func GetBlueprintResource(cd *cdv2.ComponentDescriptor, blueprintResourceName string) (*cdv2.Resource, error) {

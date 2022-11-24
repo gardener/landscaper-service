@@ -76,7 +76,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 			continue
 		}
 		//check if installation not progressing
-		if installation.Status.Phase == lsv1alpha1.ComponentPhaseProgressing {
+		if installation.Status.InstallationPhase == lsv1alpha1.InstallationPhaseProgressing {
 			logger.Info("installation for instance is progressing, skip health check monitoring", lc.KeyResource, client.ObjectKeyFromObject(installation).String())
 			continue
 		}

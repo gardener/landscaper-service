@@ -14,23 +14,22 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gardener/landscaper/controller-utils/pkg/logging"
-	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
-
-	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/client-go/tools/clientcmd"
-
 	admissionv1 "k8s.io/api/admissionregistration/v1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/json"
 	"k8s.io/apimachinery/pkg/util/yaml"
+	"k8s.io/client-go/tools/clientcmd"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
+	"github.com/gardener/landscaper/apis/core/v1alpha1/targettypes"
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
+	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
 	cliinstallations "github.com/gardener/landscapercli/cmd/installations"
 	cliutil "github.com/gardener/landscapercli/pkg/util"
 
@@ -384,29 +383,17 @@ func BuildKubernetesClusterTargetWithSecretRef(ctx context.Context, kclient clie
 		return nil, fmt.Errorf("failed to create default target secret: %w", err)
 	}
 
-	targetConfig := map[string]interface{}{
-		"kubeconfig": map[string]interface{}{
-			"secretRef": map[string]interface{}{
-				"name":      name,
-				"namespace": namespace,
-				"key":       "kubeconfig",
-			},
-		},
-	}
-
-	targetConfigRaw, err := json.Marshal(targetConfig)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal target config: %w", err)
-	}
-
 	target := &lsv1alpha1.Target{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      name,
 			Namespace: namespace,
 		},
 		Spec: lsv1alpha1.TargetSpec{
-			Type:          lsv1alpha1.KubernetesClusterTargetType,
-			Configuration: lsv1alpha1.NewAnyJSON(targetConfigRaw),
+			Type: targettypes.KubernetesClusterTargetType,
+			SecretRef: &lsv1alpha1.LocalSecretReference{
+				Name: name,
+				Key:  namespace,
+			},
 		},
 	}
 
@@ -423,15 +410,19 @@ func BuildKubernetesClusterTarget(ctx context.Context, kclient client.Client, ku
 	if err != nil {
 		return nil, fmt.Errorf("cannot read kubeconfig: %w", err)
 	}
+	kubeConfigContentStr := string(kubeConfigContent)
 
-	targetConfig := map[string]interface{}{
-		"kubeconfig": string(kubeConfigContent),
+	targetConfig := targettypes.KubernetesClusterTargetConfig{
+		Kubeconfig: targettypes.ValueRef{
+			StrVal: &kubeConfigContentStr,
+		},
 	}
 
 	targetConfigRaw, err := json.Marshal(targetConfig)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal target config: %w", err)
 	}
+	targetConfigAnyJSON := lsv1alpha1.NewAnyJSON(targetConfigRaw)
 
 	target := &lsv1alpha1.Target{
 		ObjectMeta: metav1.ObjectMeta{
@@ -439,8 +430,8 @@ func BuildKubernetesClusterTarget(ctx context.Context, kclient client.Client, ku
 			Namespace: namespace,
 		},
 		Spec: lsv1alpha1.TargetSpec{
-			Type:          lsv1alpha1.KubernetesClusterTargetType,
-			Configuration: lsv1alpha1.NewAnyJSON(targetConfigRaw),
+			Type:          targettypes.KubernetesClusterTargetType,
+			Configuration: &targetConfigAnyJSON,
 		},
 	}
 
