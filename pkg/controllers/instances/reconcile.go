@@ -11,8 +11,6 @@ import (
 	"reflect"
 	"strings"
 
-	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
-	"github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/types"
@@ -20,6 +18,9 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
 	cdv2 "github.com/gardener/component-spec/bindings-go/apis/v2"
+	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
+	"github.com/gardener/landscaper/apis/core/v1alpha1/targettypes"
+	"github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
 
@@ -143,7 +144,7 @@ func (c *Controller) reconcileTarget(ctx context.Context, instance *lssv1alpha1.
 	target.GenerateName = fmt.Sprintf("%s-", instance.GetName())
 	target.Namespace = instance.GetNamespace()
 
-	if instance.Status.TargetRef != nil && !instance.Status.InstallationRef.IsEmpty() {
+	if instance.Status.TargetRef != nil && !instance.Status.TargetRef.IsEmpty() {
 		target.Name = instance.Status.TargetRef.Name
 		target.Namespace = instance.Status.TargetRef.Namespace
 	}
@@ -201,8 +202,8 @@ func (c *Controller) mutateTarget(ctx context.Context, target *lsv1alpha1.Target
 	}
 	kubeconfigStr := string(kubeconfig)
 
-	targetConfig := lsv1alpha1.KubernetesClusterTargetConfig{
-		Kubeconfig: lsv1alpha1.ValueRef{
+	targetConfig := targettypes.KubernetesClusterTargetConfig{
+		Kubeconfig: targettypes.ValueRef{
 			StrVal: &kubeconfigStr,
 		},
 	}
@@ -211,10 +212,11 @@ func (c *Controller) mutateTarget(ctx context.Context, target *lsv1alpha1.Target
 	if err != nil {
 		return fmt.Errorf("unable to marshal kubeconfig: %w", err)
 	}
+	targetConfigAnyJSON := lsv1alpha1.NewAnyJSON(targetConfigRaw)
 
 	target.Spec = lsv1alpha1.TargetSpec{
-		Type:          lsv1alpha1.KubernetesClusterTargetType,
-		Configuration: lsv1alpha1.NewAnyJSON(targetConfigRaw),
+		Type:          targettypes.KubernetesClusterTargetType,
+		Configuration: &targetConfigAnyJSON,
 	}
 
 	return nil
