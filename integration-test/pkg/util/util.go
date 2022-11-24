@@ -392,7 +392,7 @@ func BuildKubernetesClusterTargetWithSecretRef(ctx context.Context, kclient clie
 			Type: targettypes.KubernetesClusterTargetType,
 			SecretRef: &lsv1alpha1.LocalSecretReference{
 				Name: name,
-				Key:  namespace,
+				Key:  "kubeconfig",
 			},
 		},
 	}
