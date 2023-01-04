@@ -238,6 +238,7 @@ func (c *Controller) mutateTarget(ctx context.Context, target *lsv1alpha1.Target
 	return nil
 }
 
+// reconcileGardenerServiceAccountTarget reconciles the target for the gardener service account.
 func (c *Controller) reconcileGardenerServiceAccountTarget(ctx context.Context, instance *lssv1alpha1.Instance) error {
 	target := &lsv1alpha1.Target{}
 	target.Name = gardenerServiceAccountTargetName
@@ -250,6 +251,7 @@ func (c *Controller) reconcileGardenerServiceAccountTarget(ctx context.Context, 
 	return err
 }
 
+// mutateGardenerServiceAccountTarget creates or updates the target for the gardener service account.
 func (c *Controller) mutateGardenerServiceAccountTarget(ctx context.Context, target *lsv1alpha1.Target, instance *lssv1alpha1.Instance) error {
 	if err := controllerutil.SetControllerReference(instance, target, c.Scheme()); err != nil {
 		return fmt.Errorf("unable to set controller reference for target: %w", err)
