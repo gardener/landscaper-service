@@ -71,7 +71,7 @@ func (r *InstallLAASTestRunner) Run() error {
 func (r *InstallLAASTestRunner) createServiceTargetConfig() error {
 	ingressDomain, err := util.ParseIngressDomain(r.config.HostingClusterKubeconfig)
 	if err != nil {
-		fmt.Errorf("failed to parse ingress domain: %w", err)
+		return fmt.Errorf("failed to parse ingress domain: %w", err)
 	}
 
 	serviceTargetConfig := &lssv1alpha1.ServiceTargetConfig{

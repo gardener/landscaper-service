@@ -600,7 +600,11 @@ func ParseIngressDomain(kubeconfigFile string) (string, error) {
 	}
 
 	path := jsonpath.New("clusterServer").AllowMissingKeys(true)
-	path.Parse("{.clusters[0].cluster.server}")
+	err = path.Parse("{.clusters[0].cluster.server}")
+	if err != nil {
+		return "", fmt.Errorf("failed to parse jsonpath: %w", err)
+	}
+
 	results, err := path.FindResults(hostingClusterKubeconfigMap)
 	if err != nil {
 		return "", fmt.Errorf("failed to get cluster server: %w", err)
@@ -612,7 +616,7 @@ func ParseIngressDomain(kubeconfigFile string) (string, error) {
 		return "", fmt.Errorf("field has an invalid type")
 	}
 
-	rexp, err := regexp.Compile("[^\\.]*\\.(.*)$")
+	rexp, err := regexp.Compile(`[^\\.]*\\.(.*)$`)
 	if err != nil {
 		return "", fmt.Errorf("failed to parse regex")
 	}
