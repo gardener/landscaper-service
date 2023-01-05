@@ -616,7 +616,7 @@ func ParseIngressDomain(kubeconfigFile string) (string, error) {
 		return "", fmt.Errorf("field has an invalid type")
 	}
 
-	rexp, err := regexp.Compile(`[^\\.]*\\.(.*)$`)
+	rexp, err := regexp.Compile(`[^\.]*\.(.*)$`)
 	if err != nil {
 		return "", fmt.Errorf("failed to parse regex")
 	}
