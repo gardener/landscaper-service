@@ -75,12 +75,12 @@
       "description": "InstanceStatus contains the status for an Instance.",
       "type": "object",
       "properties": {
-        "clusterEndpoint": {
-          "description": "ClusterEndpointRef contains the URL at which the landscaper cluster is accessible.",
+        "adminKubeconfig": {
+          "description": "AdminKubeconfig contains the admin kubeconfig which can be used for accessing the landscaper cluster.",
           "type": "string"
         },
-        "clusterKubeconfig": {
-          "description": "ClusterKubeconfigRef contains the Kubeconfig which can be used for accessing the landscaper cluster.",
+        "clusterEndpoint": {
+          "description": "ClusterEndpointRef contains the URL at which the landscaper cluster is accessible.",
           "type": "string"
         },
         "contextRef": {
@@ -105,9 +105,21 @@
           "format": "int64",
           "default": 0
         },
+        "shootName": {
+          "description": "ShootName is the name of the corresponding shoot cluster.",
+          "type": "string"
+        },
+        "shootNamespace": {
+          "description": "ShootNamespace is the namespace in which the shoot resource is being created.",
+          "type": "string"
+        },
         "targetRef": {
           "description": "TargetRef references the Target for this Instance.",
           "$ref": "#/definitions/core-v1alpha1-ObjectReference"
+        },
+        "userKubeconfig": {
+          "description": "UserKubeconfig contains the user kubeconfig which can be used for accessing the landscaper cluster.",
+          "type": "string"
         }
       }
     },

@@ -52,12 +52,10 @@ var _ = Describe("ServiceTargetConfig", func() {
 		testObj := createServiceTargetConfig("test", "lss-system")
 
 		testObj.ObjectMeta.Labels = map[string]string{
-			lsscore.ServiceTargetConfigRegionLabelName:  "eu",
 			lsscore.ServiceTargetConfigVisibleLabelName: "true",
 		}
 		testObj.Spec = lssv1alpha1.ServiceTargetConfigSpec{
-			ProviderType: "aws",
-			Priority:     10,
+			Priority: 10,
 			SecretRef: lssv1alpha1.SecretReference{
 				ObjectReference: lssv1alpha1.ObjectReference{
 					Name:      "target",
@@ -65,6 +63,7 @@ var _ = Describe("ServiceTargetConfig", func() {
 				},
 				Key: "kubeconfig",
 			},
+			IngressDomain: "ingress.external",
 		}
 
 		request := CreateAdmissionRequest(testObj)
@@ -77,8 +76,7 @@ var _ = Describe("ServiceTargetConfig", func() {
 		testObj := createServiceTargetConfig("test", "lss-system")
 
 		testObj.Spec = lssv1alpha1.ServiceTargetConfigSpec{
-			ProviderType: "aws",
-			Priority:     10,
+			Priority: 10,
 			SecretRef: lssv1alpha1.SecretReference{
 				ObjectReference: lssv1alpha1.ObjectReference{
 					Name:      "target",
@@ -86,6 +84,7 @@ var _ = Describe("ServiceTargetConfig", func() {
 				},
 				Key: "kubeconfig",
 			},
+			IngressDomain: "ingress.external",
 		}
 
 		request := CreateAdmissionRequest(testObj)
@@ -95,7 +94,6 @@ var _ = Describe("ServiceTargetConfig", func() {
 		Expect(response.Result).ToNot(BeNil())
 		Expect(response.Result.Reason).ToNot(BeNil())
 
-		Expect(string(response.Result.Reason)).To(ContainSubstring("metadata.labels.config.landscaper-service.gardener.cloud/region"))
 		Expect(string(response.Result.Reason)).To(ContainSubstring("metadata.labels.config.landscaper-service.gardener.cloud/visible"))
 	})
 
@@ -103,12 +101,10 @@ var _ = Describe("ServiceTargetConfig", func() {
 		testObj := createServiceTargetConfig("test", "lss-system")
 
 		testObj.ObjectMeta.Labels = map[string]string{
-			lsscore.ServiceTargetConfigRegionLabelName:  "eu",
 			lsscore.ServiceTargetConfigVisibleLabelName: "abc",
 		}
 		testObj.Spec = lssv1alpha1.ServiceTargetConfigSpec{
-			ProviderType: "aws",
-			Priority:     10,
+			Priority: 10,
 			SecretRef: lssv1alpha1.SecretReference{
 				ObjectReference: lssv1alpha1.ObjectReference{
 					Name:      "target",
@@ -116,6 +112,7 @@ var _ = Describe("ServiceTargetConfig", func() {
 				},
 				Key: "kubeconfig",
 			},
+			IngressDomain: "ingress.external",
 		}
 
 		request := CreateAdmissionRequest(testObj)
@@ -128,45 +125,14 @@ var _ = Describe("ServiceTargetConfig", func() {
 		Expect(string(response.Result.Reason)).To(ContainSubstring("metadata.labels.config.landscaper-service.gardener.cloud/visible"))
 	})
 
-	It("should deny resource with unknown provider type", func() {
-		testObj := createServiceTargetConfig("test", "lss-system")
-
-		testObj.ObjectMeta.Labels = map[string]string{
-			lsscore.ServiceTargetConfigRegionLabelName:  "eu",
-			lsscore.ServiceTargetConfigVisibleLabelName: "false",
-		}
-		testObj.Spec = lssv1alpha1.ServiceTargetConfigSpec{
-			ProviderType: "invalid",
-			Priority:     10,
-			SecretRef: lssv1alpha1.SecretReference{
-				ObjectReference: lssv1alpha1.ObjectReference{
-					Name:      "target",
-					Namespace: "lss-system",
-				},
-				Key: "kubeconfig",
-			},
-		}
-
-		request := CreateAdmissionRequest(testObj)
-		response := validator.Handle(ctx, request)
-		Expect(response).ToNot(BeNil())
-		Expect(response.Allowed).To(BeFalse())
-		Expect(response.Result).ToNot(BeNil())
-		Expect(response.Result.Reason).ToNot(BeNil())
-
-		Expect(string(response.Result.Reason)).To(ContainSubstring("spec.providerType"))
-	})
-
 	It("should deny resource with invalid secret reference", func() {
 		testObj := createServiceTargetConfig("test", "lss-system")
 
 		testObj.ObjectMeta.Labels = map[string]string{
-			lsscore.ServiceTargetConfigRegionLabelName:  "eu",
 			lsscore.ServiceTargetConfigVisibleLabelName: "true",
 		}
 		testObj.Spec = lssv1alpha1.ServiceTargetConfigSpec{
-			ProviderType: "aws",
-			Priority:     10,
+			Priority: 10,
 			SecretRef: lssv1alpha1.SecretReference{
 				ObjectReference: lssv1alpha1.ObjectReference{
 					Name:      "",
@@ -174,6 +140,7 @@ var _ = Describe("ServiceTargetConfig", func() {
 				},
 				Key: "",
 			},
+			IngressDomain: "ingress.external",
 		}
 
 		request := CreateAdmissionRequest(testObj)
@@ -186,5 +153,32 @@ var _ = Describe("ServiceTargetConfig", func() {
 		Expect(string(response.Result.Reason)).To(ContainSubstring("spec.secretRef.key"))
 		Expect(string(response.Result.Reason)).To(ContainSubstring("spec.secretRef.name"))
 		Expect(string(response.Result.Reason)).ToNot(ContainSubstring("spec.secretRef.namespace"))
+	})
+
+	It("should deny resource with missing ingress domain", func() {
+		testObj := createServiceTargetConfig("test", "lss-system")
+
+		testObj.ObjectMeta.Labels = map[string]string{
+			lsscore.ServiceTargetConfigVisibleLabelName: "true",
+		}
+		testObj.Spec = lssv1alpha1.ServiceTargetConfigSpec{
+			Priority: 10,
+			SecretRef: lssv1alpha1.SecretReference{
+				ObjectReference: lssv1alpha1.ObjectReference{
+					Name:      "target",
+					Namespace: "lss-system",
+				},
+				Key: "kubeconfig",
+			},
+		}
+
+		request := CreateAdmissionRequest(testObj)
+		response := validator.Handle(ctx, request)
+		Expect(response).ToNot(BeNil())
+		Expect(response.Allowed).To(BeFalse())
+		Expect(response.Result).ToNot(BeNil())
+		Expect(response.Result.Reason).ToNot(BeNil())
+
+		Expect(string(response.Result.Reason)).To(ContainSubstring("spec.ingressDomain"))
 	})
 })

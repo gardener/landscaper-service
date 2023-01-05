@@ -10,7 +10,7 @@ set -o pipefail
 PROJECT_ROOT="$(dirname $0)/.."
 TEST_CLUSTER="laas-integration-test"
 HOSTING_CLUSTER="laas-integration-test-target"
-TARGET_CLUSTER_PROVIDER="gcp"
+GARDENER_CLUSTER="laas-integration-test-service-account"
 # LAAS_REPOSITORY="eu.gcr.io/sap-se-gcr-k8s-private/cnudie/gardener/development"
 LAAS_REPOSITORY="eu.gcr.io/gardener-project/development"
 LAAS_VERSION="$(${PROJECT_ROOT}/hack/get-version.sh)"
@@ -21,6 +21,7 @@ FULL_INTEGRATION_TEST_PATH="$(realpath $INTEGRATION_TEST_PATH)"
 export PROJECT_ROOT
 export TEST_CLUSTER
 export HOSTING_CLUSTER
+export GARDENER_CLUSTER
 export TARGET_CLUSTER_PROVIDER
 export LAAS_VERSION
 export LAAS_REPOSITORY

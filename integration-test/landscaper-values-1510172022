@@ -1,0 +1,26 @@
+
+landscaper:
+  landscaper:
+    verbosity: debug
+    registryConfig: # contains optional oci secrets
+      allowPlainHttpRegistries: true
+      secrets: {}
+    deployers:
+    - container
+    - helm
+    - manifest
+    deployersConfig:
+      Deployers:
+        container:
+          deployer:
+            verbosityLevel: debug
+        helm:
+          deployer:
+            verbosityLevel: debug
+        manifest:
+          deployer:
+            verbosityLevel: debug
+    deployerManagement:
+      namespace: ls-system
+      agent:
+        namespace: ls-system

@@ -507,7 +507,10 @@ func autoConvert_v1alpha1_InstanceStatus_To_core_InstanceStatus(in *InstanceStat
 	out.TargetRef = (*core.ObjectReference)(unsafe.Pointer(in.TargetRef))
 	out.InstallationRef = (*core.ObjectReference)(unsafe.Pointer(in.InstallationRef))
 	out.ClusterEndpoint = in.ClusterEndpoint
-	out.ClusterKubeconfig = in.ClusterKubeconfig
+	out.UserKubeconfig = in.UserKubeconfig
+	out.AdminKubeconfig = in.AdminKubeconfig
+	out.ShootName = in.ShootName
+	out.ShootNamespace = in.ShootNamespace
 	return nil
 }
 
@@ -524,7 +527,10 @@ func autoConvert_core_InstanceStatus_To_v1alpha1_InstanceStatus(in *core.Instanc
 	out.TargetRef = (*ObjectReference)(unsafe.Pointer(in.TargetRef))
 	out.InstallationRef = (*ObjectReference)(unsafe.Pointer(in.InstallationRef))
 	out.ClusterEndpoint = in.ClusterEndpoint
-	out.ClusterKubeconfig = in.ClusterKubeconfig
+	out.UserKubeconfig = in.UserKubeconfig
+	out.AdminKubeconfig = in.AdminKubeconfig
+	out.ShootName = in.ShootName
+	out.ShootNamespace = in.ShootNamespace
 	return nil
 }
 
@@ -613,7 +619,6 @@ func autoConvert_v1alpha1_LandscaperDeploymentSpec_To_core_LandscaperDeploymentS
 	if err := Convert_v1alpha1_LandscaperConfiguration_To_core_LandscaperConfiguration(&in.LandscaperConfiguration, &out.LandscaperConfiguration, s); err != nil {
 		return err
 	}
-	out.Region = in.Region
 	return nil
 }
 
@@ -628,7 +633,6 @@ func autoConvert_core_LandscaperDeploymentSpec_To_v1alpha1_LandscaperDeploymentS
 	if err := Convert_core_LandscaperConfiguration_To_v1alpha1_LandscaperConfiguration(&in.LandscaperConfiguration, &out.LandscaperConfiguration, s); err != nil {
 		return err
 	}
-	out.Region = in.Region
 	return nil
 }
 
@@ -786,11 +790,11 @@ func Convert_core_ServiceTargetConfigList_To_v1alpha1_ServiceTargetConfigList(in
 }
 
 func autoConvert_v1alpha1_ServiceTargetConfigSpec_To_core_ServiceTargetConfigSpec(in *ServiceTargetConfigSpec, out *core.ServiceTargetConfigSpec, s conversion.Scope) error {
-	out.ProviderType = in.ProviderType
 	out.Priority = in.Priority
 	if err := Convert_v1alpha1_SecretReference_To_core_SecretReference(&in.SecretRef, &out.SecretRef, s); err != nil {
 		return err
 	}
+	out.IngressDomain = in.IngressDomain
 	return nil
 }
 
@@ -800,11 +804,11 @@ func Convert_v1alpha1_ServiceTargetConfigSpec_To_core_ServiceTargetConfigSpec(in
 }
 
 func autoConvert_core_ServiceTargetConfigSpec_To_v1alpha1_ServiceTargetConfigSpec(in *core.ServiceTargetConfigSpec, out *ServiceTargetConfigSpec, s conversion.Scope) error {
-	out.ProviderType = in.ProviderType
 	out.Priority = in.Priority
 	if err := Convert_core_SecretReference_To_v1alpha1_SecretReference(&in.SecretRef, &out.SecretRef, s); err != nil {
 		return err
 	}
+	out.IngressDomain = in.IngressDomain
 	return nil
 }
 

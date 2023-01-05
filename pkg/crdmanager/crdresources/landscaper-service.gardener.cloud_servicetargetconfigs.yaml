@@ -14,12 +14,6 @@ spec:
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
-    - jsonPath: .spec.providerType
-      name: ProviderType
-      type: string
-    - jsonPath: .metadata.labels.config\.landscaper-service\.gardener\.cloud/region
-      name: Region
-      type: string
     - jsonPath: .metadata.labels.config\.landscaper-service\.gardener\.cloud/visible
       name: Visible
       type: string
@@ -38,16 +32,16 @@ spec:
           spec:
             description: Spec contains the specification for the ServiceTargetConfig
             properties:
+              ingressDomain:
+                description: IngressDomain is the ingress domain of the corresponding
+                  target cluster.
+                type: string
               priority:
                 description: The Priority of this ServiceTargetConfig. SeedConfigs
                   with a higher priority number will be preferred over lower numbers
                   when scheduling new landscaper service installations.
                 format: int64
                 type: integer
-              providerType:
-                description: ProviderType specifies the type of the underlying infrastructure
-                  provide.
-                type: string
               secretRef:
                 description: SecretRef references the secret that contains the kubeconfig
                   of the target cluster.
@@ -66,9 +60,9 @@ spec:
                 - name
                 type: object
             required:
-            - providerType
             - priority
             - secretRef
+            - ingressDomain
             type: object
           status:
             description: Status contains the status of the ServiceTargetConfig.

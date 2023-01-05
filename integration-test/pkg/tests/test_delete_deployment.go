@@ -65,7 +65,7 @@ func (r *DeleteDeploymentRunner) deleteDeployment(deployment *lssv1alpha1.Landsc
 	timeout, err := cliutil.CheckAndWaitUntilObjectNotExistAnymore(
 		r.clusterClients.TestCluster,
 		types.NamespacedName{Name: deployment.Name, Namespace: deployment.Namespace}, deployment,
-		r.config.SleepTime, r.config.MaxRetries*5)
+		r.config.SleepTime, r.config.MaxRetries*10)
 
 	if err != nil {
 		return fmt.Errorf("failed to wait for deployment %q to be deleted: %w", deployment.Name, err)

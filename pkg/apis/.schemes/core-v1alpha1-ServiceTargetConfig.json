@@ -48,21 +48,21 @@
       "description": "ServiceTargetConfigSpec contains the specification for a ServiceTargetConfig.",
       "type": "object",
       "required": [
-        "providerType",
         "priority",
-        "secretRef"
+        "secretRef",
+        "ingressDomain"
       ],
       "properties": {
+        "ingressDomain": {
+          "description": "IngressDomain is the ingress domain of the corresponding target cluster.",
+          "type": "string",
+          "default": ""
+        },
         "priority": {
           "description": "The Priority of this ServiceTargetConfig. SeedConfigs with a higher priority number will be preferred over lower numbers when scheduling new landscaper service installations.",
           "type": "integer",
           "format": "int64",
           "default": 0
-        },
-        "providerType": {
-          "description": "ProviderType specifies the type of the underlying infrastructure provide.",
-          "type": "string",
-          "default": ""
         },
         "secretRef": {
           "description": "SecretRef references the secret that contains the kubeconfig of the target cluster.",

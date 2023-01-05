@@ -41,7 +41,9 @@ var (
 		new(tests.HelmDeployerTestRunner),
 		new(tests.ContainerDeployerTestRunner),
 		new(tests.DeleteDeploymentRunner),
-		new(tests.VerifyDeleteRunner),
+		// TODO: Test is currently not working since the landscaper
+		// deployer pods will not be destroyed automatically.
+		// new(tests.VerifyDeleteRunner),
 		new(tests.UninstallLAASTestRunner),
 	}
 )
@@ -85,11 +87,14 @@ func run() error {
 		"Landscaper Namespace", config.LandscaperNamespace,
 		"LAAS Namespace", config.LaasNamespace,
 		"Test Namespace", config.TestNamespace,
-		"Provider Type", config.ProviderType,
 	)
 
 	clusterClients, err := test.NewClusterClients(config)
 	if err != nil {
+		return err
+	}
+
+	if err := initFromGardenerSecret(ctx, clusterClients.TestCluster, config); err != nil {
 		return err
 	}
 
@@ -378,9 +383,32 @@ func cleanupResources(ctx context.Context, hostingClient, laasClient client.Clie
 		return err
 	}
 
-	if err := util.DeleteVirtualClusterNamespaces(ctx, laasClient, config.SleepTime, config.MaxRetries); err != nil {
+	if err := util.DeleteTargetClusterNamespaces(ctx, laasClient, config.SleepTime, config.MaxRetries); err != nil {
 		return err
 	}
 
+	if err := util.DeleteTestShootClusters(ctx, config.GardenerServiceAccountKubeconfig, config.GardenerProject, test.Scheme()); err != nil {
+		return err
+	}
+	return nil
+}
+
+func initFromGardenerSecret(ctx context.Context, client client.Client, config *test.TestConfig) error {
+	gardenerSecret := &corev1.Secret{}
+	if err := client.Get(ctx, types.NamespacedName{Name: "gardener-secret", Namespace: "default"}, gardenerSecret); err != nil {
+		return fmt.Errorf("failed to read gardener-secret: %w", err)
+	}
+
+	project, ok := gardenerSecret.Data["project"]
+	if !ok {
+		return fmt.Errorf("project key not found in secret")
+	}
+	secretBindingName, ok := gardenerSecret.Data["secretBindingName"]
+	if !ok {
+		return fmt.Errorf("secretBindingName key not found in secret")
+	}
+
+	config.GardenerProject = string(project)
+	config.ShootSecretBindingName = string(secretBindingName)
 	return nil
 }

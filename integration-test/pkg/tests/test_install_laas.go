@@ -8,10 +8,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 
 	cdv2 "github.com/gardener/component-spec/bindings-go/apis/v2"
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	cliutil "github.com/gardener/landscapercli/pkg/util"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 
@@ -21,6 +23,7 @@ import (
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	lssutils "github.com/gardener/landscaper-service/pkg/utils"
 	"github.com/gardener/landscaper-service/test/integration/pkg/test"
+	"github.com/gardener/landscaper-service/test/integration/pkg/util"
 )
 
 type InstallLAASTestRunner struct {
@@ -66,18 +69,21 @@ func (r *InstallLAASTestRunner) Run() error {
 }
 
 func (r *InstallLAASTestRunner) createServiceTargetConfig() error {
+	ingressDomain, err := util.ParseIngressDomain(r.config.HostingClusterKubeconfig)
+	if err != nil {
+		return fmt.Errorf("failed to parse ingress domain: %w", err)
+	}
+
 	serviceTargetConfig := &lssv1alpha1.ServiceTargetConfig{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      r.clusterTargets.LaasCluster.Name,
 			Namespace: r.config.LaasNamespace,
 			Labels: map[string]string{
 				lsscore.ServiceTargetConfigVisibleLabelName: "true",
-				lsscore.ServiceTargetConfigRegionLabelName:  "eu",
 			},
 		},
 		Spec: lssv1alpha1.ServiceTargetConfigSpec{
-			ProviderType: r.config.ProviderType,
-			Priority:     0,
+			Priority: 0,
 			SecretRef: lssv1alpha1.SecretReference{
 				ObjectReference: lssv1alpha1.ObjectReference{
 					Name:      r.clusterTargets.LaasCluster.Name,
@@ -85,6 +91,7 @@ func (r *InstallLAASTestRunner) createServiceTargetConfig() error {
 				},
 				Key: "kubeconfig",
 			},
+			IngressDomain: ingressDomain,
 		},
 	}
 
@@ -134,6 +141,38 @@ func (r *InstallLAASTestRunner) createInstallation() error {
 		return fmt.Errorf("failed to marshal avs configuration: %w", err)
 	}
 
+	kubeConfigContent, err := ioutil.ReadFile(r.config.GardenerServiceAccountKubeconfig)
+	if err != nil {
+		return fmt.Errorf("cannot read gardener service account kubeconfig: %w", err)
+	}
+
+	gardenerServiceAccountKubeconfigSecret := &corev1.Secret{
+		ObjectMeta: metav1.ObjectMeta{
+			GenerateName: "gardener-service-account-",
+			Namespace:    r.config.LaasNamespace,
+		},
+		StringData: map[string]string{
+			"kubeconfig": string(kubeConfigContent),
+		},
+	}
+	if err := r.clusterClients.TestCluster.Create(r.ctx, gardenerServiceAccountKubeconfigSecret); err != nil {
+		return fmt.Errorf("failed to create gardener service account kubeconfig secret: %w", err)
+	}
+
+	gardenerConfiguration := map[string]interface{}{
+		"serviceAccountKubeconfig": map[string]string{
+			"name":      gardenerServiceAccountKubeconfigSecret.Name,
+			"namespace": gardenerServiceAccountKubeconfigSecret.Namespace,
+			"key":       "kubeconfig",
+		},
+		"projectName":            r.config.GardenerProject,
+		"shootSecretBindingName": r.config.ShootSecretBindingName,
+	}
+	gardenerConfigurationRaw, err := json.Marshal(gardenerConfiguration)
+	if err != nil {
+		return fmt.Errorf("failed to marshal gardener configuration: %w", err)
+	}
+
 	installation := &lsv1alpha1.Installation{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "laas",
@@ -172,6 +211,7 @@ func (r *InstallLAASTestRunner) createInstallation() error {
 				"registryPullSecrets":    lsv1alpha1.NewAnyJSON(registryPullSecretsRaw),
 				"availabilityMonitoring": lsv1alpha1.NewAnyJSON(availabilityMonitoringRaw),
 				"AVSConfiguration":       lsv1alpha1.NewAnyJSON(avsConfigurationRaw),
+				"gardenerConfiguration":  lsv1alpha1.NewAnyJSON(gardenerConfigurationRaw),
 			},
 		},
 	}

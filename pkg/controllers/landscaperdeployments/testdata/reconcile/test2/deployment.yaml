@@ -10,7 +10,6 @@ metadata:
 spec:
   tenantId: "12345"
   purpose: "test"
-  region: "eu"
   landscaperConfiguration:
     deployers:
       - helm

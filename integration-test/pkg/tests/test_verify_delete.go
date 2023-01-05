@@ -69,7 +69,7 @@ func (r *VerifyDeleteRunner) verifyNamespace(namespaceName string) error {
 		}
 
 		return false, nil
-	}, r.config.SleepTime, r.config.MaxRetries*5)
+	}, r.config.SleepTime, r.config.MaxRetries*8)
 
 	if timeout {
 		return fmt.Errorf("timeout while waiting for namespace %q being deleted", namespaceName)

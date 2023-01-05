@@ -61,53 +61,63 @@ The installation will automatically start several sub-installations. Once all in
 kubectl -n laas-user get installations 
 
 NAME                          PHASE       EXECUTION                     AGE
-landscaper-deployment-25mxk   Succeeded   landscaper-deployment-25mxk   6m43s
-landscaper-rbac-d5j98         Succeeded   landscaper-rbac-d5j98         6m43s
-test-8qh5w-hmzrp              Succeeded                                 6m45s
-virtual-garden-x95xd          Succeeded   virtual-garden-x95xd          6m43s
+landscaper-deployment-qmjgx   Succeeded   landscaper-deployment-qmjgx   11m
+landscaper-rbac-4b4wg         Succeeded   landscaper-rbac-4b4wg         11m
+shoot-cluster-x4cgs           Succeeded   shoot-cluster-x4cgs           11m
+test-h97dx-mtklg              Succeeded                                 11m
+
 ```
 
 The installation status can also be inspected with the [landscaper-cli](https://github.com/gardener/landscapercli).
 
 ```sh
-landscaper-cli installations inspect -n laas-user test-8qh5w-hmzrp
+landscaper-cli installations inspect -n laas-user test-h97dx-mtklg
 
-[✅ Succeeded] Installation test-8qh5w-hmzrp
-    ├── [✅ Succeeded] Installation virtual-garden-x95xd
-    │   └── [✅ Succeeded] DeployItem virtual-garden-x95xd-virtual-garden-container-deployer-6h2qv
-    ├── [✅ Succeeded] Installation landscaper-rbac-d5j98
-    │   └── [✅ Succeeded] DeployItem landscaper-rbac-d5j98-landscaper-rbac-nqw4j
-    └── [✅ Succeeded] Installation landscaper-deployment-25mxk
-        └── [✅ Succeeded] DeployItem landscaper-deployment-25mxk-landscaper-8c5cz
+[✅ Succeeded] Installation test-h97dx-mtklg
+    ├── [✅ Succeeded] Installation landscaper-deployment-qmjgx
+    │   └── [✅ Succeeded] DeployItem landscaper-deployment-qmjgx-landscaper-6df5f
+    ├── [✅ Succeeded] Installation landscaper-rbac-4b4wg
+    │   └── [✅ Succeeded] DeployItem landscaper-rbac-4b4wg-landscaper-rbac-4dkm9
+    └── [✅ Succeeded] Installation shoot-cluster-x4cgs
+        └── [✅ Succeeded] DeployItem shoot-cluster-x4cgs-shoot-cluster-qppwx
+
 ```
 
 Once the installation has successfully finished, the landscaper service controller will update the Instance status with the `clusterEndpoint` and `clusterKubeconfig` information.
 
 ```sh
-kubectl -n laas-user get instances.landscaper-service.gardener.cloud test-8qh5w -o jsonpath="{.status}" | jq
+kubectl -n laas-user get instances.landscaper-service.gardener.cloud test-h97dx -o jsonpath="{.status}" | jq
 {
-  "clusterEndpoint": "10.0.0.1",
-  "clusterKubeconfig": "a3ViZWNvbmZpZyBjb250ZW50 ...",
-  "installationRef": {
-    "name": "test-8qh5w-hmzrp",
-    "namespace": "laas-user"
-  },
-  "observedGeneration": 1,
-  "targetRef": {
-    "name": "test-8qh5w-k88bs",
-    "namespace": "laas-user"
-  },
+  "adminKubeconfig": "a3ViZWNvbmZpZyBjb250ZW50 ...",
+  "clusterEndpoint": "https://api.ef5818d3.laas.shoot.mydomain.com",
   "contextRef": {
-    "name": "test-8qh5w-a5w3s",
+    "name": "test-h97dx-c9bx9",
     "namespace": "laas-user"
-  }
+  },
+  "installationRef": {
+    "name": "test-h97dx-mtklg",
+    "namespace": "laas-user"
+  },
+  "landscaperServiceComponent": {
+    "name": "github.com/gardener/landscaper/landscaper-service",
+    "version": "v0.41.0"
+  },
+  "observedGeneration": 2,
+  "shootName": "ef5818d3",
+  "shootNamespace": "garden-laas",
+  "targetRef": {
+    "name": "test-h97dx-w4pkc",
+    "namespace": "laas-user"
+  },
+  "userKubeconfig": "a3ViZWNvbmZpZyBjb250ZW50 ..."
 }
 ```
 
-The `status.clusterKubeconfig` field is base64 encode and can be exported into a local kubeconfig file.
+The `status.userKubeconfig` and `status.adminKubeconfig` fields are base64 encoded and can be exported into a local kubeconfig file.
 
 ```sh
-kubectl -n laas-user get instances.landscaper-service.gardener.cloud test-8qh5w -o jsonpath="{.status.clusterKubeconfig}" | base64 -d > landscaper-kubeconfig.yaml
+kubectl -n laas-user get instances.landscaper-service.gardener.cloud test-8qh5w -o jsonpath="{.status.userKubeconfig}" | base64 -d > user-kubeconfig.yaml
+kubectl -n laas-user get instances.landscaper-service.gardener.cloud test-8qh5w -o jsonpath="{.status.adminKubeconfig}" | base64 -d > admin-kubeconfig.yaml
 ```
 
-This kubeconfig file can be used to authenticate at the deployed Landscaper instance.
+These kubeconfig files can be used to authenticate at the deployed Landscaper instance.
