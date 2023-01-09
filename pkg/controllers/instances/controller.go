@@ -27,6 +27,7 @@ import (
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	lsserrors "github.com/gardener/landscaper-service/pkg/apis/errors"
 	"github.com/gardener/landscaper-service/pkg/operation"
+	"github.com/gardener/landscaper-service/pkg/utils"
 )
 
 // Controller is the instances controller
@@ -119,6 +120,11 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	// reconcile delete
 	if !instance.DeletionTimestamp.IsZero() {
 		return reconcile.Result{}, errHdl(ctx, c.HandleDeleteFunc(ctx, instance))
+	}
+
+	if utils.HasOperationAnnotation(instance, lssv1alpha1.LandscaperServiceOperationIgnore) {
+		logger.Info("instance has ignore annotation, skipping reconcile")
+		return reconcile.Result{}, nil
 	}
 
 	// reconcile

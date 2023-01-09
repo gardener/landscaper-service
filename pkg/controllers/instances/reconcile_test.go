@@ -333,4 +333,19 @@ var _ = Describe("Reconcile", func() {
 		Expect(instance.Status.LastError.Message).To(Equal(message))
 		Expect(instance.Status.LastError.LastUpdateTime.Time).Should(BeTemporally(">", instance.Status.LastError.LastTransitionTime.Time))
 	})
+
+	It("should respect the ignore operation annotation", func() {
+		var err error
+		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test4")
+		Expect(err).ToNot(HaveOccurred())
+
+		instance := state.GetInstance("test")
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
+
+		Expect(instance.Status.TargetRef).To(BeNil())
+		Expect(instance.Status.InstallationRef).To(BeNil())
+	})
 })

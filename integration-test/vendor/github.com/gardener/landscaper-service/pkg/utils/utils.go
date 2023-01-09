@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"strconv"
 
+	"sigs.k8s.io/controller-runtime/pkg/client"
+
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
@@ -48,4 +50,37 @@ func RemoveReference(refList []lssv1alpha1.ObjectReference, ref *lssv1alpha1.Obj
 		}
 	}
 	return refList
+}
+
+// HasOperationAnnotation returns true if the object has provided operation annotation set.
+func HasOperationAnnotation(object client.Object, operation string) bool {
+	annotations := object.GetAnnotations()
+	if annotations == nil {
+		return false
+	}
+
+	operationAnnotation, ok := annotations[lssv1alpha1.LandscaperServiceOperationAnnotation]
+	if !ok {
+		return false
+	}
+
+	return operationAnnotation == operation
+}
+
+// SetOperationAnnotation sets the provided operation annotation.
+func SetOperationAnnotation(object client.Object, operation string) {
+	annotations := object.GetAnnotations()
+	if annotations == nil {
+		annotations = make(map[string]string)
+		object.SetAnnotations(annotations)
+	}
+	annotations[lssv1alpha1.LandscaperServiceOperationAnnotation] = operation
+}
+
+// RemoveOperationAnnotation removes the operation annotation if it exists.
+func RemoveOperationAnnotation(object client.Object) {
+	annotations := object.GetAnnotations()
+	if annotations != nil {
+		delete(annotations, lssv1alpha1.LandscaperServiceOperationAnnotation)
+	}
 }

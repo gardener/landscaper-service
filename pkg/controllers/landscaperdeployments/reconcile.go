@@ -10,16 +10,15 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/gardener/landscaper/controller-utils/pkg/logging"
-	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
-	"k8s.io/apimachinery/pkg/types"
-
 	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/sets"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
 	"github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
+	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
 
 	lsscore "github.com/gardener/landscaper-service/pkg/apis/core"
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
@@ -93,6 +92,14 @@ func (c *Controller) mutateInstance(ctx context.Context, deployment *lssv1alpha1
 
 	if err := controllerutil.SetControllerReference(deployment, instance, c.Scheme()); err != nil {
 		return fmt.Errorf("unable to set controller reference for instance: %w", err)
+	}
+
+	if utils.HasOperationAnnotation(deployment, lssv1alpha1.LandscaperServiceOperationIgnore) {
+		utils.SetOperationAnnotation(instance, lssv1alpha1.LandscaperServiceOperationIgnore)
+	} else {
+		if utils.HasOperationAnnotation(instance, lssv1alpha1.LandscaperServiceOperationIgnore) {
+			utils.RemoveOperationAnnotation(instance)
+		}
 	}
 
 	if len(instance.Spec.ServiceTargetConfigRef.Name) == 0 {
