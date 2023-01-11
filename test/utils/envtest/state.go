@@ -36,6 +36,10 @@ type State struct {
 	AvailabilityCollections map[string]*lssv1alpha1.AvailabilityCollection
 	// LsHealthChecks contains all LsHealthCheck in this test environment
 	LsHealthChecks map[string]*lsv1alpha1.LsHealthCheck
+	// NamespaceRegistrations contains all NamespaceRegistration in this test environment
+	NamespaceRegistrations map[string]*lssv1alpha1.NamespaceRegistration
+	// SubjectLists contains all SubjectList in this test environment
+	SubjectLists map[string]*lssv1alpha1.SubjectList
 }
 
 // NewState creates a new state.
@@ -51,6 +55,8 @@ func NewState(namespace string) *State {
 		Contexts:                make(map[string]*lsv1alpha1.Context),
 		AvailabilityCollections: make(map[string]*lssv1alpha1.AvailabilityCollection),
 		LsHealthChecks:          make(map[string]*lsv1alpha1.LsHealthCheck),
+		NamespaceRegistrations:  make(map[string]*lssv1alpha1.NamespaceRegistration),
+		SubjectLists:            make(map[string]*lssv1alpha1.SubjectList),
 	}
 }
 
@@ -89,19 +95,34 @@ func (s *State) GetContext(name string) *lsv1alpha1.Context {
 	return s.Contexts[s.Namespace+"/"+name]
 }
 
-// GetAvailabilityCollectionretrieves a AvailabilityCollection by the given name
+// GetAvailabilityCollection retrieves a AvailabilityCollection by the given name
 func (s *State) GetAvailabilityCollection(name string) *lssv1alpha1.AvailabilityCollection {
 	return s.AvailabilityCollections[s.Namespace+"/"+name]
 }
 
-// GetLsHealthCheck a LsHealthCheck by the given name
+// GetLsHealthCheck retrieves a LsHealthCheck by the given name
 func (s *State) GetLsHealthCheck(name string) *lsv1alpha1.LsHealthCheck {
 	return s.LsHealthChecks[s.Namespace+"/"+name]
 }
 
-// GetLsHealthCheckInNamespace a LsHealthCheck by the given name in the given namespace
+// GetLsHealthCheckInNamespace retrieves a LsHealthCheck by the given name in the given namespace
 func (s *State) GetLsHealthCheckInNamespace(name string, namespace string) *lsv1alpha1.LsHealthCheck {
 	return s.LsHealthChecks[namespace+"/"+name]
+}
+
+// GetNamespaceRegistration retrieves a NamespaceRegistration by the given name in the given namespace
+func (s *State) GetNamespaceRegistration(name string) *lssv1alpha1.NamespaceRegistration {
+	return s.NamespaceRegistrations[s.Namespace+"/"+name]
+}
+
+// GetSubjectListInNamespace retrieves a SubjectList by the given name in the given namespace
+func (s *State) GetSubjectListInNamespace(name string, namespace string) *lssv1alpha1.SubjectList {
+	return s.SubjectLists[namespace+"/"+name]
+}
+
+// GetSubjectListInNamespace retrieves a SubjectList by the given name in the given namespace
+func (s *State) GetSubjectList(name string) *lssv1alpha1.SubjectList {
+	return s.SubjectLists[s.Namespace+"/"+name]
 }
 
 // AddObject adds a client.Object to the state.
@@ -131,5 +152,9 @@ func (s *State) AddObject(object client.Object) {
 		s.AvailabilityCollections[types.NamespacedName{Name: o.Name, Namespace: o.Namespace}.String()] = o.DeepCopy()
 	case *lsv1alpha1.LsHealthCheck:
 		s.LsHealthChecks[types.NamespacedName{Name: o.Name, Namespace: o.Namespace}.String()] = o.DeepCopy()
+	case *lssv1alpha1.NamespaceRegistration:
+		s.NamespaceRegistrations[types.NamespacedName{Name: o.Name, Namespace: o.Namespace}.String()] = o.DeepCopy()
+	case *lssv1alpha1.SubjectList:
+		s.SubjectLists[types.NamespacedName{Name: o.Name, Namespace: o.Namespace}.String()] = o.DeepCopy()
 	}
 }
