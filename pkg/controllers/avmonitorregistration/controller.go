@@ -86,12 +86,12 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 			Namespace: instance.Namespace,
 		})
 	}
-	availabilityCollection.Spec = lssv1alpha1.AvailabilityCollectionSpec{
-		InstanceRefs: instanceRefsToMonitor,
-	}
 
 	logger.Debug("creating/updating spec", lc.KeyResource, client.ObjectKeyFromObject(availabilityCollection).String())
 	_, err := kubernetes.CreateOrUpdate(ctx, c.Client(), availabilityCollection, func() error {
+		availabilityCollection.Spec = lssv1alpha1.AvailabilityCollectionSpec{
+			InstanceRefs: instanceRefsToMonitor,
+		}
 		return nil
 	})
 	if err != nil {
