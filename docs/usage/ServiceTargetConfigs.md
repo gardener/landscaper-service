@@ -27,6 +27,8 @@ metadata:
 spec:
   priority: 10
 
+  ingressDomain: ingress.mydomain.net
+
   secretRef:
     name: default-target
     namespace: laas-system
@@ -68,6 +70,10 @@ To calculate the effective priority when scheduling Instances is calculated by d
 (`spec.priority/(len(status.instanceRefs) + 1)`).
 The more instances that are referenced by a ServiceTargetConfig, the lower the effective priority becomes.
 
+## Ingress Domain
+
+The `spec.ingressDomain` field is a string specifying the ingress domain of the referenced target cluster.
+The ingress domain has to be configured for the target cluster so that an ingress resource can be created for the Landscaper Webhooks Server.
 
 ## Secret Reference
 
