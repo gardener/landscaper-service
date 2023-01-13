@@ -47,6 +47,18 @@ func (c *Controller) reconcile(ctx context.Context, deployment *lssv1alpha1.Land
 		return lsserrors.NewWrappedError(err, currOp, "CreateUpdateInstance", err.Error())
 	}
 
+	// set the instance reference for the deployment if not already set
+	if deployment.Status.InstanceRef == nil || !deployment.Status.InstanceRef.IsObject(instance) {
+		deployment.Status.InstanceRef = &lssv1alpha1.ObjectReference{
+			Name:      instance.GetName(),
+			Namespace: instance.GetNamespace(),
+		}
+
+		if err := c.Client().Status().Update(ctx, deployment); err != nil {
+			return lsserrors.NewWrappedError(err, currOp, "UpdateInstanceRefForDeployment", err.Error())
+		}
+	}
+
 	// if not already added, add the instance reference to the service target configuration
 	serviceTargetConf := &lssv1alpha1.ServiceTargetConfig{}
 	if err := c.Client().Get(ctx, instance.Spec.ServiceTargetConfigRef.NamespacedName(), serviceTargetConf); err != nil {
@@ -65,17 +77,6 @@ func (c *Controller) reconcile(ctx context.Context, deployment *lssv1alpha1.Land
 		}
 	}
 
-	// set the instance reference for the deployment if not already set
-	if deployment.Status.InstanceRef == nil || !deployment.Status.InstanceRef.IsObject(instance) {
-		deployment.Status.InstanceRef = &lssv1alpha1.ObjectReference{
-			Name:      instance.GetName(),
-			Namespace: instance.GetNamespace(),
-		}
-
-		if err := c.Client().Status().Update(ctx, deployment); err != nil {
-			return lsserrors.NewWrappedError(err, currOp, "UpdateInstanceRefForDeployment", err.Error())
-		}
-	}
 	return nil
 }
 
