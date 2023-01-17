@@ -25,7 +25,7 @@ imports:
     schema:
       type: boolean
 
-exports: {}
+exports: []
 
 deployExecutions:
   - name: deploy-execution
