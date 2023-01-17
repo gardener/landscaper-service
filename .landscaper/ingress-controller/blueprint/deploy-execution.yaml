@@ -22,7 +22,7 @@ deployItems:
             {{ $controllerImage := parseOCIRef imageResource.access.imageReference }}
             {{ $controllerImageSha := splitList ":" (index $controllerImage 1) }}
             repository: {{ index $controllerImage 0 }}
-            sha: {{ index $controllerImageSha 1 }}
+            digest: {{ index $controllerImageSha 1 }}
 
           enableCustomResources: true
           enableTLSPassthrough: true
