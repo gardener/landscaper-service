@@ -25,7 +25,7 @@ func AddControllerToManager(logger logging.Logger, mgr manager.Manager, config *
 	}
 
 	return builder.ControllerManagedBy(mgr).
-		For(&v1alpha1.NamespaceRegistration{}).
+		For(&v1alpha1.SubjectList{}).
 		WithLogConstructor(func(r *reconcile.Request) logr.Logger { return log.Logr() }).
 		Complete(ctrl)
 }

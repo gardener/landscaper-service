@@ -5,12 +5,16 @@
 package namespaceregistration_test
 
 import (
+	"context"
 	"path/filepath"
 	"testing"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
+	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	"github.com/gardener/landscaper-service/test/utils/envtest"
 )
 
@@ -31,12 +35,31 @@ var _ = BeforeSuite(func() {
 
 	_, err = testenv.Start()
 	Expect(err).ToNot(HaveOccurred())
+
+	// prepare ls-user namespace
+	ctx := context.Background()
+	lsUserNamespace := corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "ls-user"}}
+	Expect(testenv.Client.Create(ctx, &lsUserNamespace)).To(Succeed())
+	subjectList := lssv1alpha1.SubjectList{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "subjects",
+			Namespace: "ls-user",
+		},
+		Spec: lssv1alpha1.SubjectListSpec{
+			Subjects: []lssv1alpha1.Subject{
+				{
+					Kind: "User",
+					Name: "testuser",
+				},
+			},
+		},
+	}
+	Expect(testenv.Client.Create(ctx, &subjectList)).To(Succeed())
+
 })
 
 var _ = AfterSuite(func() {
 	Expect(testenv.Stop()).ToNot(HaveOccurred())
 })
 
-// create namespace resource
-//delete namespace resource
 // edit namespace resource

@@ -54,6 +54,8 @@ func NewTestActuator(op operation.Operation, logger logging.Logger) *Controller 
 		Operation: op,
 		log:       logger,
 	}
+	ctrl.ReconcileFunc = ctrl.reconcile
+	ctrl.HandleDeleteFunc = ctrl.handleDelete
 	return ctrl
 }
 
@@ -102,6 +104,37 @@ func (c *Controller) handleDelete(ctx context.Context, namespaceRegistration *ls
 		}
 		logger.Error(err, "failed loading namespace cr")
 		return reconcile.Result{}, err
+	}
+
+	//delete role binding
+	roleBinding := &rbacv1.RoleBinding{}
+	if err := c.Client().Get(ctx, types.NamespacedName{Name: subjectsync.USER_ROLE_BINDING_IN_NAMESPACE, Namespace: namespaceRegistration.GetName()}, roleBinding); err != nil {
+		if apierrors.IsNotFound(err) {
+			logger.Info("rolebinding in namespace not found")
+		} else {
+			logger.Error(err, "failed loading rolebinding in namespace")
+			return reconcile.Result{}, err
+		}
+	} else {
+		if err := c.Client().Delete(ctx, roleBinding); err != nil {
+			logger.Error(err, "failed deleting rolebinding in namespace")
+			return reconcile.Result{}, err //TODO
+		}
+	}
+	//delete role
+	role := &rbacv1.Role{}
+	if err := c.Client().Get(ctx, types.NamespacedName{Name: subjectsync.USER_ROLE_IN_NAMESPACE, Namespace: namespaceRegistration.GetName()}, role); err != nil {
+		if apierrors.IsNotFound(err) {
+			logger.Info("role in namespace not found")
+		} else {
+			logger.Error(err, "failed loading role in namespace")
+			return reconcile.Result{}, err
+		}
+	} else {
+		if err := c.Client().Delete(ctx, role); err != nil {
+			logger.Error(err, "failed deleting role in namespace")
+			return reconcile.Result{}, err //TODO
+		}
 	}
 
 	if err := c.Client().Delete(ctx, namespace); err != nil {
@@ -192,7 +225,7 @@ func (c *Controller) createRoleBindingIfNotExistOrUpdate(ctx context.Context, na
 	logger := c.log
 
 	// load subjectList from CR
-	subjectList := &lssv1alpha1.SubjectList{}
+	subjectList := &lssv1alpha1.SubjectList{} //TODO name to constant
 	if err := c.Client().Get(ctx, types.NamespacedName{Name: "subjects", Namespace: "ls-user"}, subjectList); err != nil {
 		logger.Error(err, "failed loading subjectlist cr")
 		return fmt.Errorf("failed loading subjectlist %w", err)
