@@ -73,7 +73,7 @@ The more instances that are referenced by a ServiceTargetConfig, the lower the e
 ## Ingress Domain
 
 The `spec.ingressDomain` field is a string specifying the ingress domain of the referenced target cluster.
-The ingress domain has to be configured for the target cluster so that an ingress resource can be created for the Landscaper Webhooks Server.
+The ingress domain of the target cluster has to be configured so that an ingress resource can be created as an endpoint for the Webhook Server of every Landscaper instance.
 
 ## Secret Reference
 
