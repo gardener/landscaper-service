@@ -19,10 +19,9 @@ deployItems:
         controller:
           image:
             {{ imageResource := getResource .cd "name" "ingress-nginx" }}
-            {{ $controllerImage := parseOCIRef imageResource.access.imageReference }}
-            {{ $controllerImageSha := splitList ":" (index $controllerImage 1) }}
-            repository: {{ index $controllerImage 0 }}
-            digest: {{ index $controllerImageSha 1 }}
+            {{ controllerImage := parseOCIRef imageResource.access.imageReference }}
+            repository: {{ index controllerImage 0 }}
+            digest: {{ index controllerImage 1 }}
 
           enableCustomResources: true
           enableTLSPassthrough: true
