@@ -14,14 +14,15 @@ import (
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
+	kutil "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
+	corev1 "k8s.io/api/core/v1"
+	rbacv1 "k8s.io/api/rbac/v1"
+
 	"github.com/gardener/landscaper-service/pkg/controllers/namespaceregistration"
 	"github.com/gardener/landscaper-service/pkg/controllers/subjectsync"
 	"github.com/gardener/landscaper-service/pkg/operation"
 	testutils "github.com/gardener/landscaper-service/test/utils"
 	"github.com/gardener/landscaper-service/test/utils/envtest"
-	kutil "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
-	corev1 "k8s.io/api/core/v1"
-	rbacv1 "k8s.io/api/rbac/v1"
 
 	"k8s.io/apimachinery/pkg/types"
 

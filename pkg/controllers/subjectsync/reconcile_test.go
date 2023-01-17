@@ -18,12 +18,13 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 
+	kutil "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
+
 	"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	"github.com/gardener/landscaper-service/pkg/controllers/subjectsync"
 	"github.com/gardener/landscaper-service/pkg/operation"
 	testutils "github.com/gardener/landscaper-service/test/utils"
 	"github.com/gardener/landscaper-service/test/utils/envtest"
-	kutil "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 )
 
 var _ = Describe("Reconcile", func() {
