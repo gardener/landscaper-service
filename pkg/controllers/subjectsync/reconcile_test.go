@@ -123,7 +123,7 @@ var _ = Describe("Reconcile", func() {
 		Expect(updatedLsUserRoleBinding.Subjects[1].Name).To(Equal("testgroup"))
 		Expect(updatedLsUserRoleBinding.Subjects[2].Kind).To(Equal("ServiceAccount"))
 		Expect(updatedLsUserRoleBinding.Subjects[2].Name).To(Equal("testserviceaccount"))
-		Expect(updatedLsUserRoleBinding.Subjects[2].Namespace).To(Equal("ls-user"))
+		Expect(updatedLsUserRoleBinding.Subjects[2].Namespace).To(Equal(subjectsync.LS_USER_NAMESPACE))
 
 		updatedUserRoleBinding := rbacv1.RoleBinding{}
 		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: subjectsync.USER_ROLE_BINDING_IN_NAMESPACE, Namespace: userNamespace.Name}, &updatedUserRoleBinding)).To(Succeed())
@@ -134,7 +134,7 @@ var _ = Describe("Reconcile", func() {
 		Expect(updatedUserRoleBinding.Subjects[1].Name).To(Equal("testgroup"))
 		Expect(updatedUserRoleBinding.Subjects[2].Kind).To(Equal("ServiceAccount"))
 		Expect(updatedUserRoleBinding.Subjects[2].Name).To(Equal("testserviceaccount"))
-		Expect(updatedUserRoleBinding.Subjects[2].Namespace).To(Equal("ls-user"))
+		Expect(updatedUserRoleBinding.Subjects[2].Namespace).To(Equal(subjectsync.LS_USER_NAMESPACE))
 	})
 
 	It("should skip unknown/erroneous subjects", func() {
@@ -187,7 +187,7 @@ var _ = Describe("Reconcile", func() {
 		Expect(updatedLsUserRoleBinding.Subjects[1].Name).To(Equal("testgroup"))
 		Expect(updatedLsUserRoleBinding.Subjects[2].Kind).To(Equal("ServiceAccount"))
 		Expect(updatedLsUserRoleBinding.Subjects[2].Name).To(Equal("testserviceaccount"))
-		Expect(updatedLsUserRoleBinding.Subjects[2].Namespace).To(Equal("ls-user"))
+		Expect(updatedLsUserRoleBinding.Subjects[2].Namespace).To(Equal(subjectsync.LS_USER_NAMESPACE))
 
 		updatedUserRoleBinding := rbacv1.RoleBinding{}
 		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: subjectsync.USER_ROLE_BINDING_IN_NAMESPACE, Namespace: userNamespace.Name}, &updatedUserRoleBinding)).To(Succeed())
@@ -198,7 +198,7 @@ var _ = Describe("Reconcile", func() {
 		Expect(updatedUserRoleBinding.Subjects[1].Name).To(Equal("testgroup"))
 		Expect(updatedUserRoleBinding.Subjects[2].Kind).To(Equal("ServiceAccount"))
 		Expect(updatedUserRoleBinding.Subjects[2].Name).To(Equal("testserviceaccount"))
-		Expect(updatedUserRoleBinding.Subjects[2].Namespace).To(Equal("ls-user"))
+		Expect(updatedUserRoleBinding.Subjects[2].Namespace).To(Equal(subjectsync.LS_USER_NAMESPACE))
 
 		//delete group
 		subjectlist.Spec.Subjects = append(subjectlist.Spec.Subjects[:1], subjectlist.Spec.Subjects[2:]...)
@@ -216,7 +216,7 @@ var _ = Describe("Reconcile", func() {
 		Expect(updatedLsUserRoleBinding.Subjects[0].Name).To(Equal("testuser"))
 		Expect(updatedLsUserRoleBinding.Subjects[1].Kind).To(Equal("ServiceAccount"))
 		Expect(updatedLsUserRoleBinding.Subjects[1].Name).To(Equal("testserviceaccount"))
-		Expect(updatedLsUserRoleBinding.Subjects[1].Namespace).To(Equal("ls-user"))
+		Expect(updatedLsUserRoleBinding.Subjects[1].Namespace).To(Equal(subjectsync.LS_USER_NAMESPACE))
 
 		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: subjectsync.USER_ROLE_BINDING_IN_NAMESPACE, Namespace: userNamespace.Name}, &updatedUserRoleBinding)).To(Succeed())
 		Expect(len(updatedUserRoleBinding.Subjects)).To(Equal(2))
@@ -224,7 +224,7 @@ var _ = Describe("Reconcile", func() {
 		Expect(updatedUserRoleBinding.Subjects[0].Name).To(Equal("testuser"))
 		Expect(updatedUserRoleBinding.Subjects[1].Kind).To(Equal("ServiceAccount"))
 		Expect(updatedUserRoleBinding.Subjects[1].Name).To(Equal("testserviceaccount"))
-		Expect(updatedUserRoleBinding.Subjects[1].Namespace).To(Equal("ls-user"))
+		Expect(updatedUserRoleBinding.Subjects[1].Namespace).To(Equal(subjectsync.LS_USER_NAMESPACE))
 
 		//delete user
 		subjectlist.Spec.Subjects = subjectlist.Spec.Subjects[1:]
@@ -240,13 +240,13 @@ var _ = Describe("Reconcile", func() {
 		Expect(len(updatedLsUserRoleBinding.Subjects)).To(Equal(1))
 		Expect(updatedLsUserRoleBinding.Subjects[0].Kind).To(Equal("ServiceAccount"))
 		Expect(updatedLsUserRoleBinding.Subjects[0].Name).To(Equal("testserviceaccount"))
-		Expect(updatedLsUserRoleBinding.Subjects[0].Namespace).To(Equal("ls-user"))
+		Expect(updatedLsUserRoleBinding.Subjects[0].Namespace).To(Equal(subjectsync.LS_USER_NAMESPACE))
 
 		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: subjectsync.USER_ROLE_BINDING_IN_NAMESPACE, Namespace: userNamespace.Name}, &updatedUserRoleBinding)).To(Succeed())
 		Expect(len(updatedUserRoleBinding.Subjects)).To(Equal(1))
 		Expect(updatedUserRoleBinding.Subjects[0].Kind).To(Equal("ServiceAccount"))
 		Expect(updatedUserRoleBinding.Subjects[0].Name).To(Equal("testserviceaccount"))
-		Expect(updatedUserRoleBinding.Subjects[0].Namespace).To(Equal("ls-user"))
+		Expect(updatedUserRoleBinding.Subjects[0].Namespace).To(Equal(subjectsync.LS_USER_NAMESPACE))
 
 		//delete service account
 		subjectlist.Spec.Subjects = []v1alpha1.Subject{}
@@ -290,7 +290,7 @@ var _ = Describe("Reconcile", func() {
 		Expect(updatedLsUserRoleBinding.Subjects[1].Name).To(Equal("testgroup"))
 		Expect(updatedLsUserRoleBinding.Subjects[2].Kind).To(Equal("ServiceAccount"))
 		Expect(updatedLsUserRoleBinding.Subjects[2].Name).To(Equal("testserviceaccount"))
-		Expect(updatedLsUserRoleBinding.Subjects[2].Namespace).To(Equal("ls-user"))
+		Expect(updatedLsUserRoleBinding.Subjects[2].Namespace).To(Equal(subjectsync.LS_USER_NAMESPACE))
 
 		updatedUserRoleBinding := rbacv1.RoleBinding{}
 		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: subjectsync.USER_ROLE_BINDING_IN_NAMESPACE, Namespace: userNamespace.Name}, &updatedUserRoleBinding)).To(Succeed())
@@ -301,7 +301,7 @@ var _ = Describe("Reconcile", func() {
 		Expect(updatedUserRoleBinding.Subjects[1].Name).To(Equal("testgroup"))
 		Expect(updatedUserRoleBinding.Subjects[2].Kind).To(Equal("ServiceAccount"))
 		Expect(updatedUserRoleBinding.Subjects[2].Name).To(Equal("testserviceaccount"))
-		Expect(updatedUserRoleBinding.Subjects[2].Namespace).To(Equal("ls-user"))
+		Expect(updatedUserRoleBinding.Subjects[2].Namespace).To(Equal(subjectsync.LS_USER_NAMESPACE))
 
 		//update values
 		subjectlist.Spec.Subjects[0].Kind = "Group"
@@ -367,7 +367,7 @@ var _ = Describe("Reconcile", func() {
 		Expect(updatedLsUserRoleBinding.Subjects[1].Name).To(Equal("testgroup"))
 		Expect(updatedLsUserRoleBinding.Subjects[2].Kind).To(Equal("ServiceAccount"))
 		Expect(updatedLsUserRoleBinding.Subjects[2].Name).To(Equal("testserviceaccount"))
-		Expect(updatedLsUserRoleBinding.Subjects[2].Namespace).To(Equal("ls-user"))
+		Expect(updatedLsUserRoleBinding.Subjects[2].Namespace).To(Equal(subjectsync.LS_USER_NAMESPACE))
 
 		updatedUserRoleBinding := rbacv1.RoleBinding{}
 		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: subjectsync.USER_ROLE_BINDING_IN_NAMESPACE, Namespace: userNamespace.Name}, &updatedUserRoleBinding)).To(Succeed())
@@ -378,7 +378,7 @@ var _ = Describe("Reconcile", func() {
 		Expect(updatedUserRoleBinding.Subjects[1].Name).To(Equal("testgroup"))
 		Expect(updatedUserRoleBinding.Subjects[2].Kind).To(Equal("ServiceAccount"))
 		Expect(updatedUserRoleBinding.Subjects[2].Name).To(Equal("testserviceaccount"))
-		Expect(updatedUserRoleBinding.Subjects[2].Namespace).To(Equal("ls-user"))
+		Expect(updatedUserRoleBinding.Subjects[2].Namespace).To(Equal(subjectsync.LS_USER_NAMESPACE))
 
 		subjectlist.Spec.Subjects = []v1alpha1.Subject{}
 		Expect(testenv.Client.Update(ctx, subjectlist)).To(Succeed())

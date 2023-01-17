@@ -225,8 +225,8 @@ func (c *Controller) createRoleBindingIfNotExistOrUpdate(ctx context.Context, na
 	logger := c.log
 
 	// load subjectList from CR
-	subjectList := &lssv1alpha1.SubjectList{} //TODO name to constant
-	if err := c.Client().Get(ctx, types.NamespacedName{Name: "subjects", Namespace: "ls-user"}, subjectList); err != nil {
+	subjectList := &lssv1alpha1.SubjectList{}
+	if err := c.Client().Get(ctx, types.NamespacedName{Name: subjectsync.SUBJECT_LIST_NAME, Namespace: subjectsync.LS_USER_NAMESPACE}, subjectList); err != nil {
 		logger.Error(err, "failed loading subjectlist cr")
 		return fmt.Errorf("failed loading subjectlist %w", err)
 	}

@@ -15,6 +15,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	"github.com/gardener/landscaper-service/pkg/controllers/subjectsync"
 	"github.com/gardener/landscaper-service/test/utils/envtest"
 )
 
@@ -38,12 +39,12 @@ var _ = BeforeSuite(func() {
 
 	// prepare ls-user namespace
 	ctx := context.Background()
-	lsUserNamespace := corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "ls-user"}}
+	lsUserNamespace := corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: subjectsync.LS_USER_NAMESPACE}}
 	Expect(testenv.Client.Create(ctx, &lsUserNamespace)).To(Succeed())
 	subjectList := lssv1alpha1.SubjectList{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      "subjects",
-			Namespace: "ls-user",
+			Name:      subjectsync.SUBJECT_LIST_NAME,
+			Namespace: subjectsync.LS_USER_NAMESPACE,
 		},
 		Spec: lssv1alpha1.SubjectListSpec{
 			Subjects: []lssv1alpha1.Subject{
@@ -55,7 +56,6 @@ var _ = BeforeSuite(func() {
 		},
 	}
 	Expect(testenv.Client.Create(ctx, &subjectList)).To(Succeed())
-
 })
 
 var _ = AfterSuite(func() {

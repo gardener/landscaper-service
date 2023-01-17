@@ -31,6 +31,13 @@ const USER_ROLE_BINDING_IN_NAMESPACE = "user-role-binding"
 const LS_USER_ROLE_IN_NAMESPACE = "ls-user-role"
 const LS_USER_ROLE_BINDING_IN_NAMESPACE = "ls-user-role-binding"
 
+const SUBJECT_LIST_NAME = "subjects"
+const LS_USER_NAMESPACE = "ls-user"
+
+const SUBJECT_LIST_ENTRY_USER = "User"
+const SUBJECT_LIST_ENTRY_GROUP = "Group"
+const SUBJECT_LIST_ENTRY_SERVICE_ACCOUNT = "ServiceAccount"
+
 type Controller struct {
 	operation.Operation
 	log logging.Logger
@@ -91,7 +98,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 func (c *Controller) handleDelete(ctx context.Context, subjectList *lssv1alpha1.SubjectList) (reconcile.Result, error) {
 	logger := c.log
 
-	//TODO: on delete, remove all subjects from the role bindings?
+	//on delete, remove all subjects from all role bindings
 	roleBindings := &rbacv1.RoleBindingList{}
 	if err := c.Client().List(ctx, roleBindings); err != nil {
 		logger.Error(err, "failed loading role bindings")
@@ -101,8 +108,9 @@ func (c *Controller) handleDelete(ctx context.Context, subjectList *lssv1alpha1.
 	for _, roleBinding := range roleBindings.Items {
 		logger, ctx := logging.FromContextOrNew(ctx, nil, "roleBinding", apitypes.NamespacedName{Name: roleBinding.Name, Namespace: roleBinding.Namespace}.String())
 
-		//check if it is a matching role binding
-		if roleBinding.Name != USER_ROLE_BINDING_IN_NAMESPACE && roleBinding.Name != LS_USER_ROLE_BINDING_IN_NAMESPACE {
+		//check if it is a matching role binding (different naming in ls-user and other namespaces)
+		//only process correct rolebindings
+		if !(roleBinding.Name == USER_ROLE_BINDING_IN_NAMESPACE || roleBinding.Name == LS_USER_ROLE_BINDING_IN_NAMESPACE) {
 			continue
 		}
 
@@ -138,7 +146,8 @@ func (c *Controller) reconcile(ctx context.Context, subjectList *lssv1alpha1.Sub
 		logger, ctx := logging.FromContextOrNew(ctx, nil, "roleBinding", apitypes.NamespacedName{Name: roleBinding.Name, Namespace: roleBinding.Namespace}.String())
 
 		//check if it is a matching role binding (different naming in ls-user and other namespaces)
-		if roleBinding.Name != USER_ROLE_BINDING_IN_NAMESPACE && roleBinding.Name != LS_USER_ROLE_BINDING_IN_NAMESPACE {
+		//only process correct rolebindings
+		if !(roleBinding.Name == USER_ROLE_BINDING_IN_NAMESPACE || roleBinding.Name == LS_USER_ROLE_BINDING_IN_NAMESPACE) {
 			continue
 		}
 
@@ -166,21 +175,21 @@ func (c *Controller) reconcile(ctx context.Context, subjectList *lssv1alpha1.Sub
 
 func CreateSubjectForSubjectListEntry(subjectListEntry lssv1alpha1.Subject) (*rbacv1.Subject, error) {
 	switch subjectListEntry.Kind {
-	case "User", "Group":
+	case SUBJECT_LIST_ENTRY_USER, SUBJECT_LIST_ENTRY_GROUP:
 		if subjectListEntry.Namespace != "" {
-			return nil, fmt.Errorf("namespace must be empty for subject.Kind==User|Group")
+			return nil, fmt.Errorf("namespace must be empty for subject.Kind==%s|%s", SUBJECT_LIST_ENTRY_USER, SUBJECT_LIST_ENTRY_GROUP)
 		}
 		return &rbacv1.Subject{
 			APIGroup: "rbac.authorization.k8s.io",
 			Kind:     subjectListEntry.Kind,
 			Name:     subjectListEntry.Name,
 		}, nil
-	case "ServiceAccount":
+	case SUBJECT_LIST_ENTRY_SERVICE_ACCOUNT:
 		if subjectListEntry.Namespace == "" {
-			return nil, fmt.Errorf("namespace must be set for subject.Kind==ServiceAccount")
+			return nil, fmt.Errorf("namespace must be set for subject.Kind==%s", SUBJECT_LIST_ENTRY_SERVICE_ACCOUNT)
 		}
 		return &rbacv1.Subject{
-			APIGroup:  "",
+			APIGroup:  "", //defaults to "" for service acounts as per rbacv1.Subject doc
 			Kind:      subjectListEntry.Kind,
 			Name:      subjectListEntry.Name,
 			Namespace: subjectListEntry.Namespace,
