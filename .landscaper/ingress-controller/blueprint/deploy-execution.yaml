@@ -1,0 +1,30 @@
+deployItems:
+  - name: ingress-nginx
+    type: landscaper.gardener.cloud/helm
+    target:
+      name: {{ .imports.targetCluster.metadata.name }}
+      namespace: {{ .imports.targetCluster.metadata.namespace }}
+    config:
+      apiVersion: helm.deployer.landscaper.gardener.cloud/v1alpha1
+      kind: ProviderConfiguration
+      updateStrategy: patch
+      name: ingress-nginx
+      namespace: {{ .imports.namespace }}
+
+      chart:
+        {{ $chartResource := getResource .cd "name" "ingress-nginx-chart" }}
+        ref: {{ $chartResource.access.imageReference }}
+
+      values:
+        controller:
+          image:
+            {{ imageResource := getResource .cd "name" "ingress-nginx" }}
+            {{ $controllerImage := parseOCIRef imageResource.access.imageReference }}
+            {{ $controllerImageSha := splitList ":" (index $controllerImage 1) }}
+            repository: {{ index $controllerImage 0 }}
+            sha: {{ index $controllerImageSha 1 }}
+
+          enableCustomResources: true
+          enableTLSPassthrough: true
+          ingressClass: {{ .imports.ingressClass }}
+          setAsDefaultIngress: {{ .imports.setAsDefaultIngress }}

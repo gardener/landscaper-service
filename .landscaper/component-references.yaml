@@ -2,3 +2,14 @@
 componentName: github.com/gardener/landscaper/landscaper-service
 name: landscaper-service
 version: v0.43.0
+...
+---
+componentName: github.com/gardener/landscaper-service/logging-stack
+name: logging-stack
+version: ${VERSION}
+...
+---
+componentName: github.com/gardener/landscaper-service/ingress-controller
+name: ingress-controller
+version: ${VERSION}
+...

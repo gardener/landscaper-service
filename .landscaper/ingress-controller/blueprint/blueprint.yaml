@@ -1,0 +1,33 @@
+apiVersion: landscaper.gardener.cloud/v1alpha1
+kind: Blueprint
+
+imports:
+  - name: targetCluster
+    required: true
+    type: target
+    targetType: landscaper.gardener.cloud/kubernetes-cluster
+
+  - name: namespace
+    required: true
+    type: data
+    schema:
+      type: string
+
+  - name: ingressClass
+    required: true
+    type: data
+    schema:
+      type: string
+
+  - name: setAsDefaultIngress
+    required: true
+    type: data
+    schema:
+      type: boolean
+
+exports: {}
+
+deployExecutions:
+  - name: deploy-execution
+    file: /deploy-execution.yaml
+    type: GoTemplate

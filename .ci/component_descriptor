@@ -38,6 +38,7 @@ function buildComponentArchive() {
 }
 
 buildComponentArchive "logging-stack"
+buildComponentArchive "ingress-controller"
 
 # add landscaper component descriptor
 printf "> Create Landscaper Service ca archive\n"

@@ -1,0 +1,28 @@
+---
+type: helm.io/chart
+name: ingress-nginx-chart
+relation: external
+version: v0.16.0
+access:
+  type: ociRegistry
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/charts/nginx-ingress@sha256:58d80ae80b0099b1881e9f22d1248ea3364efcc4093d161b4fdccc629bcc2719
+...
+---
+type: ociImage
+name: ingress-nginx
+version: 3.0.0
+relation: external
+access:
+  type: ociRegistry
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/nginx-ingress@sha256:ddb7469349c9fc6777db9366cd0f9262d79939613f04b4b0d4886700ac0c9b11
+...
+---
+type: blueprint
+name: ingress-controller-blueprint
+relation: local
+input:
+  type: dir
+  path: ./blueprint
+  mediaType: application/vnd.gardener.landscaper.blueprint.layer.v1.tar+gzip
+  compress: true
+...
