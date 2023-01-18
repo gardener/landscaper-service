@@ -17,13 +17,20 @@ deployItems:
 
       values:
         controller:
+          name: ingress-nginx-controller
+          container-name: ingress-nginx-controller
           image:
-            {{ $imageResource := getResource .cd "name" "ingress-nginx" }}
-            {{ $controllerImage := parseOCIRef $imageResource.access.imageReference }}
-            repository: {{ index $controllerImage 0 }}
-            digest: {{ index $controllerImage 1 }}
+            {{ $controllerImageResource := getResource .cd "name" "ingress-nginx-controller" }}
+            repository: {{ $controllerImageResource.access.imageReference }}
 
-          enableCustomResources: true
-          enableTLSPassthrough: true
-          ingressClass: {{ .imports.ingressClass }}
-          setAsDefaultIngress: {{ .imports.setAsDefaultIngress }}
+          ingressClass: nginx
+          watchIngressWithoutClass: true
+          ingressClassResource:
+            name: nginx
+            enabled: true
+            default: true
+            controllerValue: "k8s.io/ingress-nginx"
+
+          extraArgs:
+            enable-ssl-passthrough: true
+            annotations-prefix: nginx.ingress.kubernetes.io

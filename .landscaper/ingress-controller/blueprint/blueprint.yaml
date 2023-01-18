@@ -13,18 +13,6 @@ imports:
     schema:
       type: string
 
-  - name: ingressClass
-    required: true
-    type: data
-    schema:
-      type: string
-
-  - name: setAsDefaultIngress
-    required: true
-    type: data
-    schema:
-      type: boolean
-
 exports: []
 
 deployExecutions:
