@@ -10,7 +10,7 @@ access:
 ---
 type: ociImage
 name: ingress-nginx-controller
-version: 3.0.0
+version: v1.5.1
 relation: external
 access:
   type: ociRegistry
