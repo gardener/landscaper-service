@@ -212,9 +212,24 @@ The landscaper deployment creates the corresponding ServiceAccount and mounts th
 [ServiceAccount Admission Controller](https://kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin/#serviceaccount-admission-controller)),
 providing automatic token rotation.
 
-**Credentials when deploying the LaaS:** To deploy the LaaS the Deploy-Pipeline creates an Installation and a Target
-on the Core-Shoot-Cluster. This is executed with a Shoot-Cluster-Admin-Kubeconfig for the Core-Shoot-Cluster, fetched
-as described before. The Target is created and rotated by the Deploy-Pipeline as follows:
+**Credentials when deploying the LaaS:** To deploy the LaaS the Deploy-Pipeline creates on the Core-Shoot-Cluster 
+
+- a Target containing the access information for the Core-Shoot-Cluster where the LaaS should be installed
+
+- a Secret containing the access information of the OCI registry containing the Component Descriptor of the LaaS, the
+  container images etc. 
+
+- a [Context](https://github.com/gardener/landscaper/blob/master/docs/usage/Context.md) object referencing the 
+  secret with the access information of the OCI registry
+
+- a Secret containing the access information for the Garden-Resource-Cluster-Project
+
+- an Installation for the LaaS instance referencing the Target and the Context object
+
+The creation of these objects is executed with a Shoot-Cluster-Admin-Kubeconfig for the Core-Shoot-Cluster, fetched
+as described before.
+
+The Target is created and rotated by the Deploy-Pipeline as follows:
 
 - With the Gardener-Service-Account-Kubeconfig for the Gardener-LaaS-Project, create a Shoot-Cluster-Admin-Kubeconfig 
   for Core-Shoot-Cluster.
@@ -223,13 +238,21 @@ as described before. The Target is created and rotated by the Deploy-Pipeline as
   permissions for the Core-Shoot-Cluster and create a Shoot-Cluster-Kubeconfig for this service account. This kubeconfig
   is stored in the Target (or the referenced secret).
 
-The Installation to deploy the LaaS requires further credentials, mainly to be able to 
+The Secret containing the access information of the OCI registry just copies the correspponding information from the
+Secret-Store.
 
-- create shoot k8s resources in the Gardener-Resource-Cluster-Project
-- provide the Landscaper instances on the Target-Shoot-Cluster access to their Resource-Shoot-Clusters
+The Secret containing the access information for the Garden-Resource-Cluster-Project is also created from the 
+corresponding data in the Secret-Store. 
 
-For these credentials the Deploy-Pipeline creates a secret as input for the Installation, containing the 
-Gardener-Service-Account-Kubeconfig for the Gardener-Resource-Cluster-Project stored in the Secret Store.
+The Installation to deploy the LaaS requires some credentials as input data:
+
+- The name of the just created Secret containing the access information for the Garden-Resource-Cluster-Project. 
+
+- The name of the just created Secret containing the access information of the OCI registry containing the 
+  Component Descriptor.
+
+- The name of the Secret in the Garden-Resource-Cluster-Project, containing the secret key of a GCP service account
+  which is used by Gardener to create and maintain shoot clusters.
 
 ### List of Credentials for Rotation
 
