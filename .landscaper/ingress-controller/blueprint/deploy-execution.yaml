@@ -1,0 +1,39 @@
+deployItems:
+  - name: ingress-nginx
+    type: landscaper.gardener.cloud/helm
+    target:
+      name: {{ .imports.targetCluster.metadata.name }}
+      namespace: {{ .imports.targetCluster.metadata.namespace }}
+    config:
+      apiVersion: helm.deployer.landscaper.gardener.cloud/v1alpha1
+      kind: ProviderConfiguration
+      updateStrategy: patch
+      name: ingress-nginx
+      namespace: {{ .imports.namespace }}
+
+      chart:
+        {{ $chartResource := getResource .cd "name" "ingress-nginx-chart" }}
+        ref: {{ $chartResource.access.imageReference }}
+
+      values:
+        controller:
+          name: ingress-nginx-controller
+          container-name: ingress-nginx-controller
+          image:
+            {{ $controllerImageResource := getResource .cd "name" "ingress-nginx-controller" }}
+            {{ $controllerImage := parseOCIRef $controllerImageResource.access.imageReference }}
+            repository: {{ index $controllerImage 0 }}
+            tag: {{ $controllerImageResource.version }}
+            digest: {{ index $controllerImage 1 }}
+
+          ingressClass: nginx
+          watchIngressWithoutClass: true
+          ingressClassResource:
+            name: nginx
+            enabled: true
+            default: true
+            controllerValue: "k8s.io/ingress-nginx"
+
+          extraArgs:
+            enable-ssl-passthrough: true
+            annotations-prefix: nginx.ingress.kubernetes.io
