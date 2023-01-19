@@ -207,7 +207,7 @@ that the token in the kubeconfigs must be rotated with every deployment.
 Deploy-Pipeline with a Shoot-Cluster-Admin-Kubeconfig for the Core-Shoot-Cluster, which could be fetched as described before.
 We deploy the Central Landscaper via the 
 [bundled `landscaper` helm chart](https://github.com/gardener/landscaper/tree/master/charts/landscaper).
-We do not provide two kubeconfigs as Helm values for the host and resource cluster.
+No kubeconfig is provided as Helm values for the resource and webhook cluster because this is the same as the host cluster.
 The landscaper deployment creates the corresponding ServiceAccount and mounts their token into the landscaper pod (see
 [ServiceAccount Admission Controller](https://kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin/#serviceaccount-admission-controller)),
 providing automatic token rotation.
@@ -258,6 +258,8 @@ Gardener-Service-Account-Kubeconfig for the Gardener-Resource-Cluster-Project st
 - Describe internal credentials of Landscaper
 
 - Describe internal credentials of LaaS + new controller and how to rotate them? 
+
+- Describe logging stack, monitoring, nginx controller
 
 - Remove the secret manifests from the
   [rbac subchart](https://github.com/gardener/landscaper/blob/master/charts/landscaper/charts/rbac/templates/serviceaccount.yaml).
