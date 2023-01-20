@@ -1,4 +1,4 @@
-# Landscaper as a Service (LaaS) Architecture and Security Concepts 
+# Landscaper as a Service (LaaS) Architecture and Security Concepts
 
 This document describes the architecture and security concepts of a LaaS landscape.
 
