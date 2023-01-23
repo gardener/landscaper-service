@@ -43,10 +43,6 @@ type LandscaperDeploymentSpec struct {
 
 	// LandscaperConfiguration contains the configuration for the landscaper service deployment
 	LandscaperConfiguration LandscaperConfiguration `json:"landscaperConfiguration"`
-
-	// Region selects the region this LandscaperDeployment should be installed on.
-	// +optional
-	Region string `json:"region,omitempty"`
 }
 
 // LandscaperDeploymentStatus contains the status of a LandscaperDeployment.

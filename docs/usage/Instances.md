@@ -45,10 +45,13 @@ status:
     
   landscaperServiceComponent:
     name: github.com/gardener/landscaper/landscaper-service
-    nersion: v0.19.0
+    version: v0.19.0
 
   clusterEndpoint: "10.0.0.1:1234"
-  clusterKubeconfig: "a3ViZWNvbmZpZyBjb250ZW50 ..."
+  userKubeconfig: "a3ViZWNvbmZpZyBjb250ZW50 ..."
+  adminKubeconfig: "a3ViZWNvbmZpZyBjb250ZW50 ..."
+  shootName: "a1b2c3d5"
+  shootNamespace: "laas"
 ```
 
 ## TenantId
@@ -99,6 +102,18 @@ The `status.clusterEndpoint` field contains the API endpoint of the deployed Lan
 create and maintain Landscaper [Installations](https://github.com/gardener/landscaper/blob/master/docs/usage/Installations.md), 
 which are handled by the corresponding Landscaper instance.
 
-## Cluster Kubeconfig
+## User Kubeconfig
 
-The `status.clusterKubeconfig` field contains the kubeconfig which is used to access the deployed Landscaper.
+The `status.userKubeconfig` field contains the user kubeconfig which is used to access the deployed Landscaper (user restricted permissions).
+
+## Admin Kubeconfig
+
+The `status.adminKubeconfig` field contains the admin kubeconfig which is used to access the deployed Landscaper (full admin permissions).
+
+## Shoot Name
+
+The `status.shootName` field contains the name of the corresponding shoot resource.
+
+## Shoot Namespace
+
+The `status.shootNamespace` is the namespace in which the shoot resource is created.

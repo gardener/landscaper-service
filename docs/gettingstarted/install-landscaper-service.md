@@ -73,7 +73,22 @@ spec:
 
   importDataMappings:
     namespace: laas-system
-    verbosity: 2
+    verbosity: info
+  
+    gardenerConfiguration:
+      # The "serviceAccountKubeconfig" is a reference to a secret containing
+      # the kubeconfig for the gardener service account.
+      # This kubeconfig is used to create the shoot clusters hosting the customer landscaper resources.
+      serviceAccountKubeconfig:
+        name: service-account-secret
+        namespace: laas-system
+        key: kubeconfig
+      # The "projectName" is the name of the gardener project in which the shoot cluster are created.
+      # The "serviceAccountKubeconfig" must belong the specified project.
+      projectName: laas
+      # The "shootSecretBindingName" is the name of the secret binding used for creating cloud provider resources.
+      # Must belong to the specified gardener project name.
+      shootSecretBindingName: laas-cloud-provider-secret
 
     # optional: registry pull secrets, list of secrets in "kubernetes.io/dockerconfigjson" format
     # registryPullSecrets:

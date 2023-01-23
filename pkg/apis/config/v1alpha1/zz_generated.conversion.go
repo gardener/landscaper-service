@@ -57,6 +57,16 @@ func RegisterConversions(s *runtime.Scheme) error {
 	}); err != nil {
 		return err
 	}
+	if err := s.AddGeneratedConversionFunc((*GardenerConfiguration)(nil), (*config.GardenerConfiguration)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_GardenerConfiguration_To_config_GardenerConfiguration(a.(*GardenerConfiguration), b.(*config.GardenerConfiguration), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*config.GardenerConfiguration)(nil), (*GardenerConfiguration)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_config_GardenerConfiguration_To_v1alpha1_GardenerConfiguration(a.(*config.GardenerConfiguration), b.(*GardenerConfiguration), scope)
+	}); err != nil {
+		return err
+	}
 	if err := s.AddGeneratedConversionFunc((*LandscaperServiceComponentConfiguration)(nil), (*config.LandscaperServiceComponentConfiguration)(nil), func(a, b interface{}, scope conversion.Scope) error {
 		return Convert_v1alpha1_LandscaperServiceComponentConfiguration_To_config_LandscaperServiceComponentConfiguration(a.(*LandscaperServiceComponentConfiguration), b.(*config.LandscaperServiceComponentConfiguration), scope)
 	}); err != nil {
@@ -84,6 +94,106 @@ func RegisterConversions(s *runtime.Scheme) error {
 	}
 	if err := s.AddGeneratedConversionFunc((*config.MetricsConfiguration)(nil), (*MetricsConfiguration)(nil), func(a, b interface{}, scope conversion.Scope) error {
 		return Convert_config_MetricsConfiguration_To_v1alpha1_MetricsConfiguration(a.(*config.MetricsConfiguration), b.(*MetricsConfiguration), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*ShootAutoUpdateConfig)(nil), (*config.ShootAutoUpdateConfig)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_ShootAutoUpdateConfig_To_config_ShootAutoUpdateConfig(a.(*ShootAutoUpdateConfig), b.(*config.ShootAutoUpdateConfig), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*config.ShootAutoUpdateConfig)(nil), (*ShootAutoUpdateConfig)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_config_ShootAutoUpdateConfig_To_v1alpha1_ShootAutoUpdateConfig(a.(*config.ShootAutoUpdateConfig), b.(*ShootAutoUpdateConfig), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*ShootConfiguration)(nil), (*config.ShootConfiguration)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_ShootConfiguration_To_config_ShootConfiguration(a.(*ShootConfiguration), b.(*config.ShootConfiguration), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*config.ShootConfiguration)(nil), (*ShootConfiguration)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_config_ShootConfiguration_To_v1alpha1_ShootConfiguration(a.(*config.ShootConfiguration), b.(*ShootConfiguration), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*ShootKubernetesConfig)(nil), (*config.ShootKubernetesConfig)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_ShootKubernetesConfig_To_config_ShootKubernetesConfig(a.(*ShootKubernetesConfig), b.(*config.ShootKubernetesConfig), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*config.ShootKubernetesConfig)(nil), (*ShootKubernetesConfig)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_config_ShootKubernetesConfig_To_v1alpha1_ShootKubernetesConfig(a.(*config.ShootKubernetesConfig), b.(*ShootKubernetesConfig), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*ShootMachineConfiguration)(nil), (*config.ShootMachineConfiguration)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_ShootMachineConfiguration_To_config_ShootMachineConfiguration(a.(*ShootMachineConfiguration), b.(*config.ShootMachineConfiguration), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*config.ShootMachineConfiguration)(nil), (*ShootMachineConfiguration)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_config_ShootMachineConfiguration_To_v1alpha1_ShootMachineConfiguration(a.(*config.ShootMachineConfiguration), b.(*ShootMachineConfiguration), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*ShootMachineImage)(nil), (*config.ShootMachineImage)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_ShootMachineImage_To_config_ShootMachineImage(a.(*ShootMachineImage), b.(*config.ShootMachineImage), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*config.ShootMachineImage)(nil), (*ShootMachineImage)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_config_ShootMachineImage_To_v1alpha1_ShootMachineImage(a.(*config.ShootMachineImage), b.(*ShootMachineImage), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*ShootMaintenanceConfig)(nil), (*config.ShootMaintenanceConfig)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_ShootMaintenanceConfig_To_config_ShootMaintenanceConfig(a.(*ShootMaintenanceConfig), b.(*config.ShootMaintenanceConfig), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*config.ShootMaintenanceConfig)(nil), (*ShootMaintenanceConfig)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_config_ShootMaintenanceConfig_To_v1alpha1_ShootMaintenanceConfig(a.(*config.ShootMaintenanceConfig), b.(*ShootMaintenanceConfig), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*ShootMaintenanceTimeWindow)(nil), (*config.ShootMaintenanceTimeWindow)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_ShootMaintenanceTimeWindow_To_config_ShootMaintenanceTimeWindow(a.(*ShootMaintenanceTimeWindow), b.(*config.ShootMaintenanceTimeWindow), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*config.ShootMaintenanceTimeWindow)(nil), (*ShootMaintenanceTimeWindow)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_config_ShootMaintenanceTimeWindow_To_v1alpha1_ShootMaintenanceTimeWindow(a.(*config.ShootMaintenanceTimeWindow), b.(*ShootMaintenanceTimeWindow), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*ShootProviderConfiguration)(nil), (*config.ShootProviderConfiguration)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_ShootProviderConfiguration_To_config_ShootProviderConfiguration(a.(*ShootProviderConfiguration), b.(*config.ShootProviderConfiguration), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*config.ShootProviderConfiguration)(nil), (*ShootProviderConfiguration)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_config_ShootProviderConfiguration_To_v1alpha1_ShootProviderConfiguration(a.(*config.ShootProviderConfiguration), b.(*ShootProviderConfiguration), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*ShootWorkerVolumeConfiguration)(nil), (*config.ShootWorkerVolumeConfiguration)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_ShootWorkerVolumeConfiguration_To_config_ShootWorkerVolumeConfiguration(a.(*ShootWorkerVolumeConfiguration), b.(*config.ShootWorkerVolumeConfiguration), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*config.ShootWorkerVolumeConfiguration)(nil), (*ShootWorkerVolumeConfiguration)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_config_ShootWorkerVolumeConfiguration_To_v1alpha1_ShootWorkerVolumeConfiguration(a.(*config.ShootWorkerVolumeConfiguration), b.(*ShootWorkerVolumeConfiguration), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*ShootWorkersConfiguration)(nil), (*config.ShootWorkersConfiguration)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_ShootWorkersConfiguration_To_config_ShootWorkersConfiguration(a.(*ShootWorkersConfiguration), b.(*config.ShootWorkersConfiguration), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*config.ShootWorkersConfiguration)(nil), (*ShootWorkersConfiguration)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_config_ShootWorkersConfiguration_To_v1alpha1_ShootWorkersConfiguration(a.(*config.ShootWorkersConfiguration), b.(*ShootWorkersConfiguration), scope)
 	}); err != nil {
 		return err
 	}
@@ -166,6 +276,30 @@ func Convert_config_CrdManagementConfiguration_To_v1alpha1_CrdManagementConfigur
 	return autoConvert_config_CrdManagementConfiguration_To_v1alpha1_CrdManagementConfiguration(in, out, s)
 }
 
+func autoConvert_v1alpha1_GardenerConfiguration_To_config_GardenerConfiguration(in *GardenerConfiguration, out *config.GardenerConfiguration, s conversion.Scope) error {
+	out.ServiceAccountKubeconfig = in.ServiceAccountKubeconfig
+	out.ProjectName = in.ProjectName
+	out.ShootSecretBindingName = in.ShootSecretBindingName
+	return nil
+}
+
+// Convert_v1alpha1_GardenerConfiguration_To_config_GardenerConfiguration is an autogenerated conversion function.
+func Convert_v1alpha1_GardenerConfiguration_To_config_GardenerConfiguration(in *GardenerConfiguration, out *config.GardenerConfiguration, s conversion.Scope) error {
+	return autoConvert_v1alpha1_GardenerConfiguration_To_config_GardenerConfiguration(in, out, s)
+}
+
+func autoConvert_config_GardenerConfiguration_To_v1alpha1_GardenerConfiguration(in *config.GardenerConfiguration, out *GardenerConfiguration, s conversion.Scope) error {
+	out.ServiceAccountKubeconfig = in.ServiceAccountKubeconfig
+	out.ProjectName = in.ProjectName
+	out.ShootSecretBindingName = in.ShootSecretBindingName
+	return nil
+}
+
+// Convert_config_GardenerConfiguration_To_v1alpha1_GardenerConfiguration is an autogenerated conversion function.
+func Convert_config_GardenerConfiguration_To_v1alpha1_GardenerConfiguration(in *config.GardenerConfiguration, out *GardenerConfiguration, s conversion.Scope) error {
+	return autoConvert_config_GardenerConfiguration_To_v1alpha1_GardenerConfiguration(in, out, s)
+}
+
 func autoConvert_v1alpha1_LandscaperServiceComponentConfiguration_To_config_LandscaperServiceComponentConfiguration(in *LandscaperServiceComponentConfiguration, out *config.LandscaperServiceComponentConfiguration, s conversion.Scope) error {
 	out.Name = in.Name
 	out.Version = in.Version
@@ -203,6 +337,12 @@ func autoConvert_v1alpha1_LandscaperServiceConfiguration_To_config_LandscaperSer
 	if err := Convert_v1alpha1_LandscaperServiceComponentConfiguration_To_config_LandscaperServiceComponentConfiguration(&in.LandscaperServiceComponent, &out.LandscaperServiceComponent, s); err != nil {
 		return err
 	}
+	if err := Convert_v1alpha1_GardenerConfiguration_To_config_GardenerConfiguration(&in.GardenerConfiguration, &out.GardenerConfiguration, s); err != nil {
+		return err
+	}
+	if err := Convert_v1alpha1_ShootConfiguration_To_config_ShootConfiguration(&in.ShootConfiguration, &out.ShootConfiguration, s); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -220,6 +360,12 @@ func autoConvert_config_LandscaperServiceConfiguration_To_v1alpha1_LandscaperSer
 		return err
 	}
 	if err := Convert_config_LandscaperServiceComponentConfiguration_To_v1alpha1_LandscaperServiceComponentConfiguration(&in.LandscaperServiceComponent, &out.LandscaperServiceComponent, s); err != nil {
+		return err
+	}
+	if err := Convert_config_GardenerConfiguration_To_v1alpha1_GardenerConfiguration(&in.GardenerConfiguration, &out.GardenerConfiguration, s); err != nil {
+		return err
+	}
+	if err := Convert_config_ShootConfiguration_To_v1alpha1_ShootConfiguration(&in.ShootConfiguration, &out.ShootConfiguration, s); err != nil {
 		return err
 	}
 	return nil
@@ -248,4 +394,272 @@ func autoConvert_config_MetricsConfiguration_To_v1alpha1_MetricsConfiguration(in
 // Convert_config_MetricsConfiguration_To_v1alpha1_MetricsConfiguration is an autogenerated conversion function.
 func Convert_config_MetricsConfiguration_To_v1alpha1_MetricsConfiguration(in *config.MetricsConfiguration, out *MetricsConfiguration, s conversion.Scope) error {
 	return autoConvert_config_MetricsConfiguration_To_v1alpha1_MetricsConfiguration(in, out, s)
+}
+
+func autoConvert_v1alpha1_ShootAutoUpdateConfig_To_config_ShootAutoUpdateConfig(in *ShootAutoUpdateConfig, out *config.ShootAutoUpdateConfig, s conversion.Scope) error {
+	out.KubernetesVersion = (*bool)(unsafe.Pointer(in.KubernetesVersion))
+	out.MachineImageVersion = (*bool)(unsafe.Pointer(in.MachineImageVersion))
+	return nil
+}
+
+// Convert_v1alpha1_ShootAutoUpdateConfig_To_config_ShootAutoUpdateConfig is an autogenerated conversion function.
+func Convert_v1alpha1_ShootAutoUpdateConfig_To_config_ShootAutoUpdateConfig(in *ShootAutoUpdateConfig, out *config.ShootAutoUpdateConfig, s conversion.Scope) error {
+	return autoConvert_v1alpha1_ShootAutoUpdateConfig_To_config_ShootAutoUpdateConfig(in, out, s)
+}
+
+func autoConvert_config_ShootAutoUpdateConfig_To_v1alpha1_ShootAutoUpdateConfig(in *config.ShootAutoUpdateConfig, out *ShootAutoUpdateConfig, s conversion.Scope) error {
+	out.KubernetesVersion = (*bool)(unsafe.Pointer(in.KubernetesVersion))
+	out.MachineImageVersion = (*bool)(unsafe.Pointer(in.MachineImageVersion))
+	return nil
+}
+
+// Convert_config_ShootAutoUpdateConfig_To_v1alpha1_ShootAutoUpdateConfig is an autogenerated conversion function.
+func Convert_config_ShootAutoUpdateConfig_To_v1alpha1_ShootAutoUpdateConfig(in *config.ShootAutoUpdateConfig, out *ShootAutoUpdateConfig, s conversion.Scope) error {
+	return autoConvert_config_ShootAutoUpdateConfig_To_v1alpha1_ShootAutoUpdateConfig(in, out, s)
+}
+
+func autoConvert_v1alpha1_ShootConfiguration_To_config_ShootConfiguration(in *ShootConfiguration, out *config.ShootConfiguration, s conversion.Scope) error {
+	if err := Convert_v1alpha1_ShootProviderConfiguration_To_config_ShootProviderConfiguration(&in.Provider, &out.Provider, s); err != nil {
+		return err
+	}
+	if err := Convert_v1alpha1_ShootWorkersConfiguration_To_config_ShootWorkersConfiguration(&in.Workers, &out.Workers, s); err != nil {
+		return err
+	}
+	out.Region = in.Region
+	if err := Convert_v1alpha1_ShootKubernetesConfig_To_config_ShootKubernetesConfig(&in.Kubernetes, &out.Kubernetes, s); err != nil {
+		return err
+	}
+	if err := Convert_v1alpha1_ShootMaintenanceConfig_To_config_ShootMaintenanceConfig(&in.Maintenance, &out.Maintenance, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_v1alpha1_ShootConfiguration_To_config_ShootConfiguration is an autogenerated conversion function.
+func Convert_v1alpha1_ShootConfiguration_To_config_ShootConfiguration(in *ShootConfiguration, out *config.ShootConfiguration, s conversion.Scope) error {
+	return autoConvert_v1alpha1_ShootConfiguration_To_config_ShootConfiguration(in, out, s)
+}
+
+func autoConvert_config_ShootConfiguration_To_v1alpha1_ShootConfiguration(in *config.ShootConfiguration, out *ShootConfiguration, s conversion.Scope) error {
+	if err := Convert_config_ShootProviderConfiguration_To_v1alpha1_ShootProviderConfiguration(&in.Provider, &out.Provider, s); err != nil {
+		return err
+	}
+	if err := Convert_config_ShootWorkersConfiguration_To_v1alpha1_ShootWorkersConfiguration(&in.Workers, &out.Workers, s); err != nil {
+		return err
+	}
+	out.Region = in.Region
+	if err := Convert_config_ShootKubernetesConfig_To_v1alpha1_ShootKubernetesConfig(&in.Kubernetes, &out.Kubernetes, s); err != nil {
+		return err
+	}
+	if err := Convert_config_ShootMaintenanceConfig_To_v1alpha1_ShootMaintenanceConfig(&in.Maintenance, &out.Maintenance, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_config_ShootConfiguration_To_v1alpha1_ShootConfiguration is an autogenerated conversion function.
+func Convert_config_ShootConfiguration_To_v1alpha1_ShootConfiguration(in *config.ShootConfiguration, out *ShootConfiguration, s conversion.Scope) error {
+	return autoConvert_config_ShootConfiguration_To_v1alpha1_ShootConfiguration(in, out, s)
+}
+
+func autoConvert_v1alpha1_ShootKubernetesConfig_To_config_ShootKubernetesConfig(in *ShootKubernetesConfig, out *config.ShootKubernetesConfig, s conversion.Scope) error {
+	out.Version = in.Version
+	return nil
+}
+
+// Convert_v1alpha1_ShootKubernetesConfig_To_config_ShootKubernetesConfig is an autogenerated conversion function.
+func Convert_v1alpha1_ShootKubernetesConfig_To_config_ShootKubernetesConfig(in *ShootKubernetesConfig, out *config.ShootKubernetesConfig, s conversion.Scope) error {
+	return autoConvert_v1alpha1_ShootKubernetesConfig_To_config_ShootKubernetesConfig(in, out, s)
+}
+
+func autoConvert_config_ShootKubernetesConfig_To_v1alpha1_ShootKubernetesConfig(in *config.ShootKubernetesConfig, out *ShootKubernetesConfig, s conversion.Scope) error {
+	out.Version = in.Version
+	return nil
+}
+
+// Convert_config_ShootKubernetesConfig_To_v1alpha1_ShootKubernetesConfig is an autogenerated conversion function.
+func Convert_config_ShootKubernetesConfig_To_v1alpha1_ShootKubernetesConfig(in *config.ShootKubernetesConfig, out *ShootKubernetesConfig, s conversion.Scope) error {
+	return autoConvert_config_ShootKubernetesConfig_To_v1alpha1_ShootKubernetesConfig(in, out, s)
+}
+
+func autoConvert_v1alpha1_ShootMachineConfiguration_To_config_ShootMachineConfiguration(in *ShootMachineConfiguration, out *config.ShootMachineConfiguration, s conversion.Scope) error {
+	out.Type = in.Type
+	if err := Convert_v1alpha1_ShootMachineImage_To_config_ShootMachineImage(&in.Image, &out.Image, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_v1alpha1_ShootMachineConfiguration_To_config_ShootMachineConfiguration is an autogenerated conversion function.
+func Convert_v1alpha1_ShootMachineConfiguration_To_config_ShootMachineConfiguration(in *ShootMachineConfiguration, out *config.ShootMachineConfiguration, s conversion.Scope) error {
+	return autoConvert_v1alpha1_ShootMachineConfiguration_To_config_ShootMachineConfiguration(in, out, s)
+}
+
+func autoConvert_config_ShootMachineConfiguration_To_v1alpha1_ShootMachineConfiguration(in *config.ShootMachineConfiguration, out *ShootMachineConfiguration, s conversion.Scope) error {
+	out.Type = in.Type
+	if err := Convert_config_ShootMachineImage_To_v1alpha1_ShootMachineImage(&in.Image, &out.Image, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_config_ShootMachineConfiguration_To_v1alpha1_ShootMachineConfiguration is an autogenerated conversion function.
+func Convert_config_ShootMachineConfiguration_To_v1alpha1_ShootMachineConfiguration(in *config.ShootMachineConfiguration, out *ShootMachineConfiguration, s conversion.Scope) error {
+	return autoConvert_config_ShootMachineConfiguration_To_v1alpha1_ShootMachineConfiguration(in, out, s)
+}
+
+func autoConvert_v1alpha1_ShootMachineImage_To_config_ShootMachineImage(in *ShootMachineImage, out *config.ShootMachineImage, s conversion.Scope) error {
+	out.Name = in.Name
+	out.Version = in.Version
+	return nil
+}
+
+// Convert_v1alpha1_ShootMachineImage_To_config_ShootMachineImage is an autogenerated conversion function.
+func Convert_v1alpha1_ShootMachineImage_To_config_ShootMachineImage(in *ShootMachineImage, out *config.ShootMachineImage, s conversion.Scope) error {
+	return autoConvert_v1alpha1_ShootMachineImage_To_config_ShootMachineImage(in, out, s)
+}
+
+func autoConvert_config_ShootMachineImage_To_v1alpha1_ShootMachineImage(in *config.ShootMachineImage, out *ShootMachineImage, s conversion.Scope) error {
+	out.Name = in.Name
+	out.Version = in.Version
+	return nil
+}
+
+// Convert_config_ShootMachineImage_To_v1alpha1_ShootMachineImage is an autogenerated conversion function.
+func Convert_config_ShootMachineImage_To_v1alpha1_ShootMachineImage(in *config.ShootMachineImage, out *ShootMachineImage, s conversion.Scope) error {
+	return autoConvert_config_ShootMachineImage_To_v1alpha1_ShootMachineImage(in, out, s)
+}
+
+func autoConvert_v1alpha1_ShootMaintenanceConfig_To_config_ShootMaintenanceConfig(in *ShootMaintenanceConfig, out *config.ShootMaintenanceConfig, s conversion.Scope) error {
+	if err := Convert_v1alpha1_ShootAutoUpdateConfig_To_config_ShootAutoUpdateConfig(&in.AutoUpdate, &out.AutoUpdate, s); err != nil {
+		return err
+	}
+	if err := Convert_v1alpha1_ShootMaintenanceTimeWindow_To_config_ShootMaintenanceTimeWindow(&in.TimeWindow, &out.TimeWindow, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_v1alpha1_ShootMaintenanceConfig_To_config_ShootMaintenanceConfig is an autogenerated conversion function.
+func Convert_v1alpha1_ShootMaintenanceConfig_To_config_ShootMaintenanceConfig(in *ShootMaintenanceConfig, out *config.ShootMaintenanceConfig, s conversion.Scope) error {
+	return autoConvert_v1alpha1_ShootMaintenanceConfig_To_config_ShootMaintenanceConfig(in, out, s)
+}
+
+func autoConvert_config_ShootMaintenanceConfig_To_v1alpha1_ShootMaintenanceConfig(in *config.ShootMaintenanceConfig, out *ShootMaintenanceConfig, s conversion.Scope) error {
+	if err := Convert_config_ShootAutoUpdateConfig_To_v1alpha1_ShootAutoUpdateConfig(&in.AutoUpdate, &out.AutoUpdate, s); err != nil {
+		return err
+	}
+	if err := Convert_config_ShootMaintenanceTimeWindow_To_v1alpha1_ShootMaintenanceTimeWindow(&in.TimeWindow, &out.TimeWindow, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_config_ShootMaintenanceConfig_To_v1alpha1_ShootMaintenanceConfig is an autogenerated conversion function.
+func Convert_config_ShootMaintenanceConfig_To_v1alpha1_ShootMaintenanceConfig(in *config.ShootMaintenanceConfig, out *ShootMaintenanceConfig, s conversion.Scope) error {
+	return autoConvert_config_ShootMaintenanceConfig_To_v1alpha1_ShootMaintenanceConfig(in, out, s)
+}
+
+func autoConvert_v1alpha1_ShootMaintenanceTimeWindow_To_config_ShootMaintenanceTimeWindow(in *ShootMaintenanceTimeWindow, out *config.ShootMaintenanceTimeWindow, s conversion.Scope) error {
+	out.Begin = in.Begin
+	out.End = in.End
+	return nil
+}
+
+// Convert_v1alpha1_ShootMaintenanceTimeWindow_To_config_ShootMaintenanceTimeWindow is an autogenerated conversion function.
+func Convert_v1alpha1_ShootMaintenanceTimeWindow_To_config_ShootMaintenanceTimeWindow(in *ShootMaintenanceTimeWindow, out *config.ShootMaintenanceTimeWindow, s conversion.Scope) error {
+	return autoConvert_v1alpha1_ShootMaintenanceTimeWindow_To_config_ShootMaintenanceTimeWindow(in, out, s)
+}
+
+func autoConvert_config_ShootMaintenanceTimeWindow_To_v1alpha1_ShootMaintenanceTimeWindow(in *config.ShootMaintenanceTimeWindow, out *ShootMaintenanceTimeWindow, s conversion.Scope) error {
+	out.Begin = in.Begin
+	out.End = in.End
+	return nil
+}
+
+// Convert_config_ShootMaintenanceTimeWindow_To_v1alpha1_ShootMaintenanceTimeWindow is an autogenerated conversion function.
+func Convert_config_ShootMaintenanceTimeWindow_To_v1alpha1_ShootMaintenanceTimeWindow(in *config.ShootMaintenanceTimeWindow, out *ShootMaintenanceTimeWindow, s conversion.Scope) error {
+	return autoConvert_config_ShootMaintenanceTimeWindow_To_v1alpha1_ShootMaintenanceTimeWindow(in, out, s)
+}
+
+func autoConvert_v1alpha1_ShootProviderConfiguration_To_config_ShootProviderConfiguration(in *ShootProviderConfiguration, out *config.ShootProviderConfiguration, s conversion.Scope) error {
+	out.Type = in.Type
+	out.Zone = in.Zone
+	return nil
+}
+
+// Convert_v1alpha1_ShootProviderConfiguration_To_config_ShootProviderConfiguration is an autogenerated conversion function.
+func Convert_v1alpha1_ShootProviderConfiguration_To_config_ShootProviderConfiguration(in *ShootProviderConfiguration, out *config.ShootProviderConfiguration, s conversion.Scope) error {
+	return autoConvert_v1alpha1_ShootProviderConfiguration_To_config_ShootProviderConfiguration(in, out, s)
+}
+
+func autoConvert_config_ShootProviderConfiguration_To_v1alpha1_ShootProviderConfiguration(in *config.ShootProviderConfiguration, out *ShootProviderConfiguration, s conversion.Scope) error {
+	out.Type = in.Type
+	out.Zone = in.Zone
+	return nil
+}
+
+// Convert_config_ShootProviderConfiguration_To_v1alpha1_ShootProviderConfiguration is an autogenerated conversion function.
+func Convert_config_ShootProviderConfiguration_To_v1alpha1_ShootProviderConfiguration(in *config.ShootProviderConfiguration, out *ShootProviderConfiguration, s conversion.Scope) error {
+	return autoConvert_config_ShootProviderConfiguration_To_v1alpha1_ShootProviderConfiguration(in, out, s)
+}
+
+func autoConvert_v1alpha1_ShootWorkerVolumeConfiguration_To_config_ShootWorkerVolumeConfiguration(in *ShootWorkerVolumeConfiguration, out *config.ShootWorkerVolumeConfiguration, s conversion.Scope) error {
+	out.Type = in.Type
+	out.Size = in.Size
+	return nil
+}
+
+// Convert_v1alpha1_ShootWorkerVolumeConfiguration_To_config_ShootWorkerVolumeConfiguration is an autogenerated conversion function.
+func Convert_v1alpha1_ShootWorkerVolumeConfiguration_To_config_ShootWorkerVolumeConfiguration(in *ShootWorkerVolumeConfiguration, out *config.ShootWorkerVolumeConfiguration, s conversion.Scope) error {
+	return autoConvert_v1alpha1_ShootWorkerVolumeConfiguration_To_config_ShootWorkerVolumeConfiguration(in, out, s)
+}
+
+func autoConvert_config_ShootWorkerVolumeConfiguration_To_v1alpha1_ShootWorkerVolumeConfiguration(in *config.ShootWorkerVolumeConfiguration, out *ShootWorkerVolumeConfiguration, s conversion.Scope) error {
+	out.Type = in.Type
+	out.Size = in.Size
+	return nil
+}
+
+// Convert_config_ShootWorkerVolumeConfiguration_To_v1alpha1_ShootWorkerVolumeConfiguration is an autogenerated conversion function.
+func Convert_config_ShootWorkerVolumeConfiguration_To_v1alpha1_ShootWorkerVolumeConfiguration(in *config.ShootWorkerVolumeConfiguration, out *ShootWorkerVolumeConfiguration, s conversion.Scope) error {
+	return autoConvert_config_ShootWorkerVolumeConfiguration_To_v1alpha1_ShootWorkerVolumeConfiguration(in, out, s)
+}
+
+func autoConvert_v1alpha1_ShootWorkersConfiguration_To_config_ShootWorkersConfiguration(in *ShootWorkersConfiguration, out *config.ShootWorkersConfiguration, s conversion.Scope) error {
+	if err := Convert_v1alpha1_ShootMachineConfiguration_To_config_ShootMachineConfiguration(&in.Machine, &out.Machine, s); err != nil {
+		return err
+	}
+	if err := Convert_v1alpha1_ShootWorkerVolumeConfiguration_To_config_ShootWorkerVolumeConfiguration(&in.Volume, &out.Volume, s); err != nil {
+		return err
+	}
+	out.Minimum = (*int32)(unsafe.Pointer(in.Minimum))
+	out.Maximum = (*int32)(unsafe.Pointer(in.Maximum))
+	out.MaxSurge = (*int32)(unsafe.Pointer(in.MaxSurge))
+	out.MaxUnavailable = (*int32)(unsafe.Pointer(in.MaxUnavailable))
+	return nil
+}
+
+// Convert_v1alpha1_ShootWorkersConfiguration_To_config_ShootWorkersConfiguration is an autogenerated conversion function.
+func Convert_v1alpha1_ShootWorkersConfiguration_To_config_ShootWorkersConfiguration(in *ShootWorkersConfiguration, out *config.ShootWorkersConfiguration, s conversion.Scope) error {
+	return autoConvert_v1alpha1_ShootWorkersConfiguration_To_config_ShootWorkersConfiguration(in, out, s)
+}
+
+func autoConvert_config_ShootWorkersConfiguration_To_v1alpha1_ShootWorkersConfiguration(in *config.ShootWorkersConfiguration, out *ShootWorkersConfiguration, s conversion.Scope) error {
+	if err := Convert_config_ShootMachineConfiguration_To_v1alpha1_ShootMachineConfiguration(&in.Machine, &out.Machine, s); err != nil {
+		return err
+	}
+	if err := Convert_config_ShootWorkerVolumeConfiguration_To_v1alpha1_ShootWorkerVolumeConfiguration(&in.Volume, &out.Volume, s); err != nil {
+		return err
+	}
+	out.Minimum = (*int32)(unsafe.Pointer(in.Minimum))
+	out.Maximum = (*int32)(unsafe.Pointer(in.Maximum))
+	out.MaxSurge = (*int32)(unsafe.Pointer(in.MaxSurge))
+	out.MaxUnavailable = (*int32)(unsafe.Pointer(in.MaxUnavailable))
+	return nil
+}
+
+// Convert_config_ShootWorkersConfiguration_To_v1alpha1_ShootWorkersConfiguration is an autogenerated conversion function.
+func Convert_config_ShootWorkersConfiguration_To_v1alpha1_ShootWorkersConfiguration(in *config.ShootWorkersConfiguration, out *ShootWorkersConfiguration, s conversion.Scope) error {
+	return autoConvert_config_ShootWorkersConfiguration_To_v1alpha1_ShootWorkersConfiguration(in, out, s)
 }

@@ -5,23 +5,11 @@
 package validation
 
 import (
-	"fmt"
-
 	apivalidation "k8s.io/apimachinery/pkg/api/validation"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/util/sets"
 	"k8s.io/apimachinery/pkg/util/validation/field"
 
 	lsscore "github.com/gardener/landscaper-service/pkg/apis/core"
-)
-
-var (
-	// AllowedProviderTypes specifies the allowed provider types.
-	AllowedProviderTypes = sets.NewString(
-		"alicloud",
-		"aws",
-		"gcp",
-	)
 )
 
 // ValidateServiceTargetConfig validates a ServiceTargetConfig
@@ -38,14 +26,6 @@ func validateServiceTargetConfigObjectMeta(objMeta *metav1.ObjectMeta, fldPath *
 
 	labelsPath := fldPath.Child("labels")
 
-	regionLabelPath := labelsPath.Child(lsscore.ServiceTargetConfigRegionLabelName)
-	regionLabelValue, ok := objMeta.Labels[lsscore.ServiceTargetConfigRegionLabelName]
-	if !ok {
-		allErrs = append(allErrs, field.Required(regionLabelPath, "label needs to be set"))
-	} else if len(regionLabelValue) == 0 {
-		allErrs = append(allErrs, field.Required(regionLabelPath, "label value may not be empty"))
-	}
-
 	visibleLabelPath := labelsPath.Child(lsscore.ServiceTargetConfigVisibleLabelName)
 	visibleLabelValue, ok := objMeta.Labels[lsscore.ServiceTargetConfigVisibleLabelName]
 	if !ok {
@@ -60,13 +40,11 @@ func validateServiceTargetConfigObjectMeta(objMeta *metav1.ObjectMeta, fldPath *
 func validateServiceTargetConfigSpec(spec *lsscore.ServiceTargetConfigSpec, fldPath *field.Path) field.ErrorList {
 	allErrs := field.ErrorList{}
 
-	if len(spec.ProviderType) == 0 {
-		allErrs = append(allErrs, field.Required(fldPath.Child("providerType"), "providerType may not be empty"))
-	} else if !AllowedProviderTypes.Has(spec.ProviderType) {
-		allErrs = append(allErrs, field.Invalid(fldPath.Child("providerType"), spec.ProviderType, fmt.Sprintf("providerType must be one of the following: %v", AllowedProviderTypes.List())))
-	}
-
 	allErrs = append(allErrs, ValidateSecretReference(&spec.SecretRef, fldPath.Child("secretRef"))...)
+
+	if len(spec.IngressDomain) == 0 {
+		allErrs = append(allErrs, field.Required(fldPath.Child("ingressDomain"), "ingressDomain may not be empty"))
+	}
 
 	return allErrs
 }

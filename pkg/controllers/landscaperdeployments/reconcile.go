@@ -10,16 +10,15 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/gardener/landscaper/controller-utils/pkg/logging"
-	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
-	"k8s.io/apimachinery/pkg/types"
-
 	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/sets"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
 	"github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
+	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
 
 	lsscore "github.com/gardener/landscaper-service/pkg/apis/core"
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
@@ -48,6 +47,18 @@ func (c *Controller) reconcile(ctx context.Context, deployment *lssv1alpha1.Land
 		return lsserrors.NewWrappedError(err, currOp, "CreateUpdateInstance", err.Error())
 	}
 
+	// set the instance reference for the deployment if not already set
+	if deployment.Status.InstanceRef == nil || !deployment.Status.InstanceRef.IsObject(instance) {
+		deployment.Status.InstanceRef = &lssv1alpha1.ObjectReference{
+			Name:      instance.GetName(),
+			Namespace: instance.GetNamespace(),
+		}
+
+		if err := c.Client().Status().Update(ctx, deployment); err != nil {
+			return lsserrors.NewWrappedError(err, currOp, "UpdateInstanceRefForDeployment", err.Error())
+		}
+	}
+
 	// if not already added, add the instance reference to the service target configuration
 	serviceTargetConf := &lssv1alpha1.ServiceTargetConfig{}
 	if err := c.Client().Get(ctx, instance.Spec.ServiceTargetConfigRef.NamespacedName(), serviceTargetConf); err != nil {
@@ -66,17 +77,6 @@ func (c *Controller) reconcile(ctx context.Context, deployment *lssv1alpha1.Land
 		}
 	}
 
-	// set the instance reference for the deployment if not already set
-	if deployment.Status.InstanceRef == nil || !deployment.Status.InstanceRef.IsObject(instance) {
-		deployment.Status.InstanceRef = &lssv1alpha1.ObjectReference{
-			Name:      instance.GetName(),
-			Namespace: instance.GetNamespace(),
-		}
-
-		if err := c.Client().Status().Update(ctx, deployment); err != nil {
-			return lsserrors.NewWrappedError(err, currOp, "UpdateInstanceRefForDeployment", err.Error())
-		}
-	}
 	return nil
 }
 
@@ -95,9 +95,17 @@ func (c *Controller) mutateInstance(ctx context.Context, deployment *lssv1alpha1
 		return fmt.Errorf("unable to set controller reference for instance: %w", err)
 	}
 
+	if utils.HasOperationAnnotation(deployment, lssv1alpha1.LandscaperServiceOperationIgnore) {
+		utils.SetOperationAnnotation(instance, lssv1alpha1.LandscaperServiceOperationIgnore)
+	} else {
+		if utils.HasOperationAnnotation(instance, lssv1alpha1.LandscaperServiceOperationIgnore) {
+			utils.RemoveOperationAnnotation(instance)
+		}
+	}
+
 	if len(instance.Spec.ServiceTargetConfigRef.Name) == 0 {
 		// try to find a service target configuration that can be used for this landscaper deployment
-		serviceTargetConf, err := c.findServiceTargetConfig(ctx, deployment)
+		serviceTargetConf, err := c.findServiceTargetConfig(ctx)
 		if err != nil {
 			return err
 		}
@@ -131,17 +139,10 @@ func (c *Controller) mutateInstance(ctx context.Context, deployment *lssv1alpha1
 }
 
 // findServiceTargetConfig tries to find a service target configuration that applies to the deployment requirements and has capacity available.
-func (c *Controller) findServiceTargetConfig(ctx context.Context, deployment *lssv1alpha1.LandscaperDeployment) (*lssv1alpha1.ServiceTargetConfig, error) {
-	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(deployment).String()})
-
+func (c *Controller) findServiceTargetConfig(ctx context.Context) (*lssv1alpha1.ServiceTargetConfig, error) {
 	serviceTargetConfigs := &lssv1alpha1.ServiceTargetConfigList{}
 	selectorBuilder := strings.Builder{}
 	selectorBuilder.WriteString(fmt.Sprintf("%s=true", lsscore.ServiceTargetConfigVisibleLabelName))
-
-	if len(deployment.Spec.Region) > 0 {
-		logger.Info("region filter active", "serviceTargetConfigRegion", deployment.Spec.Region)
-		selectorBuilder.WriteString(fmt.Sprintf(",%s=%s", lsscore.ServiceTargetConfigRegionLabelName, deployment.Spec.Region))
-	}
 
 	labelSelector, _ := labels.Parse(selectorBuilder.String())
 	listOptions := client.ListOptions{

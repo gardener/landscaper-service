@@ -36,8 +36,6 @@ type ServiceTargetConfig struct {
 
 // ServiceTargetConfigSpec contains the specification for a ServiceTargetConfig.
 type ServiceTargetConfigSpec struct {
-	// ProviderType specifies the type of the underlying infrastructure provide.
-	ProviderType string `json:"providerType"`
 
 	// The Priority of this ServiceTargetConfig.
 	// SeedConfigs with a higher priority number will be preferred over lower numbers
@@ -46,6 +44,9 @@ type ServiceTargetConfigSpec struct {
 
 	// SecretRef references the secret that contains the kubeconfig of the target cluster.
 	SecretRef SecretReference `json:"secretRef"`
+
+	// IngressDomain is the ingress domain of the corresponding target cluster.
+	IngressDomain string `json:"ingressDomain"`
 }
 
 // ServiceTargetConfigStatus contains the status of a ServiceTargetConfig.
@@ -74,16 +75,6 @@ var ServiceTargetConfigDefinition = lsschema.CustomResourceDefinition{
 	Served:            true,
 	SubresourceStatus: true,
 	AdditionalPrinterColumns: []lsschema.CustomResourceColumnDefinition{
-		{
-			Name:     "ProviderType",
-			Type:     "string",
-			JSONPath: ".spec.providerType",
-		},
-		{
-			Name:     "Region",
-			Type:     "string",
-			JSONPath: ".metadata.labels.config\\.landscaper-service\\.gardener\\.cloud/region",
-		},
 		{
 			Name:     "Visible",
 			Type:     "string",

@@ -11,26 +11,30 @@ import (
 	"fmt"
 	"io/ioutil"
 	"path"
+	"regexp"
 	"strings"
 	"time"
-
-	"github.com/gardener/landscaper/controller-utils/pkg/logging"
-	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
-
-	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/client-go/tools/clientcmd"
 
 	admissionv1 "k8s.io/api/admissionregistration/v1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/json"
 	"k8s.io/apimachinery/pkg/util/yaml"
+	"k8s.io/client-go/tools/clientcmd"
+	"k8s.io/client-go/util/jsonpath"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
+	"github.com/gardener/landscaper/apis/core/v1alpha1/targettypes"
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
+	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
 	cliinstallations "github.com/gardener/landscapercli/cmd/installations"
 	cliutil "github.com/gardener/landscapercli/pkg/util"
 
@@ -293,8 +297,8 @@ func DeleteValidatingWebhookConfiguration(ctx context.Context, kclient client.Cl
 	return nil
 }
 
-// DeleteVirtualClusterNamespaces tries to delete all virtual cluster namespaces in the cluster.
-func DeleteVirtualClusterNamespaces(ctx context.Context, kclient client.Client, sleepTime time.Duration, maxRetries int) error {
+// DeleteTargetClusterNamespaces tries to delete all target cluster namespaces in the cluster.
+func DeleteTargetClusterNamespaces(ctx context.Context, kclient client.Client, sleepTime time.Duration, maxRetries int) error {
 	logger, ctx := logging.FromContextOrNew(ctx, nil)
 
 	namespaces := &corev1.NamespaceList{}
@@ -304,7 +308,7 @@ func DeleteVirtualClusterNamespaces(ctx context.Context, kclient client.Client, 
 	}
 
 	for _, namespace := range namespaces.Items {
-		if strings.HasPrefix(namespace.Name, "vc-") {
+		if strings.HasPrefix(namespace.Name, "tc-") {
 			logger.Info("pruning namespace", lc.KeyResource, namespace.Name)
 
 			if err := RemoveFinalizerLandscaperResources(ctx, kclient, namespace.Name); err != nil {
@@ -384,29 +388,17 @@ func BuildKubernetesClusterTargetWithSecretRef(ctx context.Context, kclient clie
 		return nil, fmt.Errorf("failed to create default target secret: %w", err)
 	}
 
-	targetConfig := map[string]interface{}{
-		"kubeconfig": map[string]interface{}{
-			"secretRef": map[string]interface{}{
-				"name":      name,
-				"namespace": namespace,
-				"key":       "kubeconfig",
-			},
-		},
-	}
-
-	targetConfigRaw, err := json.Marshal(targetConfig)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal target config: %w", err)
-	}
-
 	target := &lsv1alpha1.Target{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      name,
 			Namespace: namespace,
 		},
 		Spec: lsv1alpha1.TargetSpec{
-			Type:          lsv1alpha1.KubernetesClusterTargetType,
-			Configuration: lsv1alpha1.NewAnyJSON(targetConfigRaw),
+			Type: targettypes.KubernetesClusterTargetType,
+			SecretRef: &lsv1alpha1.LocalSecretReference{
+				Name: name,
+				Key:  "kubeconfig",
+			},
 		},
 	}
 
@@ -423,15 +415,19 @@ func BuildKubernetesClusterTarget(ctx context.Context, kclient client.Client, ku
 	if err != nil {
 		return nil, fmt.Errorf("cannot read kubeconfig: %w", err)
 	}
+	kubeConfigContentStr := string(kubeConfigContent)
 
-	targetConfig := map[string]interface{}{
-		"kubeconfig": string(kubeConfigContent),
+	targetConfig := targettypes.KubernetesClusterTargetConfig{
+		Kubeconfig: targettypes.ValueRef{
+			StrVal: &kubeConfigContentStr,
+		},
 	}
 
 	targetConfigRaw, err := json.Marshal(targetConfig)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal target config: %w", err)
 	}
+	targetConfigAnyJSON := lsv1alpha1.NewAnyJSON(targetConfigRaw)
 
 	target := &lsv1alpha1.Target{
 		ObjectMeta: metav1.ObjectMeta{
@@ -439,8 +435,8 @@ func BuildKubernetesClusterTarget(ctx context.Context, kclient client.Client, ku
 			Namespace: namespace,
 		},
 		Spec: lsv1alpha1.TargetSpec{
-			Type:          lsv1alpha1.KubernetesClusterTargetType,
-			Configuration: lsv1alpha1.NewAnyJSON(targetConfigRaw),
+			Type:          targettypes.KubernetesClusterTargetType,
+			Configuration: &targetConfigAnyJSON,
 		},
 	}
 
@@ -494,29 +490,141 @@ func BuildLandscaperContext(ctx context.Context, kclient client.Client, registry
 	return nil
 }
 
+// BuildKubeClientForInstance builds a kubernetes client for the user kubeconfig of an instance.
 func BuildKubeClientForInstance(instance *lssv1alpha1.Instance, scheme *runtime.Scheme) (client.Client, error) {
-	kubeconfig, err := base64.StdEncoding.DecodeString(instance.Status.ClusterKubeconfig)
+	kubeconfig, err := base64.StdEncoding.DecodeString(instance.Status.UserKubeconfig)
 	if err != nil {
 		return nil, fmt.Errorf("failed to decode kubeconfig of instance %q: %w", instance.Name, err)
 	}
 
-	clientCfg, err := clientcmd.Load(kubeconfig)
+	client, err := BuildKubeClient(string(kubeconfig), scheme)
 	if err != nil {
-		return nil, fmt.Errorf("failed to load kubeconfig of instance %q: %w", instance.Name, err)
+		return nil, fmt.Errorf("failed to build kube client for instance %q: %w", instance.Name, err)
+	}
+
+	return client, nil
+}
+
+// BuildKubeClient builds a kubernetes client from a kubeconfig
+func BuildKubeClient(kubeconfig string, scheme *runtime.Scheme) (client.Client, error) {
+	clientCfg, err := clientcmd.Load([]byte(kubeconfig))
+	if err != nil {
+		return nil, fmt.Errorf("failed to load kubeconfig: %w", err)
 	}
 
 	loader := clientcmd.NewDefaultClientConfig(*clientCfg, nil)
 	restConfig, err := loader.ClientConfig()
 	if err != nil {
-		return nil, fmt.Errorf("failed to load rest config of instance %q: %err", instance.Name, err)
+		return nil, fmt.Errorf("failed to load rest config: %e", err)
 	}
 
 	client, err := client.New(restConfig, client.Options{
 		Scheme: scheme,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("failed create client for instance %q: %err", instance.Name, err)
+		return nil, fmt.Errorf("failed create client: %e", err)
 	}
 
 	return client, nil
+}
+
+// DeleteTestShootClusters tries to delete all existing integration test shoot clusters.
+func DeleteTestShootClusters(ctx context.Context, gardenerServiceAccountKubeconfigFile, gardenerProject string, scheme *runtime.Scheme) error {
+	logger, ctx := logging.FromContextOrNew(ctx, nil)
+
+	kubeconfig, err := ioutil.ReadFile(gardenerServiceAccountKubeconfigFile)
+	if err != nil {
+		return fmt.Errorf("failed to read gardener service account kubeconfig from file %q: %w", gardenerServiceAccountKubeconfigFile, err)
+	}
+
+	saClient, err := BuildKubeClient(string(kubeconfig), scheme)
+	if err != nil {
+		return fmt.Errorf("failed to build kube client for gardener service account: %w", err)
+	}
+
+	shootList := &unstructured.UnstructuredList{
+		Object: map[string]interface{}{
+			"apiVersion": "core.gardener.cloud/v1beta1",
+			"kind":       "Shoot",
+		},
+	}
+
+	shootNamespace := fmt.Sprintf("garden-%s", gardenerProject)
+
+	labelSelector, _ := labels.Parse(lssv1alpha1.ShootInstanceNameLabel)
+	listOptions := client.ListOptions{
+		LabelSelector: labelSelector,
+		Namespace:     shootNamespace,
+	}
+
+	if err := saClient.List(ctx, shootList, &listOptions); err != nil {
+		return fmt.Errorf("failed to list shoots: %w", err)
+	}
+
+	for _, shoot := range shootList.Items {
+		if shoot.GetDeletionTimestamp() != nil {
+			logger.Info("shoot is already being deleted", lc.KeyResource, shoot.GetName())
+			continue
+		}
+
+		annotations := shoot.GetAnnotations()
+		if annotations == nil {
+			annotations = make(map[string]string)
+		}
+		annotations["confirmation.gardener.cloud/deletion"] = "true"
+		shoot.SetAnnotations(annotations)
+		if err := saClient.Update(ctx, &shoot); err != nil {
+			return fmt.Errorf("failed to annotate shoot %q: %w", shoot.GetName(), err)
+		}
+
+		logger.Info("deleting shoot", lc.KeyResource, shoot.GetName())
+		if err := saClient.Delete(ctx, &shoot); err != nil {
+			if !apierrors.IsNotFound(err) {
+				return fmt.Errorf("failed to delete shoot %q: %w", shoot.GetName(), err)
+			}
+		}
+	}
+
+	return nil
+}
+
+// ParseIngressDomain parses the ingress domain out of a kubeconfig file.
+func ParseIngressDomain(kubeconfigFile string) (string, error) {
+	var hostingClusterKubeconfigMap map[string]interface{}
+	hostingClusterKubeconfig, err := ioutil.ReadFile(kubeconfigFile)
+	if err != nil {
+		return "", fmt.Errorf("failed to read hosting cluster kubeconfig: %w", err)
+	}
+	if err := yaml.Unmarshal(hostingClusterKubeconfig, &hostingClusterKubeconfigMap); err != nil {
+		return "", fmt.Errorf("failed to unmarshal hosting cluster kubeconfig: %w", err)
+	}
+
+	path := jsonpath.New("clusterServer").AllowMissingKeys(true)
+	err = path.Parse("{.clusters[0].cluster.server}")
+	if err != nil {
+		return "", fmt.Errorf("failed to parse jsonpath: %w", err)
+	}
+
+	results, err := path.FindResults(hostingClusterKubeconfigMap)
+	if err != nil {
+		return "", fmt.Errorf("failed to get cluster server: %w", err)
+	}
+
+	value := results[0][0].Interface()
+	clusterServer, ok := value.(string)
+	if !ok {
+		return "", fmt.Errorf("field has an invalid type")
+	}
+
+	rexp, err := regexp.Compile(`[^\.]*\.(.*)$`)
+	if err != nil {
+		return "", fmt.Errorf("failed to parse regex")
+	}
+	match := rexp.FindStringSubmatch(clusterServer)
+	if match == nil || len(match) < 2 {
+		return "", fmt.Errorf("failed to parse url")
+	}
+	ingressDomain := fmt.Sprintf("ingress.%s", match[1])
+
+	return ingressDomain, nil
 }

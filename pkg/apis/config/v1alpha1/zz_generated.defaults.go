@@ -28,4 +28,5 @@ func SetObjectDefaults_LandscaperServiceConfiguration(in *LandscaperServiceConfi
 	SetDefaults_LandscaperServiceConfiguration(in)
 	SetDefaults_AvailabilityMonitoringConfiguration(&in.AvailabilityMonitoring)
 	SetDefaults_CrdManagementConfiguration(&in.CrdManagement)
+	SetDefaults_ShootConfiguration(&in.ShootConfiguration)
 }

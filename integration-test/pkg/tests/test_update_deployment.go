@@ -9,6 +9,12 @@ import (
 	"fmt"
 	"time"
 
+	"sigs.k8s.io/controller-runtime/pkg/client"
+
+	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
+
+	lssutils "github.com/gardener/landscaper-service/pkg/utils"
+
 	"k8s.io/apimachinery/pkg/types"
 
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
@@ -58,11 +64,19 @@ func (r *UpdateDeploymentRunner) updateDeployment(deployment *lssv1alpha1.Landsc
 	logger, _ := logging.FromContextOrNew(r.ctx, nil)
 
 	logger.Info("updating deployment", "name", deployment.Name)
+	if err := r.clusterClients.TestCluster.Get(r.ctx, client.ObjectKeyFromObject(deployment), deployment); err != nil {
+		return fmt.Errorf("failed to get deployment %q: %w", deployment.Name, err)
+	}
+
+	lssutils.SetOperationAnnotation(deployment, lssv1alpha1.LandscaperServiceOperationIgnore)
 	deployment.Spec.LandscaperConfiguration.Deployers = append(deployment.Spec.LandscaperConfiguration.Deployers, "container")
 
 	if err := r.clusterClients.TestCluster.Update(r.ctx, deployment); err != nil {
 		return fmt.Errorf("failed to update deployment %q: %w", deployment.Name, err)
 	}
+
+	// wait for the controller to reconcile the instance
+	time.Sleep(10 * time.Second)
 
 	instance := &lssv1alpha1.Instance{}
 	if err := r.clusterClients.TestCluster.Get(
@@ -70,6 +84,29 @@ func (r *UpdateDeploymentRunner) updateDeployment(deployment *lssv1alpha1.Landsc
 		types.NamespacedName{Name: deployment.Status.InstanceRef.Name, Namespace: deployment.Status.InstanceRef.Namespace},
 		instance); err != nil {
 		return fmt.Errorf("failed to retrieve instance for deployment %q: %w", deployment.Name, err)
+	}
+
+	if !lssutils.HasOperationAnnotation(instance, lssv1alpha1.LandscaperServiceOperationIgnore) {
+		return fmt.Errorf("ignore operation annotation of deployment %s was not inherited to instance", deployment.Name)
+	}
+
+	installation := &lsv1alpha1.Installation{}
+	if err := r.clusterClients.TestCluster.Get(
+		r.ctx,
+		types.NamespacedName{Name: instance.Status.InstallationRef.Name, Namespace: instance.Status.InstallationRef.Namespace}, installation); err != nil {
+		return fmt.Errorf("could not get installation for landscaper deployment %s: %w", deployment.Name, err)
+	}
+
+	if installation.Status.InstallationPhase != lsv1alpha1.InstallationPhaseSucceeded {
+		return fmt.Errorf("ignore annotation of deployment %s was ignored", deployment.Name)
+	}
+
+	if err := r.clusterClients.TestCluster.Get(r.ctx, client.ObjectKeyFromObject(deployment), deployment); err != nil {
+		return fmt.Errorf("failed to get deployment %q: %w", deployment.Name, err)
+	}
+	lssutils.RemoveOperationAnnotation(deployment)
+	if err := r.clusterClients.TestCluster.Update(r.ctx, deployment); err != nil {
+		return fmt.Errorf("failed to update deployment %q: %w", deployment.Name, err)
 	}
 
 	// waiting for a state change, because installations are already succeeded

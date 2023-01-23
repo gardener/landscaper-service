@@ -23,11 +23,11 @@ metadata:
   name: default
   labels:
     config.landscaper-service.gardener.cloud/visible: "true"
-    config.landscaper-service.gardener.cloud/region: "eu-west-1"
 
 spec:
-  providerType: gcp | aws | alicloud
   priority: 10
+
+  ingressDomain: ingress.mydomain.net
 
   secretRef:
     name: default-target
@@ -42,13 +42,11 @@ status:
 
 ## Labels
 
-ServiceTargetConfigs support two special labels:
+ServiceTargetConfig supported labels:
 
 * `config.landscaper-service.gardener.cloud/visible` defines the visibility of the ServiceTargetConfig. 
 When set to `true`, the ServiceTargetConfig can be used to schedule new deployments of the Landscaper on the referenced kubernetes cluster.
 When not set or set to any other value than `true`, no new deployments can be scheduled on the referenced cluster.
-* `config.landscaper-service.gardener.cloud/region` can be used to specify the geo-region of the referenced kubernetes cluster.
-LandscaperDeployments can make use of this label to specify on which geo-region the Landscaper shall be deployed.
 
 ### Managing Visibility
 
@@ -65,16 +63,6 @@ To set a ServiceTargetConfig to visible, do the following:
 kubectl -n laas-system label --overwrite=true servicetargetconfigs.landscaper-service.gardener.cloud default config.landscaper-service.gardener.cloud/visible=true
 ```
 
-
-## Provider Type
-
-The field `spec.providerType` specifies the infrastructure provider of the referenced kubernetes cluster.
-Currently, supported values are:
-
-* `gcp`
-* `aws`
-* `alicloud`
-
 ## Priority
 
 The `spec.priority` field is an integer number specifying the scheduling priority for the ServiceTargetConfig. 
@@ -82,6 +70,10 @@ To calculate the effective priority when scheduling Instances is calculated by d
 (`spec.priority/(len(status.instanceRefs) + 1)`).
 The more instances that are referenced by a ServiceTargetConfig, the lower the effective priority becomes.
 
+## Ingress Domain
+
+The `spec.ingressDomain` field is a string specifying the ingress domain of the referenced target cluster.
+The ingress domain of the target cluster has to be configured so that an ingress resource can be created as an endpoint for the Webhook Server of every Landscaper instance.
 
 ## Secret Reference
 

@@ -36,6 +36,15 @@ landscaperservice:
   #     apiKey:
   #     timeout:
 
+  gardener:
+    serviceAccountKubeconfig:
+      name: gardener-service-account
+      namespace: laas-system
+      key: kubeconfig
+    projectName: laas
+
+  shootConfiguration: {}
+
 
 image: {}
 

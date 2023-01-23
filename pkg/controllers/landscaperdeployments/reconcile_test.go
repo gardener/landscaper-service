@@ -9,6 +9,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/gardener/landscaper-service/pkg/utils"
+
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 
 	lsserrors "github.com/gardener/landscaper-service/pkg/apis/errors"
@@ -211,7 +213,7 @@ var _ = Describe("Reconcile", func() {
 		Expect(err).ToNot(HaveOccurred())
 
 		deployment := state.GetDeployment("test")
-		config := state.GetConfig("config2")
+		config := state.GetConfig("config3")
 
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(deployment))
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(deployment), deployment)).To(Succeed())
@@ -222,7 +224,7 @@ var _ = Describe("Reconcile", func() {
 		instance := &lssv1alpha1.Instance{}
 		err = testenv.Client.Get(ctx, types.NamespacedName{Name: deployment.Status.InstanceRef.Name, Namespace: deployment.Status.InstanceRef.Namespace}, instance)
 		Expect(err).ToNot(HaveOccurred())
-		Expect(instance.Spec.ServiceTargetConfigRef.Name).To(Equal("config2"))
+		Expect(instance.Spec.ServiceTargetConfigRef.Name).To(Equal("config3"))
 		Expect(instance.Spec.LandscaperConfiguration).To(Equal(deployment.Spec.LandscaperConfiguration))
 		Expect(instance.Spec.TenantId).To(Equal(deployment.Spec.TenantId))
 		Expect(instance.Spec.ID).To(MatchRegexp("[a-f0-9]+"))
@@ -351,5 +353,34 @@ var _ = Describe("Reconcile", func() {
 		Expect(deployment.Status.LastError.Reason).To(Equal(reason))
 		Expect(deployment.Status.LastError.Message).To(Equal(message))
 		Expect(deployment.Status.LastError.LastUpdateTime.Time).Should(BeTemporally(">", deployment.Status.LastError.LastTransitionTime.Time))
+	})
+
+	It("should respect the ignore operation annotation", func() {
+		var err error
+		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test6")
+		Expect(err).ToNot(HaveOccurred())
+
+		deployment := state.GetDeployment("test")
+
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(deployment))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(deployment), deployment)).To(Succeed())
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(deployment))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(deployment), deployment)).To(Succeed())
+		Expect(deployment.Status.InstanceRef).ToNot(BeNil())
+
+		instance := &lssv1alpha1.Instance{}
+		err = testenv.Client.Get(ctx, types.NamespacedName{Name: deployment.Status.InstanceRef.Name, Namespace: deployment.Status.InstanceRef.Namespace}, instance)
+		Expect(err).ToNot(HaveOccurred())
+		Expect(utils.HasOperationAnnotation(instance, lssv1alpha1.LandscaperServiceOperationIgnore)).To(BeTrue())
+
+		utils.RemoveOperationAnnotation(deployment)
+		err = testenv.Client.Update(ctx, deployment)
+		Expect(err).ToNot(HaveOccurred())
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(deployment))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(deployment), deployment)).To(Succeed())
+
+		err = testenv.Client.Get(ctx, types.NamespacedName{Name: deployment.Status.InstanceRef.Name, Namespace: deployment.Status.InstanceRef.Namespace}, instance)
+		Expect(err).ToNot(HaveOccurred())
+		Expect(utils.HasOperationAnnotation(instance, lssv1alpha1.LandscaperServiceOperationIgnore)).To(BeFalse())
 	})
 })

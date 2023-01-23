@@ -82,9 +82,21 @@ type InstanceStatus struct {
 	// +optional
 	ClusterEndpoint string `json:"clusterEndpoint,omitempty"`
 
-	// ClusterKubeconfigRef contains the Kubeconfig which can be used for accessing the landscaper cluster.
+	// UserKubeconfig contains the user kubeconfig which can be used for accessing the landscaper cluster.
 	// +optional
-	ClusterKubeconfig string `json:"clusterKubeconfig,omitempty"`
+	UserKubeconfig string `json:"userKubeconfig,omitempty"`
+
+	// AdminKubeconfig contains the admin kubeconfig which can be used for accessing the landscaper cluster.
+	// +optional
+	AdminKubeconfig string `json:"adminKubeconfig,omitempty"`
+
+	// ShootName is the name of the corresponding shoot cluster.
+	// +optional
+	ShootName string `json:"shootName,omitempty"`
+
+	// ShootNamespace is the namespace in which the shoot resource is being created.
+	// +optional
+	ShootNamespace string `json:"shootNamespace,omitempty"`
 }
 
 var InstanceDefinition = lsschema.CustomResourceDefinition{

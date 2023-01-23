@@ -9,6 +9,10 @@ import (
 	"fmt"
 	"reflect"
 
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+
+	guuid "github.com/google/uuid"
+
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -23,24 +27,44 @@ import (
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	lsserrors "github.com/gardener/landscaper-service/pkg/apis/errors"
 	"github.com/gardener/landscaper-service/pkg/operation"
+	"github.com/gardener/landscaper-service/pkg/utils"
 )
 
 // Controller is the instances controller
 type Controller struct {
 	operation.Operation
-	log logging.Logger
+	log                          logging.Logger
+	gardenerServiceAccountClient client.Client
 
-	ReconcileFunc    func(ctx context.Context, deployment *lssv1alpha1.Instance) error
-	HandleDeleteFunc func(ctx context.Context, deployment *lssv1alpha1.Instance) error
+	UniqueIDFunc func() string
+
+	ReconcileFunc    func(ctx context.Context, instance *lssv1alpha1.Instance) error
+	HandleDeleteFunc func(ctx context.Context, instance *lssv1alpha1.Instance) error
+	ListShootsFunc   func(ctx context.Context, instance *lssv1alpha1.Instance) (*unstructured.UnstructuredList, error)
+}
+
+// NewUniqueID creates a new unique id string with a length of 8.
+func (c *Controller) NewUniqueID() string {
+	id := c.UniqueIDFunc()
+	if len(id) > 8 {
+		id = id[:8]
+	}
+	return id
+}
+
+func defaultUniqueIdFunc() string {
+	return guuid.New().String()
 }
 
 // NewController returns a new instances controller
 func NewController(logger logging.Logger, c client.Client, scheme *runtime.Scheme, config *coreconfig.LandscaperServiceConfiguration) (reconcile.Reconciler, error) {
 	ctrl := &Controller{
-		log: logger,
+		log:          logger,
+		UniqueIDFunc: defaultUniqueIdFunc,
 	}
 	ctrl.ReconcileFunc = ctrl.reconcile
 	ctrl.HandleDeleteFunc = ctrl.handleDelete
+	ctrl.ListShootsFunc = ctrl.listShoots
 	op := operation.NewOperation(c, scheme, config)
 	ctrl.Operation = *op
 	return ctrl, nil
@@ -49,11 +73,14 @@ func NewController(logger logging.Logger, c client.Client, scheme *runtime.Schem
 // NewTestActuator creates a new controller for testing purposes.
 func NewTestActuator(op operation.Operation, logger logging.Logger) *Controller {
 	ctrl := &Controller{
-		Operation: op,
-		log:       logger,
+		Operation:                    op,
+		log:                          logger,
+		UniqueIDFunc:                 defaultUniqueIdFunc,
+		gardenerServiceAccountClient: op.Client(),
 	}
 	ctrl.ReconcileFunc = ctrl.reconcile
 	ctrl.HandleDeleteFunc = ctrl.handleDelete
+	ctrl.ListShootsFunc = ctrl.listShoots
 	return ctrl
 }
 
@@ -93,6 +120,11 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	// reconcile delete
 	if !instance.DeletionTimestamp.IsZero() {
 		return reconcile.Result{}, errHdl(ctx, c.HandleDeleteFunc(ctx, instance))
+	}
+
+	if utils.HasOperationAnnotation(instance, lssv1alpha1.LandscaperServiceOperationIgnore) {
+		logger.Info("instance has ignore annotation, skipping reconcile")
+		return reconcile.Result{}, nil
 	}
 
 	// reconcile

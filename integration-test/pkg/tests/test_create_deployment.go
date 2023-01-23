@@ -157,5 +157,5 @@ func (r *CreateDeploymentRunner) createDeployment() error {
 func createTenantId() string {
 	low := 10000
 	high := 99999
-	return fmt.Sprintf("vc-%d", low+rand.Intn(high-low))
+	return fmt.Sprintf("tc-%d", low+rand.Intn(high-low))
 }

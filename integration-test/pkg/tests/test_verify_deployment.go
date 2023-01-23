@@ -105,10 +105,6 @@ func (r *VerifyDeploymentRunner) verifyPods(namespace string, numDeployers int) 
 	expectedPods := []string{
 		"landscaper-controller",
 		"landscaper-webhooks",
-		"etcd-main",
-		"etcd-events",
-		"apiserver",
-		"controller-manager,",
 	}
 
 	logger.Info("waiting for pods to be created")
@@ -167,7 +163,7 @@ func (r *VerifyDeploymentRunner) verifyKubeconfig(instance *lssv1alpha1.Instance
 			return false, err
 		}
 
-		return len(instance.Status.ClusterKubeconfig) > 0, nil
+		return len(instance.Status.UserKubeconfig) > 0, nil
 	}, r.config.SleepTime, r.config.MaxRetries)
 
 	if timeout {

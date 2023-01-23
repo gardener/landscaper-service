@@ -10,6 +10,8 @@ import (
 	"fmt"
 	"time"
 
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+
 	lsserrors "github.com/gardener/landscaper-service/pkg/apis/errors"
 
 	. "github.com/onsi/ginkgo"
@@ -32,6 +34,10 @@ import (
 )
 
 var _ = Describe("Reconcile", func() {
+	const (
+		uniqueId = "a1b2c3d4e6"
+	)
+
 	var (
 		op    *operation.Operation
 		ctrl  *instancescontroller.Controller
@@ -42,7 +48,17 @@ var _ = Describe("Reconcile", func() {
 	BeforeEach(func() {
 		ctx = context.Background()
 		op = operation.NewOperation(testenv.Client, envtest.LandscaperServiceScheme, testutils.DefaultControllerConfiguration())
+		Expect(testutils.CreateServiceAccountSecret(ctx, op.Client(), op.Config())).To(Succeed())
 		ctrl = instancescontroller.NewTestActuator(*op, logging.Discard())
+		ctrl.ListShootsFunc = func(ctx context.Context, instance *lssv1alpha1.Instance) (*unstructured.UnstructuredList, error) {
+			return &unstructured.UnstructuredList{
+				Items: []unstructured.Unstructured{},
+			}, nil
+		}
+		ctrl.UniqueIDFunc = func() string {
+			return uniqueId
+		}
+
 	})
 
 	AfterEach(func() {
@@ -71,7 +87,7 @@ var _ = Describe("Reconcile", func() {
 		Expect(err).ToNot(HaveOccurred())
 
 		instance := state.GetInstance("test")
-		config := state.GetConfig("default")
+		//config := state.GetConfig("default")
 
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
@@ -94,9 +110,21 @@ var _ = Describe("Reconcile", func() {
 		Expect(installation.Spec.Context).To(ContainSubstring("test-"))
 		Expect(installation.Spec.ComponentDescriptor.Reference.Version).To(Equal(op.Config().LandscaperServiceComponent.Version))
 		Expect(installation.Spec.ComponentDescriptor.Reference.ComponentName).To(Equal(op.Config().LandscaperServiceComponent.Name))
-		Expect(installation.Spec.ImportDataMappings[lsinstallation.ProviderTypeImportName]).To(Equal(utils.StringToAnyJSON(config.Spec.ProviderType)))
-		Expect(installation.Spec.ImportDataMappings[lsinstallation.VirtualClusterNamespaceImportName]).To(Equal(utils.StringToAnyJSON(lsinstallation.VirtualClusterNamespace)))
 		Expect(installation.Spec.ImportDataMappings[lsinstallation.HostingClusterNamespaceImportName]).To(Equal(utils.StringToAnyJSON("12345-abcdef")))
+		Expect(installation.Spec.ImportDataMappings[lsinstallation.TargetClusterNamespaceImportName]).To(Equal(utils.StringToAnyJSON(lsinstallation.TargetClusterNamespace)))
+		Expect(installation.Spec.ImportDataMappings[lsinstallation.WebhooksHostNameImportName]).To(Equal(utils.StringToAnyJSON("12345-abcdef.ingress.mycluster.external")))
+		Expect(installation.Spec.ImportDataMappings[lsinstallation.ShootNameImportName]).To(Equal(utils.StringToAnyJSON(uniqueId[:8])))
+		Expect(installation.Spec.ImportDataMappings[lsinstallation.ShootNamespaceImportName]).To(Equal(utils.StringToAnyJSON("garden-test")))
+		Expect(installation.Spec.ImportDataMappings[lsinstallation.ShootSecretBindingImportName]).To(Equal(utils.StringToAnyJSON("secret-binding")))
+		Expect(installation.Spec.ImportDataMappings[lsinstallation.ShootLabelsImportName]).ToNot(BeNil())
+
+		shootAnnotationsRaw := installation.Spec.ImportDataMappings[lsinstallation.ShootLabelsImportName]
+		var shootAnnotations map[string]interface{}
+		Expect(json.Unmarshal(shootAnnotationsRaw.RawMessage, &shootAnnotations)).To(Succeed())
+		Expect(shootAnnotations).To(HaveKeyWithValue(lssv1alpha1.ShootTenantIDLabel, instance.Spec.TenantId))
+		Expect(shootAnnotations).To(HaveKeyWithValue(lssv1alpha1.ShootInstanceIDLabel, instance.Spec.ID))
+		Expect(shootAnnotations).To(HaveKeyWithValue(lssv1alpha1.ShootInstanceNameLabel, instance.Name))
+		Expect(shootAnnotations).To(HaveKeyWithValue(lssv1alpha1.ShootInstanceNamespaceLabel, instance.Namespace))
 
 		Expect(installation.Annotations).ToNot(BeNil())
 		Expect(installation.Annotations).To(HaveKey(lsv1alpha1.OperationAnnotation))
@@ -114,33 +142,51 @@ var _ = Describe("Reconcile", func() {
 				Name:      "endpointexport",
 				Namespace: state.Namespace,
 				Labels: map[string]string{
-					lsv1alpha1.DataObjectKeyLabel:    lsinstallation.ClusterEndpointExportName,
-					lsv1alpha1.DataObjectSourceLabel: fmt.Sprintf("Inst.%s", installation.Name),
+					lsv1alpha1.DataObjectKeyLabel:        lsinstallation.ClusterEndpointExportName,
+					lsv1alpha1.DataObjectSourceLabel:     fmt.Sprintf("Inst.%s", installation.Name),
+					lsv1alpha1.DataObjectSourceTypeLabel: string(lsv1alpha1.ExportDataObjectSourceType),
 				},
 			},
 			Data: utils.StringToAnyJSON(clusterEndpoint),
 		}
 		Expect(testenv.Client.Create(ctx, endpointExport)).To(Succeed())
 
-		clusterKubeConfig := "dummy"
-		kubeconfigExport := &lsv1alpha1.DataObject{
+		userKubeConfig := "userkubeconfigdata"
+		userKubeconfigExport := &lsv1alpha1.DataObject{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:      "kubeconfigexport",
+				Name:      "userkubeconfigexport",
 				Namespace: state.Namespace,
 				Labels: map[string]string{
-					lsv1alpha1.DataObjectKeyLabel:    lsinstallation.ClusterKubeconfigExportName,
-					lsv1alpha1.DataObjectSourceLabel: fmt.Sprintf("Inst.%s", installation.Name),
+					lsv1alpha1.DataObjectKeyLabel:        lsinstallation.UserKubeconfigExportName,
+					lsv1alpha1.DataObjectSourceLabel:     fmt.Sprintf("Inst.%s", installation.Name),
+					lsv1alpha1.DataObjectSourceTypeLabel: string(lsv1alpha1.ExportDataObjectSourceType),
 				},
 			},
-			Data: utils.StringToAnyJSON(clusterKubeConfig),
+			Data: utils.StringToAnyJSON(userKubeConfig),
 		}
-		Expect(testenv.Client.Create(ctx, kubeconfigExport)).To(Succeed())
+		Expect(testenv.Client.Create(ctx, userKubeconfigExport)).To(Succeed())
+
+		adminKubeConfig := "adminkubeconfigdata"
+		adminKubeconfigExport := &lsv1alpha1.DataObject{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "adminkubeconfigexport",
+				Namespace: state.Namespace,
+				Labels: map[string]string{
+					lsv1alpha1.DataObjectKeyLabel:        lsinstallation.AdminKubeconfigExportName,
+					lsv1alpha1.DataObjectSourceLabel:     fmt.Sprintf("Inst.%s", installation.Name),
+					lsv1alpha1.DataObjectSourceTypeLabel: string(lsv1alpha1.ExportDataObjectSourceType),
+				},
+			},
+			Data: utils.StringToAnyJSON(adminKubeConfig),
+		}
+		Expect(testenv.Client.Create(ctx, adminKubeconfigExport)).To(Succeed())
 
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
 
 		Expect(instance.Status.ClusterEndpoint).To(Equal(clusterEndpoint))
-		Expect(instance.Status.ClusterKubeconfig).To(Equal(clusterKubeConfig))
+		Expect(instance.Status.UserKubeconfig).To(Equal(userKubeConfig))
+		Expect(instance.Status.AdminKubeconfig).To(Equal(adminKubeConfig))
 	})
 
 	It("should create registry pull secrets for the context", func() {
@@ -286,5 +332,20 @@ var _ = Describe("Reconcile", func() {
 		Expect(instance.Status.LastError.Reason).To(Equal(reason))
 		Expect(instance.Status.LastError.Message).To(Equal(message))
 		Expect(instance.Status.LastError.LastUpdateTime.Time).Should(BeTemporally(">", instance.Status.LastError.LastTransitionTime.Time))
+	})
+
+	It("should respect the ignore operation annotation", func() {
+		var err error
+		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test4")
+		Expect(err).ToNot(HaveOccurred())
+
+		instance := state.GetInstance("test")
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
+
+		Expect(instance.Status.TargetRef).To(BeNil())
+		Expect(instance.Status.InstallationRef).To(BeNil())
 	})
 })

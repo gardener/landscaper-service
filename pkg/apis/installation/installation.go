@@ -32,27 +32,34 @@ const (
 
 	// HostingClusterNamespaceImportName is the import name for the hosting cluster namespace.
 	HostingClusterNamespaceImportName = "hostingClusterNamespace"
-	// DeleteHostingClusterImportName is the import for specifying whether the hosting cluster namespace shall be deleted.
-	// before the installation.
-	DeleteHostingClusterImportName = "deleteHostingClusterNamespace"
-	// VirtualClusterNamespaceImportName is the import for the virtual cluster namespace.
-	VirtualClusterNamespaceImportName = "virtualClusterNamespace"
-	// ProviderTypeImportName is the import for the provider type.
-	ProviderTypeImportName = "providerType"
+	// TargetClusterNamespaceImportName is the import for the target cluster namespace.
+	TargetClusterNamespaceImportName = "targetClusterNamespace"
 	// RegistryConfigImportName is the import for the registry configuration.
 	RegistryConfigImportName = "registryConfig"
 	// LandscaperConfigImportName is the import for the landscaper configuration.
 	LandscaperConfigImportName = "landscaperConfig"
-	// DNSAccessDomainImportName is the import for the API server DNS name.
-	DNSAccessDomainImportName = "dnsAccessDomain"
+	// ShootNameImportName is the import for the shoot name.
+	ShootNameImportName = "shootName"
+	// ShootNamespaceImportName is the import for the shoot namespace.
+	ShootNamespaceImportName = "shootNamespace"
+	// ShootSecretBindingImportName is the import for the name of the shoot secret binding.
+	ShootSecretBindingImportName = "shootSecretBindingName"
+	// ShootLabelsImportName is the import for the shoot labels.
+	ShootLabelsImportName = "shootLabels"
+	// ShootConfigImportName is the shoot configuration import.
+	ShootConfigImportName = "shootConfig"
+	//WebhooksHostNameImportName is the import for the webhooks host name.
+	WebhooksHostNameImportName = "webhooksHostName"
 
-	// VirtualClusterNamespace is the virtual cluster namespace used for landscaper internals.
-	VirtualClusterNamespace = "ls-system"
+	// TargetClusterNamespace is the target cluster namespace used for landscaper internals.
+	TargetClusterNamespace = "ls-system"
 
 	// ClusterEndpointExportName is the name of the cluster endpoint export.
 	ClusterEndpointExportName = "landscaperClusterEndpoint"
-	// ClusterKubeconfigExportName is the name of the cluster kubeconfig export.
-	ClusterKubeconfigExportName = "landscaperClusterKubeconfig"
+	// UserKubeconfigExportName is the name of the user kubeconfig export.
+	UserKubeconfigExportName = "landscaperUserKubeconfig"
+	// AdminKubeconfigExportName is the name of the admin kubeconfig export.
+	AdminKubeconfigExportName = "landscaperAdminKubeconfig"
 )
 
 // CacheConfig specifies the landscaper registry cache configuration.

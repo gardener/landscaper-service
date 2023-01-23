@@ -801,9 +801,30 @@ func schema_pkg_apis_core_v1alpha1_InstanceStatus(ref common.ReferenceCallback) 
 							Format:      "",
 						},
 					},
-					"clusterKubeconfig": {
+					"userKubeconfig": {
 						SchemaProps: spec.SchemaProps{
-							Description: "ClusterKubeconfigRef contains the Kubeconfig which can be used for accessing the landscaper cluster.",
+							Description: "UserKubeconfig contains the user kubeconfig which can be used for accessing the landscaper cluster.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"adminKubeconfig": {
+						SchemaProps: spec.SchemaProps{
+							Description: "AdminKubeconfig contains the admin kubeconfig which can be used for accessing the landscaper cluster.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"shootName": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ShootName is the name of the corresponding shoot cluster.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"shootNamespace": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ShootNamespace is the namespace in which the shoot resource is being created.",
 							Type:        []string{"string"},
 							Format:      "",
 						},
@@ -972,13 +993,6 @@ func schema_pkg_apis_core_v1alpha1_LandscaperDeploymentSpec(ref common.Reference
 							Description: "LandscaperConfiguration contains the configuration for the landscaper service deployment",
 							Default:     map[string]interface{}{},
 							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperConfiguration"),
-						},
-					},
-					"region": {
-						SchemaProps: spec.SchemaProps{
-							Description: "Region selects the region this LandscaperDeployment should be installed on.",
-							Type:        []string{"string"},
-							Format:      "",
 						},
 					},
 				},
@@ -1357,14 +1371,6 @@ func schema_pkg_apis_core_v1alpha1_ServiceTargetConfigSpec(ref common.ReferenceC
 				Description: "ServiceTargetConfigSpec contains the specification for a ServiceTargetConfig.",
 				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
-					"providerType": {
-						SchemaProps: spec.SchemaProps{
-							Description: "ProviderType specifies the type of the underlying infrastructure provide.",
-							Default:     "",
-							Type:        []string{"string"},
-							Format:      "",
-						},
-					},
 					"priority": {
 						SchemaProps: spec.SchemaProps{
 							Description: "The Priority of this ServiceTargetConfig. SeedConfigs with a higher priority number will be preferred over lower numbers when scheduling new landscaper service installations.",
@@ -1380,8 +1386,16 @@ func schema_pkg_apis_core_v1alpha1_ServiceTargetConfigSpec(ref common.ReferenceC
 							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SecretReference"),
 						},
 					},
+					"ingressDomain": {
+						SchemaProps: spec.SchemaProps{
+							Description: "IngressDomain is the ingress domain of the corresponding target cluster.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
 				},
-				Required: []string{"providerType", "priority", "secretRef"},
+				Required: []string{"priority", "secretRef", "ingressDomain"},
 			},
 		},
 		Dependencies: []string{
