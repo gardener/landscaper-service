@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/gardener/landscaper-service/cmd/resource-cluster-controller/app"
+	"github.com/gardener/landscaper-service/cmd/landscaper-service-target-shoot-sidecar-server/app"
 )
 
 func main() {
