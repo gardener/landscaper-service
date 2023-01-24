@@ -30,29 +30,29 @@ import (
 )
 
 type Controller struct {
-	operation.Operation
+	operation.TargetShootSidecarOperation
 	log logging.Logger
 
 	ReconcileFunc    func(ctx context.Context, namespaceRegistration *lssv1alpha1.NamespaceRegistration) (reconcile.Result, error)
 	HandleDeleteFunc func(ctx context.Context, namespaceRegistration *lssv1alpha1.NamespaceRegistration) (reconcile.Result, error)
 }
 
-func NewController(logger logging.Logger, c client.Client, scheme *runtime.Scheme, config *coreconfig.LandscaperServiceConfiguration) (reconcile.Reconciler, error) {
+func NewController(logger logging.Logger, c client.Client, scheme *runtime.Scheme, config *coreconfig.TargetShootSidecarConfiguration) (reconcile.Reconciler, error) {
 	ctrl := &Controller{
 		log: logger,
 	}
 	ctrl.ReconcileFunc = ctrl.reconcile
 	ctrl.HandleDeleteFunc = ctrl.handleDelete
-	op := operation.NewOperation(c, scheme, config)
-	ctrl.Operation = *op
+	op := operation.NewTargetShootSidecarOperation(c, scheme, config)
+	ctrl.TargetShootSidecarOperation = *op
 	return ctrl, nil
 }
 
 // NewTestActuator creates a new controller for testing purposes.
-func NewTestActuator(op operation.Operation, logger logging.Logger) *Controller {
+func NewTestActuator(op operation.TargetShootSidecarOperation, logger logging.Logger) *Controller {
 	ctrl := &Controller{
-		Operation: op,
-		log:       logger,
+		TargetShootSidecarOperation: op,
+		log:                         logger,
 	}
 	ctrl.ReconcileFunc = ctrl.reconcile
 	ctrl.HandleDeleteFunc = ctrl.handleDelete

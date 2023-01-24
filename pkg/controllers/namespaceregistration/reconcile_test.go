@@ -31,7 +31,7 @@ import (
 
 var _ = Describe("Reconcile", func() {
 	var (
-		op    *operation.Operation
+		op    *operation.TargetShootSidecarOperation
 		ctrl  reconcile.Reconciler
 		ctx   context.Context
 		state *envtest.State
@@ -39,7 +39,7 @@ var _ = Describe("Reconcile", func() {
 
 	BeforeEach(func() {
 		ctx = context.Background()
-		op = operation.NewOperation(testenv.Client, envtest.LandscaperServiceScheme, testutils.DefaultControllerConfiguration())
+		op = operation.NewTargetShootSidecarOperation(testenv.Client, envtest.LandscaperServiceScheme, testutils.DefaultTargetShootConfiguration())
 		ctrl = namespaceregistration.NewTestActuator(*op, logging.Discard())
 	})
 

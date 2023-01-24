@@ -28,7 +28,7 @@ type options struct {
 	Log        logging.Logger // Log is the logger instance
 	ConfigPath string         // ConfigPath is the path to the configuration file
 
-	Config *config.LandscaperServiceConfiguration // Config is the parsed configuration
+	Config *config.TargetShootSidecarConfiguration // Config is the parsed configuration
 }
 
 // NewOptions returns a new options instance
@@ -61,12 +61,12 @@ func (o *options) Complete(ctx context.Context) error {
 	return err
 }
 
-func (o *options) parseConfigurationFile(ctx context.Context) (*config.LandscaperServiceConfiguration, error) {
+func (o *options) parseConfigurationFile(ctx context.Context) (*config.TargetShootSidecarConfiguration, error) {
 	configScheme := runtime.NewScheme()
 	configinstall.Install(configScheme)
 	decoder := serializer.NewCodecFactory(configScheme).UniversalDecoder()
 
-	configv1alpha1 := &v1alpha1.LandscaperServiceConfiguration{}
+	configv1alpha1 := &v1alpha1.TargetShootSidecarConfiguration{}
 
 	if len(o.ConfigPath) != 0 {
 		data, err := ioutil.ReadFile(o.ConfigPath)
@@ -81,7 +81,7 @@ func (o *options) parseConfigurationFile(ctx context.Context) (*config.Landscape
 
 	configScheme.Default(configv1alpha1)
 
-	config := &config.LandscaperServiceConfiguration{}
+	config := &config.TargetShootSidecarConfiguration{}
 	err := configScheme.Convert(configv1alpha1, config, ctx)
 	if err != nil {
 		return nil, err

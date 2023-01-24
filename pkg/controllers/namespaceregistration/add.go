@@ -17,7 +17,7 @@ import (
 )
 
 // AddControllerToManager adds the Namespaceregistration Controller to the manager
-func AddControllerToManager(logger logging.Logger, mgr manager.Manager, config *coreconfig.LandscaperServiceConfiguration) error {
+func AddControllerToManager(logger logging.Logger, mgr manager.Manager, config *coreconfig.TargetShootSidecarConfiguration) error {
 	log := logger.Reconciles("NamespaceRegistrationController", "NamespaceRegistration")
 	ctrl, err := NewController(log, mgr.GetClient(), mgr.GetScheme(), config)
 	if err != nil {
