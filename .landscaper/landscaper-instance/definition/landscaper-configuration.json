@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "github.com/gardener/landscaper/landscaper-service/definitions/landscaper-configuration",
+  "$id": "github.com/gardener/landscaper-service/landscaper-instance/definitions/landscaper-configuration",
   "title": "Landscaper Configuration",
   "description": "Describes the configuration for the landscaper deployment.",
   "type": "object",
