@@ -65,19 +65,4 @@ input:
   path: ./definition/shoot-configuration.json
   mediaType: application/vnd.gardener.landscaper.jsonschema.layer.v1.json
 ...
----
-type: helm.io/chart
-name: landscaper-controller-rbac-chart
-relation: local
-access:
-  type: ociRegistry
-  imageReference: eu.gcr.io/gardener-project/landscaper/charts/landscaper-rbac:${VERSION}
-...
----
-type: helm.io/chart
-name: landscaper-controller-deployment-chart
-relation: local
-access:
-  type: ociRegistry
-  imageReference: eu.gcr.io/gardener-project/landscaper/charts/landscaper-controller:${VERSION}
-...
+
