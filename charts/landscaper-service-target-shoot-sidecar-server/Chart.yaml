@@ -3,9 +3,9 @@
 # SPDX-License-Identifier: Apache-2.0
 
 apiVersion: v2
-name: ls-service-target-shoot-sidecar
+name: landscaper-service-target-shoot-sidecar-server
 description: Helm chart for target-shoot sidecar server
 
 type: application
 version: v0.1.0
-appVersion: v0.25.0
+appVersion: v0.26.0
