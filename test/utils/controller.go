@@ -51,7 +51,7 @@ func ShouldNotReconcile(ctx context.Context, reconciler reconcile.Reconciler, re
 func DefaultControllerConfiguration() *config.LandscaperServiceConfiguration {
 	cfg := &config.LandscaperServiceConfiguration{
 		LandscaperServiceComponent: config.LandscaperServiceComponentConfiguration{
-			Name:    "github.com/gardener/landscaper/landscaper-service",
+			Name:    "github.com/gardener/landscaper-service/landscaper-instance",
 			Version: "v1.1.1",
 		},
 		AvailabilityMonitoring: config.AvailabilityMonitoringConfiguration{

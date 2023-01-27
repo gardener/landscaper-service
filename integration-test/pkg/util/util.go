@@ -46,7 +46,7 @@ func GetLandscaperVersion(repoRootDir string) (string, error) {
 
 	var landscaperVersion string
 
-	compReferencesFile := path.Join(repoRootDir, ".landscaper", "component-references.yaml")
+	compReferencesFile := path.Join(repoRootDir, ".landscaper", "landscaper-instance", "component-references.yaml")
 	raw, err := ioutil.ReadFile(compReferencesFile)
 	if err != nil {
 		return "", err
@@ -61,7 +61,7 @@ func GetLandscaperVersion(repoRootDir string) (string, error) {
 		if !ok {
 			continue
 		}
-		if name != "landscaper-service" {
+		if name != "landscaper" {
 			continue
 		}
 		version, ok := componentReferences["version"]
