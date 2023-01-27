@@ -99,7 +99,7 @@ kubectl -n laas-user get instances.landscaper-service.gardener.cloud test-h97dx 
     "namespace": "laas-user"
   },
   "landscaperServiceComponent": {
-    "name": "github.com/gardener/landscaper/landscaper-service",
+    "name": "github.com/gardener/landscaper-service/landscaper-instance",
     "version": "v0.41.0"
   },
   "observedGeneration": 2,

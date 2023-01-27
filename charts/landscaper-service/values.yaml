@@ -13,7 +13,7 @@ landscaperservice:
   #   forceUpdate: true
 
   landscaperServiceComponent:
-    name: github.com/gardener/landscaper/landscaper-service
+    name: github.com/gardener/landscaper-service/landscaper-instance
     # the version of the landscaper service component is mandatory
     version: v0.0.0
 

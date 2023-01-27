@@ -13,7 +13,7 @@ import (
 )
 
 // This file contains the API of the landscaper-service component "installation-blueprint" resource.
-// github.com/gardener/landscaper/landscaper-service
+// github.com/gardener/landscaper-service/landscaper-instance
 
 const (
 	// UseInMemoryOverlayDefault is default value for the landscaper cache in memory overlay configuration.

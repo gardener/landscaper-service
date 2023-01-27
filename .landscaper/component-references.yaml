@@ -1,7 +1,7 @@
 ---
-componentName: github.com/gardener/landscaper/landscaper-service
-name: landscaper-service
-version: v0.44.0
+componentName: github.com/gardener/landscaper-service/landscaper-instance
+name: landscaper-instance
+version: ${VERSION}
 ...
 ---
 componentName: github.com/gardener/landscaper-service/logging-stack
