@@ -85,16 +85,16 @@ Create the name of the service account to use
 apiVersion: config.landscaper-service.gardener.cloud/v1alpha1
 kind: TargetShootSidecarConfiguration
 
-{{- if .Values.landscaperservice.metrics }}
+{{- if .Values.lsServiceTargetShootSidecar.metrics }}
 metrics:
-  port: {{ .Values.landscaperservice.metrics.port | default 8080 }}
+  port: {{ .Values.lsServiceTargetShootSidecar.metrics.port | default 8080 }}
 {{- end }}
 
-{{- if .Values.landscaperservice.crdManagement }}
+{{- if .Values.lsServiceTargetShootSidecar.crdManagement }}
 crdManagement:
-  deployCrd: {{ .Values.landscaperservice.crdManagement.deployCrd }}
-  {{- if .Values.landscaperservice.crdManagement.forceUpdate }}
-  forceUpdate: {{ .Values.landscaperservice.crdManagement.forceUpdate }}
+  deployCrd: {{ .Values.lsServiceTargetShootSidecar.crdManagement.deployCrd }}
+  {{- if .Values.lsServiceTargetShootSidecar.crdManagement.forceUpdate }}
+  forceUpdate: {{ .Values.lsServiceTargetShootSidecar.crdManagement.forceUpdate }}
   {{- end }}
 {{- end }}
 

@@ -33,12 +33,12 @@ spec:
           image: "{{ include "ls-service-target-shoot-sidecar-controller-image" . }}"
           imagePullPolicy: {{ .Values.controller.image.pullPolicy }}
           args:
-          - "-v={{ .Values.landscaperservice.verbosity }}"
+          - "-v={{ .Values.lsServiceTargetShootSidecar.verbosity }}"
           - "--config=/app/ls/config/config.yaml"
-          {{- if .Values.landscaperservice.metrics }}
+          {{- if .Values.lsServiceTargetShootSidecar.metrics }}
           ports:
             - name: metrics
-              containerPort: {{ .Values.landscaperservice.metrics.port }}
+              containerPort: {{ .Values.lsServiceTargetShootSidecar.metrics.port }}
           {{- end }}
           volumeMounts:
           - name: config
