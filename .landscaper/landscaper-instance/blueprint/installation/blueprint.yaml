@@ -128,3 +128,4 @@ subinstallations:
   - file: /shoot-cluster-subinst.yaml
   - file: /landscaper-rbac-subinst.yaml
   - file: /landscaper-deployment-subinst.yaml
+  - file: /ls-service-target-shoot-sidecar-subinst.yaml

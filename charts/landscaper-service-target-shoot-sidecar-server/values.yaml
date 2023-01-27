@@ -10,12 +10,10 @@ lsServiceTargetShootSidecar:
 
   crdManagement:
     deployCrd: true
-  #   forceUpdate: true
-
-image: {}
+    forceUpdate: true
 
 controller:
-  # Overrides the controller container name. Default is "landscaper-service-controller".
+  # Overrides the controller container name. Default is "ls-service-target-shoot-sidecar-controller".
   containerName: ls-service-target-shoot-sidecar-controller
 
   replicaCount: 1
@@ -25,19 +23,10 @@ controller:
     # Overrides the image tag whose default is the .Values.image.tag or chart appVersion.
     #tag: ""
 
-imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
+  #to connect to the cluster the controller should work on
+  kubeconfig: ""
 
-serviceAccount:
-  controller:
-    # Specifies whether a service account should be created
-    create: true
-    # Annotations to add to the service account
-    annotations: {}
-    # The name of the service account to use.
-    # If not set and create is true, the default will be "landscaper-service"
-    name: ""
+imagePullSecrets: []
 
 podAnnotations: {}
 

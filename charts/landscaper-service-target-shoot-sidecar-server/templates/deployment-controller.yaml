@@ -23,7 +23,6 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "ls-service-target-shoot-sidecar.controller.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -34,6 +33,7 @@ spec:
           imagePullPolicy: {{ .Values.controller.image.pullPolicy }}
           args:
           - "-v={{ .Values.lsServiceTargetShootSidecar.verbosity }}"
+          - "--kubeconfig=/app/ls/cluster-kubeconfig/kubeconfig"
           - "--config=/app/ls/config/config.yaml"
           {{- if .Values.lsServiceTargetShootSidecar.metrics }}
           ports:
@@ -43,12 +43,18 @@ spec:
           volumeMounts:
           - name: config
             mountPath: /app/ls/config
+          - name: kubeconfig
+            mountPath: /app/ls/cluster-kubeconfig
+
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       volumes:
       - name: config
         secret:
           secretName: {{ include "ls-service-target-shoot-sidecar.fullname" . }}-config
+      - name: kubeconfig
+        secret:
+          secretName: {{ include "ls-service-target-shoot-sidecar.fullname" . }}-controller-cluster-kubeconfig
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

@@ -68,7 +68,7 @@ Create the name of the service account to use
 {{- end }}
 
 {{- define "ls-service-target-shoot-sidecar-controller-image" -}}
-{{- $tag := ( .Values.controller.image.tag | default .Values.image.tag | default .Chart.AppVersion )  -}}
+{{- $tag := ( .Values.controller.image.tag | default .Chart.AppVersion )  -}}
 {{- $image :=  dict "repository" .Values.controller.image.repository "tag" $tag  -}}
 {{- include "utils-templates.image" $image }}
 {{- end -}}
