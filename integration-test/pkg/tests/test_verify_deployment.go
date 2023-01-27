@@ -19,6 +19,7 @@ import (
 	cliutil "github.com/gardener/landscapercli/pkg/util"
 
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	lsinstallation "github.com/gardener/landscaper-service/pkg/apis/installation"
 	"github.com/gardener/landscaper-service/test/integration/pkg/test"
 	"github.com/gardener/landscaper-service/test/integration/pkg/util"
 )
@@ -75,7 +76,17 @@ func (r *VerifyDeploymentRunner) verifyDeployment(deployment *lssv1alpha1.Landsc
 		return fmt.Errorf("failed to get installation for instance %q: %w", instance.Name, err)
 	}
 
-	hostingClusterNamespaceRaw, ok := installation.Spec.ImportDataMappings["hostingClusterNamespace"]
+	_, ok := installation.Spec.ImportDataMappings[lsinstallation.SubaccountIdImportName]
+	if !ok {
+		return fmt.Errorf("installation has no subaccoutId setting")
+	}
+
+	_, ok = installation.Spec.ImportDataMappings[lsinstallation.AuditPolicyImportName]
+	if !ok {
+		return fmt.Errorf("installation has no audit policy setting")
+	}
+
+	hostingClusterNamespaceRaw, ok := installation.Spec.ImportDataMappings[lsinstallation.HostingClusterNamespaceImportName]
 
 	if !ok {
 		return fmt.Errorf("installation has no hostingClusterNamespace setting")
