@@ -381,6 +381,12 @@ func (e *Environment) decodeAndAppendLSSObject(data []byte, objects []client.Obj
 			return nil, fmt.Errorf("unable to decode file as secret: %w", err)
 		}
 		return append(objects, secret), nil
+	case ConfigMapGVK.Kind:
+		configMap := &corev1.ConfigMap{}
+		if _, _, err := decoder.Decode(data, nil, configMap); err != nil {
+			return nil, fmt.Errorf("unable to decode file as secret: %w", err)
+		}
+		return append(objects, configMap), nil
 	case InstallationGVK.Kind:
 		installation := &lsv1alpha1.Installation{}
 		if _, _, err := decoder.Decode(data, nil, installation); err != nil {

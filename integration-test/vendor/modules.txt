@@ -92,6 +92,7 @@ github.com/gardener/landscaper/pkg/utils/tar
 ## explicit; go 1.18
 github.com/gardener/landscaper-service/pkg/apis/core
 github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1
+github.com/gardener/landscaper-service/pkg/apis/installation
 github.com/gardener/landscaper-service/pkg/utils
 # github.com/gardener/landscaper/apis v0.45.0
 ## explicit; go 1.19

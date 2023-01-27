@@ -173,6 +173,14 @@ func (r *InstallLAASTestRunner) createInstallation() error {
 		return fmt.Errorf("failed to marshal gardener configuration: %w", err)
 	}
 
+	auditLogConfiguration := map[string]interface{}{
+		"subaccountId": "abdcdef-123456",
+	}
+	auditLogConfigurationRaw, err := json.Marshal(auditLogConfiguration)
+	if err != nil {
+		return fmt.Errorf("failed to marshal audit log configuration: %w", err)
+	}
+
 	installation := &lsv1alpha1.Installation{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "laas",
@@ -212,6 +220,7 @@ func (r *InstallLAASTestRunner) createInstallation() error {
 				"availabilityMonitoring": lsv1alpha1.NewAnyJSON(availabilityMonitoringRaw),
 				"AVSConfiguration":       lsv1alpha1.NewAnyJSON(avsConfigurationRaw),
 				"gardenerConfiguration":  lsv1alpha1.NewAnyJSON(gardenerConfigurationRaw),
+				"auditLogConfiguration":  lsv1alpha1.NewAnyJSON(auditLogConfigurationRaw),
 			},
 		},
 	}

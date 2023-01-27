@@ -45,6 +45,10 @@ landscaperservice:
 
   shootConfiguration: {}
 
+  # Audit Log configuration (optional)
+  # auditLogConfiguration:
+  #   subaccountId: abcdef-12345
+  #   auditPolicy: {}
 
 image: {}
 

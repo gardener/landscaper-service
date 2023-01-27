@@ -35,6 +35,10 @@ type LandscaperServiceConfiguration struct {
 
 	// ShootConfiguration is the specification to the gardener shoots.
 	ShootConfiguration ShootConfiguration `json:"shootConfiguration"`
+
+	// AuditLogConfig is the audit log configuration for the created shoots.
+	// +optional
+	AuditLogConfig *AuditLogConfiguration `json:"auditLogConfig"`
 }
 
 //AvailabilityMonitoringConfiguration is the configuration for the availability monitoring of the provisioned landscaper
@@ -108,4 +112,12 @@ type GardenerConfiguration struct {
 
 	// ShootSecretBindingName is the secret binding which is used to allocate resources for shoots.
 	ShootSecretBindingName string `json:"shootSecretBindingName"`
+}
+
+// AuditLogConfiguration specifies the shoot cluster audit log configuration.
+type AuditLogConfiguration struct {
+	// SubAccountId is the subaccount id in which the audit log service is available.
+	SubAccountId string `json:"subaccountId"`
+	// AuditPolicy specifies the Kubernetes API server audit policy (audit.k8s.io Policy)
+	AuditPolicy v1alpha1.ConfigMapReference `json:"auditPolicy"`
 }

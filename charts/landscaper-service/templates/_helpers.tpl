@@ -158,4 +158,13 @@ gardenerConfiguration:
 
 shootConfiguration:
 {{ toYaml .Values.landscaperservice.shootConfiguration | indent 2 }}
+
+{{- if .Values.landscaperservice.auditLogConfiguration }}
+auditLogConfig:
+  subaccountId: {{ .Values.landscaperservice.auditLogConfiguration.subaccountId }}
+  auditPolicy:
+    name: {{ include "landscaper-service.fullname" . }}-audit-policy
+    namespace: {{ .Release.Namespace }}
+    key: policy
+{{- end }}
 {{- end }}
