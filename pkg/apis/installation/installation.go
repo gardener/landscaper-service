@@ -50,6 +50,10 @@ const (
 	ShootConfigImportName = "shootConfig"
 	//WebhooksHostNameImportName is the import for the webhooks host name.
 	WebhooksHostNameImportName = "webhooksHostName"
+	// AuditPolicyImportName is the import for the audit policy configuration.
+	AuditPolicyImportName = "auditPolicy"
+	// SubaccountIdImportName is the import for the subaccount id.
+	SubaccountIdImportName = "subaccountId"
 
 	// TargetClusterNamespace is the target cluster namespace used for landscaper internals.
 	TargetClusterNamespace = "ls-system"

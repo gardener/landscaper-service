@@ -74,6 +74,14 @@ deployItems:
           shootConfiguration:
 {{ toYaml $shootConfiguration | indent 12 }}
 
+{{ if .imports.auditLogConfig }}
+          {{ $auditPolicy := ( fromJson (toString (readFile "./audit-policy.json"))) }}
+          auditLogConfiguration:
+            subaccountId: {{ .imports.auditLogConfiguration.subaccountId }}
+            auditPolicy:
+{{ toYaml $auditPolicy | indent 14 }}
+{{ end }}
+
           landscaperServiceComponent:
             name: {{ $landscaperInstanceComponentName }}
             version: {{ $landscaperInstanceComponentVersion }}

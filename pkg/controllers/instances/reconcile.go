@@ -11,6 +11,8 @@ import (
 	"reflect"
 	"strings"
 
+	"k8s.io/apimachinery/pkg/util/yaml"
+
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/labels"
@@ -456,6 +458,34 @@ func (c *Controller) mutateInstallation(ctx context.Context, installation *lsv1a
 		},
 	}
 
+	if c.Config().AuditLogConfig != nil {
+		logger.Info("Setting audit log configuration")
+
+		auditPolicyCm := &corev1.ConfigMap{}
+		if err := c.Client().Get(ctx, c.Config().AuditLogConfig.AuditPolicy.NamespacedName(), auditPolicyCm); err != nil {
+			return fmt.Errorf("unable to retrieve audit policy from config map %q: %w", c.Config().AuditLogConfig.AuditPolicy.NamespacedName(), err)
+		}
+
+		auditPolicyRawStr, ok := auditPolicyCm.Data[c.Config().AuditLogConfig.AuditPolicy.Key]
+		if !ok {
+			return fmt.Errorf("audit policy config map has no key %q", c.Config().AuditLogConfig.AuditPolicy.Key)
+		}
+
+		var auditPolicy map[string]interface{}
+		decoder := yaml.NewYAMLOrJSONDecoder(strings.NewReader(auditPolicyRawStr), 512)
+		if err := decoder.Decode(&auditPolicy); err != nil {
+			return fmt.Errorf("failed to decode audit policy: %w", err)
+		}
+
+		auditPolicyRaw, err := json.Marshal(auditPolicy)
+		if err != nil {
+			return fmt.Errorf("failed to marshal audit policy: %w", err)
+		}
+
+		installation.Spec.ImportDataMappings[lsinstallation.SubaccountIdImportName] = utils.StringToAnyJSON(c.Config().AuditLogConfig.SubAccountId)
+		installation.Spec.ImportDataMappings[lsinstallation.AuditPolicyImportName] = lsv1alpha1.NewAnyJSON(auditPolicyRaw)
+	}
+
 	if !deepEqualInstallationSpec(oldInstallationSpec, installation.Spec.DeepCopy()) {
 		// set reconcile annotation to start/update the installation
 		logger.Info("Setting reconcile operation annotation")
@@ -504,6 +534,26 @@ func deepEqualInstallationSpec(specA, specB *lsv1alpha1.InstallationSpec) bool {
 	}
 	if !reflect.DeepEqual(shootConfigA, shootConfigB) {
 		return false
+	}
+
+	_, policyExistsA := specA.ImportDataMappings[lsinstallation.AuditPolicyImportName]
+	_, policyExistsB := specB.ImportDataMappings[lsinstallation.AuditPolicyImportName]
+
+	if policyExistsA && policyExistsB {
+		auditPolicyA := make(map[string]interface{})
+		if err := json.Unmarshal(specA.ImportDataMappings[lsinstallation.AuditPolicyImportName].RawMessage, &auditPolicyA); err != nil {
+			return false
+		}
+		auditPolicyB := make(map[string]interface{})
+		if err := json.Unmarshal(specB.ImportDataMappings[lsinstallation.AuditPolicyImportName].RawMessage, &auditPolicyB); err != nil {
+			return false
+		}
+		if !reflect.DeepEqual(auditPolicyA, auditPolicyB) {
+			return false
+		}
+
+		delete(specA.ImportDataMappings, lsinstallation.AuditPolicyImportName)
+		delete(specB.ImportDataMappings, lsinstallation.AuditPolicyImportName)
 	}
 
 	delete(specA.ImportDataMappings, lsinstallation.LandscaperConfigImportName)

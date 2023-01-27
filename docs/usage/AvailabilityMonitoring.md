@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2023 "SAP SE or an SAP affiliate company and Gardener contributors"
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # Availability Monitoring
 
 Availability Monitoring of the LaaS monitors landscaper instances and notifies in case of unavailability. This includes the landscaper on the core cluster itself and all LaaS-provisioned customer landscaper.

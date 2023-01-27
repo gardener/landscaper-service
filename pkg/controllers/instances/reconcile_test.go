@@ -8,23 +8,26 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"reflect"
 	"time"
 
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-
-	lsserrors "github.com/gardener/landscaper-service/pkg/apis/errors"
+	"k8s.io/apimachinery/pkg/util/yaml"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
+	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/types"
+
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	kutil "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
-	corev1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/types"
 
+	lssconfig "github.com/gardener/landscaper-service/pkg/apis/config"
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	lsserrors "github.com/gardener/landscaper-service/pkg/apis/errors"
 	lsinstallation "github.com/gardener/landscaper-service/pkg/apis/installation"
 	instancescontroller "github.com/gardener/landscaper-service/pkg/controllers/instances"
 	"github.com/gardener/landscaper-service/pkg/operation"
@@ -260,10 +263,44 @@ var _ = Describe("Reconcile", func() {
 		Expect(installation.Annotations).ToNot(BeNil())
 		Expect(installation.Annotations).To(HaveKey(lsv1alpha1.OperationAnnotation))
 		Expect(installation.Annotations[lsv1alpha1.OperationAnnotation]).To(Equal(string(lsv1alpha1.ReconcileOperation)))
+
+		delete(installation.Annotations, lsv1alpha1.OperationAnnotation)
+		Expect(testenv.Client.Update(ctx, installation)).To(Succeed())
+
+		op.Config().AuditLogConfig = &lssconfig.AuditLogConfiguration{
+			SubAccountId: "abcd-1234",
+			AuditPolicy: lsv1alpha1.ConfigMapReference{
+				ObjectReference: lsv1alpha1.ObjectReference{
+					Name:      "audit-policy",
+					Namespace: state.Namespace,
+				},
+				Key: "policy",
+			},
+		}
+
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
+
+		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: installation.Name, Namespace: installation.Namespace}, installation)).To(Succeed())
+		Expect(installation.Annotations).ToNot(BeNil())
+		Expect(installation.Annotations).To(HaveKey(lsv1alpha1.OperationAnnotation))
+		Expect(installation.Annotations[lsv1alpha1.OperationAnnotation]).To(Equal(string(lsv1alpha1.ReconcileOperation)))
 	})
 
 	It("should not set the reconcile operation annotation when the spec has not changed", func() {
 		var err error
+
+		op.Config().AuditLogConfig = &lssconfig.AuditLogConfiguration{
+			SubAccountId: "abcd-1234",
+			AuditPolicy: lsv1alpha1.ConfigMapReference{
+				ObjectReference: lsv1alpha1.ObjectReference{
+					Name:      "audit-policy",
+					Namespace: state.Namespace,
+				},
+				Key: "policy",
+			},
+		}
+
 		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test2")
 		Expect(err).ToNot(HaveOccurred())
 
@@ -347,5 +384,49 @@ var _ = Describe("Reconcile", func() {
 
 		Expect(instance.Status.TargetRef).To(BeNil())
 		Expect(instance.Status.InstallationRef).To(BeNil())
+	})
+
+	It("should set the audit log configuration", func() {
+		var err error
+
+		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test5")
+		Expect(err).ToNot(HaveOccurred())
+
+		instance := state.GetInstance("test")
+
+		op.Config().AuditLogConfig = &lssconfig.AuditLogConfiguration{
+			SubAccountId: "abcd-1234",
+			AuditPolicy: lsv1alpha1.ConfigMapReference{
+				ObjectReference: lsv1alpha1.ObjectReference{
+					Name:      "audit-policy",
+					Namespace: state.Namespace,
+				},
+				Key: "policy",
+			},
+		}
+
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
+
+		Expect(instance.Status.TargetRef).ToNot(BeNil())
+		Expect(instance.Status.InstallationRef).ToNot(BeNil())
+
+		installation := &lsv1alpha1.Installation{}
+		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: instance.Status.InstallationRef.Name, Namespace: instance.Status.InstallationRef.Namespace}, installation)).To(Succeed())
+
+		Expect(installation.Spec.ImportDataMappings).To(HaveKeyWithValue(lsinstallation.SubaccountIdImportName, utils.StringToAnyJSON(op.Config().AuditLogConfig.SubAccountId)))
+		Expect(installation.Spec.ImportDataMappings).To(HaveKey(lsinstallation.AuditPolicyImportName))
+
+		auditPolicyConfigMap := state.GetConfigMap("audit-policy")
+
+		var auditPolicyOrig map[string]interface{}
+		Expect(yaml.Unmarshal([]byte(auditPolicyConfigMap.Data["policy"]), &auditPolicyOrig)).To(Succeed())
+
+		var auditPolicyInstallation map[string]interface{}
+		Expect(yaml.Unmarshal(installation.Spec.ImportDataMappings[lsinstallation.AuditPolicyImportName].RawMessage, &auditPolicyInstallation)).To(Succeed())
+
+		Expect(reflect.DeepEqual(auditPolicyOrig, auditPolicyInstallation)).To(BeTrue())
 	})
 })

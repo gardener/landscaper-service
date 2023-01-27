@@ -30,6 +30,8 @@ var (
 	ConfigGVK schema.GroupVersionKind
 	// SecretGVK is the GVK for secrets.
 	SecretGVK schema.GroupVersionKind
+	// ConfigMapGVK is the GVK for config maps.
+	ConfigMapGVK schema.GroupVersionKind
 	// InstallationGVK is the GVK for installations.
 	InstallationGVK schema.GroupVersionKind
 	// TargetGVK is the GVK for targets.
@@ -56,6 +58,8 @@ func init() {
 	ConfigGVK, err = apiutil.GVKForObject(&lssv1alpha1.ServiceTargetConfig{}, LandscaperServiceScheme)
 	utilruntime.Must(err)
 	SecretGVK, err = apiutil.GVKForObject(&corev1.Secret{}, LandscaperServiceScheme)
+	utilruntime.Must(err)
+	ConfigMapGVK, err = apiutil.GVKForObject(&corev1.ConfigMap{}, LandscaperServiceScheme)
 	utilruntime.Must(err)
 	InstallationGVK, err = apiutil.GVKForObject(&lsv1alpha1.Installation{}, LandscaperServiceScheme)
 	utilruntime.Must(err)

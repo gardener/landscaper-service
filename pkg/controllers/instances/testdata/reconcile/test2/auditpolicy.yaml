@@ -1,0 +1,32 @@
+# SPDX-FileCopyrightText: 2023 "SAP SE or an SAP affiliate company and Gardener contributors"
+#
+# SPDX-License-Identifier: Apache-2.0
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: audit-policy
+  namespace: {{ .Namespace }}
+data:
+  policy: "apiVersion: audit.k8s.io/v1\nkind: Policy\nomitStages:\n- RequestReceived\nrules:\n-
+    level: None\n  users:\n    - \"gardener\"\n    - \"kubelet\"\n    - \"etcd-client\"\n
+    \   - \"vpn-seed\"\n    - \"aws-lb-readvertiser\"\n    - \"cloud-config-downloader\"\n
+    \   - \"system:kube-apiserver:kubelet\"\n    - \"system:kube-controller-manager\"\n
+    \   - \"system:kube-aggregator\"\n    - \"system:kube-scheduler\"\n    - \"system:kube-addon-manager\"\n
+    \   - \"system:kube-aggregator\"\n    - \"system:kube-proxy\"\n    - \"system:cluster-autoscaler\"\n
+    \   - \"system:machine-controller-manager\"\n    - \"system:cloud-controller-manager\"\n
+    \   - \"system:apiserver\"\n    - \"garden.sapcloud.io:system:cert-broker\"\n
+    \   - \"gardener.cloud:system:cert-management\"\n    - \"gardener.cloud:system:gardener-resource-manager\"\n-
+    level: None\n  userGroups:\n    - \"system:nodes\"\n    - \"system:serviceaccounts:kube-system\"\n
+    \   - \"garden.sapcloud.io:monitoring\"\n- level: None\n  resources:\n    - group:
+    \"\"\n      resources: [\"secrets\", \"events\", \"configmaps\", \"tokenreviews\"]\n-
+    level: None\n  verbs: [\"watch\", \"get\", \"list\"]\n- level: None\n  nonResourceURLs:\n
+    \   - /*\n- level: Metadata\n  resources:\n    - group: \"\" # core\n    - group:
+    \"admissionregistration.k8s.io\"\n    - group: \"apiextensions.k8s.io\"\n    -
+    group: \"apiregistration.k8s.io\"\n    - group: \"apps\"\n    - group: \"authentication.k8s.io\"\n
+    \   - group: \"authorization.k8s.io\"\n    - group: \"autoscaling\"\n    - group:
+    \"batch\"\n    - group: \"certificates.k8s.io\"\n    - group: \"coordination.k8s.io\"\n
+    \   - group: \"extensions\"\n    - group: \"metrics.k8s.io\"\n    - group: \"networking.k8s.io\"\n
+    \   - group: \"policy\"\n    - group: \"rbac.authorization.k8s.io\"\n    - group:
+    \"scheduling.k8s.io\"\n    - group: \"settings.k8s.io\"\n    - group: \"storage.k8s.io\"\n
+    \ "

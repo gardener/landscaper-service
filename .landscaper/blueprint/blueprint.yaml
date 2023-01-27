@@ -81,7 +81,14 @@ imports:
               type: string
         projectName:
           type: string
-        shootSecretBindingName:
+
+  - name: auditLogConfiguration
+    required: false
+    type: data
+    schema:
+      type: object
+      properties:
+        subaccountId:
           type: string
 
 deployExecutions:
