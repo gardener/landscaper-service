@@ -7,14 +7,6 @@ access:
   imageReference: eu.gcr.io/gardener-project/landscaper-service/charts/landscaper-service:${VERSION}
 ...
 ---
-type: helm.io/chart
-name: ls-service-target-shoot-sidecar-chart
-relation: local
-access:
-  type: ociRegistry
-  imageReference: eu.gcr.io/gardener-project/landscaper-service/charts/landscaper-service-target-shoot-sidecar-server:${VERSION}
-...
----
 type: blueprint
 name: landscaper-service-blueprint
 relation: local

@@ -18,17 +18,10 @@ imports:
     schema:
       type: string
 
-  - name: verbosity
-    required: true
+  - name: sidecarConfig
     type: data
     schema:
-      type: string
-    
-  - name: webhooksHostName
-    required: true
-    type: data
-    schema:
-      type: string
+      $ref: "cd://resources/sidecar-config-definition"
 
 deployExecutions:
   - name: deploy-execution
