@@ -42,6 +42,10 @@ var (
 	AvailabilityCollectionGVK schema.GroupVersionKind
 	// LsHealthCheckGVK is the GVK for LsHealthCheck.
 	LsHealthCheckGVK schema.GroupVersionKind
+	// NamespaceRegistrationGVK is the GVK for SubjectList.
+	NamespaceRegistrationGVK schema.GroupVersionKind
+	// SubjectListGVK is the GVK for SubjectList.
+	SubjectListGVK schema.GroupVersionKind
 )
 
 func init() {
@@ -70,5 +74,9 @@ func init() {
 	AvailabilityCollectionGVK, err = apiutil.GVKForObject(&lssv1alpha1.AvailabilityCollection{}, LandscaperServiceScheme)
 	utilruntime.Must(err)
 	LsHealthCheckGVK, err = apiutil.GVKForObject(&lsv1alpha1.LsHealthCheck{}, LandscaperServiceScheme)
+	utilruntime.Must(err)
+	NamespaceRegistrationGVK, err = apiutil.GVKForObject(&lssv1alpha1.NamespaceRegistration{}, LandscaperServiceScheme)
+	utilruntime.Must(err)
+	SubjectListGVK, err = apiutil.GVKForObject(&lssv1alpha1.SubjectList{}, LandscaperServiceScheme)
 	utilruntime.Must(err)
 }

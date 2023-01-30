@@ -22,6 +22,8 @@ var Exports = []string{
 	"LandscaperDeployment",
 	"Instance",
 	"ServiceTargetConfig",
+	"NamespaceRegistration",
+	"SubjectList",
 }
 
 var CRDs = []lsschema.CustomResourceDefinitions{

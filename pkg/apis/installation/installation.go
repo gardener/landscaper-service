@@ -38,6 +38,8 @@ const (
 	RegistryConfigImportName = "registryConfig"
 	// LandscaperConfigImportName is the import for the landscaper configuration.
 	LandscaperConfigImportName = "landscaperConfig"
+	// SidecarConfigImportName is the import for the sidecar configuration.
+	SidecarConfigImportName = "sidecarConfig"
 	// ShootNameImportName is the import for the shoot name.
 	ShootNameImportName = "shootName"
 	// ShootNamespaceImportName is the import for the shoot namespace.
@@ -151,6 +153,30 @@ func NewLandscaperConfig() *LandscaperConfig {
 
 // ToAnyJSON marshals this landscaper configuration to an AnyJSON object.
 func (l *LandscaperConfig) ToAnyJSON() (*lsv1alpha1.AnyJSON, error) {
+	raw, err := json.Marshal(l)
+	if err != nil {
+		return nil, err
+	}
+	anyJSON := lsv1alpha1.NewAnyJSON(raw)
+	return &anyJSON, err
+}
+
+// SidecarConfig specifies the config for the namespace registration and subject sync controller.
+type SidecarConfig struct {
+	// Verbosity defines the logging verbosity level.
+	Verbosity string `json:"verbosity,omitempty"`
+}
+
+// NewSidecarConfig creates a new SidecarConfig.
+func NewSidecarConfig() *SidecarConfig {
+	c := &SidecarConfig{
+		Verbosity: VerbosityDefault.String(),
+	}
+	return c
+}
+
+// ToAnyJSON marshals this SidecarConfig to an AnyJSON object.
+func (l *SidecarConfig) ToAnyJSON() (*lsv1alpha1.AnyJSON, error) {
 	raw, err := json.Marshal(l)
 	if err != nil {
 		return nil, err

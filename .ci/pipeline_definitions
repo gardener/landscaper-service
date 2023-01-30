@@ -21,6 +21,10 @@ landscaper-service:
             registry: 'gcr-readwrite'
             target: 'landscaper-service-webhooks-server'
             image: eu.gcr.io/gardener-project/landscaper-service/landscaper-service-webhooks-server
+          landscaper-service-target-shoot-sidecar-server:
+            registry: 'gcr-readwrite'
+            target: 'landscaper-service-target-shoot-sidecar-server'
+            image: eu.gcr.io/gardener-project/landscaper-service/landscaper-service-target-shoot-sidecar-server
     steps:
       verify:
         image: 'golang:1.18.9'

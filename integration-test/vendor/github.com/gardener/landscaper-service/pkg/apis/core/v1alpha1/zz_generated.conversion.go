@@ -186,6 +186,46 @@ func RegisterConversions(s *runtime.Scheme) error {
 	}); err != nil {
 		return err
 	}
+	if err := s.AddGeneratedConversionFunc((*NamespaceRegistration)(nil), (*core.NamespaceRegistration)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_NamespaceRegistration_To_core_NamespaceRegistration(a.(*NamespaceRegistration), b.(*core.NamespaceRegistration), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.NamespaceRegistration)(nil), (*NamespaceRegistration)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_NamespaceRegistration_To_v1alpha1_NamespaceRegistration(a.(*core.NamespaceRegistration), b.(*NamespaceRegistration), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*NamespaceRegistrationList)(nil), (*core.NamespaceRegistrationList)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_NamespaceRegistrationList_To_core_NamespaceRegistrationList(a.(*NamespaceRegistrationList), b.(*core.NamespaceRegistrationList), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.NamespaceRegistrationList)(nil), (*NamespaceRegistrationList)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_NamespaceRegistrationList_To_v1alpha1_NamespaceRegistrationList(a.(*core.NamespaceRegistrationList), b.(*NamespaceRegistrationList), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*NamespaceRegistrationSpec)(nil), (*core.NamespaceRegistrationSpec)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_NamespaceRegistrationSpec_To_core_NamespaceRegistrationSpec(a.(*NamespaceRegistrationSpec), b.(*core.NamespaceRegistrationSpec), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.NamespaceRegistrationSpec)(nil), (*NamespaceRegistrationSpec)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_NamespaceRegistrationSpec_To_v1alpha1_NamespaceRegistrationSpec(a.(*core.NamespaceRegistrationSpec), b.(*NamespaceRegistrationSpec), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*NamespaceRegistrationStatus)(nil), (*core.NamespaceRegistrationStatus)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_NamespaceRegistrationStatus_To_core_NamespaceRegistrationStatus(a.(*NamespaceRegistrationStatus), b.(*core.NamespaceRegistrationStatus), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.NamespaceRegistrationStatus)(nil), (*NamespaceRegistrationStatus)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_NamespaceRegistrationStatus_To_v1alpha1_NamespaceRegistrationStatus(a.(*core.NamespaceRegistrationStatus), b.(*NamespaceRegistrationStatus), scope)
+	}); err != nil {
+		return err
+	}
 	if err := s.AddGeneratedConversionFunc((*ObjectReference)(nil), (*core.ObjectReference)(nil), func(a, b interface{}, scope conversion.Scope) error {
 		return Convert_v1alpha1_ObjectReference_To_core_ObjectReference(a.(*ObjectReference), b.(*core.ObjectReference), scope)
 	}); err != nil {
@@ -243,6 +283,56 @@ func RegisterConversions(s *runtime.Scheme) error {
 	}
 	if err := s.AddGeneratedConversionFunc((*core.ServiceTargetConfigStatus)(nil), (*ServiceTargetConfigStatus)(nil), func(a, b interface{}, scope conversion.Scope) error {
 		return Convert_core_ServiceTargetConfigStatus_To_v1alpha1_ServiceTargetConfigStatus(a.(*core.ServiceTargetConfigStatus), b.(*ServiceTargetConfigStatus), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*Subject)(nil), (*core.Subject)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_Subject_To_core_Subject(a.(*Subject), b.(*core.Subject), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.Subject)(nil), (*Subject)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_Subject_To_v1alpha1_Subject(a.(*core.Subject), b.(*Subject), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*SubjectList)(nil), (*core.SubjectList)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_SubjectList_To_core_SubjectList(a.(*SubjectList), b.(*core.SubjectList), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.SubjectList)(nil), (*SubjectList)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_SubjectList_To_v1alpha1_SubjectList(a.(*core.SubjectList), b.(*SubjectList), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*SubjectListList)(nil), (*core.SubjectListList)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_SubjectListList_To_core_SubjectListList(a.(*SubjectListList), b.(*core.SubjectListList), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.SubjectListList)(nil), (*SubjectListList)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_SubjectListList_To_v1alpha1_SubjectListList(a.(*core.SubjectListList), b.(*SubjectListList), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*SubjectListSpec)(nil), (*core.SubjectListSpec)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_SubjectListSpec_To_core_SubjectListSpec(a.(*SubjectListSpec), b.(*core.SubjectListSpec), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.SubjectListSpec)(nil), (*SubjectListSpec)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_SubjectListSpec_To_v1alpha1_SubjectListSpec(a.(*core.SubjectListSpec), b.(*SubjectListSpec), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*SubjectListStatus)(nil), (*core.SubjectListStatus)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_SubjectListStatus_To_core_SubjectListStatus(a.(*SubjectListStatus), b.(*core.SubjectListStatus), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.SubjectListStatus)(nil), (*SubjectListStatus)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_SubjectListStatus_To_v1alpha1_SubjectListStatus(a.(*core.SubjectListStatus), b.(*SubjectListStatus), scope)
 	}); err != nil {
 		return err
 	}
@@ -687,6 +777,98 @@ func Convert_core_LandscaperServiceComponent_To_v1alpha1_LandscaperServiceCompon
 	return autoConvert_core_LandscaperServiceComponent_To_v1alpha1_LandscaperServiceComponent(in, out, s)
 }
 
+func autoConvert_v1alpha1_NamespaceRegistration_To_core_NamespaceRegistration(in *NamespaceRegistration, out *core.NamespaceRegistration, s conversion.Scope) error {
+	out.ObjectMeta = in.ObjectMeta
+	if err := Convert_v1alpha1_NamespaceRegistrationSpec_To_core_NamespaceRegistrationSpec(&in.Spec, &out.Spec, s); err != nil {
+		return err
+	}
+	if err := Convert_v1alpha1_NamespaceRegistrationStatus_To_core_NamespaceRegistrationStatus(&in.Status, &out.Status, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_v1alpha1_NamespaceRegistration_To_core_NamespaceRegistration is an autogenerated conversion function.
+func Convert_v1alpha1_NamespaceRegistration_To_core_NamespaceRegistration(in *NamespaceRegistration, out *core.NamespaceRegistration, s conversion.Scope) error {
+	return autoConvert_v1alpha1_NamespaceRegistration_To_core_NamespaceRegistration(in, out, s)
+}
+
+func autoConvert_core_NamespaceRegistration_To_v1alpha1_NamespaceRegistration(in *core.NamespaceRegistration, out *NamespaceRegistration, s conversion.Scope) error {
+	out.ObjectMeta = in.ObjectMeta
+	if err := Convert_core_NamespaceRegistrationSpec_To_v1alpha1_NamespaceRegistrationSpec(&in.Spec, &out.Spec, s); err != nil {
+		return err
+	}
+	if err := Convert_core_NamespaceRegistrationStatus_To_v1alpha1_NamespaceRegistrationStatus(&in.Status, &out.Status, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_core_NamespaceRegistration_To_v1alpha1_NamespaceRegistration is an autogenerated conversion function.
+func Convert_core_NamespaceRegistration_To_v1alpha1_NamespaceRegistration(in *core.NamespaceRegistration, out *NamespaceRegistration, s conversion.Scope) error {
+	return autoConvert_core_NamespaceRegistration_To_v1alpha1_NamespaceRegistration(in, out, s)
+}
+
+func autoConvert_v1alpha1_NamespaceRegistrationList_To_core_NamespaceRegistrationList(in *NamespaceRegistrationList, out *core.NamespaceRegistrationList, s conversion.Scope) error {
+	out.ListMeta = in.ListMeta
+	out.Items = *(*[]core.NamespaceRegistration)(unsafe.Pointer(&in.Items))
+	return nil
+}
+
+// Convert_v1alpha1_NamespaceRegistrationList_To_core_NamespaceRegistrationList is an autogenerated conversion function.
+func Convert_v1alpha1_NamespaceRegistrationList_To_core_NamespaceRegistrationList(in *NamespaceRegistrationList, out *core.NamespaceRegistrationList, s conversion.Scope) error {
+	return autoConvert_v1alpha1_NamespaceRegistrationList_To_core_NamespaceRegistrationList(in, out, s)
+}
+
+func autoConvert_core_NamespaceRegistrationList_To_v1alpha1_NamespaceRegistrationList(in *core.NamespaceRegistrationList, out *NamespaceRegistrationList, s conversion.Scope) error {
+	out.ListMeta = in.ListMeta
+	out.Items = *(*[]NamespaceRegistration)(unsafe.Pointer(&in.Items))
+	return nil
+}
+
+// Convert_core_NamespaceRegistrationList_To_v1alpha1_NamespaceRegistrationList is an autogenerated conversion function.
+func Convert_core_NamespaceRegistrationList_To_v1alpha1_NamespaceRegistrationList(in *core.NamespaceRegistrationList, out *NamespaceRegistrationList, s conversion.Scope) error {
+	return autoConvert_core_NamespaceRegistrationList_To_v1alpha1_NamespaceRegistrationList(in, out, s)
+}
+
+func autoConvert_v1alpha1_NamespaceRegistrationSpec_To_core_NamespaceRegistrationSpec(in *NamespaceRegistrationSpec, out *core.NamespaceRegistrationSpec, s conversion.Scope) error {
+	return nil
+}
+
+// Convert_v1alpha1_NamespaceRegistrationSpec_To_core_NamespaceRegistrationSpec is an autogenerated conversion function.
+func Convert_v1alpha1_NamespaceRegistrationSpec_To_core_NamespaceRegistrationSpec(in *NamespaceRegistrationSpec, out *core.NamespaceRegistrationSpec, s conversion.Scope) error {
+	return autoConvert_v1alpha1_NamespaceRegistrationSpec_To_core_NamespaceRegistrationSpec(in, out, s)
+}
+
+func autoConvert_core_NamespaceRegistrationSpec_To_v1alpha1_NamespaceRegistrationSpec(in *core.NamespaceRegistrationSpec, out *NamespaceRegistrationSpec, s conversion.Scope) error {
+	return nil
+}
+
+// Convert_core_NamespaceRegistrationSpec_To_v1alpha1_NamespaceRegistrationSpec is an autogenerated conversion function.
+func Convert_core_NamespaceRegistrationSpec_To_v1alpha1_NamespaceRegistrationSpec(in *core.NamespaceRegistrationSpec, out *NamespaceRegistrationSpec, s conversion.Scope) error {
+	return autoConvert_core_NamespaceRegistrationSpec_To_v1alpha1_NamespaceRegistrationSpec(in, out, s)
+}
+
+func autoConvert_v1alpha1_NamespaceRegistrationStatus_To_core_NamespaceRegistrationStatus(in *NamespaceRegistrationStatus, out *core.NamespaceRegistrationStatus, s conversion.Scope) error {
+	out.Phase = in.Phase
+	return nil
+}
+
+// Convert_v1alpha1_NamespaceRegistrationStatus_To_core_NamespaceRegistrationStatus is an autogenerated conversion function.
+func Convert_v1alpha1_NamespaceRegistrationStatus_To_core_NamespaceRegistrationStatus(in *NamespaceRegistrationStatus, out *core.NamespaceRegistrationStatus, s conversion.Scope) error {
+	return autoConvert_v1alpha1_NamespaceRegistrationStatus_To_core_NamespaceRegistrationStatus(in, out, s)
+}
+
+func autoConvert_core_NamespaceRegistrationStatus_To_v1alpha1_NamespaceRegistrationStatus(in *core.NamespaceRegistrationStatus, out *NamespaceRegistrationStatus, s conversion.Scope) error {
+	out.Phase = in.Phase
+	return nil
+}
+
+// Convert_core_NamespaceRegistrationStatus_To_v1alpha1_NamespaceRegistrationStatus is an autogenerated conversion function.
+func Convert_core_NamespaceRegistrationStatus_To_v1alpha1_NamespaceRegistrationStatus(in *core.NamespaceRegistrationStatus, out *NamespaceRegistrationStatus, s conversion.Scope) error {
+	return autoConvert_core_NamespaceRegistrationStatus_To_v1alpha1_NamespaceRegistrationStatus(in, out, s)
+}
+
 func autoConvert_v1alpha1_ObjectReference_To_core_ObjectReference(in *ObjectReference, out *core.ObjectReference, s conversion.Scope) error {
 	out.Name = in.Name
 	out.Namespace = in.Namespace
@@ -837,4 +1019,124 @@ func autoConvert_core_ServiceTargetConfigStatus_To_v1alpha1_ServiceTargetConfigS
 // Convert_core_ServiceTargetConfigStatus_To_v1alpha1_ServiceTargetConfigStatus is an autogenerated conversion function.
 func Convert_core_ServiceTargetConfigStatus_To_v1alpha1_ServiceTargetConfigStatus(in *core.ServiceTargetConfigStatus, out *ServiceTargetConfigStatus, s conversion.Scope) error {
 	return autoConvert_core_ServiceTargetConfigStatus_To_v1alpha1_ServiceTargetConfigStatus(in, out, s)
+}
+
+func autoConvert_v1alpha1_Subject_To_core_Subject(in *Subject, out *core.Subject, s conversion.Scope) error {
+	out.Kind = in.Kind
+	out.Name = in.Name
+	out.Namespace = in.Namespace
+	return nil
+}
+
+// Convert_v1alpha1_Subject_To_core_Subject is an autogenerated conversion function.
+func Convert_v1alpha1_Subject_To_core_Subject(in *Subject, out *core.Subject, s conversion.Scope) error {
+	return autoConvert_v1alpha1_Subject_To_core_Subject(in, out, s)
+}
+
+func autoConvert_core_Subject_To_v1alpha1_Subject(in *core.Subject, out *Subject, s conversion.Scope) error {
+	out.Kind = in.Kind
+	out.Name = in.Name
+	out.Namespace = in.Namespace
+	return nil
+}
+
+// Convert_core_Subject_To_v1alpha1_Subject is an autogenerated conversion function.
+func Convert_core_Subject_To_v1alpha1_Subject(in *core.Subject, out *Subject, s conversion.Scope) error {
+	return autoConvert_core_Subject_To_v1alpha1_Subject(in, out, s)
+}
+
+func autoConvert_v1alpha1_SubjectList_To_core_SubjectList(in *SubjectList, out *core.SubjectList, s conversion.Scope) error {
+	out.ObjectMeta = in.ObjectMeta
+	if err := Convert_v1alpha1_SubjectListSpec_To_core_SubjectListSpec(&in.Spec, &out.Spec, s); err != nil {
+		return err
+	}
+	if err := Convert_v1alpha1_SubjectListStatus_To_core_SubjectListStatus(&in.Status, &out.Status, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_v1alpha1_SubjectList_To_core_SubjectList is an autogenerated conversion function.
+func Convert_v1alpha1_SubjectList_To_core_SubjectList(in *SubjectList, out *core.SubjectList, s conversion.Scope) error {
+	return autoConvert_v1alpha1_SubjectList_To_core_SubjectList(in, out, s)
+}
+
+func autoConvert_core_SubjectList_To_v1alpha1_SubjectList(in *core.SubjectList, out *SubjectList, s conversion.Scope) error {
+	out.ObjectMeta = in.ObjectMeta
+	if err := Convert_core_SubjectListSpec_To_v1alpha1_SubjectListSpec(&in.Spec, &out.Spec, s); err != nil {
+		return err
+	}
+	if err := Convert_core_SubjectListStatus_To_v1alpha1_SubjectListStatus(&in.Status, &out.Status, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_core_SubjectList_To_v1alpha1_SubjectList is an autogenerated conversion function.
+func Convert_core_SubjectList_To_v1alpha1_SubjectList(in *core.SubjectList, out *SubjectList, s conversion.Scope) error {
+	return autoConvert_core_SubjectList_To_v1alpha1_SubjectList(in, out, s)
+}
+
+func autoConvert_v1alpha1_SubjectListList_To_core_SubjectListList(in *SubjectListList, out *core.SubjectListList, s conversion.Scope) error {
+	out.ListMeta = in.ListMeta
+	out.Items = *(*[]core.SubjectList)(unsafe.Pointer(&in.Items))
+	return nil
+}
+
+// Convert_v1alpha1_SubjectListList_To_core_SubjectListList is an autogenerated conversion function.
+func Convert_v1alpha1_SubjectListList_To_core_SubjectListList(in *SubjectListList, out *core.SubjectListList, s conversion.Scope) error {
+	return autoConvert_v1alpha1_SubjectListList_To_core_SubjectListList(in, out, s)
+}
+
+func autoConvert_core_SubjectListList_To_v1alpha1_SubjectListList(in *core.SubjectListList, out *SubjectListList, s conversion.Scope) error {
+	out.ListMeta = in.ListMeta
+	out.Items = *(*[]SubjectList)(unsafe.Pointer(&in.Items))
+	return nil
+}
+
+// Convert_core_SubjectListList_To_v1alpha1_SubjectListList is an autogenerated conversion function.
+func Convert_core_SubjectListList_To_v1alpha1_SubjectListList(in *core.SubjectListList, out *SubjectListList, s conversion.Scope) error {
+	return autoConvert_core_SubjectListList_To_v1alpha1_SubjectListList(in, out, s)
+}
+
+func autoConvert_v1alpha1_SubjectListSpec_To_core_SubjectListSpec(in *SubjectListSpec, out *core.SubjectListSpec, s conversion.Scope) error {
+	out.Subjects = *(*[]core.Subject)(unsafe.Pointer(&in.Subjects))
+	return nil
+}
+
+// Convert_v1alpha1_SubjectListSpec_To_core_SubjectListSpec is an autogenerated conversion function.
+func Convert_v1alpha1_SubjectListSpec_To_core_SubjectListSpec(in *SubjectListSpec, out *core.SubjectListSpec, s conversion.Scope) error {
+	return autoConvert_v1alpha1_SubjectListSpec_To_core_SubjectListSpec(in, out, s)
+}
+
+func autoConvert_core_SubjectListSpec_To_v1alpha1_SubjectListSpec(in *core.SubjectListSpec, out *SubjectListSpec, s conversion.Scope) error {
+	out.Subjects = *(*[]Subject)(unsafe.Pointer(&in.Subjects))
+	return nil
+}
+
+// Convert_core_SubjectListSpec_To_v1alpha1_SubjectListSpec is an autogenerated conversion function.
+func Convert_core_SubjectListSpec_To_v1alpha1_SubjectListSpec(in *core.SubjectListSpec, out *SubjectListSpec, s conversion.Scope) error {
+	return autoConvert_core_SubjectListSpec_To_v1alpha1_SubjectListSpec(in, out, s)
+}
+
+func autoConvert_v1alpha1_SubjectListStatus_To_core_SubjectListStatus(in *SubjectListStatus, out *core.SubjectListStatus, s conversion.Scope) error {
+	out.Phase = in.Phase
+	out.ObservedGeneration = in.ObservedGeneration
+	return nil
+}
+
+// Convert_v1alpha1_SubjectListStatus_To_core_SubjectListStatus is an autogenerated conversion function.
+func Convert_v1alpha1_SubjectListStatus_To_core_SubjectListStatus(in *SubjectListStatus, out *core.SubjectListStatus, s conversion.Scope) error {
+	return autoConvert_v1alpha1_SubjectListStatus_To_core_SubjectListStatus(in, out, s)
+}
+
+func autoConvert_core_SubjectListStatus_To_v1alpha1_SubjectListStatus(in *core.SubjectListStatus, out *SubjectListStatus, s conversion.Scope) error {
+	out.Phase = in.Phase
+	out.ObservedGeneration = in.ObservedGeneration
+	return nil
+}
+
+// Convert_core_SubjectListStatus_To_v1alpha1_SubjectListStatus is an autogenerated conversion function.
+func Convert_core_SubjectListStatus_To_v1alpha1_SubjectListStatus(in *core.SubjectListStatus, out *SubjectListStatus, s conversion.Scope) error {
+	return autoConvert_core_SubjectListStatus_To_v1alpha1_SubjectListStatus(in, out, s)
 }

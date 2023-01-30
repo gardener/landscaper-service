@@ -9,6 +9,7 @@ EFFECTIVE_VERSION                              := $(VERSION)-$(shell git rev-par
 REGISTRY                                       := eu.gcr.io/gardener-project/landscaper-service
 LANDSCAPER_SERVICE_CONTROLLER_IMAGE_REPOSITORY         := $(REGISTRY)/landscaper-service-controller
 LANDSCAPER_SERVICE_WEBHOOKS_SERVER_IMAGE_REPOSITORY    := $(REGISTRY)/landscaper-service-webhooks-server
+LANDSCAPER_SERVICE_TARGET_SHOOT_SIDECAR_SERVER_IMAGE_REPOSITORY    := $(REGISTRY)/landscaper-service-target-shoot-sidecar-server
 
 .PHONY: install-requirements
 install-requirements:
@@ -64,14 +65,17 @@ docker-images:
 	@echo "Building docker images for version $(EFFECTIVE_VERSION)"
 	@docker build --build-arg EFFECTIVE_VERSION=$(EFFECTIVE_VERSION) -t $(LANDSCAPER_SERVICE_CONTROLLER_IMAGE_REPOSITORY):$(EFFECTIVE_VERSION) -f Dockerfile --target landscaper-service-controller .
 	@docker build --build-arg EFFECTIVE_VERSION=$(EFFECTIVE_VERSION) -t $(LANDSCAPER_SERVICE_WEBHOOKS_SERVER_IMAGE_REPOSITORY):$(EFFECTIVE_VERSION) -f Dockerfile --target landscaper-service-webhooks-server .
+	@docker build --build-arg EFFECTIVE_VERSION=$(EFFECTIVE_VERSION) -t $(LANDSCAPER_SERVICE_TARGET_SHOOT_SIDECAR_SERVER_IMAGE_REPOSITORY):$(EFFECTIVE_VERSION) -f Dockerfile --target landscaper-service-target-shoot-sidecar-server .
 
 .PHONY: docker-push
 docker-push:
 	@echo "Pushing docker images for version $(EFFECTIVE_VERSION) to registry $(REGISTRY)"
 	@if ! docker images $(LANDSCAPER_SERVICE_CONTROLLER_IMAGE_REPOSITORY) | awk '{ print $$2 }' | grep -q -F $(EFFECTIVE_VERSION); then echo "$(LANDSCAPER_SERVICE_CONTROLLER_IMAGE_REPOSITORY) version $(EFFECTIVE_VERSION) is not yet built. Please run 'make docker-images'"; false; fi
 	@if ! docker images $(LANDSCAPER_SERVICE_WEBHOOKS_SERVER_IMAGE_REPOSITORY) | awk '{ print $$2 }' | grep -q -F $(EFFECTIVE_VERSION); then echo "$(LANDSCAPER_SERVICE_WEBHOOKS_SERVER_IMAGE_REPOSITORY) version $(EFFECTIVE_VERSION) is not yet built. Please run 'make docker-images'"; false; fi
+	@if ! docker images $(LANDSCAPER_SERVICE_TARGET_SHOOT_SIDECAR_SERVER_IMAGE_REPOSITORY) | awk '{ print $$2 }' | grep -q -F $(EFFECTIVE_VERSION); then echo "$(LANDSCAPER_SERVICE_TARGET_SHOOT_SIDECAR_SERVER_IMAGE_REPOSITORY) version $(EFFECTIVE_VERSION) is not yet built. Please run 'make docker-images'"; false; fi
 	@docker push $(LANDSCAPER_SERVICE_CONTROLLER_IMAGE_REPOSITORY):$(EFFECTIVE_VERSION)
 	@docker push $(LANDSCAPER_SERVICE_WEBHOOKS_SERVER_IMAGE_REPOSITORY):$(EFFECTIVE_VERSION)
+	@docker push $(LANDSCAPER_SERVICE_TARGET_SHOOT_SIDECAR_SERVER_IMAGE_REPOSITORY):$(EFFECTIVE_VERSION)
 
 .PHONY: docker-all
 docker-all: docker-images docker-push

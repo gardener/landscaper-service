@@ -43,6 +43,8 @@ var (
 			LandscaperDeploymentDefinition,
 			InstanceDefinition,
 			ServiceTargetConfigDefinition,
+			NamespaceRegistrationDefinition,
+			SubjectListDefinition,
 		},
 	}
 )
@@ -59,6 +61,10 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 		&ServiceTargetConfigList{},
 		&AvailabilityCollection{},
 		&AvailabilityCollectionList{},
+		&NamespaceRegistration{},
+		&NamespaceRegistrationList{},
+		&SubjectList{},
+		&SubjectListList{},
 	)
 
 	if err := RegisterConversions(scheme); err != nil {

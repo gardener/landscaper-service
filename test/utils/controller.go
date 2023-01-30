@@ -83,6 +83,11 @@ func DefaultControllerConfiguration() *config.LandscaperServiceConfiguration {
 	return cfg
 }
 
+func DefaultTargetShootConfiguration() *config.TargetShootSidecarConfiguration {
+	cfg := &config.TargetShootSidecarConfiguration{}
+	return cfg
+}
+
 func CreateServiceAccountSecret(ctx context.Context, client client.Client, c *config.LandscaperServiceConfiguration) error {
 	namespace := &corev1.Namespace{
 		ObjectMeta: metav1.ObjectMeta{

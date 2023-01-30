@@ -1,0 +1,11 @@
+apiVersion: landscaper-service.gardener.cloud/v1alpha1
+kind: SubjectList
+metadata:
+  name: subjectlist
+  namespace: {{ .Namespace }}
+spec:
+  subjects:
+  - kind: UserUnknownKind
+    name: "testuser"
+  - kind: ServiceAccount
+    name: "testserviceaccount"

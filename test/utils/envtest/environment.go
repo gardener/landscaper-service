@@ -417,6 +417,18 @@ func (e *Environment) decodeAndAppendLSSObject(data []byte, objects []client.Obj
 			return nil, fmt.Errorf("unable to decode file as  lshealthcheck: %w", err)
 		}
 		return append(objects, lshealthcheck), nil
+	case NamespaceRegistrationGVK.Kind:
+		namespaceRegistration := &lssv1alpha1.NamespaceRegistration{}
+		if _, _, err := decoder.Decode(data, nil, namespaceRegistration); err != nil {
+			return nil, fmt.Errorf("unable to decode file as  NamespaceRegistration: %w", err)
+		}
+		return append(objects, namespaceRegistration), nil
+	case SubjectListGVK.Kind:
+		subjectList := &lssv1alpha1.SubjectList{}
+		if _, _, err := decoder.Decode(data, nil, subjectList); err != nil {
+			return nil, fmt.Errorf("unable to decode file as  SubjectList: %w", err)
+		}
+		return append(objects, subjectList), nil
 
 	default:
 		return objects, nil

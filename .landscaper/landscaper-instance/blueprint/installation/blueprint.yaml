@@ -93,6 +93,13 @@ imports:
         The host name which is used to create the landscaper webhooks ingress.
       type: string
 
+  - name: sidecarConfig
+    type: data
+    schema:
+      description: |
+        The configuration for the sidecar server containing the namespace registration and subject sync controller.
+      $ref: "cd://resources/sidecar-config-definition"
+
 exports:
   - name: landscaperClusterEndpoint
     type: data
@@ -128,3 +135,4 @@ subinstallations:
   - file: /shoot-cluster-subinst.yaml
   - file: /landscaper-rbac-subinst.yaml
   - file: /landscaper-deployment-subinst.yaml
+  - file: /sidecar-subinst.yaml

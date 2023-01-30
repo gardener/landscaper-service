@@ -387,6 +387,12 @@ func (c *Controller) mutateInstallation(ctx context.Context, installation *lsv1a
 		return fmt.Errorf("unable to marshal landscaper config: %w", err)
 	}
 
+	sidecarConfig := lsinstallation.NewSidecarConfig()
+	sidecarConfigRaw, err := sidecarConfig.ToAnyJSON()
+	if err != nil {
+		return fmt.Errorf("unable to marshal sidecar config: %w", err)
+	}
+
 	shootConfigRaw, err := json.Marshal(c.Config().ShootConfiguration)
 	if err != nil {
 		return fmt.Errorf("unable to marshal shoot config: %w", err)
@@ -433,6 +439,7 @@ func (c *Controller) mutateInstallation(ctx context.Context, installation *lsv1a
 			lsinstallation.TargetClusterNamespaceImportName:  utils.StringToAnyJSON(lsinstallation.TargetClusterNamespace),
 			lsinstallation.RegistryConfigImportName:          *registryConfigRaw,
 			lsinstallation.LandscaperConfigImportName:        *landscaperConfigRaw,
+			lsinstallation.SidecarConfigImportName:           *sidecarConfigRaw,
 			lsinstallation.ShootNameImportName:               utils.StringToAnyJSON(instance.Status.ShootName),
 			lsinstallation.ShootNamespaceImportName:          utils.StringToAnyJSON(instance.Status.ShootNamespace),
 			lsinstallation.ShootSecretBindingImportName:      utils.StringToAnyJSON(c.Config().GardenerConfiguration.ShootSecretBindingName),

@@ -1,0 +1,38 @@
+deployItems:
+  - name: ls-service-target-shoot-sidecar-server
+    type: landscaper.gardener.cloud/helm
+    target:
+      import: hostingCluster
+    config:
+      apiVersion: helm.deployer.landscaper.gardener.cloud/v1alpha1
+      kind: ProviderConfiguration
+      updateStrategy: patch
+      name: ls-service-target-shoot-sidecar-server
+      namespace: {{ .imports.hostingClusterNamespace }}
+      createNamespace: true
+
+      chart:
+        {{ $resource := getResource .cd "name" "ls-service-target-shoot-sidecar-chart" }}
+        ref: {{ $resource.access.imageReference }}
+
+      values:
+        lsServiceTargetShootSidecar:
+          verbosity: {{ .imports.sidecarConfig.verbosity | default "info" }}
+
+        controller:
+          kubeconfig: |
+{{ .imports.landscaperControllerKubeconfigYaml | indent 12 }}
+          {{ $imgresource := getResource .cd "name" "ls-service-target-shoot-sidecar-image" }}
+          {{ $imgrepo := ociRefRepo $imgresource.access.imageReference }}
+          {{ $imgtag := ociRefVersion $imgresource.access.imageReference }}
+          image:
+            repository: {{ $imgrepo }}
+            tag: {{ $imgtag }}
+            pullPolicy: IfNotPresent
+
+        service:
+          type: ClusterIP
+          port: 80
+
+        resources:
+{{ toYaml .imports.sidecarConfig.resources | indent 10 }}

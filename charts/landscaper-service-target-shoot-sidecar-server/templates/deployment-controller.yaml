@@ -1,0 +1,69 @@
+{{/* SPDX-FileCopyrightText: 2021 "SAP SE or an SAP affiliate company and Gardener contributors"
+
+  SPDX-License-Identifier: Apache-2.0
+*/}}
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ls-service-target-shoot-sidecar.fullname" . }}
+  labels:
+    {{- include "ls-service-target-shoot-sidecar.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.controller.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "ls-service-target-shoot-sidecar.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "ls-service-target-shoot-sidecar.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ include "ls-service-target-shoot-sidecar.controller.containerName" . }}
+          securityContext:
+            {{  toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ include "ls-service-target-shoot-sidecar-controller-image" . }}"
+          imagePullPolicy: {{ .Values.controller.image.pullPolicy }}
+          args:
+          - "-v={{ .Values.lsServiceTargetShootSidecar.verbosity }}"
+          - "--kubeconfig=/app/ls/cluster-kubeconfig/kubeconfig"
+          - "--config=/app/ls/config/config.yaml"
+          {{- if .Values.lsServiceTargetShootSidecar.metrics }}
+          ports:
+            - name: metrics
+              containerPort: {{ .Values.lsServiceTargetShootSidecar.metrics.port }}
+          {{- end }}
+          volumeMounts:
+          - name: config
+            mountPath: /app/ls/config
+          - name: kubeconfig
+            mountPath: /app/ls/cluster-kubeconfig
+
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+      - name: config
+        secret:
+          secretName: {{ include "ls-service-target-shoot-sidecar.fullname" . }}-config
+      - name: kubeconfig
+        secret:
+          secretName: {{ include "ls-service-target-shoot-sidecar.fullname" . }}-controller-cluster-kubeconfig
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

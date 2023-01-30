@@ -21,6 +21,9 @@ func RegisterDefaults(scheme *runtime.Scheme) error {
 	scheme.AddTypeDefaultingFunc(&LandscaperServiceConfiguration{}, func(obj interface{}) {
 		SetObjectDefaults_LandscaperServiceConfiguration(obj.(*LandscaperServiceConfiguration))
 	})
+	scheme.AddTypeDefaultingFunc(&TargetShootSidecarConfiguration{}, func(obj interface{}) {
+		SetObjectDefaults_TargetShootSidecarConfiguration(obj.(*TargetShootSidecarConfiguration))
+	})
 	return nil
 }
 
@@ -29,4 +32,8 @@ func SetObjectDefaults_LandscaperServiceConfiguration(in *LandscaperServiceConfi
 	SetDefaults_AvailabilityMonitoringConfiguration(&in.AvailabilityMonitoring)
 	SetDefaults_CrdManagementConfiguration(&in.CrdManagement)
 	SetDefaults_ShootConfiguration(&in.ShootConfiguration)
+}
+
+func SetObjectDefaults_TargetShootSidecarConfiguration(in *TargetShootSidecarConfiguration) {
+	SetDefaults_CrdManagementConfiguration(&in.CrdManagement)
 }

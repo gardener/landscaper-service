@@ -32,3 +32,12 @@ COPY --from=builder /go/bin/landscaper-service-webhooks-server /landscaper-servi
 WORKDIR /
 
 ENTRYPOINT ["/landscaper-service-webhooks-server"]
+
+#### Landscaper Target-shoot Sidecar server ####
+FROM base as landscaper-service-target-shoot-sidecar-server
+
+COPY --from=builder /go/bin/landscaper-service-target-shoot-sidecar-server /landscaper-service-target-shoot-sidecar-server
+
+WORKDIR /
+
+ENTRYPOINT ["/landscaper-service-target-shoot-sidecar-server"]

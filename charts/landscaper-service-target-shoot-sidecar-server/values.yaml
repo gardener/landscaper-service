@@ -1,0 +1,64 @@
+# SPDX-FileCopyrightText: 2021 "SAP SE or an SAP affiliate company and Gardener contributors"
+#
+# SPDX-License-Identifier: Apache-2.0
+
+lsServiceTargetShootSidecar:
+  verbosity: info
+
+  #  metrics:
+  #    port: 8080
+
+  crdManagement:
+    deployCrd: true
+    forceUpdate: true
+
+controller:
+  # Overrides the controller container name. Default is "ls-service-target-shoot-sidecar-controller".
+  containerName: ls-service-target-shoot-sidecar-controller
+
+  replicaCount: 1
+  image:
+    repository: eu.gcr.io/gardener-project/landscaper-service/landscaper-service-target-shoot-sidecar-server
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the .Values.image.tag or chart appVersion.
+    #tag: ""
+
+  #to connect to the cluster the controller should work on
+  kubeconfig: ""
+
+imagePullSecrets: []
+
+podAnnotations: {}
+
+podSecurityContext: {}
+# fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+# runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 80
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+#   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
