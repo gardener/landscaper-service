@@ -1,0 +1,27 @@
+---
+type: helm.io/chart
+name: sap-btp-service-operator-chart
+relation: external
+version: v0.3.6
+access:
+  type: ociRegistry
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/charts/sap-btp-operator@sha256:45bf5e50ae4a9ef4c425df7763349e34e3e138de191541af3cade6caca40ee4e
+...
+---
+type: ociImage
+name: kube-rbac-proxy
+version: v0.11.0
+relation: external
+access:
+  type: ociRegistry
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/kube-rbac-proxy@sha256:a4f6c39b17f2ba68366c6d4e139ed18ede2ad9f3f9d5bf7477bdcbef73b43e54
+...
+---
+type: ociImage
+name: sap-btp-service-operator-controller
+version: v0.3.6
+relation: external
+access:
+  type: ociRegistry
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/sap-btp-service-operator-controller@sha256:bae17bfc5d6c071f76f840026d881b131df714ca08f9a69460d6270e87b4f706
+...

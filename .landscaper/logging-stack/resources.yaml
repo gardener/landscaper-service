@@ -1,85 +1,4 @@
 ---
-type: helm.io/chart
-name: cert-manager-chart
-relation: external
-version: v1.9.0
-access:
-  type: ociRegistry
-  imageReference: eu.gcr.io/gardener-project/landscaper-service/charts/cert-manager@sha256:6addbb6e31b5e3db704b12b6c52774112b277a3b1ef8ded5eac44f9d18ea5f1b
-...
----
-type: helm.io/chart
-name: sap-btp-service-operator-chart
-relation: external
-version: v0.2.7
-access:
-  type: ociRegistry
-  imageReference: eu.gcr.io/gardener-project/landscaper-service/charts/sap-btp-operator@sha256:77aee8fce9bd78d3b47b19eae66a943d22c3b06b699a750466839e3ab3a083ad
-...
----
-type: ociImage
-name: fluent-bit
-version: 1.8.15
-relation: external
-access:
-  type: ociRegistry
-  imageReference: eu.gcr.io/gardener-project/landscaper-service/fluent-bit@sha256:0747200c2ca2aa6e65f93ebdd620deb94e10fb9bbc1236b4c0eaf4292b12c514
-...
----
-type: ociImage
-name: cert-manager-cainjector
-version: v1.9.0
-relation: external
-access:
-  type: ociRegistry
-  imageReference: eu.gcr.io/gardener-project/landscaper-service/cert-manager-cainjector@sha256:da995e52e72ec8e33673acad967ecb3d28e8bd4e347c31ccd41ae8c32cb885f4
-...
----
-type: ociImage
-name: cert-manager-controller
-version: v1.9.0
-relation: external
-access:
-  type: ociRegistry
-  imageReference: eu.gcr.io/gardener-project/landscaper-service/cert-manager-controller@sha256:4fbcfeb37cc91293bc35a08be3c71f619b40930cdab1bc1531dc1952653f06dd
-...
----
-type: ociImage
-name: cert-manager-ctl
-version: v1.9.0
-relation: external
-access:
-  type: ociRegistry
-  imageReference: eu.gcr.io/gardener-project/landscaper-service/cert-manager-ctl@sha256:1a28693a235f7dfc16f815fdb0cadfc97be9f8592d801a2f8844c4b2a3f85c94
-...
----
-type: ociImage
-name: cert-manager-webhook
-version: v1.9.0
-relation: external
-access:
-  type: ociRegistry
-  imageReference: eu.gcr.io/gardener-project/landscaper-service/cert-manager-webhook@sha256:420f37800f280bc7a5a4c671effd2557b76659b7e580bb104e5236cc7519c507
-...
----
-type: ociImage
-name: kube-rbac-proxy
-version: v0.11.0
-relation: external
-access:
-  type: ociRegistry
-  imageReference: eu.gcr.io/gardener-project/landscaper-service/kube-rbac-proxy@sha256:a4f6c39b17f2ba68366c6d4e139ed18ede2ad9f3f9d5bf7477bdcbef73b43e54
-...
----
-type: ociImage
-name: sap-btp-service-operator-controller
-version: v0.2.7
-relation: external
-access:
-  type: ociRegistry
-  imageReference: eu.gcr.io/gardener-project/landscaper-service/sap-btp-service-operator-controller@sha256:2719de080b40886dbee49fcecd68b0927e7d17ae39c05171927d0708553ed052
-...
----
 type: blueprint
 name: installation-blueprint
 relation: local
@@ -91,41 +10,11 @@ input:
 ...
 ---
 type: blueprint
-name: cert-manager-blueprint
-relation: local
-input:
-  type: dir
-  path: ./blueprint/cert-manager
-  mediaType: application/vnd.gardener.landscaper.blueprint.layer.v1.tar+gzip
-  compress: true
-...
----
-type: blueprint
-name: sap-btp-service-operator-blueprint
-relation: local
-input:
-  type: dir
-  path: ./blueprint/sap-btp-service-operator
-  mediaType: application/vnd.gardener.landscaper.blueprint.layer.v1.tar+gzip
-  compress: true
-...
----
-type: blueprint
 name: service-provisioning-blueprint
 relation: local
 input:
   type: dir
   path: ./blueprint/service-provisioning
-  mediaType: application/vnd.gardener.landscaper.blueprint.layer.v1.tar+gzip
-  compress: true
-...
----
-type: blueprint
-name: fluentbit-blueprint
-relation: local
-input:
-  type: dir
-  path: ./blueprint/fluentbit
   mediaType: application/vnd.gardener.landscaper.blueprint.layer.v1.tar+gzip
   compress: true
 ...

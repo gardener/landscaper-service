@@ -22,8 +22,26 @@ REPO_CTX="${CURRENT_COMPONENT_REPOSITORY}"
 
 printf "> Building components with version ${VERSION} - ${COMMIT_SHA}\n"
 
+function buildResourcesArg()  {
+  PATH=$1
+  FILES=$2
+  RESOURCES=""
+
+  for file in $FILES; do
+      echo $file
+      if [[ -z $RESOURCES ]]; then
+          RESOURCES+="${PATH}/$file"
+      else
+          RESOURCES+=",${PATH}/$file"
+      fi
+  done
+
+  echo $RESOURCES
+}
+
 function buildComponentArchive() {
   COMPONENT_NAME=$1
+  RESOURCES=$2
   CA_PATH="$(mktemp -d)"
   printf "> Building component ${COMPONENT_NAME}\n"
 
@@ -38,15 +56,15 @@ function buildComponentArchive() {
     --component-version=${VERSION} \
     --repo-ctx=${REPO_CTX} \
     -s ${SOURCE_PATH}/.landscaper/sources.yaml \
-    -r ${SOURCE_PATH}/.landscaper/${COMPONENT_NAME}/resources.yaml \
+    -r $(buildResourcesArg ${SOURCE_PATH}/.landscaper/${COMPONENT_NAME} $RESOURCES) \
     COMMIT_SHA=${COMMIT_SHA} \
     VERSION=${VERSION} \
     $COMPONENT_REFERENCES
 }
 
-buildComponentArchive "logging-stack"
-buildComponentArchive "ingress-controller"
-buildComponentArchive "landscaper-instance"
+buildComponentArchive "logging-stack" "resources.yaml resources-cert-manager.yaml resource-sap-btp-service-operator.yaml resources-fluentbit.yaml"
+buildComponentArchive "ingress-controller" "resources.yaml"
+buildComponentArchive "landscaper-instance" "resources.yaml"
 
 # add landscaper component descriptor
 printf "> Create Landscaper Service ca archive\n"

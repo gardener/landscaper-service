@@ -1,0 +1,64 @@
+---
+type: blueprint
+name: cert-manager-blueprint
+relation: local
+input:
+  type: dir
+  path: ./blueprint/cert-manager
+  mediaType: application/vnd.gardener.landscaper.blueprint.layer.v1.tar+gzip
+  compress: true
+...
+---
+type: helm.io/chart
+name: cert-manager-chart
+relation: external
+version: v1.11.0
+access:
+  type: ociRegistry
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/charts/cert-manager@sha256:6ea4e7bd7ef39b17e3dff589851b99f46829c28995fb2b2ea4d8f9d1ab88e102
+...
+---
+type: ociImage
+name: cert-manager-cainjector
+version: v1.11.0
+relation: external
+access:
+  type: ociRegistry
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/cert-manager-cainjector@sha256:2fca0709ab5363e188137095f0420103329d62266614be26f420fe77b8f111a6
+...
+---
+type: ociImage
+name: cert-manager-controller
+version: v1.11.0
+relation: external
+access:
+  type: ociRegistry
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/cert-manager-controller@sha256:b7f2ef147b7a4deb03962a8a17ab700b6f813e672608d7d5e26b453a18d5601d
+...
+---
+type: ociImage
+name: cert-manager-ctl
+version: v1.11.0
+relation: external
+access:
+  type: ociRegistry
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/cert-manager-ctl@sha256:7a64acd9ad8f6d3ea352956dd7bc2fbac83485e15f165e2dd7299728fbf097e9
+...
+---
+type: ociImage
+name: cert-manager-webhook
+version: v1.11.0
+relation: external
+access:
+  type: ociRegistry
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/cert-manager-webhook@sha256:e40d6d9ca854ec52eb955db41eaaf9e8ab939cfcf7d18ba92b8fdb88b64e94e8
+...
+---
+type: ociImage
+name: cert-manager-acmesolver
+version: v1.11.0
+relation: external
+access:
+  type: ociRegistry
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/cert-manager-acmesolver@sha256:b19a48c0d319315493394f1b2529b93fa1b0ba97af33572a4103a266590f5ed9
+...

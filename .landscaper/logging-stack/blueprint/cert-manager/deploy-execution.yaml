@@ -42,5 +42,12 @@ deployItems:
           image:
             {{ $certManagerCTLResource := getResource .cd "name" "cert-manager-ctl" }}
             {{ $certManagerCTLImage := parseOCIRef $certManagerCTLResource.access.imageReference }}
-              repository: {{ index $certManagerCTLImage 0 }}
-              digest: {{ index $certManagerCTLImage 1 }}
+            repository: {{ index $certManagerCTLImage 0 }}
+            digest: {{ index $certManagerCTLImage 1 }}
+
+        acmesolver:
+          image:
+            {{ $certManagerACMESolverResource := getResource .cd "name" "cert-manager-acmesolver" }}
+            {{ $certManagerACMESolverImage := parseOCIRef $certManagerACMESolverResource.access.imageReference }}
+            repository: {{ index $certManagerACMESolverImage 0 }}
+            digest: {{ index $certManagerACMESolverImage 1 }}
