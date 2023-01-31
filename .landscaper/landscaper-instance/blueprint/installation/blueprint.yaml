@@ -136,3 +136,4 @@ subinstallations:
   - file: /landscaper-rbac-subinst.yaml
   - file: /landscaper-deployment-subinst.yaml
   - file: /sidecar-subinst.yaml
+  - file: /sidecar-rbac-subinst.yaml

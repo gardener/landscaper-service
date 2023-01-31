@@ -40,6 +40,16 @@ input:
 ...
 ---
 type: blueprint
+name: sidecar-rbac
+relation: local
+input:
+  type: dir
+  path: ./blueprint/sidecar-rbac
+  mediaType: application/vnd.gardener.landscaper.blueprint.layer.v1.tar+gzip
+  compress: true
+...
+---
+type: blueprint
 name: installation-blueprint
 relation: local
 input:
@@ -55,6 +65,14 @@ relation: local
 access:
   type: ociRegistry
   imageReference: eu.gcr.io/gardener-project/landscaper-service/charts/landscaper-service-target-shoot-sidecar-server:${VERSION}
+...
+---
+type: helm.io/chart
+name: sidecar-rbac-chart
+relation: local
+access:
+  type: ociRegistry
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/charts/sidecar-rbac:${VERSION}
 ...
 ---
 type: ociImage
@@ -100,3 +118,4 @@ input:
   path: ./definition/sidecar-configuration.json
   mediaType: application/vnd.gardener.landscaper.jsonschema.layer.v1.json
 ...
+
