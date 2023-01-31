@@ -28,7 +28,11 @@ function buildResourcesArgs()  {
   RESOURCES=""
 
   for file in $FILES; do
-    RESOURCES+="-r ${PATH}/$file"
+    if [[ -z $RESOURCES ]]; then
+      RESOURCES+="-r ${PATH}/$file"
+    else
+      RESOURCES+=" -r ${PATH}/$file"
+    fi
   done
 
   echo $RESOURCES
@@ -61,7 +65,7 @@ function buildComponentArchive() {
   cat ${CA_PATH}/component-descriptor.yaml
 }
 
-buildComponentArchive "logging-stack" "resources.yaml resources-cert-manager.yaml resource-sap-btp-service-operator.yaml resources-fluentbit.yaml"
+buildComponentArchive "logging-stack" "resources.yaml resources-cert-manager.yaml resources-sap-btp-service-operator.yaml resources-fluentbit.yaml"
 buildComponentArchive "ingress-controller" "resources.yaml"
 buildComponentArchive "landscaper-instance" "resources.yaml"
 
