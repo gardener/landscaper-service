@@ -12,8 +12,8 @@ deployItems:
       createNamespace: true
 
       chart:
-        { { $resource := getResource .cd "name" "sidecar-rbac-chart" } }
-        ref: { { $resource.access.imageReference } }
+        {{ $resource := getResource .cd "name" "sidecar-rbac-chart" }}
+        ref: {{ $resource.access.imageReference }}
 
       values:
         serviceAccount:
