@@ -7,7 +7,7 @@ deployItems:
       apiVersion: helm.deployer.landscaper.gardener.cloud/v1alpha1
       kind: ProviderConfiguration
       updateStrategy: patch
-      name: landscaper-rbac
+      name: sidecar-rbac
       namespace: {{ .imports.targetClusterNamespace }}
       createNamespace: true
 
