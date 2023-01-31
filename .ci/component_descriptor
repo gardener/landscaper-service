@@ -51,15 +51,19 @@ function buildComponentArchive() {
     COMPONENT_REFERENCES="-c ${SOURCE_PATH}/.landscaper/${COMPONENT_NAME}/component-references.yaml"
   fi
 
+  RESOURCES_ARG=$(buildResourcesArg ${SOURCE_PATH}/.landscaper/${COMPONENT_NAME} $RESOURCES)
+
   ${COMP_CLI} ca "${CA_PATH}" "${CTF_PATH}" \
     --component-name=github.com/gardener/landscaper-service/${COMPONENT_NAME} \
     --component-version=${VERSION} \
     --repo-ctx=${REPO_CTX} \
     -s ${SOURCE_PATH}/.landscaper/sources.yaml \
-    -r $(buildResourcesArg ${SOURCE_PATH}/.landscaper/${COMPONENT_NAME} $RESOURCES) \
+    -r ${RESOURCES_ARG} \
     COMMIT_SHA=${COMMIT_SHA} \
     VERSION=${VERSION} \
     $COMPONENT_REFERENCES
+
+  cat ${CA_PATH}/component-descriptor.yaml
 }
 
 buildComponentArchive "logging-stack" "resources.yaml resources-cert-manager.yaml resource-sap-btp-service-operator.yaml resources-fluentbit.yaml"
