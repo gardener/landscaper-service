@@ -118,7 +118,7 @@ deployItems:
                 version: {{ .imports.shootConfig.kubernetes.version }}
                 enableStaticTokenKubeconfig: true
                 kubeAPIServer:
-                  {{ if .imports.shootConfig.kubernetes.kubeAPIServer.oidcConfig }}
+                  {{ if ((.imports.shootConfig.kubernetes.kubeAPIServer).oidcConfig) }}
                   oidcConfig:
 {{ toYaml .imports.shootConfig.kubernetes.kubeAPIServer.oidcConfig | indent 20 }}
                   {{ end }}
