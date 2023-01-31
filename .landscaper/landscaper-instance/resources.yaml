@@ -40,7 +40,7 @@ input:
 ...
 ---
 type: blueprint
-name: sidecar-rbac
+name: sidecar-rbac-blueprint
 relation: local
 input:
   type: dir
