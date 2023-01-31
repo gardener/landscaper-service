@@ -18,7 +18,7 @@ helm pull ingress-nginx/ingress-nginx --version ${INGRESS_NGINX_CHART_VERSION} -
 helm package ${TMP_PATH}/ingress-nginx -d ${TMP_PATH}
 helm push ${TMP_PATH}/ingress-nginx-${INGRESS_NGINX_CHART_VERSION}.tgz oci://eu.gcr.io/gardener-project/landscaper-service/charts
 
-docker pull --platform amd64 registry.k8s.io/ingress-nginx:/controller${INGRESS_NGINX_IMAGE_VERSION}
+docker pull --platform amd64 registry.k8s.io/ingress-nginx/controller:${INGRESS_NGINX_IMAGE_VERSION}
 docker tag registry.k8s.io/ingress-nginx/controller:${INGRESS_NGINX_IMAGE_VERSION} eu.gcr.io/gardener-project/landscaper-service/ingress-nginx/controller:${INGRESS_NGINX_IMAGE_VERSION}
 docker push eu.gcr.io/gardener-project/landscaper-service/ingress-nginx/controller:${INGRESS_NGINX_IMAGE_VERSION}
 
