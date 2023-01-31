@@ -73,6 +73,21 @@ type ShootWorkerVolumeConfiguration struct {
 type ShootKubernetesConfig struct {
 	// The kubernetes version to use.
 	Version string `json:"version"`
+	// The configuration for the KubeAPIServer
+	KubeAPIServer KubeAPIServerConfig `json:"kubeAPIServer"`
+}
+
+// KubeAPIServerConfig is the configuration for the KubeAPIServer
+type KubeAPIServerConfig struct {
+	OIDCConfig OIDCConfig `json:"oidcConfig"`
+}
+
+// OIDCConfig defines the OIDC configuration
+type OIDCConfig struct {
+	ClientID      string `json:"clientID,omitempty"`
+	IssuerURL     string `json:"issuerURL,omitempty"`
+	UsernameClaim string `json:"usernameClaim,omitempty"`
+	GroupsClaim   string `json:"groupsClaim,omitempty"`
 }
 
 // ShootMaintenanceConfig specifies the maintenance handling for the shoot cluster.

@@ -91,6 +91,12 @@ imports:
         subaccountId:
           type: string
 
+  - name: shootConfiguration
+    required: false
+    type: data
+    schema:
+      type: object
+
 deployExecutions:
   - name: deploy-execution
     file: /deploy-execution.yaml
