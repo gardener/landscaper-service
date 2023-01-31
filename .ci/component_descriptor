@@ -22,18 +22,13 @@ REPO_CTX="${CURRENT_COMPONENT_REPOSITORY}"
 
 printf "> Building components with version ${VERSION} - ${COMMIT_SHA}\n"
 
-function buildResourcesArg()  {
+function buildResourcesArgs()  {
   PATH=$1
   FILES=$2
   RESOURCES=""
 
   for file in $FILES; do
-      echo $file
-      if [[ -z $RESOURCES ]]; then
-          RESOURCES+="${PATH}/$file"
-      else
-          RESOURCES+=",${PATH}/$file"
-      fi
+    RESOURCES+="-r ${PATH}/$file"
   done
 
   echo $RESOURCES
@@ -51,14 +46,14 @@ function buildComponentArchive() {
     COMPONENT_REFERENCES="-c ${SOURCE_PATH}/.landscaper/${COMPONENT_NAME}/component-references.yaml"
   fi
 
-  RESOURCES_ARG=$(buildResourcesArg ${SOURCE_PATH}/.landscaper/${COMPONENT_NAME} $RESOURCES)
+  RESOURCES_ARGS=$(buildResourcesArgs "${SOURCE_PATH}/.landscaper/${COMPONENT_NAME}" "${RESOURCES}")
 
   ${COMP_CLI} ca "${CA_PATH}" "${CTF_PATH}" \
     --component-name=github.com/gardener/landscaper-service/${COMPONENT_NAME} \
     --component-version=${VERSION} \
     --repo-ctx=${REPO_CTX} \
     -s ${SOURCE_PATH}/.landscaper/sources.yaml \
-    -r ${RESOURCES_ARG} \
+    ${RESOURCES_ARGS} \
     COMMIT_SHA=${COMMIT_SHA} \
     VERSION=${VERSION} \
     $COMPONENT_REFERENCES
