@@ -87,6 +87,14 @@
       "properties": {
         "version": {
           "type": "string"
+        },
+        "kubeAPIServer": {
+          "type": "object",
+          "properties": {
+            "oidcConfig": {
+              "type": "object"
+            }
+          }
         }
       }
     },
