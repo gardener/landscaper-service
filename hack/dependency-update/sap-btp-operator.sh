@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# SPDX-FileCopyrightText: 2023 "SAP SE or an SAP affiliate company and Gardener contributors"
+#
+# SPDX-License-Identifier: Apache-2.0
+
 SCRIPT_PATH="$(dirname $0)"
 SOURCE_PATH="${SCRIPT_PATH}/../.."
 TMP_PATH="$(mktemp -d)"

@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2023 "SAP SE or an SAP affiliate company and Gardener contributors"
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # landscaper-service dependency update
 
 landscaper-service uses various external dependencies. All of these dependencies are transported to the `eu.gcr.io/gardener-project` repository
