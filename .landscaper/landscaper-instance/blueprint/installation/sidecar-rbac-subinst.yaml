@@ -1,0 +1,22 @@
+apiVersion: landscaper.gardener.cloud/v1alpha1
+kind: InstallationTemplate
+
+name: sidecar-rbac
+
+blueprint:
+  ref: cd://resources/sidecar-rbac-blueprint
+
+imports:
+  targets:
+    - name: shootCluster
+      target: shootCluster
+  data:
+    - name: targetClusterNamespace
+      dataRef: targetClusterNamespace
+    - name: shootClusterEndpoint
+      dataRef: shootClusterEndpoint
+
+exports:
+  data:
+    - name: sidecarControllerKubeconfigYaml
+      dataRef: sidecarControllerKubeconfigYaml

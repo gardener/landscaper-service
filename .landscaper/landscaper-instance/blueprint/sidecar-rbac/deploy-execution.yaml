@@ -1,0 +1,42 @@
+deployItems:
+  - name: sidecar-rbac
+    type: landscaper.gardener.cloud/helm
+    target:
+      import: shootCluster
+    config:
+      apiVersion: helm.deployer.landscaper.gardener.cloud/v1alpha1
+      kind: ProviderConfiguration
+      updateStrategy: patch
+      name: landscaper-rbac
+      namespace: {{ .imports.targetClusterNamespace }}
+      createNamespace: true
+
+      chart:
+        { { $resource := getResource .cd "name" "sidecar-rbac-chart" } }
+        ref: { { $resource.access.imageReference } }
+
+      values:
+        serviceAccount:
+          annotations: { }
+          name: sidecar-rbac
+
+      exports:
+        defaultTimeout: 10m
+        exports:
+        - key: rbacSidecarToken
+          timeout: 10m
+          jsonPath: ".data.token"
+          fromResource:
+            apiVersion: v1
+            kind: Secret
+            name: sidecar-token
+            namespace: {{ .imports.targetClusterNamespace }}
+
+        - key: rbacSidecarCaCrt
+          timeout: 10m
+          jsonPath: ".data.ca\\.crt"
+          fromResource:
+            apiVersion: v1
+            kind: Secret
+            name: sidecar-token
+            namespace: {{ .imports.targetClusterNamespace }}
