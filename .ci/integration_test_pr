@@ -9,6 +9,8 @@ if ! which git 1>/dev/null; then
   apk add --no-cache --no-progress git
 fi
 
+cd "${PROJECT_ROOT}"
+
 GIT_COMMENT=$(git show -s --format=%s)
 echo "git comment: " $GIT_COMMENT
 
