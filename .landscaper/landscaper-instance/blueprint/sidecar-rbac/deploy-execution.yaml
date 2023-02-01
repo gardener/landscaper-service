@@ -7,13 +7,13 @@ deployItems:
       apiVersion: helm.deployer.landscaper.gardener.cloud/v1alpha1
       kind: ProviderConfiguration
       updateStrategy: patch
-      name: landscaper-rbac
+      name: sidecar-rbac
       namespace: {{ .imports.targetClusterNamespace }}
       createNamespace: true
 
       chart:
-        { { $resource := getResource .cd "name" "sidecar-rbac-chart" } }
-        ref: { { $resource.access.imageReference } }
+        {{ $resource := getResource .cd "name" "sidecar-rbac-chart" }}
+        ref: {{ $resource.access.imageReference }}
 
       values:
         serviceAccount:

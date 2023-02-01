@@ -117,13 +117,17 @@ deployItems:
               kubernetes:
                 version: {{ .imports.shootConfig.kubernetes.version }}
                 enableStaticTokenKubeconfig: true
-                {{ if .imports.auditPolicy }}
                 kubeAPIServer:
+                  {{ if ((.imports.shootConfig.kubernetes.kubeAPIServer).oidcConfig) }}
+                  oidcConfig:
+{{ toYaml .imports.shootConfig.kubernetes.kubeAPIServer.oidcConfig | indent 20 }}
+                  {{ end }}
+                  {{ if .imports.auditPolicy }}
                   auditConfig:
                     auditPolicy:
                       configMapRef:
                         name: {{ .imports.name }}-audit-policy
-                {{ end }}
+                  {{ end }}
               purpose: production
               maintenance:
                 timeWindow:
