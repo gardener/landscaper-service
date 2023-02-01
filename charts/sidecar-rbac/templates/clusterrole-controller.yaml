@@ -14,7 +14,9 @@ rules:
       - "landscaper-service.gardener.cloud"
     resources:
       - "namespaceregistrations"
+      - "namespaceregistrations/status"
       - "subjectlists"
+      - "subjectlists/status"
     verbs:
       - "*"
   - apiGroups:
