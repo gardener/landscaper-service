@@ -1,0 +1,20 @@
+#!/bin/sh
+
+PROJECT_ROOT="$(dirname $0)/.."
+
+echo "check if integration tests should be started"
+
+if ! which git 1>/dev/null; then
+  echo "Installing git... "
+  apk add --no-cache --no-progress git
+fi
+
+GIT_COMMENT=$(git show -s --format=%s)
+echo "git comment: " $GIT_COMMENT
+
+if git show -s --format=%s | grep run-int-tests; then
+  echo "laas integration test"
+  ${PROJECT_ROOT}/hack/integration-test.sh
+else
+    echo "integration tests are skipped"
+fi
