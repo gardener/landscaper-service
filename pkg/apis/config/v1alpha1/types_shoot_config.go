@@ -74,12 +74,12 @@ type ShootKubernetesConfig struct {
 	// The kubernetes version to use.
 	Version string `json:"version"`
 	// The configuration for the KubeAPIServer
-	KubeAPIServer KubeAPIServerConfig `json:"kubeAPIServer"`
+	KubeAPIServer KubeAPIServerConfig `json:"kubeAPIServer,omitempty"`
 }
 
 // KubeAPIServerConfig is the configuration for the KubeAPIServer
 type KubeAPIServerConfig struct {
-	OIDCConfig OIDCConfig `json:"oidcConfig"`
+	OIDCConfig OIDCConfig `json:"oidcConfig,omitempty"`
 }
 
 // OIDCConfig defines the OIDC configuration
