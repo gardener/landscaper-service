@@ -61,8 +61,6 @@ function buildComponentArchive() {
     COMMIT_SHA=${COMMIT_SHA} \
     VERSION=${VERSION} \
     $COMPONENT_REFERENCES
-
-  cat ${CA_PATH}/component-descriptor.yaml
 }
 
 buildComponentArchive "logging-stack" "resources.yaml resources-cert-manager.yaml resources-sap-btp-service-operator.yaml resources-fluentbit.yaml"
