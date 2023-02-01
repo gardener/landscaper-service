@@ -8,8 +8,16 @@ set +e
 set -o pipefail
 
 PROJECT_ROOT="$(dirname $0)/.."
-TEST_CLUSTER="laas-integration-test"
-HOSTING_CLUSTER="laas-integration-test-target"
+ARG=$1
+
+if [[ $ARG == "pull-request" ]]; then
+  TEST_CLUSTER="laas-integration-test"
+  HOSTING_CLUSTER="laas-integration-test-target"
+else
+  TEST_CLUSTER="laas-integration-test-pr"
+  HOSTING_CLUSTER="laas-integration-test-target-pr"
+fi
+
 GARDENER_CLUSTER="laas-integration-test-service-account"
 # LAAS_REPOSITORY="eu.gcr.io/sap-se-gcr-k8s-private/cnudie/gardener/development"
 LAAS_REPOSITORY="eu.gcr.io/gardener-project/development"
