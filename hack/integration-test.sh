@@ -11,11 +11,11 @@ PROJECT_ROOT="$(dirname $0)/.."
 ARG=$1
 
 if [[ $ARG == "pull-request" ]]; then
-  TEST_CLUSTER="laas-integration-test"
-  HOSTING_CLUSTER="laas-integration-test-target"
-else
   TEST_CLUSTER="laas-integration-test-pr"
   HOSTING_CLUSTER="laas-integration-test-target-pr"
+else
+  TEST_CLUSTER="laas-integration-test"
+  HOSTING_CLUSTER="laas-integration-test-target"
 fi
 
 GARDENER_CLUSTER="laas-integration-test-service-account"
