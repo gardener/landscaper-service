@@ -9,6 +9,9 @@ if ! which git 1>/dev/null; then
   apk add --no-cache --no-progress git
 fi
 
+cd "${PROJECT_ROOT}"
+PROJECT_ROOT="$(pwd)"
+
 GIT_COMMENT=$(git show -s --format=%s)
 echo "git comment: " $GIT_COMMENT
 
@@ -16,5 +19,5 @@ if git show -s --format=%s | grep run-int-tests; then
   echo "laas integration test"
   ${PROJECT_ROOT}/hack/integration-test.sh
 else
-    echo "integration tests are skipped"
+  echo "integration tests are skipped"
 fi
