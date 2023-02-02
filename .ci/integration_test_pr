@@ -17,7 +17,7 @@ echo "git comment: " $GIT_COMMENT
 
 if git show -s --format=%s | grep run-int-tests; then
   echo "laas integration test"
-  ${PROJECT_ROOT}/hack/integration-test.sh
+  ${PROJECT_ROOT}/hack/integration-test.sh pull-request
 else
   echo "integration tests are skipped"
 fi
