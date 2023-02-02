@@ -543,6 +543,18 @@ func deepEqualInstallationSpec(specA, specB *lsv1alpha1.InstallationSpec) bool {
 		return false
 	}
 
+	sidecarConfigA := make(map[string]interface{})
+	if err := json.Unmarshal(specA.ImportDataMappings[lsinstallation.SidecarConfigImportName].RawMessage, &sidecarConfigA); err != nil {
+		return false
+	}
+	sidecarConfigB := make(map[string]interface{})
+	if err := json.Unmarshal(specB.ImportDataMappings[lsinstallation.SidecarConfigImportName].RawMessage, &sidecarConfigB); err != nil {
+		return false
+	}
+	if !reflect.DeepEqual(sidecarConfigA, sidecarConfigB) {
+		return false
+	}
+
 	_, policyExistsA := specA.ImportDataMappings[lsinstallation.AuditPolicyImportName]
 	_, policyExistsB := specB.ImportDataMappings[lsinstallation.AuditPolicyImportName]
 
@@ -569,6 +581,8 @@ func deepEqualInstallationSpec(specA, specB *lsv1alpha1.InstallationSpec) bool {
 	delete(specB.ImportDataMappings, lsinstallation.RegistryConfigImportName)
 	delete(specA.ImportDataMappings, lsinstallation.ShootConfigImportName)
 	delete(specB.ImportDataMappings, lsinstallation.ShootConfigImportName)
+	delete(specA.ImportDataMappings, lsinstallation.SidecarConfigImportName)
+	delete(specB.ImportDataMappings, lsinstallation.SidecarConfigImportName)
 
 	return reflect.DeepEqual(specA, specB)
 }
