@@ -1,0 +1,19 @@
+---
+type: blueprint
+name: fluentbit-blueprint
+relation: local
+input:
+  type: dir
+  path: ./blueprint/fluentbit
+  mediaType: application/vnd.gardener.landscaper.blueprint.layer.v1.tar+gzip
+  compress: true
+...
+---
+type: ociImage
+name: fluent-bit
+version: ${FLUENTBIT_VERSION}
+relation: external
+access:
+  type: ociRegistry
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/fluent-bit@${FLUENTBIT_DIGEST}
+...
