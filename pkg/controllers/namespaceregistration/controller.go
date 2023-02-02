@@ -200,9 +200,14 @@ func (c *Controller) createRoleIfNotExistOrUpdate(ctx context.Context, namespace
 			Namespace: namespaceRegistration.Name,
 		},
 		Rules: []rbacv1.PolicyRule{
-			{ //TODO: correct the permissions for the role
-				APIGroups: []string{"landscaper.gardener.cloud/v1alpha1"},
+			{
+				APIGroups: []string{"landscaper.gardener.cloud"},
 				Resources: []string{"*"},
+				Verbs:     []string{"*"},
+			},
+			{
+				APIGroups: []string{""},
+				Resources: []string{"secrets", "configmaps"},
 				Verbs:     []string{"*"},
 			},
 		},

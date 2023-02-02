@@ -86,6 +86,12 @@ var _ = Describe("Reconcile", func() {
 		//check for role being created
 		role := rbacv1.Role{}
 		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: subjectsync.USER_ROLE_IN_NAMESPACE, Namespace: namespace.Name}, &role)).To(Succeed())
+		Expect(role.Rules[0].APIGroups).To(ContainElement("landscaper.gardener.cloud"))
+		Expect(role.Rules[0].Resources).To(ContainElement("*"))
+		Expect(role.Rules[0].Verbs).To(ContainElement("*"))
+		Expect(role.Rules[1].APIGroups).To(ContainElement(""))
+		Expect(role.Rules[1].Resources).To(ContainElements("secrets", "configmaps"))
+		Expect(role.Rules[1].Verbs).To(ContainElement("*"))
 
 		//check for rolebinding being created
 		rolebinding := rbacv1.RoleBinding{}
