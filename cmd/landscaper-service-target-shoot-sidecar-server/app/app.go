@@ -7,9 +7,10 @@ package app
 import (
 	"context"
 	"fmt"
+	"os"
+
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/rest"
-	"os"
 
 	lsinstall "github.com/gardener/landscaper/apis/core/install"
 	"github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
