@@ -269,6 +269,10 @@ The Installation to deploy the LaaS requires some credentials as input data:
   - Secret containing Gardener-Service-Account-Kubeconfigs for the Gardener-Resource-Cluster-Project provided as input
     to the LaaS installation.
 
+### Other Images for later usage
+
+![architecture](images/reource-cluster.png)
+
 ## 3 Questions and open points
 
 ### Open Points
