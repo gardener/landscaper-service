@@ -139,9 +139,15 @@ func createOrUpdateLsUserRole(ctx context.Context, c client.Client) error {
 	rules := []rbacv1.PolicyRule{
 		{
 			APIGroups:     []string{"landscaper-service.gardener.cloud"},
-			Resources:     []string{"subjectlists", "subjectlists/status"},
+			Resources:     []string{"subjectlists"},
 			ResourceNames: []string{subjectsync.SUBJECT_LIST_NAME},
-			Verbs:         []string{"get", "update", "list", "watch"},
+			Verbs:         []string{"get", "update", "patch", "list", "watch"},
+		},
+		{
+			APIGroups:     []string{"landscaper-service.gardener.cloud"},
+			Resources:     []string{"subjectlists/status"},
+			ResourceNames: []string{subjectsync.SUBJECT_LIST_NAME},
+			Verbs:         []string{"get", "list", "watch"},
 		},
 		{
 			APIGroups: []string{"landscaper-service.gardener.cloud"},
@@ -165,7 +171,6 @@ func createOrUpdateLsUserRole(ctx context.Context, c client.Client) error {
 			Name:      subjectsync.LS_USER_ROLE_IN_NAMESPACE,
 			Namespace: subjectsync.LS_USER_NAMESPACE,
 		},
-		Rules: rules,
 	}
 
 	_, err := kubernetes.CreateOrUpdate(ctx, c, role, func() error {
