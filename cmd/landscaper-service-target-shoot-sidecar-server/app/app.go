@@ -139,21 +139,25 @@ func createOrUpdateLsUserRole(ctx context.Context, c client.Client) error {
 	rules := []rbacv1.PolicyRule{
 		{
 			APIGroups:     []string{"landscaper-service.gardener.cloud"},
-			Resources:     []string{"subjectlists"},
+			Resources:     []string{"subjectlists", "subjectlists/status"},
 			ResourceNames: []string{subjectsync.SUBJECT_LIST_NAME},
-			Verbs:         []string{"get", "update"},
+			Verbs:         []string{"get", "update", "list", "watch"},
 		},
 		{
 			APIGroups: []string{"landscaper-service.gardener.cloud"},
-			Resources: []string{"namespaceregistrations"},
-			Verbs:     []string{"create", "delete", "list", "watch", "get"},
+			Resources: []string{"namespaceregistrations", "namespaceregistrations/status"},
+			Verbs:     []string{"*"},
 		},
 		{
 			APIGroups: []string{""},
 			Resources: []string{"serviceaccounts"},
-			Verbs:     []string{"create", "delete", "update", "list", "get"},
+			Verbs:     []string{"*"},
 		},
-		//TODO: token request api only for service accounts in the namespace (so no token for cluster-admin is issued)
+		{
+			APIGroups: []string{""},
+			Resources: []string{"serviceaccounts/token"},
+			Verbs:     []string{"create"},
+		},
 	}
 
 	role := &rbacv1.Role{
