@@ -7,6 +7,7 @@ package subjectsync
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -37,6 +38,8 @@ const LS_USER_NAMESPACE = "ls-user"
 const SUBJECT_LIST_ENTRY_USER = "User"
 const SUBJECT_LIST_ENTRY_GROUP = "Group"
 const SUBJECT_LIST_ENTRY_SERVICE_ACCOUNT = "ServiceAccount"
+
+const CUSTOM_NS_PREFIX = "cu-"
 
 type Controller struct {
 	operation.TargetShootSidecarOperation
@@ -149,6 +152,10 @@ func (c *Controller) reconcile(ctx context.Context, subjectList *lssv1alpha1.Sub
 		//only process correct rolebindings
 		if !(roleBinding.Name == USER_ROLE_BINDING_IN_NAMESPACE || roleBinding.Name == LS_USER_ROLE_BINDING_IN_NAMESPACE) {
 			continue
+		}
+
+		if !strings.HasPrefix(roleBinding.Namespace, CUSTOM_NS_PREFIX) && roleBinding.Namespace != LS_USER_NAMESPACE {
+			logger.Error(nil, "invalid customer namespace detected: "+roleBinding.Namespace)
 		}
 
 		//remove subject list

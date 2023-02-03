@@ -7,6 +7,7 @@ package namespaceregistration
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -163,6 +164,15 @@ func (c *Controller) reconcile(ctx context.Context, namespaceRegistration *lssv1
 			Name: namespaceRegistration.Name,
 		},
 	}
+
+	if !strings.HasPrefix(namespaceRegistration.Name, subjectsync.CUSTOM_NS_PREFIX) {
+		namespaceRegistration.Status.Phase = "InvalidName"
+		if err := c.Client().Status().Update(ctx, namespaceRegistration); err != nil {
+			logger.Error(err, "failed to update namespaceregistration with invalid name - must start with "+subjectsync.CUSTOM_NS_PREFIX)
+			return reconcile.Result{}, err
+		}
+	}
+
 	if err := c.Client().Create(ctx, namespace); err != nil {
 		if apierrors.IsAlreadyExists(err) {
 			namespaceRegistration.Status.Phase = "Completed"
@@ -200,9 +210,14 @@ func (c *Controller) createRoleIfNotExistOrUpdate(ctx context.Context, namespace
 			Namespace: namespaceRegistration.Name,
 		},
 		Rules: []rbacv1.PolicyRule{
-			{ //TODO: correct the permissions for the role
-				APIGroups: []string{"landscaper.gardener.cloud/v1alpha1"},
+			{
+				APIGroups: []string{"landscaper.gardener.cloud"},
 				Resources: []string{"*"},
+				Verbs:     []string{"*"},
+			},
+			{
+				APIGroups: []string{""},
+				Resources: []string{"secrets", "configmaps"},
 				Verbs:     []string{"*"},
 			},
 		},
