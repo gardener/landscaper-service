@@ -41,7 +41,7 @@ type LandscaperServiceConfiguration struct {
 	AuditLogConfig *AuditLogConfiguration `json:"auditLogConfig"`
 }
 
-//AvailabilityMonitoringConfiguration is the configuration for the availability monitoring of the provisioned landscaper
+// AvailabilityMonitoringConfiguration is the configuration for the availability monitoring of the provisioned landscaper
 type AvailabilityMonitoringConfiguration struct {
 	//AvailabilityCollectionName is the name of the CR containing the av monitoring statuses
 	AvailabilityCollectionName string `json:"availabilityCollectionName"`
@@ -60,7 +60,7 @@ type AvailabilityMonitoringConfiguration struct {
 	LSHealthCheckTimeout v1alpha1.Duration `json:"lsHealthCheckTimeout"`
 }
 
-//AvailabilityServiceConfiguration configures an external AVS service
+// AvailabilityServiceConfiguration configures an external AVS service
 type AvailabilityServiceConfiguration struct {
 	//Url is the full url to the AVS
 	Url string `json:"url"`

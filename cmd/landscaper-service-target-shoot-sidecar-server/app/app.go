@@ -18,14 +18,15 @@ import (
 	"github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 
-	lssinstall "github.com/gardener/landscaper-service/pkg/apis/core/install"
-	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
-	"github.com/gardener/landscaper-service/pkg/controllers/namespaceregistration"
-	"github.com/gardener/landscaper-service/pkg/controllers/subjectsync"
 	corev1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	lssinstall "github.com/gardener/landscaper-service/pkg/apis/core/install"
+	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	"github.com/gardener/landscaper-service/pkg/controllers/namespaceregistration"
+	"github.com/gardener/landscaper-service/pkg/controllers/subjectsync"
 
 	"github.com/gardener/landscaper-service/pkg/crdmanager"
 	"github.com/gardener/landscaper-service/pkg/version"
