@@ -83,13 +83,13 @@ func (o *options) run(ctx context.Context) error {
 	if err := createLsUserNamespaceIfNotExist(ctx, mgr.GetClient()); err != nil {
 		return fmt.Errorf("failed creating initial required namespace: %w", err)
 	}
-	if createOrUpdateLsUserRole(ctx, mgr.GetClient()); err != nil {
+	if err := createOrUpdateLsUserRole(ctx, mgr.GetClient()); err != nil {
 		return fmt.Errorf("failed creating initial required role: %w", err)
 	}
-	if createLsUserRolebindingIfNotExist(ctx, mgr.GetClient()); err != nil {
+	if err := createLsUserRolebindingIfNotExist(ctx, mgr.GetClient()); err != nil {
 		return fmt.Errorf("failed creating initial required rolebinding: %w", err)
 	}
-	if createSubjectsListIfNotExist(ctx, mgr.GetClient()); err != nil {
+	if err := createSubjectsListIfNotExist(ctx, mgr.GetClient()); err != nil {
 		return fmt.Errorf("failed creating initial required subjectlist: %w", err)
 	}
 
