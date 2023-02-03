@@ -9,22 +9,21 @@ import (
 	"fmt"
 	"os"
 
+	lsinstall "github.com/gardener/landscaper/apis/core/install"
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 	"github.com/spf13/cobra"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
-
-	lsinstall "github.com/gardener/landscaper/apis/core/install"
-	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 
 	lssinstall "github.com/gardener/landscaper-service/pkg/apis/core/install"
 	"github.com/gardener/landscaper-service/pkg/controllers/avmonitorregistration"
 	"github.com/gardener/landscaper-service/pkg/controllers/avuploader"
 	"github.com/gardener/landscaper-service/pkg/controllers/healthwatcher"
-
 	instancesctrl "github.com/gardener/landscaper-service/pkg/controllers/instances"
 	landscaperdeploymentsctrl "github.com/gardener/landscaper-service/pkg/controllers/landscaperdeployments"
 	servicetargetconfigsctrl "github.com/gardener/landscaper-service/pkg/controllers/servicetargetconfigs"
 	"github.com/gardener/landscaper-service/pkg/crdmanager"
+	"github.com/gardener/landscaper-service/pkg/utils"
 	"github.com/gardener/landscaper-service/pkg/version"
 )
 
@@ -59,6 +58,7 @@ func (o *options) run(ctx context.Context) error {
 		LeaderElection:     false,
 		Port:               9443,
 		MetricsBindAddress: "0",
+		NewClient:          utils.NewUncachedClient,
 	}
 
 	if o.Config.Metrics != nil {

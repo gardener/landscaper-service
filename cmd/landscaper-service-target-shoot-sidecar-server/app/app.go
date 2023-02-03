@@ -9,26 +9,24 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/spf13/cobra"
-	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/manager"
-
 	lsinstall "github.com/gardener/landscaper/apis/core/install"
 	"github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
-
+	"github.com/spf13/cobra"
 	corev1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/manager"
 
 	lssinstall "github.com/gardener/landscaper-service/pkg/apis/core/install"
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	"github.com/gardener/landscaper-service/pkg/controllers/namespaceregistration"
 	"github.com/gardener/landscaper-service/pkg/controllers/subjectsync"
-
 	"github.com/gardener/landscaper-service/pkg/crdmanager"
+	"github.com/gardener/landscaper-service/pkg/utils"
 	"github.com/gardener/landscaper-service/pkg/version"
 )
 
@@ -63,6 +61,7 @@ func (o *options) run(ctx context.Context) error {
 		LeaderElection:     false,
 		Port:               9443,
 		MetricsBindAddress: "0",
+		NewClient:          utils.NewUncachedClient,
 	}
 
 	if o.Config.Metrics != nil {
