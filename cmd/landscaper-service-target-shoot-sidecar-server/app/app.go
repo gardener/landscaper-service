@@ -151,8 +151,13 @@ func createOrUpdateLsUserRole(ctx context.Context, c client.Client) error {
 		},
 		{
 			APIGroups: []string{"landscaper-service.gardener.cloud"},
-			Resources: []string{"namespaceregistrations", "namespaceregistrations/status"},
+			Resources: []string{"namespaceregistrations"},
 			Verbs:     []string{"*"},
+		},
+		{
+			APIGroups: []string{"landscaper-service.gardener.cloud"},
+			Resources: []string{"namespaceregistrations/status"},
+			Verbs:     []string{"get", "list", "watch"},
 		},
 		{
 			APIGroups: []string{""},
