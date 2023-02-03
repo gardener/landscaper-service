@@ -7,6 +7,8 @@ package app
 import (
 	"context"
 	"fmt"
+	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/client-go/rest"
 	"os"
 
 	lsinstall "github.com/gardener/landscaper/apis/core/install"
@@ -80,16 +82,21 @@ func (o *options) run(ctx context.Context) error {
 	lssinstall.Install(mgr.GetScheme())
 	lsinstall.Install(mgr.GetScheme())
 
-	if err := createLsUserNamespaceIfNotExist(ctx, mgr.GetClient()); err != nil {
+	initClient, err := createClientForInit(mgr.GetConfig())
+	if err != nil {
+		return err
+	}
+
+	if err := createLsUserNamespaceIfNotExist(ctx, initClient); err != nil {
 		return fmt.Errorf("failed creating initial required namespace: %w", err)
 	}
-	if err := createOrUpdateLsUserRole(ctx, mgr.GetClient()); err != nil {
+	if err := createOrUpdateLsUserRole(ctx, initClient); err != nil {
 		return fmt.Errorf("failed creating initial required role: %w", err)
 	}
-	if err := createLsUserRolebindingIfNotExist(ctx, mgr.GetClient()); err != nil {
+	if err := createLsUserRolebindingIfNotExist(ctx, initClient); err != nil {
 		return fmt.Errorf("failed creating initial required rolebinding: %w", err)
 	}
-	if err := createSubjectsListIfNotExist(ctx, mgr.GetClient()); err != nil {
+	if err := createSubjectsListIfNotExist(ctx, initClient); err != nil {
 		return fmt.Errorf("failed creating initial required subjectlist: %w", err)
 	}
 
@@ -121,6 +128,21 @@ func (o *options) ensureCRDs(ctx context.Context, mgr manager.Manager) error {
 	}
 
 	return nil
+}
+
+func createClientForInit(config *rest.Config) (client.Client, error) {
+	scheme := runtime.NewScheme()
+	lssinstall.Install(scheme)
+	lsinstall.Install(scheme)
+	rbacv1.AddToScheme(scheme)
+	corev1.AddToScheme(scheme)
+
+	c, err := client.New(config, client.Options{Scheme: scheme})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create init client: %w", err)
+	}
+
+	return c, nil
 }
 
 func createLsUserNamespaceIfNotExist(ctx context.Context, c client.Client) error {
