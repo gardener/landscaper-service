@@ -41,6 +41,10 @@ func InstallationSpecDeepEquals(specA, specB *lsv1alpha1.InstallationSpec) bool 
 		return true
 	}
 
+	if len(specA.ImportDataMappings) != len(specB.ImportDataMappings) {
+		return false
+	}
+
 	if !testImportDataMappings(specA, specB) {
 		return false
 	}
