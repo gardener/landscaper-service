@@ -9,9 +9,6 @@ import (
 	"fmt"
 	"os"
 
-	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/client-go/rest"
-
 	lsinstall "github.com/gardener/landscaper/apis/core/install"
 	"github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
@@ -20,6 +17,9 @@ import (
 	rbacv1 "k8s.io/api/rbac/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
+	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
+	"k8s.io/client-go/rest"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
@@ -135,8 +135,8 @@ func createClientForInit(config *rest.Config) (client.Client, error) {
 	scheme := runtime.NewScheme()
 	lssinstall.Install(scheme)
 	lsinstall.Install(scheme)
-	rbacv1.AddToScheme(scheme)
-	corev1.AddToScheme(scheme)
+	utilruntime.Must(rbacv1.AddToScheme(scheme))
+	utilruntime.Must(corev1.AddToScheme(scheme))
 
 	c, err := client.New(config, client.Options{Scheme: scheme})
 	if err != nil {
