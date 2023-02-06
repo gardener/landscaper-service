@@ -154,8 +154,9 @@ func (c *Controller) reconcile(ctx context.Context, subjectList *lssv1alpha1.Sub
 			continue
 		}
 
-		if !strings.HasPrefix(roleBinding.Namespace, CUSTOM_NS_PREFIX) && roleBinding.Namespace != LS_USER_NAMESPACE {
-			logger.Error(nil, "invalid customer namespace detected: "+roleBinding.Namespace)
+		if !(strings.HasPrefix(roleBinding.Namespace, CUSTOM_NS_PREFIX) || roleBinding.Namespace == LS_USER_NAMESPACE) {
+			logger.Info("user-role/-binding found outside of customer namespace. Reconcile skipped: " + roleBinding.Namespace)
+			continue
 		}
 
 		//remove subject list

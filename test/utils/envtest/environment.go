@@ -194,6 +194,16 @@ func (e *Environment) CleanupResources(ctx context.Context, state *State) error 
 			return err
 		}
 	}
+	for _, obj := range state.NamespaceRegistrations {
+		if err := e.deleteObject(ctx, obj); err != nil {
+			return err
+		}
+	}
+	for _, obj := range state.SubjectLists {
+		if err := e.deleteObject(ctx, obj); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
