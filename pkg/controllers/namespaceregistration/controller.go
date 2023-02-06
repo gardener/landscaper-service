@@ -174,15 +174,10 @@ func (c *Controller) reconcile(ctx context.Context, namespaceRegistration *lssv1
 	}
 
 	if err := c.Client().Create(ctx, namespace); err != nil {
-		if apierrors.IsAlreadyExists(err) {
-			namespaceRegistration.Status.Phase = "Completed"
-			if err := c.Client().Status().Update(ctx, namespaceRegistration); err != nil {
-				logger.Error(err, "failed updating status of namespaceregistration")
-				return reconcile.Result{}, err
-			}
+		if !apierrors.IsAlreadyExists(err) {
+			logger.Error(err, "failed creating namespace")
+			return reconcile.Result{}, err
 		}
-		logger.Error(err, "failed creating namespace")
-		return reconcile.Result{}, err
 	}
 
 	if err := c.createRoleIfNotExistOrUpdate(ctx, namespaceRegistration); err != nil {
