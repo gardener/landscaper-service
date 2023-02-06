@@ -72,6 +72,14 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 		return reconcile.Result{}, err
 	}
 
+	if !strings.HasPrefix(namespaceRegistration.Name, subjectsync.CUSTOM_NS_PREFIX) {
+		namespaceRegistration.Status.Phase = "InvalidName"
+		if err := c.Client().Status().Update(ctx, namespaceRegistration); err != nil {
+			logger.Error(err, "failed to update namespaceregistration with invalid name - must start with "+subjectsync.CUSTOM_NS_PREFIX)
+			return reconcile.Result{}, err
+		}
+	}
+
 	// set finalizer
 	if namespaceRegistration.DeletionTimestamp.IsZero() && !kutils.HasFinalizer(namespaceRegistration, lssv1alpha1.LandscaperServiceFinalizer) {
 		controllerutil.AddFinalizer(namespaceRegistration, lssv1alpha1.LandscaperServiceFinalizer)
@@ -163,14 +171,6 @@ func (c *Controller) reconcile(ctx context.Context, namespaceRegistration *lssv1
 		ObjectMeta: metav1.ObjectMeta{
 			Name: namespaceRegistration.Name,
 		},
-	}
-
-	if !strings.HasPrefix(namespaceRegistration.Name, subjectsync.CUSTOM_NS_PREFIX) {
-		namespaceRegistration.Status.Phase = "InvalidName"
-		if err := c.Client().Status().Update(ctx, namespaceRegistration); err != nil {
-			logger.Error(err, "failed to update namespaceregistration with invalid name - must start with "+subjectsync.CUSTOM_NS_PREFIX)
-			return reconcile.Result{}, err
-		}
 	}
 
 	if err := c.Client().Create(ctx, namespace); err != nil {
