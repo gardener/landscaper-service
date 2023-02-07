@@ -193,11 +193,6 @@ func createOrUpdateLsUserRole(ctx context.Context, c client.Client) error {
 			Resources: []string{"serviceaccounts/token"},
 			Verbs:     []string{"create"},
 		},
-		{
-			APIGroups: []string{""},
-			Resources: []string{"namespaces"},
-			Verbs:     []string{"get", "list", "watch"},
-		},
 	}
 
 	role := &rbacv1.Role{
