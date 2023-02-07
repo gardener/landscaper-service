@@ -56,7 +56,7 @@ var _ = Describe("Reconcile", func() {
 		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test1")
 		Expect(err).ToNot(HaveOccurred())
 
-		namespaceRegistration := state.GetNamespaceRegistration("test-namespace-1")
+		namespaceRegistration := state.GetNamespaceRegistration("cu-test-namespace-1")
 		//reconcile for finalizer
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(namespaceRegistration), namespaceRegistration)).To(Succeed())
@@ -70,7 +70,7 @@ var _ = Describe("Reconcile", func() {
 		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test1")
 		Expect(err).ToNot(HaveOccurred())
 
-		namespaceRegistration := state.GetNamespaceRegistration("test-namespace-1")
+		namespaceRegistration := state.GetNamespaceRegistration("cu-test-namespace-1")
 		//reconcile for finalizer
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(namespaceRegistration), namespaceRegistration)).To(Succeed())
@@ -108,7 +108,7 @@ var _ = Describe("Reconcile", func() {
 		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test2")
 		Expect(err).ToNot(HaveOccurred())
 
-		namespaceRegistration := state.GetNamespaceRegistration("test-namespace-2")
+		namespaceRegistration := state.GetNamespaceRegistration("cu-test-namespace-2")
 		//reconcile for finalizer
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(namespaceRegistration), namespaceRegistration)).To(Succeed())

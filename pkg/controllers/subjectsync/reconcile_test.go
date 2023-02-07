@@ -127,7 +127,7 @@ var _ = Describe("Reconcile", func() {
 		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test1")
 		Expect(err).ToNot(HaveOccurred())
 
-		subjectlist := state.GetSubjectList("subjectlist")
+		subjectlist := state.GetSubjectList("subjects")
 		//reconcile for finalizer
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(subjectlist))
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(subjectlist), subjectlist)).To(Succeed())
@@ -164,7 +164,7 @@ var _ = Describe("Reconcile", func() {
 		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test2")
 		Expect(err).ToNot(HaveOccurred())
 
-		subjectlist := state.GetSubjectList("subjectlist")
+		subjectlist := state.GetSubjectList("subjects")
 		//reconcile for finalizer
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(subjectlist))
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(subjectlist), subjectlist)).To(Succeed())
@@ -174,11 +174,15 @@ var _ = Describe("Reconcile", func() {
 
 		updatedLsUserRoleBinding := rbacv1.RoleBinding{}
 		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: subjectsync.LS_USER_ROLE_BINDING_IN_NAMESPACE, Namespace: lsUserNamespace}, &updatedLsUserRoleBinding)).To(Succeed())
-		Expect(len(updatedLsUserRoleBinding.Subjects)).To(Equal(0))
+		Expect(len(updatedLsUserRoleBinding.Subjects)).To(Equal(1))
 
 		updatedUserRoleBinding := rbacv1.RoleBinding{}
 		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: subjectsync.USER_ROLE_BINDING_IN_NAMESPACE, Namespace: userNamespace}, &updatedUserRoleBinding)).To(Succeed())
-		Expect(len(updatedUserRoleBinding.Subjects)).To(Equal(0))
+		Expect(len(updatedUserRoleBinding.Subjects)).To(Equal(1))
+
+		clusterRoleBinding := rbacv1.ClusterRoleBinding{}
+		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: subjectsync.USER_CLUSTER_ROLE_BINDING, Namespace: userNamespace}, &clusterRoleBinding)).To(Succeed())
+		Expect(len(updatedUserRoleBinding.Subjects)).To(Equal(1))
 	})
 
 	It("should remove subjects if removed from the subject list", func() {
@@ -187,7 +191,7 @@ var _ = Describe("Reconcile", func() {
 		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test1")
 		Expect(err).ToNot(HaveOccurred())
 
-		subjectlist := state.GetSubjectList("subjectlist")
+		subjectlist := state.GetSubjectList("subjects")
 		//reconcile for finalizer
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(subjectlist))
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(subjectlist), subjectlist)).To(Succeed())
@@ -288,7 +292,7 @@ var _ = Describe("Reconcile", func() {
 		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test1")
 		Expect(err).ToNot(HaveOccurred())
 
-		subjectlist := state.GetSubjectList("subjectlist")
+		subjectlist := state.GetSubjectList("subjects")
 		//reconcile for finalizer
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(subjectlist))
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(subjectlist), subjectlist)).To(Succeed())
@@ -363,7 +367,7 @@ var _ = Describe("Reconcile", func() {
 		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test1")
 		Expect(err).ToNot(HaveOccurred())
 
-		subjectlist := state.GetSubjectList("subjectlist")
+		subjectlist := state.GetSubjectList("subjects")
 		//reconcile for finalizer
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(subjectlist))
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(subjectlist), subjectlist)).To(Succeed())

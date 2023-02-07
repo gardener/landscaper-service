@@ -1,7 +1,7 @@
 apiVersion: landscaper-service.gardener.cloud/v1alpha1
 kind: SubjectList
 metadata:
-  name: subjectlist
+  name: subjects
   namespace: ls-user
 spec:
   subjects:
