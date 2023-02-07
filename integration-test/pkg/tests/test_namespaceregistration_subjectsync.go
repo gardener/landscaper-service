@@ -8,10 +8,13 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"strings"
 
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
+	cliutil "github.com/gardener/landscapercli/pkg/util"
 	corev1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
@@ -53,6 +56,140 @@ func (r *NamespaceregistrationSubjectSyncRunner) Run() error {
 		if err := r.checkInitialSetup(deployment); err != nil {
 			return fmt.Errorf("failed checking initial setup: %w", err)
 		}
+		if err := r.addUserToSubjectListAndCheckChangePropagated(deployment, "user1"); err != nil {
+			return fmt.Errorf("failed adding user to subjectlist and check if change propagated: %w", err)
+		}
+		if err := r.addNamespaceregistrationAndCheckCreation("cu-test-registration"); err != nil {
+			return fmt.Errorf("failed adding namespaceregistration and check setup: %w", err)
+		}
+		if err := r.addUserToSubjectListAndCheckChangePropagated(deployment, "user2"); err != nil {
+			return fmt.Errorf("failed adding user to subjectlist and check if change propagated: %w", err)
+		}
+	}
+	return nil
+}
+
+func (r *NamespaceregistrationSubjectSyncRunner) addNamespaceregistrationAndCheckCreation(namespaceregistrationName string) error {
+	namespaceRegistration := &lssv1alpha1.NamespaceRegistration{
+		ObjectMeta: v1.ObjectMeta{
+			Name:      namespaceregistrationName,
+			Namespace: "ls-user",
+		},
+	}
+	if err := r.resourceClusterAdminClient.Create(
+		r.ctx,
+		namespaceRegistration); err != nil {
+		return fmt.Errorf("failed creating namespaceregistration %q/%q: %w", namespaceRegistration.Namespace, namespaceRegistration.Name, err)
+	}
+
+	subjects := &lssv1alpha1.SubjectList{}
+	if err := r.resourceClusterAdminClient.Get(
+		r.ctx,
+		types.NamespacedName{Name: "subjects", Namespace: "ls-user"},
+		subjects); err != nil {
+		return fmt.Errorf("failed to get subjects for deployment: %w", err)
+	}
+
+	timeout, err := cliutil.CheckConditionPeriodically(func() (bool, error) {
+		if err := r.resourceClusterAdminClient.Get(
+			r.ctx,
+			types.NamespacedName{Name: namespaceRegistration.Name, Namespace: namespaceRegistration.Namespace},
+			namespaceRegistration); err != nil {
+			return false, fmt.Errorf("failed retrieving namespaceregistration %q/%q: %w", namespaceRegistration.Namespace, namespaceRegistration.Name, err)
+		}
+		if namespaceRegistration.Status.Phase != "Completed" {
+			return false, nil
+		}
+
+		role := &rbacv1.Role{}
+		if err := r.resourceClusterAdminClient.Get(r.BaseTestRunner.ctx, types.NamespacedName{Name: "user-role", Namespace: namespaceRegistration.Name}, role); err != nil {
+			return false, nil
+		}
+
+		rolebinding := &rbacv1.RoleBinding{}
+		if err := r.resourceClusterAdminClient.Get(r.BaseTestRunner.ctx, types.NamespacedName{Name: "user-role-binding", Namespace: namespaceRegistration.Name}, rolebinding); err != nil {
+			return false, nil
+		}
+		if len(rolebinding.Subjects) != len(subjects.Spec.Subjects) {
+			return false, nil
+		}
+		for i := 0; i < len(subjects.Spec.Subjects); i++ {
+			if rolebinding.Subjects[i].Kind != subjects.Spec.Subjects[i].Kind ||
+				rolebinding.Subjects[i].Name != subjects.Spec.Subjects[i].Name ||
+				rolebinding.Subjects[i].Namespace != subjects.Spec.Subjects[i].Namespace {
+				return false, nil
+			}
+		}
+
+		return true, nil
+
+	}, r.config.SleepTime, r.config.MaxRetries)
+	if err != nil {
+		return fmt.Errorf("failed checking for namespaceregistration creation: %w", err)
+	}
+	if timeout {
+		return fmt.Errorf("timeout waiting for namespaceregistration creation")
+	}
+
+	return nil
+}
+
+func (r *NamespaceregistrationSubjectSyncRunner) addUserToSubjectListAndCheckChangePropagated(deployment *lssv1alpha1.LandscaperDeployment, username string) error {
+	// add user to subjectlist
+	subjects := &lssv1alpha1.SubjectList{}
+	if err := r.resourceClusterAdminClient.Get(
+		r.ctx,
+		types.NamespacedName{Name: "subjects", Namespace: "ls-user"},
+		subjects); err != nil {
+		return fmt.Errorf("failed to get subjects for deployment: %w", err)
+	}
+	subjects.Spec.Subjects = append(subjects.Spec.Subjects, lssv1alpha1.Subject{Kind: "User", Name: username})
+	r.resourceClusterAdminClient.Update(r.ctx, subjects)
+
+	if err := r.checkRolebindingForSubjectlistSynced(types.NamespacedName{Namespace: "ls-user", Name: "ls-user-role-binding"}, subjects); err != nil {
+		return fmt.Errorf("failed sycing subjectlist for ls-user/ls-user-role-binding:%w", err)
+	}
+
+	namespaceList := &corev1.NamespaceList{}
+	if err := r.resourceClusterAdminClient.List(r.ctx, namespaceList); err != nil {
+		return fmt.Errorf("failed retrieving namespace list:%w", err)
+	}
+	for _, v := range namespaceList.Items {
+		if strings.HasPrefix(v.Name, "cu-") {
+			if err := r.checkRolebindingForSubjectlistSynced(types.NamespacedName{Namespace: v.Name, Name: "user-role-binding"}, subjects); err != nil {
+				return fmt.Errorf("failed sycing subjectlist for %q/user-role-binding:%w", v.Name, err)
+			}
+		}
+	}
+	return nil
+}
+
+func (r *NamespaceregistrationSubjectSyncRunner) checkRolebindingForSubjectlistSynced(namespaceName types.NamespacedName, subjects *lssv1alpha1.SubjectList) error {
+	timeout, err := cliutil.CheckConditionPeriodically(func() (bool, error) {
+		rolebinding := &rbacv1.RoleBinding{}
+		if err := r.resourceClusterAdminClient.Get(
+			r.ctx,
+			namespaceName,
+			rolebinding); err != nil {
+			return false, fmt.Errorf("failed to get rolebinding %q/%q: %w", namespaceName.Namespace, namespaceName.Name, err)
+		}
+		if len(rolebinding.Subjects) != len(subjects.Spec.Subjects) {
+			return false, nil
+		}
+		for i := 0; i < len(subjects.Spec.Subjects); i++ {
+			if rolebinding.Subjects[i].Kind != subjects.Spec.Subjects[i].Kind ||
+				rolebinding.Subjects[i].Name != subjects.Spec.Subjects[i].Name ||
+				rolebinding.Subjects[i].Namespace != subjects.Spec.Subjects[i].Namespace {
+				return false, nil
+			}
+		}
+		return true, nil
+	}, r.config.SleepTime, r.config.MaxRetries)
+	if err != nil {
+		return fmt.Errorf("failed checking for subjectlist sync: %w", err)
+	}
+	if timeout {
+		return fmt.Errorf("timeout waiting for subjectlist sync")
 	}
 	return nil
 }
