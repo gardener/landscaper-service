@@ -208,11 +208,6 @@ func (c *Controller) createRoleIfNotExistOrUpdate(ctx context.Context, namespace
 			Resources: []string{"secrets", "configmaps"},
 			Verbs:     []string{"*"},
 		},
-		{
-			APIGroups: []string{""},
-			Resources: []string{"namespaces"},
-			Verbs:     []string{"get", "list", "watch"},
-		},
 	}
 
 	role := &rbacv1.Role{
