@@ -19,7 +19,7 @@ controller:
   replicaCount: 1
   image:
     repository: eu.gcr.io/gardener-project/landscaper-service/landscaper-service-target-shoot-sidecar-server
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
     # Overrides the image tag whose default is the .Values.image.tag or chart appVersion.
     #tag: ""
 
