@@ -144,7 +144,9 @@ func (r *NamespaceregistrationSubjectSyncRunner) addUserToSubjectListAndCheckCha
 		return fmt.Errorf("failed to get subjects for deployment: %w", err)
 	}
 	subjects.Spec.Subjects = append(subjects.Spec.Subjects, lssv1alpha1.Subject{Kind: "User", Name: username})
-	r.resourceClusterAdminClient.Update(r.ctx, subjects)
+	if err := r.resourceClusterAdminClient.Update(r.ctx, subjects); err != nil {
+		return fmt.Errorf("failed updating subjectlist for ls-user/ls-user-role-binding:%w", err)
+	}
 
 	if err := r.checkRolebindingForSubjectlistSynced(types.NamespacedName{Namespace: "ls-user", Name: "ls-user-role-binding"}, subjects); err != nil {
 		return fmt.Errorf("failed sycing subjectlist for ls-user/ls-user-role-binding:%w", err)
