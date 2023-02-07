@@ -6,6 +6,7 @@ package tests
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
@@ -74,12 +75,17 @@ func (r *NamespaceregistrationSubjectSyncRunner) checkInitialSetup(deployment *l
 		return fmt.Errorf("instance %q for deployment %q missing AdminKubeconfig", instance.Name, deployment.Name)
 	}
 
-	//build client
-	var err error
-	r.resourceClusterAdminClient, err = util.BuildKubeClient(instance.Status.AdminKubeconfig, test.Scheme())
+	kubeconfig, err := base64.StdEncoding.DecodeString(instance.Status.AdminKubeconfig)
 	if err != nil {
-		return fmt.Errorf("failed building KubeClient for instance %s:%s: %w", instance.Name, instance.Namespace, err)
+		return fmt.Errorf("failed to decode admin kubeconfig of instance %q/%q: %w", instance.Namespace, instance.Name, err)
 	}
+
+	//build client
+	kubeClient, err := util.BuildKubeClient(string(kubeconfig), test.Scheme())
+	if err != nil {
+		return fmt.Errorf("failed building KubeClient for instance %q/%q: %w", instance.Namespace, instance.Name, err)
+	}
+	r.resourceClusterAdminClient = kubeClient
 
 	//check for namespace ls-user, role, rolebinding, subjectsynclist
 	namespace := &corev1.Namespace{}
