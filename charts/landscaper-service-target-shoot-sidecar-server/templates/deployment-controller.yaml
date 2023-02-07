@@ -30,7 +30,7 @@ spec:
           securityContext:
             {{  toYaml .Values.securityContext | nindent 12 }}
           image: "{{ include "ls-service-target-shoot-sidecar-controller-image" . }}"
-          imagePullPolicy: {{ .Values.controller.image.pullPolicy }}
+          imagePullPolicy: Always
           args:
           - "-v={{ .Values.lsServiceTargetShootSidecar.verbosity }}"
           - "--kubeconfig=/app/ls/cluster-kubeconfig/kubeconfig"
