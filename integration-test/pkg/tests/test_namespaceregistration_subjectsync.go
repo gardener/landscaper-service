@@ -23,6 +23,19 @@ import (
 	"github.com/gardener/landscaper-service/test/integration/pkg/util"
 )
 
+const (
+	USER_CLUSTER_ROLE                 = "landscaper-service:namespace-registrator"
+	USER_CLUSTER_ROLE_BINDING         = "landscaper-service:namespace-registrator"
+	LS_USER_ROLE_IN_NAMESPACE         = "landscaper-service:namespace-registrator"
+	LS_USER_ROLE_BINDING_IN_NAMESPACE = "landscaper-service:namespace-registrator"
+	USER_ROLE_IN_NAMESPACE            = "landscaper-service:landscaper-user"
+	USER_ROLE_BINDING_IN_NAMESPACE    = "landscaper-service:landscaper-user"
+
+	SUBJECT_LIST_NAME = "subjects"
+	LS_USER_NAMESPACE = "ls-user"
+	CUSTOM_NS_PREFIX  = "cu-"
+)
+
 type NamespaceregistrationSubjectSyncRunner struct {
 	BaseTestRunner
 	resourceClusterAdminClient client.Client
@@ -86,7 +99,7 @@ func (r *NamespaceregistrationSubjectSyncRunner) deleteNamespaceregistrationAndC
 	namespaceRegistration := &lssv1alpha1.NamespaceRegistration{
 		ObjectMeta: v1.ObjectMeta{
 			Name:      namespaceregistrationName,
-			Namespace: "ls-user",
+			Namespace: LS_USER_NAMESPACE,
 		},
 	}
 	if err := r.resourceClusterAdminClient.Delete(
@@ -98,7 +111,7 @@ func (r *NamespaceregistrationSubjectSyncRunner) deleteNamespaceregistrationAndC
 	logger.Info("waiting for namespaceregistration to be deleted", "name", namespaceregistrationName)
 	timeout, err := cliutil.CheckAndWaitUntilObjectNotExistAnymore(
 		r.clusterClients.TestCluster,
-		types.NamespacedName{Name: namespaceregistrationName, Namespace: "ls-user"}, namespaceRegistration,
+		types.NamespacedName{Name: namespaceregistrationName, Namespace: LS_USER_NAMESPACE}, namespaceRegistration,
 		r.config.SleepTime, r.config.MaxRetries*10)
 
 	if err != nil {
@@ -132,7 +145,7 @@ func (r *NamespaceregistrationSubjectSyncRunner) deleteUserFromSubjectsAndCheckS
 	subjects := &lssv1alpha1.SubjectList{}
 	if err := r.resourceClusterAdminClient.Get(
 		r.ctx,
-		types.NamespacedName{Name: "subjects", Namespace: "ls-user"},
+		types.NamespacedName{Name: SUBJECT_LIST_NAME, Namespace: LS_USER_NAMESPACE},
 		subjects); err != nil {
 		return fmt.Errorf("failed to get subjects: %w", err)
 	}
@@ -149,14 +162,14 @@ func (r *NamespaceregistrationSubjectSyncRunner) deleteUserFromSubjectsAndCheckS
 	subjects.Spec.Subjects = filteredSubjects
 
 	if err := r.resourceClusterAdminClient.Update(r.ctx, subjects); err != nil {
-		return fmt.Errorf("failed updating subjectlist for ls-user/ls-user-role-binding:%w", err)
+		return fmt.Errorf("failed updating subjectlist for %q/%q:%w", LS_USER_NAMESPACE, LS_USER_ROLE_BINDING_IN_NAMESPACE, err)
 	}
 
 	// check that there is one subject less after update
 	subjectsAfterUpdate := &lssv1alpha1.SubjectList{}
 	if err := r.resourceClusterAdminClient.Get(
 		r.ctx,
-		types.NamespacedName{Name: "subjects", Namespace: "ls-user"},
+		types.NamespacedName{Name: SUBJECT_LIST_NAME, Namespace: LS_USER_NAMESPACE},
 		subjectsAfterUpdate); err != nil {
 		return fmt.Errorf("failed to get updated subjects: %w", err)
 	}
@@ -178,7 +191,7 @@ func (r *NamespaceregistrationSubjectSyncRunner) addNamespaceregistrationAndChec
 	namespaceRegistration := &lssv1alpha1.NamespaceRegistration{
 		ObjectMeta: v1.ObjectMeta{
 			Name:      namespaceregistrationName,
-			Namespace: "ls-user",
+			Namespace: LS_USER_NAMESPACE,
 		},
 	}
 	if err := r.resourceClusterAdminClient.Create(
@@ -190,7 +203,7 @@ func (r *NamespaceregistrationSubjectSyncRunner) addNamespaceregistrationAndChec
 	subjects := &lssv1alpha1.SubjectList{}
 	if err := r.resourceClusterAdminClient.Get(
 		r.ctx,
-		types.NamespacedName{Name: "subjects", Namespace: "ls-user"},
+		types.NamespacedName{Name: SUBJECT_LIST_NAME, Namespace: LS_USER_NAMESPACE},
 		subjects); err != nil {
 		return fmt.Errorf("failed to get subjects for deployment: %w", err)
 	}
@@ -208,12 +221,12 @@ func (r *NamespaceregistrationSubjectSyncRunner) addNamespaceregistrationAndChec
 		}
 
 		role := &rbacv1.Role{}
-		if err := r.resourceClusterAdminClient.Get(r.BaseTestRunner.ctx, types.NamespacedName{Name: "user-role", Namespace: namespaceRegistration.Name}, role); err != nil {
+		if err := r.resourceClusterAdminClient.Get(r.BaseTestRunner.ctx, types.NamespacedName{Name: USER_ROLE_IN_NAMESPACE, Namespace: namespaceRegistration.Name}, role); err != nil {
 			return false, nil
 		}
 
 		rolebinding := &rbacv1.RoleBinding{}
-		if err := r.resourceClusterAdminClient.Get(r.BaseTestRunner.ctx, types.NamespacedName{Name: "user-role-binding", Namespace: namespaceRegistration.Name}, rolebinding); err != nil {
+		if err := r.resourceClusterAdminClient.Get(r.BaseTestRunner.ctx, types.NamespacedName{Name: USER_ROLE_BINDING_IN_NAMESPACE, Namespace: namespaceRegistration.Name}, rolebinding); err != nil {
 			return false, nil
 		}
 		if len(rolebinding.Subjects) != len(subjects.Spec.Subjects) {
@@ -247,13 +260,13 @@ func (r *NamespaceregistrationSubjectSyncRunner) addUserToSubjectListAndCheckCha
 	subjects := &lssv1alpha1.SubjectList{}
 	if err := r.resourceClusterAdminClient.Get(
 		r.ctx,
-		types.NamespacedName{Name: "subjects", Namespace: "ls-user"},
+		types.NamespacedName{Name: SUBJECT_LIST_NAME, Namespace: LS_USER_NAMESPACE},
 		subjects); err != nil {
 		return fmt.Errorf("failed to get subjects for deployment: %w", err)
 	}
 	subjects.Spec.Subjects = append(subjects.Spec.Subjects, lssv1alpha1.Subject{Kind: "User", Name: username})
 	if err := r.resourceClusterAdminClient.Update(r.ctx, subjects); err != nil {
-		return fmt.Errorf("failed updating subjectlist for ls-user/ls-user-role-binding:%w", err)
+		return fmt.Errorf("failed updating subjectlist for %q/%q:%w", LS_USER_NAMESPACE, LS_USER_ROLE_BINDING_IN_NAMESPACE, err)
 	}
 
 	if err := r.checkAllNamespacesForSubjectsSynced(subjects); err != nil {
@@ -264,8 +277,8 @@ func (r *NamespaceregistrationSubjectSyncRunner) addUserToSubjectListAndCheckCha
 }
 
 func (r *NamespaceregistrationSubjectSyncRunner) checkAllNamespacesForSubjectsSynced(subjects *lssv1alpha1.SubjectList) error {
-	if err := r.checkRolebindingForSubjectlistSynced(types.NamespacedName{Namespace: "ls-user", Name: "ls-user-role-binding"}, subjects); err != nil {
-		return fmt.Errorf("failed sycing subjectlist for ls-user/ls-user-role-binding:%w", err)
+	if err := r.checkRolebindingForSubjectlistSynced(types.NamespacedName{Namespace: LS_USER_NAMESPACE, Name: LS_USER_ROLE_BINDING_IN_NAMESPACE}, subjects); err != nil {
+		return fmt.Errorf("failed sycing subjectlist for %q/%q:%w", LS_USER_NAMESPACE, LS_USER_ROLE_BINDING_IN_NAMESPACE, err)
 	}
 
 	namespaceList := &corev1.NamespaceList{}
@@ -274,8 +287,8 @@ func (r *NamespaceregistrationSubjectSyncRunner) checkAllNamespacesForSubjectsSy
 	}
 	for _, v := range namespaceList.Items {
 		if strings.HasPrefix(v.Name, "cu-") {
-			if err := r.checkRolebindingForSubjectlistSynced(types.NamespacedName{Namespace: v.Name, Name: "user-role-binding"}, subjects); err != nil {
-				return fmt.Errorf("failed sycing subjectlist for %q/user-role-binding:%w", v.Name, err)
+			if err := r.checkRolebindingForSubjectlistSynced(types.NamespacedName{Namespace: v.Name, Name: USER_ROLE_BINDING_IN_NAMESPACE}, subjects); err != nil {
+				return fmt.Errorf("failed sycing subjectlist for %q/%q:%w", v.Name, USER_ROLE_BINDING_IN_NAMESPACE, err)
 			}
 		}
 	}
@@ -317,7 +330,7 @@ func (r *NamespaceregistrationSubjectSyncRunner) checkInitialSetup(deployment *l
 	logger.Info("check initial setup for deployment", "name", deployment.Name)
 
 	// get admin kubeconfig for resource-shoot cluster from landscaperdeployment.status.instanceRef - Instance.Status.AdminKubeconfig
-	logger.Info("build kube client from config in instance status")
+	logger.Info("build kube client from config in instance.Status")
 	if deployment.Status.InstanceRef.Name == "" || deployment.Status.InstanceRef.Namespace == "" {
 		return fmt.Errorf("deployment %q instance ref empty", deployment.Name)
 	}
@@ -346,23 +359,23 @@ func (r *NamespaceregistrationSubjectSyncRunner) checkInitialSetup(deployment *l
 	}
 	r.resourceClusterAdminClient = kubeClient
 
-	logger.Info("check ls-user namespace existance")
+	logger.Info("check initial namespace existance", "name", LS_USER_NAMESPACE)
 	namespace := &corev1.Namespace{}
-	err = r.resourceClusterAdminClient.Get(r.BaseTestRunner.ctx, types.NamespacedName{Name: "ls-user"}, namespace)
+	err = r.resourceClusterAdminClient.Get(r.BaseTestRunner.ctx, types.NamespacedName{Name: LS_USER_NAMESPACE}, namespace)
 	if err != nil {
 		return fmt.Errorf("failed retrieving namespace: %w", err)
 	}
 
-	logger.Info("check role existance", "name", "ls-user-role")
+	logger.Info("check role existance", "name", LS_USER_ROLE_IN_NAMESPACE)
 	role := &rbacv1.Role{}
-	err = r.resourceClusterAdminClient.Get(r.BaseTestRunner.ctx, types.NamespacedName{Name: "ls-user-role", Namespace: namespace.Name}, role)
+	err = r.resourceClusterAdminClient.Get(r.BaseTestRunner.ctx, types.NamespacedName{Name: LS_USER_ROLE_IN_NAMESPACE, Namespace: namespace.Name}, role)
 	if err != nil {
 		return fmt.Errorf("failed retrieving role: %w", err)
 	}
 
-	logger.Info("check role binding existance and being empty", "name", "ls-user-role-binding")
+	logger.Info("check role binding existance and being empty", "name", LS_USER_ROLE_BINDING_IN_NAMESPACE)
 	rolebinding := &rbacv1.RoleBinding{}
-	err = r.resourceClusterAdminClient.Get(r.BaseTestRunner.ctx, types.NamespacedName{Name: "ls-user-role-binding", Namespace: namespace.Name}, rolebinding)
+	err = r.resourceClusterAdminClient.Get(r.BaseTestRunner.ctx, types.NamespacedName{Name: LS_USER_ROLE_BINDING_IN_NAMESPACE, Namespace: namespace.Name}, rolebinding)
 	if err != nil {
 		return fmt.Errorf("failed retrieving role: %w", err)
 	}
