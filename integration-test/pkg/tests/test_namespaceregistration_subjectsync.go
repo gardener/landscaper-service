@@ -277,8 +277,33 @@ func (r *NamespaceregistrationSubjectSyncRunner) addUserToSubjectListAndCheckCha
 }
 
 func (r *NamespaceregistrationSubjectSyncRunner) checkAllNamespacesForSubjectsSynced(subjects *lssv1alpha1.SubjectList) error {
-	if err := r.checkRolebindingForSubjectlistSynced(types.NamespacedName{Namespace: LS_USER_NAMESPACE, Name: LS_USER_ROLE_BINDING_IN_NAMESPACE}, subjects); err != nil {
+	roleBindingGetter := func(namespaceName types.NamespacedName) ([]rbacv1.Subject, error) {
+		rolebinding := &rbacv1.RoleBinding{}
+		if err := r.resourceClusterAdminClient.Get(
+			r.ctx,
+			namespaceName,
+			rolebinding); err != nil {
+			return nil, fmt.Errorf("failed to get rolebinding %q/%q: %w", namespaceName.Namespace, namespaceName.Name, err)
+		}
+		return rolebinding.Subjects, nil
+	}
+	clusterRoleBindingGetter := func(namespaceName types.NamespacedName) ([]rbacv1.Subject, error) {
+		clusterRolebinding := &rbacv1.ClusterRoleBinding{}
+		if err := r.resourceClusterAdminClient.Get(
+			r.ctx,
+			namespaceName,
+			clusterRolebinding); err != nil {
+			return nil, fmt.Errorf("failed to get clusterrolebinding %q/%q: %w", namespaceName.Namespace, namespaceName.Name, err)
+		}
+		return clusterRolebinding.Subjects, nil
+	}
+
+	if err := r.checkRolebindingForSubjectlistSynced(roleBindingGetter, types.NamespacedName{Namespace: LS_USER_NAMESPACE, Name: LS_USER_ROLE_BINDING_IN_NAMESPACE}, subjects); err != nil {
 		return fmt.Errorf("failed sycing subjectlist for %q/%q:%w", LS_USER_NAMESPACE, LS_USER_ROLE_BINDING_IN_NAMESPACE, err)
+	}
+
+	if err := r.checkRolebindingForSubjectlistSynced(clusterRoleBindingGetter, types.NamespacedName{Name: USER_CLUSTER_ROLE_BINDING}, subjects); err != nil {
+		return fmt.Errorf("failed sycing subjectlist for clusterrolebinding %q:%w", USER_CLUSTER_ROLE_BINDING, err)
 	}
 
 	namespaceList := &corev1.NamespaceList{}
@@ -287,7 +312,7 @@ func (r *NamespaceregistrationSubjectSyncRunner) checkAllNamespacesForSubjectsSy
 	}
 	for _, v := range namespaceList.Items {
 		if strings.HasPrefix(v.Name, "cu-") {
-			if err := r.checkRolebindingForSubjectlistSynced(types.NamespacedName{Namespace: v.Name, Name: USER_ROLE_BINDING_IN_NAMESPACE}, subjects); err != nil {
+			if err := r.checkRolebindingForSubjectlistSynced(roleBindingGetter, types.NamespacedName{Namespace: v.Name, Name: USER_ROLE_BINDING_IN_NAMESPACE}, subjects); err != nil {
 				return fmt.Errorf("failed sycing subjectlist for %q/%q:%w", v.Name, USER_ROLE_BINDING_IN_NAMESPACE, err)
 			}
 		}
@@ -295,22 +320,19 @@ func (r *NamespaceregistrationSubjectSyncRunner) checkAllNamespacesForSubjectsSy
 	return nil
 }
 
-func (r *NamespaceregistrationSubjectSyncRunner) checkRolebindingForSubjectlistSynced(namespaceName types.NamespacedName, subjects *lssv1alpha1.SubjectList) error {
+func (r *NamespaceregistrationSubjectSyncRunner) checkRolebindingForSubjectlistSynced(getSubjects func(types.NamespacedName) ([]rbacv1.Subject, error), namespaceName types.NamespacedName, subjects *lssv1alpha1.SubjectList) error {
 	timeout, err := cliutil.CheckConditionPeriodically(func() (bool, error) {
-		rolebinding := &rbacv1.RoleBinding{}
-		if err := r.resourceClusterAdminClient.Get(
-			r.ctx,
-			namespaceName,
-			rolebinding); err != nil {
+		subjectInBinding, err := getSubjects(namespaceName)
+		if err != nil {
 			return false, fmt.Errorf("failed to get rolebinding %q/%q: %w", namespaceName.Namespace, namespaceName.Name, err)
 		}
-		if len(rolebinding.Subjects) != len(subjects.Spec.Subjects) {
+		if len(subjectInBinding) != len(subjects.Spec.Subjects) {
 			return false, nil
 		}
 		for i := 0; i < len(subjects.Spec.Subjects); i++ {
-			if rolebinding.Subjects[i].Kind != subjects.Spec.Subjects[i].Kind ||
-				rolebinding.Subjects[i].Name != subjects.Spec.Subjects[i].Name ||
-				rolebinding.Subjects[i].Namespace != subjects.Spec.Subjects[i].Namespace {
+			if subjectInBinding[i].Kind != subjects.Spec.Subjects[i].Kind ||
+				subjectInBinding[i].Name != subjects.Spec.Subjects[i].Name ||
+				subjectInBinding[i].Namespace != subjects.Spec.Subjects[i].Namespace {
 				return false, nil
 			}
 		}
@@ -382,6 +404,24 @@ func (r *NamespaceregistrationSubjectSyncRunner) checkInitialSetup(deployment *l
 
 	if len(rolebinding.Subjects) != 0 {
 		return fmt.Errorf("initial rolebinding should be empty but contains %q subjects", len(rolebinding.Subjects))
+	}
+
+	logger.Info("check cluster role existance", "name", USER_CLUSTER_ROLE)
+	clusterRole := &rbacv1.ClusterRole{}
+	err = r.resourceClusterAdminClient.Get(r.BaseTestRunner.ctx, types.NamespacedName{Name: USER_CLUSTER_ROLE}, clusterRole)
+	if err != nil {
+		return fmt.Errorf("failed retrieving clusterrole: %w", err)
+	}
+
+	logger.Info("check clusterrole binding existance and being empty", "name", USER_CLUSTER_ROLE_BINDING)
+	clusterRolebinding := &rbacv1.ClusterRoleBinding{}
+	err = r.resourceClusterAdminClient.Get(r.BaseTestRunner.ctx, types.NamespacedName{Name: USER_CLUSTER_ROLE_BINDING}, clusterRolebinding)
+	if err != nil {
+		return fmt.Errorf("failed retrieving role: %w", err)
+	}
+
+	if len(clusterRolebinding.Subjects) != 0 {
+		return fmt.Errorf("initial rolebinding should be empty but contains %q subjects", len(clusterRolebinding.Subjects))
 	}
 
 	return nil
