@@ -83,6 +83,7 @@ func (o *options) run(ctx context.Context) error {
 	lssinstall.Install(mgr.GetScheme())
 	lsinstall.Install(mgr.GetScheme())
 
+	o.Log.Info("Fetching client for init")
 	initClient, err := createClientForInit(mgr.GetConfig())
 	if err != nil {
 		return err

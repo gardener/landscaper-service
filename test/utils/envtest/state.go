@@ -10,6 +10,8 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
+	"github.com/gardener/landscaper-service/pkg/controllers/subjectsync"
+
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 )
 
@@ -124,13 +126,8 @@ func (s *State) GetNamespaceRegistration(name string) *lssv1alpha1.NamespaceRegi
 }
 
 // GetSubjectListInNamespace retrieves a SubjectList by the given name in the given namespace
-func (s *State) GetSubjectListInNamespace(name string, namespace string) *lssv1alpha1.SubjectList {
-	return s.SubjectLists[namespace+"/"+name]
-}
-
-// GetSubjectListInNamespace retrieves a SubjectList by the given name in the given namespace
 func (s *State) GetSubjectList(name string) *lssv1alpha1.SubjectList {
-	return s.SubjectLists[s.Namespace+"/"+name]
+	return s.SubjectLists[subjectsync.LS_USER_NAMESPACE+"/"+name]
 }
 
 // AddObject adds a client.Object to the state.

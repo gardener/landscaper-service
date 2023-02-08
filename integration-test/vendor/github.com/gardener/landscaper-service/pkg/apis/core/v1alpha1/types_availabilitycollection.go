@@ -21,8 +21,8 @@ type AvailabilityCollectionList struct {
 // +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-//AvailabilityCollection is created/updated by the AvailabilityMonitoringRegistrationController.
-//It contains a list of references to Instances that should be monitored for availability.
+// AvailabilityCollection is created/updated by the AvailabilityMonitoringRegistrationController.
+// It contains a list of references to Instances that should be monitored for availability.
 type AvailabilityCollection struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`

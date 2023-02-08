@@ -8,25 +8,21 @@ import (
 	"context"
 	"time"
 
+	kutil "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	"github.com/gardener/landscaper/controller-utils/pkg/logging"
-	"sigs.k8s.io/controller-runtime/pkg/reconcile"
-
-	kutil "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	corev1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
+	"k8s.io/apimachinery/pkg/types"
+	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
+	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	"github.com/gardener/landscaper-service/pkg/controllers/namespaceregistration"
 	"github.com/gardener/landscaper-service/pkg/controllers/subjectsync"
 	"github.com/gardener/landscaper-service/pkg/operation"
 	testutils "github.com/gardener/landscaper-service/test/utils"
 	"github.com/gardener/landscaper-service/test/utils/envtest"
-
-	"k8s.io/apimachinery/pkg/types"
-
-	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 )
 
 var _ = Describe("Reconcile", func() {
@@ -56,7 +52,7 @@ var _ = Describe("Reconcile", func() {
 		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test1")
 		Expect(err).ToNot(HaveOccurred())
 
-		namespaceRegistration := state.GetNamespaceRegistration("test-namespace-1")
+		namespaceRegistration := state.GetNamespaceRegistration(subjectsync.CUSTOM_NS_PREFIX + "test-namespace-1")
 		//reconcile for finalizer
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(namespaceRegistration), namespaceRegistration)).To(Succeed())
@@ -70,7 +66,7 @@ var _ = Describe("Reconcile", func() {
 		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test1")
 		Expect(err).ToNot(HaveOccurred())
 
-		namespaceRegistration := state.GetNamespaceRegistration("test-namespace-1")
+		namespaceRegistration := state.GetNamespaceRegistration(subjectsync.CUSTOM_NS_PREFIX + "test-namespace-1")
 		//reconcile for finalizer
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(namespaceRegistration), namespaceRegistration)).To(Succeed())
@@ -108,7 +104,7 @@ var _ = Describe("Reconcile", func() {
 		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test2")
 		Expect(err).ToNot(HaveOccurred())
 
-		namespaceRegistration := state.GetNamespaceRegistration("test-namespace-2")
+		namespaceRegistration := state.GetNamespaceRegistration(subjectsync.CUSTOM_NS_PREFIX + "test-namespace-2")
 		//reconcile for finalizer
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(namespaceRegistration), namespaceRegistration)).To(Succeed())
