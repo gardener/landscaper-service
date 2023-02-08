@@ -9,44 +9,27 @@ import (
 	"fmt"
 	"strings"
 
+	kutils "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
+	rbacv1 "k8s.io/api/rbac/v1"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	apitypes "k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
-	"github.com/gardener/landscaper-service/pkg/operation"
-
-	kutils "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
-
-	rbacv1 "k8s.io/api/rbac/v1"
-	apierrors "k8s.io/apimachinery/pkg/api/errors"
-	apitypes "k8s.io/apimachinery/pkg/types"
-
 	coreconfig "github.com/gardener/landscaper-service/pkg/apis/config"
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	"github.com/gardener/landscaper-service/pkg/operation"
 )
-
-const USER_ROLE_IN_NAMESPACE = "user-role"
-const USER_ROLE_BINDING_IN_NAMESPACE = "user-role-binding"
-const LS_USER_ROLE_IN_NAMESPACE = "ls-user-role"
-const LS_USER_ROLE_BINDING_IN_NAMESPACE = "ls-user-role-binding"
-
-const SUBJECT_LIST_NAME = "subjects"
-const LS_USER_NAMESPACE = "ls-user"
-
-const SUBJECT_LIST_ENTRY_USER = "User"
-const SUBJECT_LIST_ENTRY_GROUP = "Group"
-const SUBJECT_LIST_ENTRY_SERVICE_ACCOUNT = "ServiceAccount"
-
-const CUSTOM_NS_PREFIX = "cu-"
 
 type Controller struct {
 	operation.TargetShootSidecarOperation
 	log logging.Logger
 
-	ReconcileFunc    func(ctx context.Context, subjectList *lssv1alpha1.SubjectList) (reconcile.Result, error)
-	HandleDeleteFunc func(ctx context.Context, subjectList *lssv1alpha1.SubjectList) (reconcile.Result, error)
+	ReconcileFunc func(ctx context.Context, subjectList *lssv1alpha1.SubjectList) (reconcile.Result, error)
 }
 
 func NewController(logger logging.Logger, c client.Client, scheme *runtime.Scheme, config *coreconfig.TargetShootSidecarConfiguration) (reconcile.Reconciler, error) {
@@ -54,7 +37,6 @@ func NewController(logger logging.Logger, c client.Client, scheme *runtime.Schem
 		log: logger,
 	}
 	ctrl.ReconcileFunc = ctrl.reconcile
-	ctrl.HandleDeleteFunc = ctrl.handleDelete
 	op := operation.NewTargetShootSidecarOperation(c, scheme, config)
 	ctrl.TargetShootSidecarOperation = *op
 	return ctrl, nil
@@ -90,54 +72,29 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 		return reconcile.Result{}, nil
 	}
 
-	// reconcile delete
 	if !subjectList.DeletionTimestamp.IsZero() {
-		return c.HandleDeleteFunc(ctx, subjectList)
+		// deletion of the subjectlist is not allowed
+		return reconcile.Result{}, nil
 	}
 
 	return c.reconcile(ctx, subjectList)
 }
 
-func (c *Controller) handleDelete(ctx context.Context, subjectList *lssv1alpha1.SubjectList) (reconcile.Result, error) {
-	logger := c.log
-
-	//on delete, remove all subjects from all role bindings
-	roleBindings := &rbacv1.RoleBindingList{}
-	if err := c.Client().List(ctx, roleBindings); err != nil {
-		logger.Error(err, "failed loading role bindings")
-		return reconcile.Result{}, err
-	}
-
-	for _, roleBinding := range roleBindings.Items {
-		logger, ctx := logging.FromContextOrNew(ctx, nil, "roleBinding", apitypes.NamespacedName{Name: roleBinding.Name, Namespace: roleBinding.Namespace}.String())
-
-		//check if it is a matching role binding (different naming in ls-user and other namespaces)
-		//only process correct rolebindings
-		if !(roleBinding.Name == USER_ROLE_BINDING_IN_NAMESPACE || roleBinding.Name == LS_USER_ROLE_BINDING_IN_NAMESPACE) {
-			continue
-		}
-
-		//remove subject list
-		roleBinding.Subjects = []rbacv1.Subject{}
-
-		//	write update role binding
-		if err := c.Client().Update(ctx, &roleBinding); err != nil {
-			logger.Error(err, "failed updating rolebinding %s %s", roleBinding.Namespace, roleBinding.Name)
-			return reconcile.Result{}, err
-		}
-	}
-
-	controllerutil.RemoveFinalizer(subjectList, lssv1alpha1.LandscaperServiceFinalizer)
-	if err := c.Client().Update(ctx, subjectList); err != nil {
-		logger.Error(err, "failed removing finalizer")
-		return reconcile.Result{}, err
-	}
-	return reconcile.Result{}, nil
-
-}
-
 func (c *Controller) reconcile(ctx context.Context, subjectList *lssv1alpha1.SubjectList) (reconcile.Result, error) {
-	logger := c.log
+	logger, ctx := logging.FromContextOrNew(ctx, nil)
+
+	// convert subjects of the SubjectList custom resource into rbac subjects
+	subjects := CreateSubjectsForSubjectList(ctx, subjectList)
+
+	if err := c.createOrUpdateUserClusterRole(ctx); err != nil {
+		logger.Error(err, "failed updating user cluster role")
+		return reconcile.Result{}, err
+	}
+
+	if err := c.createOrUpdateUserClusterRoleBinding(ctx, subjects); err != nil {
+		logger.Error(err, "failed updating user cluster role binding")
+		return reconcile.Result{}, err
+	}
 
 	roleBindings := &rbacv1.RoleBindingList{}
 	if err := c.Client().List(ctx, roleBindings); err != nil {
@@ -159,51 +116,61 @@ func (c *Controller) reconcile(ctx context.Context, subjectList *lssv1alpha1.Sub
 			continue
 		}
 
-		//remove subject list
-		roleBinding.Subjects = []rbacv1.Subject{}
-
-		//add subjects from SubjectList CR
-		for _, subject := range subjectList.Spec.Subjects {
-			rbacSubject, err := CreateSubjectForSubjectListEntry(subject)
-			if err != nil {
-				logger.Error(err, "could not create rbac.Subject from SubjectList.spec.subject")
-				continue
-			}
-			roleBinding.Subjects = append(roleBinding.Subjects, *rbacSubject)
-		}
-
-		//	write update role binding
+		// update role binding
+		roleBinding.Subjects = subjects
 		if err := c.Client().Update(ctx, &roleBinding); err != nil {
 			logger.Error(err, "failed updating rolebinding %s %s", roleBinding.Namespace, roleBinding.Name)
 			return reconcile.Result{}, err
 		}
 	}
+
 	return reconcile.Result{}, nil
 }
 
-func CreateSubjectForSubjectListEntry(subjectListEntry lssv1alpha1.Subject) (*rbacv1.Subject, error) {
-	switch subjectListEntry.Kind {
-	case SUBJECT_LIST_ENTRY_USER, SUBJECT_LIST_ENTRY_GROUP:
-		if subjectListEntry.Namespace != "" {
-			return nil, fmt.Errorf("namespace must be empty for subject.Kind==%s|%s", SUBJECT_LIST_ENTRY_USER, SUBJECT_LIST_ENTRY_GROUP)
-		}
-		return &rbacv1.Subject{
-			APIGroup: "rbac.authorization.k8s.io",
-			Kind:     subjectListEntry.Kind,
-			Name:     subjectListEntry.Name,
-		}, nil
-	case SUBJECT_LIST_ENTRY_SERVICE_ACCOUNT:
-		if subjectListEntry.Namespace == "" {
-			return nil, fmt.Errorf("namespace must be set for subject.Kind==%s", SUBJECT_LIST_ENTRY_SERVICE_ACCOUNT)
-		}
-		return &rbacv1.Subject{
-			APIGroup:  "", //defaults to "" for service acounts as per rbacv1.Subject doc
-			Kind:      subjectListEntry.Kind,
-			Name:      subjectListEntry.Name,
-			Namespace: subjectListEntry.Namespace,
-		}, nil
-	default:
-		return nil, fmt.Errorf("subject kind %s unknown", subjectListEntry.Kind)
+func (c *Controller) createOrUpdateUserClusterRole(ctx context.Context) error {
+	rules := []rbacv1.PolicyRule{
+		{
+			APIGroups: []string{""},
+			Resources: []string{"namespaces"},
+			Verbs:     []string{"get", "list", "watch"},
+		},
 	}
 
+	role := &rbacv1.ClusterRole{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: USER_CLUSTER_ROLE,
+		},
+	}
+
+	_, err := kutils.CreateOrUpdate(ctx, c.Client(), role, func() error {
+		role.Rules = rules
+		return nil
+	})
+	if err != nil {
+		return fmt.Errorf("failed ensuring user cluster role %s: %w", role.Name, err)
+	}
+	return nil
+}
+
+func (c *Controller) createOrUpdateUserClusterRoleBinding(ctx context.Context, subjects []rbacv1.Subject) error {
+	roleBinding := &rbacv1.ClusterRoleBinding{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: USER_CLUSTER_ROLE_BINDING,
+		},
+	}
+
+	_, err := kutils.CreateOrUpdate(ctx, c.Client(), roleBinding, func() error {
+		roleBinding.RoleRef = rbacv1.RoleRef{
+			APIGroup: "rbac.authorization.k8s.io",
+			Kind:     "ClusterRole",
+			Name:     USER_CLUSTER_ROLE,
+		}
+		roleBinding.Subjects = subjects
+		return nil
+	})
+	if err != nil {
+		return fmt.Errorf("failed updating user cluster role binding %s: %w", roleBinding.Name, err)
+	}
+
+	return nil
 }

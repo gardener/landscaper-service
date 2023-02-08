@@ -9,25 +9,22 @@ import (
 	"fmt"
 	"strings"
 
+	kutils "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
+	corev1 "k8s.io/api/core/v1"
+	rbacv1 "k8s.io/api/rbac/v1"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
-	"github.com/gardener/landscaper-service/pkg/controllers/subjectsync"
-	"github.com/gardener/landscaper-service/pkg/operation"
-
-	kutils "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
-
-	corev1 "k8s.io/api/core/v1"
-	rbacv1 "k8s.io/api/rbac/v1"
-	apierrors "k8s.io/apimachinery/pkg/api/errors"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
 	coreconfig "github.com/gardener/landscaper-service/pkg/apis/config"
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	"github.com/gardener/landscaper-service/pkg/controllers/subjectsync"
+	"github.com/gardener/landscaper-service/pkg/operation"
 )
 
 type Controller struct {
@@ -78,6 +75,8 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 			logger.Error(err, "failed to update namespaceregistration with invalid name - must start with "+subjectsync.CUSTOM_NS_PREFIX)
 			return reconcile.Result{}, err
 		}
+
+		return reconcile.Result{}, nil
 	}
 
 	// set finalizer
@@ -98,7 +97,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 }
 
 func (c *Controller) handleDelete(ctx context.Context, namespaceRegistration *lssv1alpha1.NamespaceRegistration) (reconcile.Result, error) {
-	logger := c.log
+	logger, ctx := logging.FromContextOrNew(ctx, nil)
 
 	namespace := &corev1.Namespace{}
 	if err := c.Client().Get(ctx, types.NamespacedName{Name: namespaceRegistration.GetName()}, namespace); err != nil {
@@ -160,7 +159,7 @@ func (c *Controller) handleDelete(ctx context.Context, namespaceRegistration *ls
 }
 
 func (c *Controller) reconcile(ctx context.Context, namespaceRegistration *lssv1alpha1.NamespaceRegistration) (reconcile.Result, error) {
-	logger := c.log
+	logger, ctx := logging.FromContextOrNew(ctx, nil)
 
 	if namespaceRegistration.Status.Phase == "Completed" {
 		logger.Info("Phase already in Completed")
@@ -196,43 +195,42 @@ func (c *Controller) reconcile(ctx context.Context, namespaceRegistration *lssv1
 }
 
 func (c *Controller) createRoleIfNotExistOrUpdate(ctx context.Context, namespaceRegistration *lssv1alpha1.NamespaceRegistration) error {
-	logger := c.log
+	logger, ctx := logging.FromContextOrNew(ctx, nil)
 
-	//create role
+	rules := []rbacv1.PolicyRule{
+		{
+			APIGroups: []string{"landscaper.gardener.cloud"},
+			Resources: []string{"*"},
+			Verbs:     []string{"*"},
+		},
+		{
+			APIGroups: []string{""},
+			Resources: []string{"secrets", "configmaps"},
+			Verbs:     []string{"*"},
+		},
+	}
+
 	role := &rbacv1.Role{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      subjectsync.USER_ROLE_IN_NAMESPACE,
 			Namespace: namespaceRegistration.Name,
 		},
-		Rules: []rbacv1.PolicyRule{
-			{
-				APIGroups: []string{"landscaper.gardener.cloud"},
-				Resources: []string{"*"},
-				Verbs:     []string{"*"},
-			},
-			{
-				APIGroups: []string{""},
-				Resources: []string{"secrets", "configmaps"},
-				Verbs:     []string{"*"},
-			},
-		},
 	}
 
-	if err := c.Client().Create(ctx, role); err != nil {
-		if apierrors.IsAlreadyExists(err) {
-			if err := c.Client().Update(ctx, role); err != nil {
-				logger.Error(err, "failed updating role")
-				return err
-			}
-		}
-		logger.Error(err, "failed creating role")
-		return err
+	_, err := kutils.CreateOrUpdate(ctx, c.Client(), role, func() error {
+		role.Rules = rules
+		return nil
+	})
+	if err != nil {
+		logger.Error(err, "failed ensuring user role")
+		return fmt.Errorf("failed ensuring user role %s: %w", role.Name, err)
 	}
+
 	return nil
 }
 
 func (c *Controller) createRoleBindingIfNotExistOrUpdate(ctx context.Context, namespaceRegistration *lssv1alpha1.NamespaceRegistration) error {
-	logger := c.log
+	logger, ctx := logging.FromContextOrNew(ctx, nil)
 
 	// load subjectList from CR
 	subjectList := &lssv1alpha1.SubjectList{}
@@ -241,37 +239,29 @@ func (c *Controller) createRoleBindingIfNotExistOrUpdate(ctx context.Context, na
 		return fmt.Errorf("failed loading subjectlist %w", err)
 	}
 
+	// convert subjects of the SubjectList custom resource into rbac subjects
+	subjects := subjectsync.CreateSubjectsForSubjectList(ctx, subjectList)
+
 	//create role binding
 	roleBinding := &rbacv1.RoleBinding{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      subjectsync.USER_ROLE_BINDING_IN_NAMESPACE,
 			Namespace: namespaceRegistration.Name,
 		},
-		RoleRef: rbacv1.RoleRef{
+	}
+
+	_, err := kutils.CreateOrUpdate(ctx, c.Client(), roleBinding, func() error {
+		roleBinding.RoleRef = rbacv1.RoleRef{
 			APIGroup: "rbac.authorization.k8s.io",
 			Kind:     "Role",
 			Name:     subjectsync.USER_ROLE_IN_NAMESPACE,
-		},
-	}
-
-	//add subjectlist subjects to rolebinding
-	for _, subject := range subjectList.Spec.Subjects {
-		rbacSubject, err := subjectsync.CreateSubjectForSubjectListEntry(subject)
-		if err != nil {
-			return fmt.Errorf("could not create rbac.Subject from SubjectList.spec.subject: %w", err) //TODO: change to continue?
 		}
-		roleBinding.Subjects = append(roleBinding.Subjects, *rbacSubject)
-	}
-
-	if err := c.Client().Create(ctx, roleBinding); err != nil {
-		if apierrors.IsAlreadyExists(err) {
-			if err := c.Client().Update(ctx, roleBinding); err != nil {
-				logger.Error(err, "failed updating role binding")
-				return err
-			}
-		}
-		logger.Error(err, "failed creating role binding")
-		return err
+		roleBinding.Subjects = subjects
+		return nil
+	})
+	if err != nil {
+		logger.Error(err, "failed ensuring user role binding")
+		return fmt.Errorf("failed ensuring role binding %s: %w", roleBinding.Name, err)
 	}
 
 	return nil
