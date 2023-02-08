@@ -152,7 +152,7 @@ func (r *NamespaceregistrationSubjectSyncRunner) deleteUserFromSubjectsAndCheckS
 	if err := r.resourceClusterAdminClient.Get(
 		r.ctx,
 		types.NamespacedName{Name: "subjects", Namespace: "ls-user"},
-		subjects); err != nil {
+		subjectsAfterUpdate); err != nil {
 		return fmt.Errorf("failed to get updated subjects: %w", err)
 	}
 	if len(subjectsAfterUpdate.Spec.Subjects) != lengthSubjectsBefore-1 {
