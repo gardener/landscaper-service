@@ -36,5 +36,17 @@ rules:
     resources:
       - "roles"
       - "rolebindings"
+    resourceNames:
+      - "landscaper-service:namespace-registrator"
+      - "landscaper-service:landscaper-user"
+    verbs:
+      - '*'
+  - apiGroups:
+      - "rbac.authorization.k8s.io"
+    resources:
+      - "clusterroles"
+      - "clusterrolebindings"
+    resourceNames:
+      - "landscaper-service:namespace-registrator"
     verbs:
       - '*'
