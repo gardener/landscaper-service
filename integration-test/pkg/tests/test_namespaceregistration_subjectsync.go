@@ -50,22 +50,119 @@ func (r *NamespaceregistrationSubjectSyncRunner) String() string {
 
 func (r *NamespaceregistrationSubjectSyncRunner) Run() error {
 	logger, _ := logging.FromContextOrNew(r.ctx, nil)
-	logger.Info("checking initial setup")
+
+	namespaceregistrationName := "cu-test-registration"
+	user1 := "user1"
+	user2 := "user2"
 
 	for _, deployment := range r.testObjects.LandscaperDeployments {
+		logger.Info("checking initial setup")
 		if err := r.checkInitialSetup(deployment); err != nil {
 			return fmt.Errorf("failed checking initial setup: %w", err)
 		}
-		if err := r.addUserToSubjectListAndCheckChangePropagated(deployment, "user1"); err != nil {
+		if err := r.addUserToSubjectListAndCheckChangePropagated(user1); err != nil {
 			return fmt.Errorf("failed adding user to subjectlist and check if change propagated: %w", err)
 		}
-		if err := r.addNamespaceregistrationAndCheckCreation("cu-test-registration"); err != nil {
+		if err := r.addNamespaceregistrationAndCheckCreation(namespaceregistrationName); err != nil {
 			return fmt.Errorf("failed adding namespaceregistration and check setup: %w", err)
 		}
-		if err := r.addUserToSubjectListAndCheckChangePropagated(deployment, "user2"); err != nil {
+		if err := r.addUserToSubjectListAndCheckChangePropagated(user2); err != nil {
 			return fmt.Errorf("failed adding user to subjectlist and check if change propagated: %w", err)
 		}
+		if err := r.deleteUserFromSubjectsAndCheckSync(user2); err != nil {
+			return fmt.Errorf("failed deleting user from subjectlist and check if change propagated: %w", err)
+		}
+		if err := r.deleteNamespaceregistrationAndCheckForNamespaceDeletion(namespaceregistrationName); err != nil {
+			return fmt.Errorf("failed deleting namespaceregistration and checking if namespace is deleted: %w", err)
+		}
 	}
+	return nil
+}
+
+func (r *NamespaceregistrationSubjectSyncRunner) deleteNamespaceregistrationAndCheckForNamespaceDeletion(namespaceregistrationName string) error {
+	logger, _ := logging.FromContextOrNew(r.ctx, nil)
+	logger.Info("deleting namespaceregistration", "name", namespaceregistrationName)
+
+	namespaceRegistration := &lssv1alpha1.NamespaceRegistration{
+		ObjectMeta: v1.ObjectMeta{
+			Name:      namespaceregistrationName,
+			Namespace: "ls-user",
+		},
+	}
+	if err := r.resourceClusterAdminClient.Delete(
+		r.ctx,
+		namespaceRegistration); err != nil {
+		return fmt.Errorf("failed deleting namespaceregistration %q/%q: %w", namespaceRegistration.Namespace, namespaceRegistration.Name, err)
+	}
+	timeout, err := cliutil.CheckAndWaitUntilObjectNotExistAnymore(
+		r.clusterClients.TestCluster,
+		types.NamespacedName{Name: namespaceregistrationName, Namespace: "ls-user"}, namespaceRegistration,
+		r.config.SleepTime, r.config.MaxRetries*10)
+
+	if err != nil {
+		return fmt.Errorf("failed waiting for namespace to be deleted with error: %w", err)
+	}
+	if timeout {
+		return fmt.Errorf("timeout waiting for namespace to be deleted")
+	}
+
+	logger.Info("waiting for namespace to be deleted", "name", namespaceregistrationName)
+	namespace := &corev1.Namespace{}
+	timeout, err = cliutil.CheckAndWaitUntilObjectNotExistAnymore(
+		r.clusterClients.TestCluster,
+		types.NamespacedName{Name: namespaceregistrationName}, namespace,
+		r.config.SleepTime, r.config.MaxRetries*10)
+
+	if err != nil {
+		return fmt.Errorf("failed waiting for namespace to be deleted with error: %w", err)
+	}
+	if timeout {
+		return fmt.Errorf("timeout waiting for namespace to be deleted")
+	}
+
+	return nil
+}
+
+func (r *NamespaceregistrationSubjectSyncRunner) deleteUserFromSubjectsAndCheckSync(username string) error {
+	subjects := &lssv1alpha1.SubjectList{}
+	if err := r.resourceClusterAdminClient.Get(
+		r.ctx,
+		types.NamespacedName{Name: "subjects", Namespace: "ls-user"},
+		subjects); err != nil {
+		return fmt.Errorf("failed to get subjects: %w", err)
+	}
+
+	lengthSubjectsBefore := len(subjects.Spec.Subjects)
+
+	filteredSubjects := []lssv1alpha1.Subject{}
+
+	for _, s := range subjects.Spec.Subjects {
+		if s.Name != username {
+			filteredSubjects = append(filteredSubjects, s)
+		}
+	}
+	subjects.Spec.Subjects = filteredSubjects
+
+	if err := r.resourceClusterAdminClient.Update(r.ctx, subjects); err != nil {
+		return fmt.Errorf("failed updating subjectlist for ls-user/ls-user-role-binding:%w", err)
+	}
+
+	// check that there is one subject less after update
+	subjectsAfterUpdate := &lssv1alpha1.SubjectList{}
+	if err := r.resourceClusterAdminClient.Get(
+		r.ctx,
+		types.NamespacedName{Name: "subjects", Namespace: "ls-user"},
+		subjects); err != nil {
+		return fmt.Errorf("failed to get updated subjects: %w", err)
+	}
+	if len(subjectsAfterUpdate.Spec.Subjects) != lengthSubjectsBefore-1 {
+		return fmt.Errorf("deleting %q from subjects has no effect on length of subjects", username)
+	}
+
+	if err := r.checkAllNamespacesForSubjectsSynced(subjects); err != nil {
+		return fmt.Errorf("failed checking all namespaces for successfull subjects sync: %w", err)
+	}
+
 	return nil
 }
 
@@ -134,8 +231,7 @@ func (r *NamespaceregistrationSubjectSyncRunner) addNamespaceregistrationAndChec
 	return nil
 }
 
-func (r *NamespaceregistrationSubjectSyncRunner) addUserToSubjectListAndCheckChangePropagated(deployment *lssv1alpha1.LandscaperDeployment, username string) error {
-	// add user to subjectlist
+func (r *NamespaceregistrationSubjectSyncRunner) addUserToSubjectListAndCheckChangePropagated(username string) error {
 	subjects := &lssv1alpha1.SubjectList{}
 	if err := r.resourceClusterAdminClient.Get(
 		r.ctx,
@@ -148,6 +244,14 @@ func (r *NamespaceregistrationSubjectSyncRunner) addUserToSubjectListAndCheckCha
 		return fmt.Errorf("failed updating subjectlist for ls-user/ls-user-role-binding:%w", err)
 	}
 
+	if err := r.checkAllNamespacesForSubjectsSynced(subjects); err != nil {
+		return fmt.Errorf("failed checking all namespaces for successfull subjects sync: %w", err)
+	}
+
+	return nil
+}
+
+func (r *NamespaceregistrationSubjectSyncRunner) checkAllNamespacesForSubjectsSynced(subjects *lssv1alpha1.SubjectList) error {
 	if err := r.checkRolebindingForSubjectlistSynced(types.NamespacedName{Namespace: "ls-user", Name: "ls-user-role-binding"}, subjects); err != nil {
 		return fmt.Errorf("failed sycing subjectlist for ls-user/ls-user-role-binding:%w", err)
 	}
