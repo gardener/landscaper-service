@@ -7,6 +7,7 @@ package subjectsync_test
 import (
 	"context"
 
+	kutil "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -16,8 +17,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
-
-	kutil "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 
 	"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	"github.com/gardener/landscaper-service/pkg/controllers/subjectsync"
@@ -30,7 +29,7 @@ var _ = Describe("Reconcile", func() {
 
 	const (
 		lsUserNamespace = subjectsync.LS_USER_NAMESPACE
-		userNamespace   = "cu-user1"
+		userNamespace   = subjectsync.CUSTOM_NS_PREFIX + "user1"
 	)
 	var (
 		op    *operation.TargetShootSidecarOperation
@@ -127,7 +126,7 @@ var _ = Describe("Reconcile", func() {
 		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test1")
 		Expect(err).ToNot(HaveOccurred())
 
-		subjectlist := state.GetSubjectList("subjects")
+		subjectlist := state.GetSubjectList(subjectsync.SUBJECT_LIST_NAME)
 		//reconcile for finalizer
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(subjectlist))
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(subjectlist), subjectlist)).To(Succeed())
@@ -164,7 +163,7 @@ var _ = Describe("Reconcile", func() {
 		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test2")
 		Expect(err).ToNot(HaveOccurred())
 
-		subjectlist := state.GetSubjectList("subjects")
+		subjectlist := state.GetSubjectList(subjectsync.SUBJECT_LIST_NAME)
 		//reconcile for finalizer
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(subjectlist))
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(subjectlist), subjectlist)).To(Succeed())
@@ -191,7 +190,7 @@ var _ = Describe("Reconcile", func() {
 		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test1")
 		Expect(err).ToNot(HaveOccurred())
 
-		subjectlist := state.GetSubjectList("subjects")
+		subjectlist := state.GetSubjectList(subjectsync.SUBJECT_LIST_NAME)
 		//reconcile for finalizer
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(subjectlist))
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(subjectlist), subjectlist)).To(Succeed())
@@ -292,7 +291,7 @@ var _ = Describe("Reconcile", func() {
 		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test1")
 		Expect(err).ToNot(HaveOccurred())
 
-		subjectlist := state.GetSubjectList("subjects")
+		subjectlist := state.GetSubjectList(subjectsync.SUBJECT_LIST_NAME)
 		//reconcile for finalizer
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(subjectlist))
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(subjectlist), subjectlist)).To(Succeed())
@@ -367,7 +366,7 @@ var _ = Describe("Reconcile", func() {
 		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test1")
 		Expect(err).ToNot(HaveOccurred())
 
-		subjectlist := state.GetSubjectList("subjects")
+		subjectlist := state.GetSubjectList(subjectsync.SUBJECT_LIST_NAME)
 		//reconcile for finalizer
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(subjectlist))
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(subjectlist), subjectlist)).To(Succeed())
