@@ -38,3 +38,10 @@ rules:
       - "rolebindings"
     verbs:
       - '*'
+  - apiGroups:
+      - "rbac.authorization.k8s.io"
+    resources:
+      - "clusterroles"
+      - "clusterrolebindings"
+    verbs:
+      - '*'
