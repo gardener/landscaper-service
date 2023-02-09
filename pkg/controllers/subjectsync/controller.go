@@ -134,6 +134,11 @@ func (c *Controller) createOrUpdateUserClusterRole(ctx context.Context) error {
 			Resources: []string{"namespaces"},
 			Verbs:     []string{"get", "list", "watch"},
 		},
+		{
+			APIGroups: []string{"landscaper-service.gardener.cloud"},
+			Resources: []string{"subjectlists"},
+			Verbs:     []string{"get", "list", "watch"},
+		},
 	}
 
 	role := &rbacv1.ClusterRole{
