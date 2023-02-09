@@ -35,6 +35,7 @@ var (
 		new(tests.InstallLAASTestRunner),
 		new(tests.CreateDeploymentRunner),
 		new(tests.VerifyDeploymentRunner),
+		new(tests.NamespaceregistrationSubjectSyncRunner),
 		new(tests.UpdateDeploymentRunner),
 		new(tests.VerifyDeploymentRunner),
 		new(tests.ManifestDeployerTestRunner),
