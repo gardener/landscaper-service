@@ -271,7 +271,7 @@ The Installation to deploy the LaaS requires some credentials as input data:
 
 ### Other Images for later usage
 
-![architecture](images/reource-cluster.png)
+![architecture](images/resource-cluster.png)
 
 ## 3 Questions and open points
 
