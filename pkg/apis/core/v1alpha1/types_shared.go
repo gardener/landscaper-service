@@ -83,3 +83,11 @@ type LandscaperServiceComponent struct {
 	// Version defines the version of the landscaper service component.
 	Version string `json:"version"`
 }
+
+// OIDCConfig defines the OIDC configuration
+type OIDCConfig struct {
+	ClientID      string `json:"clientID,omitempty"`
+	IssuerURL     string `json:"issuerURL,omitempty"`
+	UsernameClaim string `json:"usernameClaim,omitempty"`
+	GroupsClaim   string `json:"groupsClaim,omitempty"`
+}
