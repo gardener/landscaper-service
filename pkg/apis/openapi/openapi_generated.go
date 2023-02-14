@@ -41,6 +41,7 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.NamespaceRegistrationList":    schema_pkg_apis_core_v1alpha1_NamespaceRegistrationList(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.NamespaceRegistrationSpec":    schema_pkg_apis_core_v1alpha1_NamespaceRegistrationSpec(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.NamespaceRegistrationStatus":  schema_pkg_apis_core_v1alpha1_NamespaceRegistrationStatus(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.OIDCConfig":                   schema_pkg_apis_core_v1alpha1_OIDCConfig(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference":              schema_pkg_apis_core_v1alpha1_ObjectReference(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SecretReference":              schema_pkg_apis_core_v1alpha1_SecretReference(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfig":          schema_pkg_apis_core_v1alpha1_ServiceTargetConfig(ref),
@@ -740,12 +741,18 @@ func schema_pkg_apis_core_v1alpha1_InstanceSpec(ref common.ReferenceCallback) co
 							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference"),
 						},
 					},
+					"oidcConfig": {
+						SchemaProps: spec.SchemaProps{
+							Description: "OIDCConfig describes the OIDC config of the customer resource cluster (shoot cluster)",
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.OIDCConfig"),
+						},
+					},
 				},
 				Required: []string{"tenantId", "id", "landscaperConfiguration", "serviceTargetConfigRef"},
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperConfiguration", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperConfiguration", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.OIDCConfig", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference"},
 	}
 }
 
@@ -995,12 +1002,18 @@ func schema_pkg_apis_core_v1alpha1_LandscaperDeploymentSpec(ref common.Reference
 							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperConfiguration"),
 						},
 					},
+					"oidcConfig": {
+						SchemaProps: spec.SchemaProps{
+							Description: "OIDCConfig describes the OIDC config of the customer resource cluster (shoot cluster)",
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.OIDCConfig"),
+						},
+					},
 				},
 				Required: []string{"tenantId", "purpose", "landscaperConfiguration"},
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperConfiguration"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperConfiguration", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.OIDCConfig"},
 	}
 }
 
@@ -1192,6 +1205,43 @@ func schema_pkg_apis_core_v1alpha1_NamespaceRegistrationStatus(ref common.Refere
 					},
 				},
 				Required: []string{"phase"},
+			},
+		},
+	}
+}
+
+func schema_pkg_apis_core_v1alpha1_OIDCConfig(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "OIDCConfig defines the OIDC configuration",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"clientID": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"issuerURL": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"usernameClaim": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"groupsClaim": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+				},
 			},
 		},
 	}

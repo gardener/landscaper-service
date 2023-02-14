@@ -59,6 +59,10 @@
           "default": {},
           "$ref": "#/definitions/core-v1alpha1-LandscaperConfiguration"
         },
+        "oidcConfig": {
+          "description": "OIDCConfig describes the OIDC config of the customer resource cluster (shoot cluster)",
+          "$ref": "#/definitions/core-v1alpha1-OIDCConfig"
+        },
         "serviceTargetConfigRef": {
           "description": "ServiceTargetConfigRef specifies the target cluster for which the installation is created.",
           "default": {},
@@ -157,6 +161,24 @@
           "description": "Version defines the version of the landscaper service component.",
           "type": "string",
           "default": ""
+        }
+      }
+    },
+    "core-v1alpha1-OIDCConfig": {
+      "description": "OIDCConfig defines the OIDC configuration",
+      "type": "object",
+      "properties": {
+        "clientID": {
+          "type": "string"
+        },
+        "groupsClaim": {
+          "type": "string"
+        },
+        "issuerURL": {
+          "type": "string"
+        },
+        "usernameClaim": {
+          "type": "string"
         }
       }
     },
