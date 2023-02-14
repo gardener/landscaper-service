@@ -43,6 +43,10 @@ type LandscaperDeploymentSpec struct {
 
 	// LandscaperConfiguration contains the configuration for the landscaper service deployment
 	LandscaperConfiguration LandscaperConfiguration `json:"landscaperConfiguration"`
+
+	// OIDCConfig describes the OIDC config of the customer resource cluster (shoot cluster)
+	// +optional
+	OIDCConfig *OIDCConfig `json:"oidcConfig,omitempty"`
 }
 
 // LandscaperDeploymentStatus contains the status of a LandscaperDeployment.

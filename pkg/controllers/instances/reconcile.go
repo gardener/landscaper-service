@@ -11,24 +11,23 @@ import (
 	"reflect"
 	"strings"
 
-	"k8s.io/apimachinery/pkg/util/yaml"
-
-	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	"k8s.io/apimachinery/pkg/labels"
-	"k8s.io/apimachinery/pkg/types"
-	"k8s.io/apimachinery/pkg/util/sets"
-	"k8s.io/client-go/tools/clientcmd"
-	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
-
 	cdv2 "github.com/gardener/component-spec/bindings-go/apis/v2"
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	"github.com/gardener/landscaper/apis/core/v1alpha1/targettypes"
 	"github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
+	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/apimachinery/pkg/util/sets"
+	"k8s.io/apimachinery/pkg/util/yaml"
+	"k8s.io/client-go/tools/clientcmd"
+	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
+	lssconfig "github.com/gardener/landscaper-service/pkg/apis/config"
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	"github.com/gardener/landscaper-service/pkg/apis/errors"
 	lsinstallation "github.com/gardener/landscaper-service/pkg/apis/installation"
@@ -393,7 +392,18 @@ func (c *Controller) mutateInstallation(ctx context.Context, installation *lsv1a
 		return fmt.Errorf("unable to marshal sidecar config: %w", err)
 	}
 
-	shootConfigRaw, err := json.Marshal(c.Config().ShootConfiguration)
+	shootConfig := &lssconfig.ShootConfiguration{}
+	c.Config().ShootConfiguration.DeepCopyInto(shootConfig)
+
+	if instance.Spec.OIDCConfig != nil {
+		// Overwrite the default oidc config with instance specific values
+		shootConfig.Kubernetes.KubeAPIServer.OIDCConfig.ClientID = instance.Spec.OIDCConfig.ClientID
+		shootConfig.Kubernetes.KubeAPIServer.OIDCConfig.IssuerURL = instance.Spec.OIDCConfig.IssuerURL
+		shootConfig.Kubernetes.KubeAPIServer.OIDCConfig.UsernameClaim = instance.Spec.OIDCConfig.UsernameClaim
+		shootConfig.Kubernetes.KubeAPIServer.OIDCConfig.GroupsClaim = instance.Spec.OIDCConfig.GroupsClaim
+	}
+
+	shootConfigRaw, err := json.Marshal(shootConfig)
 	if err != nil {
 		return fmt.Errorf("unable to marshal shoot config: %w", err)
 	}

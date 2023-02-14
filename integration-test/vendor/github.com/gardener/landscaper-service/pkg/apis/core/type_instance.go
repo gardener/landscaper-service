@@ -48,6 +48,10 @@ type InstanceSpec struct {
 
 	// ServiceTargetConfigRef specifies the target cluster for which the installation is created.
 	ServiceTargetConfigRef ObjectReference `json:"serviceTargetConfigRef"`
+
+	// OIDCConfig describes the OIDC config of the customer resource cluster (shoot cluster)
+	// +optional
+	OIDCConfig *OIDCConfig `json:"oidcConfig,omitempty"`
 }
 
 // InstanceStatus contains the status for an Instance.
