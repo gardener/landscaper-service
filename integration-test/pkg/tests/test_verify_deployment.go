@@ -233,7 +233,7 @@ func (r *VerifyDeploymentRunner) verifyOIDCKubeconfig(instance *lssv1alpha1.Inst
 		return fmt.Errorf("command in user kubeconfig authinfo incorret")
 	}
 
-	corretArgs := []string{"oidc-login", "get-token", "--oidc-issuer-url=mock-test-issuer-url", "--oidc-client-id=mock-test"}
+	corretArgs := []string{"oidc-login", "get-token", "--oidc-issuer-url=https://127.0.0.1:5555", "--oidc-client-id=mock-test"}
 	for i, v := range corretArgs {
 		if authInfo.Exec.Args[i] != v {
 			return fmt.Errorf("args in user kubeconfig authinfo incorret at indext %q: expected %q", i, v)

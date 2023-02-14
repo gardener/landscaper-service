@@ -60,7 +60,7 @@ exports:
           args:
             - oidc-login
             - get-token
-            - '--oidc-issuer-url= {{ .imports.shootConfig.kubernetes.kubeAPIServer.oidcConfig.issuerURL }}'
+            - '--oidc-issuer-url={{ .imports.shootConfig.kubernetes.kubeAPIServer.oidcConfig.issuerURL }}'
             - '--oidc-client-id={{ .imports.shootConfig.kubernetes.kubeAPIServer.oidcConfig.clientID }}'
             - '--oidc-extra-scope=email'
             - '--oidc-extra-scope=profile'

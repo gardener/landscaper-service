@@ -186,7 +186,7 @@ func (r *InstallLAASTestRunner) createInstallation() error {
 			"kubeAPIServer": map[string]interface{}{
 				"oidcConfig": map[string]interface{}{
 					"clientID":      "mock-test",
-					"issuerURL":     "mock-test-issuer-url",
+					"issuerURL":     "https://127.0.0.1:5555",
 					"groupsClaim":   "mock-group-claim",
 					"usernameClaim": "mock-username-claim",
 				},
