@@ -42,6 +42,19 @@ spec:
                 required:
                 - deployers
                 type: object
+              oidcConfig:
+                description: OIDCConfig describes the OIDC config of the customer
+                  resource cluster (shoot cluster)
+                properties:
+                  clientID:
+                    type: string
+                  groupsClaim:
+                    type: string
+                  issuerURL:
+                    type: string
+                  usernameClaim:
+                    type: string
+                type: object
               purpose:
                 description: Purpose contains the purpose of this LandscaperDeployment.
                 type: string

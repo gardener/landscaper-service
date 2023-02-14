@@ -70,6 +70,10 @@
           "default": {},
           "$ref": "#/definitions/core-v1alpha1-LandscaperConfiguration"
         },
+        "oidcConfig": {
+          "description": "OIDCConfig describes the OIDC config of the customer resource cluster (shoot cluster)",
+          "$ref": "#/definitions/core-v1alpha1-OIDCConfig"
+        },
         "purpose": {
           "description": "Purpose contains the purpose of this LandscaperDeployment.",
           "type": "string",
@@ -99,6 +103,24 @@
           "type": "integer",
           "format": "int64",
           "default": 0
+        }
+      }
+    },
+    "core-v1alpha1-OIDCConfig": {
+      "description": "OIDCConfig defines the OIDC configuration",
+      "type": "object",
+      "properties": {
+        "clientID": {
+          "type": "string"
+        },
+        "groupsClaim": {
+          "type": "string"
+        },
+        "issuerURL": {
+          "type": "string"
+        },
+        "usernameClaim": {
+          "type": "string"
         }
       }
     },
