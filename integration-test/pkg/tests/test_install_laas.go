@@ -181,6 +181,23 @@ func (r *InstallLAASTestRunner) createInstallation() error {
 		return fmt.Errorf("failed to marshal audit log configuration: %w", err)
 	}
 
+	shootConfiguration := map[string]interface{}{
+		"kubernetes": map[string]interface{}{
+			"kubeAPIServer": map[string]interface{}{
+				"oidcConfig": map[string]interface{}{
+					"clientID":      "mock-test",
+					"issuerURL":     "mock-test-issuer-url",
+					"groupsClaim":   "mock-group-claim",
+					"usernameClaim": "mock-username-claim",
+				},
+			},
+		},
+	}
+	shootConfigurationRaw, err := json.Marshal(shootConfiguration)
+	if err != nil {
+		return fmt.Errorf("failed to marshal shoot configuration: %w", err)
+	}
+
 	installation := &lsv1alpha1.Installation{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "laas",
@@ -221,6 +238,7 @@ func (r *InstallLAASTestRunner) createInstallation() error {
 				"AVSConfiguration":       lsv1alpha1.NewAnyJSON(avsConfigurationRaw),
 				"gardenerConfiguration":  lsv1alpha1.NewAnyJSON(gardenerConfigurationRaw),
 				"auditLogConfiguration":  lsv1alpha1.NewAnyJSON(auditLogConfigurationRaw),
+				"shootConfiguration":     lsv1alpha1.NewAnyJSON(shootConfigurationRaw),
 			},
 		},
 	}
