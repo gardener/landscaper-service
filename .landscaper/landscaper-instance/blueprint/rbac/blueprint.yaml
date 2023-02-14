@@ -18,6 +18,13 @@ imports:
     schema:
       type: string
 
+  - name: shootConfig
+    type: data
+    schema:
+      description: |
+        The "shootConfig" Specifies the gardener shoot configuration.
+      $ref: "cd://resources/shoot-config-definition"
+
 exports:
   - name: landscaperControllerKubeconfigYaml
     type: data
