@@ -387,7 +387,7 @@ func cleanupResources(ctx context.Context, hostingClient, laasClient client.Clie
 		return err
 	}
 
-	if err := util.DeleteTestShootClusters(ctx, config.GardenerServiceAccountKubeconfig, config.GardenerProject, test.Scheme()); err != nil {
+	if err := util.DeleteTestShootClusters(ctx, config.GardenerServiceAccountKubeconfig, config.GardenerProject, config.TestPurpose, test.Scheme()); err != nil {
 		return err
 	}
 	return nil

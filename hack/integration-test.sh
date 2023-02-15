@@ -13,9 +13,11 @@ ARG=$1
 if [[ $ARG == "pull-request" ]]; then
   TEST_CLUSTER="laas-integration-test-pr"
   HOSTING_CLUSTER="laas-integration-test-target-pr"
+  export TEST_PURPOSE="pull-request"
 else
   TEST_CLUSTER="laas-integration-test"
   HOSTING_CLUSTER="laas-integration-test-target"
+  export TEST_PURPOSE="head-update-release"
 fi
 
 GARDENER_CLUSTER="laas-integration-test-service-account"

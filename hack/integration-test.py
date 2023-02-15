@@ -15,6 +15,7 @@ import oci.auth as oa
 from util import ctx
 from subprocess import run
 
+test_purpose = os.environ["TEST_PURPOSE"]
 project_root = os.environ["PROJECT_ROOT"]
 test_cluster = os.environ["TEST_CLUSTER"]
 hosting_cluster = os.environ["HOSTING_CLUSTER"]
@@ -63,6 +64,7 @@ with (
     registry_secrets_path = registry_temp_file.switch()
 
     command = ["go", "run", "./pkg/main.go",
+                "--test-purpose", test_purpose,
                 "--kubeconfig", test_cluster_kubeconfig_path,
                 "--hosting-kubeconfig", hosting_cluster_kubeconfig_path,
                 "--gardener-service-account-kubeconfig", gardener_cluster_kubeconfig_path,

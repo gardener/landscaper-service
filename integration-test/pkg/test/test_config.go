@@ -38,6 +38,7 @@ func init() {
 
 // TestConfig contains all the configured flags of the integration test.
 type TestConfig struct {
+	TestPurpose                      string
 	TestClusterKubeconfig            string
 	HostingClusterKubeconfig         string
 	GardenerServiceAccountKubeconfig string
@@ -58,6 +59,7 @@ type TestConfig struct {
 // ParseConfig parses the TestConfig from the command line arguments.
 func ParseConfig() *TestConfig {
 	var (
+		testPurpose,
 		testClusterKubeconfig,
 		hostingClusterKubeconfig,
 		gardenerServiceAccountKubeconfig,
@@ -68,6 +70,7 @@ func ParseConfig() *TestConfig {
 		maxRetries int
 	)
 
+	flag.StringVar(&testPurpose, "test-purpose", "", "set an optional test purpose")
 	flag.StringVar(&testClusterKubeconfig, "kubeconfig", "", "path to the kubeconfig of the cluster")
 	flag.StringVar(&hostingClusterKubeconfig, "hosting-kubeconfig", "", "path to the kubeconfig of the hosting cluster")
 	flag.StringVar(&gardenerServiceAccountKubeconfig, "gardener-service-account-kubeconfig", "", "path to the kubeconfig of the hosting cluster")
@@ -86,6 +89,7 @@ func ParseConfig() *TestConfig {
 	}
 
 	return &TestConfig{
+		TestPurpose:                      testPurpose,
 		TestClusterKubeconfig:            testClusterKubeconfig,
 		HostingClusterKubeconfig:         hostingClusterKubeconfig,
 		GardenerServiceAccountKubeconfig: gardenerServiceAccountKubeconfig,
