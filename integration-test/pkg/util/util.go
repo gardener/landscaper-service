@@ -562,6 +562,7 @@ func DeleteTestShootClusters(ctx context.Context, gardenerServiceAccountKubeconf
 	}
 
 	for _, shoot := range shootList.Items {
+		logger.Info("found shoot", lc.KeyResource, shoot.GetName())
 		labels := shoot.GetLabels()
 		instanceName, ok := labels[lssv1alpha1.ShootInstanceNameLabel]
 		logger.Info("ignoring shoot without instance name label")
@@ -605,6 +606,7 @@ func DeleteTestShootClusters(ctx context.Context, gardenerServiceAccountKubeconf
 	}
 
 	for _, configMap := range configMapList.Items {
+		logger.Info("found config map", lc.KeyResource, configMap.GetName())
 		labels := configMap.GetLabels()
 		instanceName, ok := labels[lssv1alpha1.ShootInstanceNameLabel]
 		logger.Info("ignoring config map without instance name label")
@@ -624,6 +626,7 @@ func DeleteTestShootClusters(ctx context.Context, gardenerServiceAccountKubeconf
 			continue
 		}
 
+		logger.Info("deleting config map", lc.KeyResource, configMap.GetName())
 		if err := saClient.Delete(ctx, &configMap); err != nil {
 			if !apierrors.IsNotFound(err) {
 				return fmt.Errorf("failed to delete config map %q: %w", configMap.GetName(), err)
