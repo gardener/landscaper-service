@@ -15,8 +15,6 @@ imports:
       dataRef: targetClusterNamespace
     - name: shootClusterEndpoint
       dataRef: shootClusterEndpoint
-    - name: shootConfig
-      dataRef: shootConfig
 
 exports:
   data:
