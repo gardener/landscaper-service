@@ -565,8 +565,8 @@ func DeleteTestShootClusters(ctx context.Context, gardenerServiceAccountKubeconf
 		logger.Info("found shoot", lc.KeyResource, shoot.GetName())
 		labels := shoot.GetLabels()
 		instanceName, ok := labels[lssv1alpha1.ShootInstanceNameLabel]
-		logger.Info("ignoring shoot without instance name label")
 		if !ok {
+			logger.Info("ignoring shoot without instance name label")
 			continue
 		}
 
@@ -609,8 +609,8 @@ func DeleteTestShootClusters(ctx context.Context, gardenerServiceAccountKubeconf
 		logger.Info("found config map", lc.KeyResource, configMap.GetName())
 		labels := configMap.GetLabels()
 		instanceName, ok := labels[lssv1alpha1.ShootInstanceNameLabel]
-		logger.Info("ignoring config map without instance name label")
 		if !ok {
+			logger.Info("ignoring config map without instance name label")
 			continue
 		}
 
