@@ -225,7 +225,7 @@ func (r *VerifyDeploymentRunner) verifyOIDCKubeconfig(instance *lssv1alpha1.Inst
 	if _, ok := clientCfg.AuthInfos["landscaper-user"]; !ok {
 		return fmt.Errorf("failed to load user landscaper-user in user kubeconfig")
 	}
-	authInfo := clientCfg.AuthInfos["oidc-user"]
+	authInfo := clientCfg.AuthInfos["landscaper-user"]
 	if authInfo.Exec.APIVersion != "client.authentication.k8s.io/v1beta1" {
 		return fmt.Errorf("apiversion in user kubeconfig authinfo incorrect")
 	}
