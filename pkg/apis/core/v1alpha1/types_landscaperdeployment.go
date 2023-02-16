@@ -5,9 +5,8 @@
 package v1alpha1
 
 import (
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
 	lsschema "github.com/gardener/landscaper/apis/schema"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
@@ -45,6 +44,10 @@ type LandscaperDeploymentSpec struct {
 
 	// LandscaperConfiguration contains the configuration for the landscaper service deployment
 	LandscaperConfiguration LandscaperConfiguration `json:"landscaperConfiguration"`
+
+	// OIDCConfig describes the OIDC config of the customer resource cluster (shoot cluster)
+	// +optional
+	OIDCConfig *OIDCConfig `json:"oidcConfig,omitempty"`
 }
 
 // LandscaperDeploymentStatus contains the status of a LandscaperDeployment.

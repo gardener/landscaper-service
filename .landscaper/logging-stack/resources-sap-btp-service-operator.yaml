@@ -1,11 +1,21 @@
 ---
+type: blueprint
+name: sap-btp-service-operator-blueprint
+relation: local
+input:
+  type: dir
+  path: ./blueprint/sap-btp-service-operator
+  mediaType: application/vnd.gardener.landscaper.blueprint.layer.v1.tar+gzip
+  compress: true
+...
+---
 type: helm.io/chart
 name: sap-btp-service-operator-chart
 relation: external
 version: v0.3.6
 access:
   type: ociRegistry
-  imageReference: eu.gcr.io/gardener-project/landscaper-service/charts/sap-btp-operator@sha256:45bf5e50ae4a9ef4c425df7763349e34e3e138de191541af3cade6caca40ee4e
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/charts/sap-btp-operator@sha256:867ccc3c9deff01eb7dcbb402eb054ed43bbc4e34061eae42a2ef359171265d9
 ...
 ---
 type: ociImage
