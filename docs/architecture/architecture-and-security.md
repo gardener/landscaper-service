@@ -73,29 +73,47 @@ The following image gives a more detailed overview how Landscaper instances are 
 
 ![architecture](images/landscaper-instance-creation.png)
 
-For every customer there is a dedicated namespace on the Core-Shoot-Cluster. To get a Landscaper instance a 
+For every customer there is a dedicated namespace on the Core-Shoot-Cluster. To get a Landscaper Instance a 
 user/customer/operator creates a [LandscaperDeployment](../usage/LandscaperDeployments.md) custom resource in this 
 namespace. The LaaS instance in the Core-Shoot-Cluster watches for such custom resources and creates an 
 [Instance](../usage/Instances.md) custom resource for every LandscaperDeployment. For every Instance, the LaaS deploys an 
-[Installation](https://github.com/gardener/landscaper/blob/master/docs/usage/Installations.md) consisting
-of a component which creates
+[Installation](https://github.com/gardener/landscaper/blob/master/docs/usage/Installations.md) for a Landscaper Instance.
 
-- a new shoot custom resource in the Garden-Resource-Cluster-Project for which the Gardener creates the 
-  Resource-Shoot-Cluster
-- a new namespace on one of the Target-Shoot-Clusters for a new Landscaper instance
-- a Landscaper deployment on the Target-Shoot-Cluster in the newly created namespace
+The LaaS furthermore creates two [Targets](https://github.com/gardener/landscaper/blob/master/docs/usage/Targets.md)
+as input for the Installation containing the credentials
 
-The LaaS furthermore creates two [Targets](https://github.com/gardener/landscaper/blob/master/docs/usage/Targets.md) 
-as input for the Installation containing the credentials 
+- for a Target-Shoot-Cluster. These credentials are fetched from one of the ServiceTargetConfig custom resources and 
+  are used to install all required artefacts for the Landscaper Instance on a Target-Shoot-Cluster.
 
-- for the Garden project Garden-Resource-Cluster-Project (for shoot resource creation)
+- for the Garden project Garden-Resource-Cluster-Project to create a Resource-Shoot-Cluster on which the customer 
+  deploys its Landscaper resources like Installations, Targets, etc.
 
-- for a Target-Shoot-Cluster. These credentials are fetched from one of the ServiceTargetConfig custom resources. 
+The Central Landscaper watches for the Installations and executes them.
 
-The Central Landscaper watches for the Installations and executes them. 
+### Landscaper Instance Details
 
-The installed Landscaper instance watches the just created Resource-Shoot-Cluster on which the customer/user could 
-deploy its own Installations.
+A Landscaper instance is described by [this](../../.landscaper/landscaper-instance) component. The component 
+contains a blueprint with five 
+[sub installations](https://github.com/gardener/landscaper/blob/master/docs/usage/Blueprints.md#nested-installations), 
+which are deploying:
+
+- sub installation shoot: Creates a new shoot custom resource in the Garden-Resource-Cluster-Project for which the 
+  Gardener creates a new Resource-Shoot-Cluster
+- sub installation landscaper: A new Landscaper and its deployers in new namespace on one of the Target-Shoot-Cluster. 
+  The Landscaper is watching and processing the Landscaper resources on the Resource-Shoot-Cluster
+- sub installation ls-service-target-shoot-sidecar-server: To controllers handling the access rights of the customer to 
+  the Resource-Shoot-Cluster as well as the creation of custom namespaces on that cluster.
+- sub installation rbac: Creates a service account with the right permissions, providing the new Landscaper access to 
+  the Resource-Shoot-Cluster
+- sub installation sidecar-rbac: Creates a service account with the right permissions providing the controllers 
+  installed by ls-service-target-shoot-sidecar-server access to the Resource-Shoot-Cluster
+
+The following picture gives an overview about the different sub installations:
+
+![see also](images/landscaper-instance-details.png)
+
+The installed Landscaper Instance watches the just created Resource-Shoot-Cluster on which the customer/user could 
+deploy and maintain its Installations.
 
 ## 2 Credentials and Credential Rotation for a Landscaper as a Service (LaaS) landscape
 
