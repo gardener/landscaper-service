@@ -26,6 +26,9 @@ spec:
       - helm
       - manifest
       - container
+  oidcConfig: # optional
+    clientID: <some client ID>
+    issuerURL: <OIDC token issuer URL>
 
 status:
   instanceRef:
@@ -46,6 +49,12 @@ The `spec.purpose` field should contain the human-readable purpose of the Landsc
 The `spec.landscaperConfiguration` field contains the configuration of the Landscaper deployment.
 Configuration contains the list of the standard deployers that shall be deployed.
 For available deployers please check [this documentation](https://github.com/gardener/landscaper/tree/master/docs/deployer).
+
+## Oidc Config
+
+With the optional field OIDC config you specify that the Landscaper resource cluster of a Landscaper instance
+(the Gardener shoot cluster on which the user creates Installations, Targets etc,) gets this OIDC configuration such
+that user access could be provided via OIDC.
 
 ## Instance Reference
 
