@@ -59,8 +59,8 @@ with its two sub charts `landscaper-rbac` and `landscaper-controller`:
   watching Installations, and for creating the ValidatingWebhookConfig.
 - The `landscaper-controller` chart deploys the landscaper controller and deployers.
 
-Then the Deploy-Pipeline creates an Installation (and Target etc.) for the LaaS, such that the Central Landscaper
-installs it also on the Core-Shoot-Cluster.
+Then the Deploy-Pipeline creates an Installation (and Target etc.) for the [LaaS component](../../.landscaper), such 
+that the Central Landscaper installs it also on the Core-Shoot-Cluster.
 
 To enable the LaaS to deploy e.g. Landscaper Instances for customers to the Target-Shoot-Clusters, a 
 [ServiceTargetConfig](../usage/ServiceTargetConfigs.md) object is deployed on the Core-Shoot-Cluster for every 
@@ -438,11 +438,6 @@ The Installation to deploy the LaaS requires some credentials as input data:
 ## 3 Questions and open points
 
 ### Open Points
-
-- Describe the different namespaces, custom resources on the Resource-Shoot-Clusters for the customers. Also
-  describe the controller watching and handling these resources.
-
-- Describe how customers request and access their Resource-Shoot-Clusters.
 
 - Describe internal credentials of Landscaper
 
