@@ -32,7 +32,7 @@ The main units are:
   in the Core-Shoot-Cluster. The LaaS component is responsible to install Landscaper instances for the customers 
   in the Target-Shoot-Cluster(s). 
 
-- Gardener-Resource-Cluster-Project: The Gardener project for the customer resource shoot cluster. If a customer requests 
+- Gardener-Resource-Cluster-Project: The Gardener project for the custom resource shoot cluster. If a customer requests 
   a Landscaper instance, the LaaS, running on the Core-Shoot-Cluster, deploys a new Landscaper instance in a new namespace 
   of the Target-Shoot-Cluster. For every new Landscaper instance, the LaaS also starts a new Resource-Shoot-Cluster
   in the Gardener-Resource-Cluster-Project. For its own deployments, the customer could create Landscaper 
@@ -86,27 +86,31 @@ as input for the Installation containing the credentials
   are used to install all required artefacts for the Landscaper Instance on a Target-Shoot-Cluster.
 
 - for the Garden project Garden-Resource-Cluster-Project to create a Resource-Shoot-Cluster on which the customer 
-  deploys its Landscaper resources like Installations, Targets, etc.
+  can later deploy its Landscaper resources like Installations, Targets, etc.
 
 The Central Landscaper watches for the Installations and executes them.
 
 ### Landscaper Instance Details
 
-A Landscaper instance is described by [this](../../.landscaper/landscaper-instance) component. The component 
-contains a blueprint with five 
+A Landscaper Instance is defined by [this](../../.landscaper/landscaper-instance) component. The component 
+contains a [blueprint](../../.landscaper/landscaper-instance/blueprint/installation/blueprint.yaml) with five 
 [sub installations](https://github.com/gardener/landscaper/blob/master/docs/usage/Blueprints.md#nested-installations), 
 which are deploying:
 
-- sub installation **shoot**: Creates a new shoot custom resource in the Garden-Resource-Cluster-Project for which the 
-  Gardener creates a new Resource-Shoot-Cluster
-- sub installation **landscaper**: A new Landscaper and its deployers in new namespace on one of the Target-Shoot-Cluster. 
-  The Landscaper is watching and processing the Landscaper resources on the Resource-Shoot-Cluster
-- sub installation **ls-service-target-shoot-sidecar-server**: To controllers handling the access rights of the customer to 
-  the Resource-Shoot-Cluster as well as the creation of custom namespaces on that cluster.
-- sub installation **rbac**: Creates a service account with the right permissions, providing the new Landscaper access to 
-  the Resource-Shoot-Cluster
-- sub installation **sidecar-rbac**: Creates a service account with the right permissions providing the controllers 
-  installed by ls-service-target-shoot-sidecar-server access to the Resource-Shoot-Cluster
+- **[shoot](../../.landscaper/landscaper-instance/blueprint/installation/shoot-cluster-subinst.yaml)**: 
+  A new shoot custom resource in the Garden-Resource-Cluster-Project for which the Gardener creates a new 
+  Resource-Shoot-Cluster
+- **[landscaper](../../.landscaper/landscaper-instance/blueprint/installation/landscaper-deployment-subinst.yaml)**: 
+  A new Landscaper and its deployers in new namespace on one of the Target-Shoot-Clusters. This Landscaper is watching 
+  and processing the Landscaper resources on the Resource-Shoot-Cluster.
+- **[ls-service-target-shoot-sidecar-server](../../.landscaper/landscaper-instance/blueprint/installation/sidecar-subinst.yaml)**: 
+  Two controllers handling the access rights of the customer/users to the Resource-Shoot-Cluster as well as the 
+  creation of custom namespaces on that cluster.
+- **[rbac](../../.landscaper/landscaper-instance/blueprint/installation/landscaper-rbac-subinst.yaml)**: A 
+  service account with the right permissions, providing the new Landscaper access to the Resource-Shoot-Cluster.
+- **[sidecar-rbac](../../.landscaper/landscaper-instance/blueprint/installation/sidecar-rbac-subinst.yaml)**: 
+  A service account with the right permissions providing the controllers installed by 
+  ls-service-target-shoot-sidecar-server access to the Resource-Shoot-Cluster.
 
 The following picture gives an overview about the different sub installations:
 
@@ -117,7 +121,7 @@ deploy and maintain its Installations.
 
 ### Details of a Resource-Shoot-Cluster
 
-Initially a Resource-Shoot-Cluster has two namespaces:
+Initially a Resource-Shoot-Cluster has two namespaces which are interesting with respect to the Landscaper Instance:
 
 - namespace ls-system: This namespace mainly contains the Installations for the deployers of the Landscaper which 
   is part of the Landscaper-Instance. Customers/users have no access to this namespace. 
@@ -128,7 +132,7 @@ Initially a Resource-Shoot-Cluster has two namespaces:
 
 #### Controlling user access to the Resource-Shoot-Cluster
 
-In the namespace ls-users there  exists one customer resource *subjects* of type 
+In the namespace ls-users there exists one custom resource *subjects* of type 
 [SubjectList](../../pkg/apis/core/v1alpha1/types_subjectlist.go). 
 
 ```bash
@@ -150,13 +154,14 @@ spec:
   subjects: []
 ```
 
-To provide an initial access for a user, a cluster admin can create a service account in the namespace ls-user:
+To create an initial access for a user, a cluster administrator creates a service account in the namespace ls-user:
 
 ```bash
-kubectl create sa -n ls-user testserviceaccount
+kubectl create sa -n ls-user <name of service account>
 ```
 
-Next you add an entry for the new service account to the `subjectlist` *subjects* such that it looks as follows:
+Next, the administrator adds an entry for the new service account to the `SubjectList` *subjects* such that it looks 
+as follows:
 
 ```yaml
 apiVersion: landscaper-service.gardener.cloud/v1alpha1
@@ -168,14 +173,14 @@ metadata:
 spec:
   subjects:
   - kind: ServiceAccount
-    name: testserviceaccount
+    name: <name of service account>
 ```
 
-Now the controllers of ls-service-target-shoot-sidecar-server automatically add this service account to particular 
-predefined role-bindings and cluster-role-bindings, with the exactly right permissions a user needs to work with a 
-Resource-Shoot-Cluster, e.g. to create Landscaper Installations. 
+Now, the controllers deployed by ls-service-target-shoot-sidecar-server automatically add this service account to 
+particular predefined role-bindings and cluster-role-bindings, with the exactly right permissions a user needs to 
+work with a Resource-Shoot-Cluster, e.g. to create Landscaper Installations, Targets etc. 
 
-Next the cluster admin can fetch a token for the new service account with the
+Next, the cluster admin can fetch a token with a restricted lifetime for the new service account with the
 [token request API](https://kubernetes.io/docs/reference/kubernetes-api/authentication-resources/token-request-v1/#TokenRequest):
 
 ```bash
@@ -185,14 +190,14 @@ eyJhbGciOiJSUzI1NiIsImtpZCI6IkdzM1J...
 ```
 
 A kubeconfig with this token allows a user to access the Resource-Shoot-Cluster and also to refresh its token when 
-required. With this access data the user can also create additional service accounts, add them to the `subjectlist` 
-*subjects*. The user is not allowed to create and roles, cluster-roles, role-bindings or cluster-rolebindings such that
-he could not get more permissions by itself.
+required. With this access data, the user can also create additional service accounts, add them to the `SubjectList` 
+*subjects*. The user is not allowed to create or modify roles, cluster-roles, role-bindings or cluster-rolebindings to
+get more permissions.
 
-As described above a Landscaper Instance is deployed when a [LandscaperDeployment](../usage/LandscaperDeployments.md)
-was created. If a Landscaper deployment you could also specify some OIDC configuration for the Resource-Shoot-Cluster. 
-Allowing end users to be authenticated via OIDC. To give such an authenticated user the required end user permissions,
-you might add its email to the `subjectlist` *subjects*:
+As described above, a Landscaper Instance is deployed when a [LandscaperDeployment](../usage/LandscaperDeployments.md)
+is created. In a `LandscaperDeployment` you could also specify some OIDC configuration for the Resource-Shoot-Cluster, 
+allowing end users to be authenticated via OIDC. To give such an authenticated user the required end user permissions,
+you might add its email to the `SubjectList` *subjects*:
 
 ```yaml
 apiVersion: landscaper-service.gardener.cloud/v1alpha1
@@ -208,10 +213,10 @@ spec:
 ```
 
 Again the controllers of ls-service-target-shoot-sidecar-server automatically add this user to the right
-predefined role-bindings and cluster-role-bindings, by the way the same as for the service accounts above. 
+predefined role-bindings and cluster-role-bindings, in the same way as for the service accounts above. 
 
-If the OIDC flow also provides group information another possibility to authorize users is to add some of their groups
-to the `subjectlist` *subjects*:
+If the OIDC flow also provides group information, another possibility to authorize users is to add some of their groups
+to the `SubjectList` *subjects*:
 
 ```bash
 apiVersion: landscaper-service.gardener.cloud/v1alpha1
@@ -228,7 +233,7 @@ spec:
 ```
 
 Again the controllers of ls-service-target-shoot-sidecar-server automatically add this group to the right
-predefined role-bindings and cluster-role-bindings, and again the same as for the service accounts above.
+predefined role-bindings and cluster-role-bindings, in the same way as for the service accounts above.
 
 The following image gives a more detailed descriptions of the involved roles, cluster-roles etc. The namespaces 
 *cu-* are so-called customer namespaces on the Resource-Shoot-Cluster and will be described in more detail below:
@@ -243,7 +248,7 @@ Resource-Shoot-Cluster with a name starting with the prefix *cu-*.
 
 To create such a namespace the user must create a 
 *[namespaceRegistration](../../pkg/apis/core/v1alpha1/types_namespaceregistration.go)* object in the namespace ls-user
-with the same name of the namespace. The following manifest would create a customer namespace *cu-test*:
+with the same name as the namespace. The following manifest for example would create a customer namespace *cu-test*:
 
 ```yaml
 apiVersion: landscaper-service.gardener.cloud/v1alpha1
@@ -254,8 +259,9 @@ metadata:
 spec: {}
 ```
 
-The controller of ls-service-target-shoot-sidecar-server automatically creates the required roles, role-bindings etc. 
-for all entries in the `subjectlist` *subjects* in every newly created namespace (see the details in the image before). 
+The controllers of ls-service-target-shoot-sidecar-server automatically creates the required roles, role-bindings etc. 
+for all entries in the `SubjectList` *subjects* in every newly created customer namespace (see the details in the image 
+before). 
 
 ## 2 Credentials and Credential Rotation for a Landscaper as a Service (LaaS) landscape
 
