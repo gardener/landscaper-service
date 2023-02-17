@@ -60,7 +60,12 @@ with its two sub charts `landscaper-rbac` and `landscaper-controller`:
 - The `landscaper-controller` chart deploys the landscaper controller and deployers.
 
 Then the Deploy-Pipeline creates an Installation (and Target etc.) for the [LaaS component](../../.landscaper), such 
-that the Central Landscaper installs it also on the Core-Shoot-Cluster.
+that the Central Landscaper installs it also on the Core-Shoot-Cluster. The LaaS component has the name 
+*github.com/gardener/landscaper/landscaper-service* and comprises the following important parts:
+
+- [blueprint](../../.landscaper/blueprint/blueprint.yaml)
+- [resources](../../.landscaper/resources.yaml)
+- [component-references](../../.landscaper/component-references.yaml)
 
 To enable the LaaS to deploy e.g. Landscaper Instances for customers to the Target-Shoot-Clusters, a 
 [ServiceTargetConfig](../usage/ServiceTargetConfigs.md) object is deployed on the Core-Shoot-Cluster for every 
