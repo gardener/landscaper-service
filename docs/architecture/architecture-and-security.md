@@ -210,7 +210,7 @@ spec:
 Again the controllers of ls-service-target-shoot-sidecar-server automatically add this user to the right
 predefined role-bindings and cluster-role-bindings, by the way the same as for the service accounts above. 
 
-If the OIDC flow also provides groups information another posibility to authorize users is to add some of their groups
+If the OIDC flow also provides group information another possibility to authorize users is to add some of their groups
 to the `subjectlist` *subjects*:
 
 ```bash
@@ -233,7 +233,29 @@ predefined role-bindings and cluster-role-bindings, and again the same as for th
 The following image gives a more detailed descriptions of the involved roles, cluster-roles etc. The namespaces 
 *cu-* are so-called customer namespaces on the Resource-Shoot-Cluster and will be described in more detail below:
 
-![architecture](images/resource-cluster.png)
+![architecture](images/resource-cluster.png "Resoure-Shoot-Cluster")
+
+#### Controlling Customer Namespaces on the Resource-Shoot-Cluster
+
+A user, with access to the Resource-Shoot-Cluster as described before, is only allowed to create Landscaper resources 
+like Installations, Targets etc. in so-called customer namespaces. A customer namespace is a normal namespace on the
+Resource-Shoot-Cluster with a name starting with the prefix *cu-*. 
+
+To create such a namespace the user must create a 
+*[namespaceRegistration](../../pkg/apis/core/v1alpha1/types_namespaceregistration.go)* object in the namespace ls-user
+with the same name of the namespace. The following manifest would create a customer namespace *cu-test*:
+
+```yaml
+apiVersion: landscaper-service.gardener.cloud/v1alpha1
+kind: NamespaceRegistration
+metadata:
+  name: cu-test
+  namespace: ls-user
+spec: {}
+```
+
+The controller of ls-service-target-shoot-sidecar-server automatically creates the required roles, role-bindings etc. 
+for all entries in the `subjectlist` *subjects* in every newly created namespace (see the details in the image before). 
 
 ## 2 Credentials and Credential Rotation for a Landscaper as a Service (LaaS) landscape
 
