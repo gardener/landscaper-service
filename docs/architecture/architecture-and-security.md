@@ -444,6 +444,9 @@ The Installation to deploy the LaaS requires some credentials as input data:
 
 ### Open Points
 
+- Use or mention the right component names: component-descriptors/github.com/gardener/landscaper-service,
+  component-descriptors/github.com/gardener/landscaper-service/landscaper-instance
+
 - Describe internal credentials of Landscaper
 
 - Describe internal credentials of LaaS + new controller and how to rotate them? 
