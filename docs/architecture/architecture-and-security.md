@@ -109,7 +109,7 @@ which are deploying:
   A new Landscaper and its deployers in new namespace on one of the Target-Shoot-Clusters. This Landscaper is watching 
   and processing the Landscaper resources on the Resource-Shoot-Cluster.
 - **[ls-service-target-shoot-sidecar-server](../../.landscaper/landscaper-instance/blueprint/installation/sidecar-subinst.yaml)**: 
-  Two controllers handling the access rights of the customer/users to the Resource-Shoot-Cluster as well as the 
+  Two controller handling the access rights of the customer/users to the Resource-Shoot-Cluster as well as the 
   creation of custom namespaces on that cluster.
 - **[rbac](../../.landscaper/landscaper-instance/blueprint/installation/landscaper-rbac-subinst.yaml)**: A 
   service account with the right permissions, providing the new Landscaper access to the Resource-Shoot-Cluster.

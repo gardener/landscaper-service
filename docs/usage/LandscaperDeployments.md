@@ -6,8 +6,9 @@ SPDX-License-Identifier: Apache-2.0
 
 # LandscaperDeployments
 
-LandscaperDeployments are kubernetes resources, created by clients/users, to trigger the deployment of a landscaper instance by 
-the Landscaper as a Service. The Landscaper as a Service controller will select a suitable [ServiceTargetConfig](ServiceTargetConfigs.md) 
+[LandscaperDeployments](../../pkg/apis/core/type_landscaperdeployment.go) are kubernetes resources, created by 
+clients/users, to trigger the deployment of a landscaper instance by the Landscaper as a Service. The Landscaper as a 
+Service controller will select a suitable [ServiceTargetConfig](ServiceTargetConfigs.md) 
 and creates an [Instance](Instances.md) for the LandscaperDeployment.
 
 ### Basic structure:
@@ -29,6 +30,8 @@ spec:
   oidcConfig: # optional
     clientID: <some client ID>
     issuerURL: <OIDC token issuer URL>
+    groupsClaim: groups
+    usernameClaim: email
 
 status:
   instanceRef:
