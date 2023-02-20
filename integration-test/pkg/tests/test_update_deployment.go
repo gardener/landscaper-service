@@ -71,6 +71,13 @@ func (r *UpdateDeploymentRunner) updateDeployment(deployment *lssv1alpha1.Landsc
 	lssutils.SetOperationAnnotation(deployment, lssv1alpha1.LandscaperServiceOperationIgnore)
 	deployment.Spec.LandscaperConfiguration.Deployers = append(deployment.Spec.LandscaperConfiguration.Deployers, "container")
 
+	deployment.Spec.OIDCConfig = &lssv1alpha1.OIDCConfig{
+		ClientID:      "updated-mock-test",
+		IssuerURL:     "https://127.0.0.1:4444",
+		GroupsClaim:   "updated-mock-group-claim",
+		UsernameClaim: "updated-mock-username-claim",
+	}
+
 	if err := r.clusterClients.TestCluster.Update(r.ctx, deployment); err != nil {
 		return fmt.Errorf("failed to update deployment %q: %w", deployment.Name, err)
 	}

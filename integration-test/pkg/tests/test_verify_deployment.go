@@ -6,12 +6,14 @@ package tests
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/client-go/tools/clientcmd"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
@@ -189,6 +191,10 @@ func (r *VerifyDeploymentRunner) verifyKubeconfig(instance *lssv1alpha1.Instance
 		return err
 	}
 
+	if err := r.verifyOIDCKubeconfig(instance); err != nil {
+		return fmt.Errorf("failed verifiying OIDC kubeconfig: %w", err)
+	}
+
 	namespace := &corev1.Namespace{
 		ObjectMeta: metav1.ObjectMeta{
 			GenerateName: "itest-",
@@ -204,5 +210,44 @@ func (r *VerifyDeploymentRunner) verifyKubeconfig(instance *lssv1alpha1.Instance
 		return fmt.Errorf("failed to list installations on cluster for instance %q: %w", instance.Name, err)
 	}
 
+	return nil
+}
+func (r *VerifyDeploymentRunner) verifyOIDCKubeconfig(instance *lssv1alpha1.Instance) error {
+	kubeconfig, err := base64.StdEncoding.DecodeString(instance.Status.UserKubeconfig)
+	if err != nil {
+		return fmt.Errorf("failed to decode kubeconfig of instance %q: %w", instance.Name, err)
+	}
+	clientCfg, err := clientcmd.Load([]byte(kubeconfig))
+	if err != nil {
+		return fmt.Errorf("failed to load kubeconfig: %w", err)
+	}
+
+	if _, ok := clientCfg.AuthInfos["landscaper-user"]; !ok {
+		return fmt.Errorf("failed to load user landscaper-user in user kubeconfig")
+	}
+	authInfo := clientCfg.AuthInfos["landscaper-user"]
+	if authInfo.Exec.APIVersion != "client.authentication.k8s.io/v1beta1" {
+		return fmt.Errorf("apiversion in user kubeconfig authinfo incorrect")
+	}
+	if authInfo.Exec.Command != "kubectl" {
+		return fmt.Errorf("command in user kubeconfig authinfo incorret")
+	}
+
+	// if the oidc config is set in spec, dont check for default oidc config but for deployment-specific oidc config
+	corretArgs := []string{"oidc-login", "get-token"}
+	if instance.Spec.OIDCConfig != nil {
+		if instance.Spec.OIDCConfig.IssuerURL == "" || instance.Spec.OIDCConfig.ClientID == "" {
+			return fmt.Errorf("OIDC spec in instance found, but clientID or issuerURL is empty")
+		}
+		corretArgs = append(corretArgs, fmt.Sprintf("--oidc-issuer-url=%s", instance.Spec.OIDCConfig.IssuerURL), fmt.Sprintf("--oidc-client-id=%s", instance.Spec.OIDCConfig.ClientID))
+	} else {
+		corretArgs = append(corretArgs, "--oidc-issuer-url=https://127.0.0.1:5555", "--oidc-client-id=mock-test")
+	}
+
+	for i, v := range corretArgs {
+		if authInfo.Exec.Args[i] != v {
+			return fmt.Errorf("args in user kubeconfig authinfo incorret at indext %q: expected %q", i, v)
+		}
+	}
 	return nil
 }

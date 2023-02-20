@@ -490,9 +490,9 @@ func BuildLandscaperContext(ctx context.Context, kclient client.Client, registry
 	return nil
 }
 
-// BuildKubeClientForInstance builds a kubernetes client for the user kubeconfig of an instance.
+// BuildKubeClientForInstance builds a kubernetes client for the admin kubeconfig of an instance.
 func BuildKubeClientForInstance(instance *lssv1alpha1.Instance, scheme *runtime.Scheme) (client.Client, error) {
-	kubeconfig, err := base64.StdEncoding.DecodeString(instance.Status.UserKubeconfig)
+	kubeconfig, err := base64.StdEncoding.DecodeString(instance.Status.AdminKubeconfig)
 	if err != nil {
 		return nil, fmt.Errorf("failed to decode kubeconfig of instance %q: %w", instance.Name, err)
 	}
