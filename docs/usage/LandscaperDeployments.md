@@ -6,8 +6,9 @@ SPDX-License-Identifier: Apache-2.0
 
 # LandscaperDeployments
 
-LandscaperDeployments are kubernetes resources, created by clients/users, to trigger the deployment of a landscaper instance by 
-the Landscaper as a Service. The Landscaper as a Service controller will select a suitable [ServiceTargetConfig](ServiceTargetConfigs.md) 
+[LandscaperDeployments](../../pkg/apis/core/type_landscaperdeployment.go) are kubernetes resources, created by 
+clients/users, to trigger the deployment of a landscaper instance by the Landscaper as a Service. The Landscaper as a 
+Service controller will select a suitable [ServiceTargetConfig](ServiceTargetConfigs.md) 
 and creates an [Instance](Instances.md) for the LandscaperDeployment.
 
 ### Basic structure:
@@ -26,6 +27,11 @@ spec:
       - helm
       - manifest
       - container
+  oidcConfig: # optional
+    clientID: <some client ID>
+    issuerURL: <OIDC token issuer URL>
+    groupsClaim: groups
+    usernameClaim: email
 
 status:
   instanceRef:
@@ -46,6 +52,12 @@ The `spec.purpose` field should contain the human-readable purpose of the Landsc
 The `spec.landscaperConfiguration` field contains the configuration of the Landscaper deployment.
 Configuration contains the list of the standard deployers that shall be deployed.
 For available deployers please check [this documentation](https://github.com/gardener/landscaper/tree/master/docs/deployer).
+
+## Oidc Config
+
+With the optional field OIDC config you specify that the Landscaper resource cluster of a Landscaper instance
+(the Gardener shoot cluster on which the user creates Installations, Targets etc,) gets this OIDC configuration such
+that user access could be provided via OIDC.
 
 ## Instance Reference
 
