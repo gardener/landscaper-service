@@ -24,10 +24,10 @@ func SetDefaults_LandscaperServiceConfiguration(obj *LandscaperServiceConfigurat
 // SetDefaults_CrdManagementConfiguration sets the defaults for the crd management configuration.
 func SetDefaults_CrdManagementConfiguration(obj *CrdManagementConfiguration) {
 	if obj.DeployCustomResourceDefinitions == nil {
-		obj.DeployCustomResourceDefinitions = pointer.BoolPtr(true)
+		obj.DeployCustomResourceDefinitions = pointer.Bool(true)
 	}
 	if obj.ForceUpdate == nil {
-		obj.ForceUpdate = pointer.BoolPtr(true)
+		obj.ForceUpdate = pointer.Bool(true)
 	}
 }
 
@@ -60,11 +60,11 @@ func SetDefaults_ShootConfiguration(obj *ShootConfiguration) {
 	maintenance := &obj.Maintenance
 
 	if maintenance.AutoUpdate.KubernetesVersion == nil {
-		obj.Maintenance.AutoUpdate.KubernetesVersion = pointer.BoolPtr(false)
+		obj.Maintenance.AutoUpdate.KubernetesVersion = pointer.Bool(false)
 	}
 
 	if maintenance.AutoUpdate.MachineImageVersion == nil {
-		obj.Maintenance.AutoUpdate.MachineImageVersion = pointer.BoolPtr(false)
+		obj.Maintenance.AutoUpdate.MachineImageVersion = pointer.Bool(false)
 	}
 	workers := &obj.Workers
 
