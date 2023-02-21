@@ -1,6 +1,7 @@
 # Landscaper as a Service (LaaS) Security 
 
-This document describes the security concepts of a LaaS landscape.
+This document describes the security concepts of a LaaS landscape. The
+[architecture document](./architecture.md) is a prerequisite of the following description.
 
 ## Component communication
 
@@ -21,44 +22,45 @@ The following image shows all communication channels of a LaaS landscape.
 In the following the different channels are described in more detail:
 
 - access 1 (Pod to API server communication): The Central-Landscaper access and manipulates kubernetes objects like
-  Installations, Executions, Pods, etc. via the API server.
+  Installations, Executions, Pods, etc. via the API server of the Core-Shoot-Cluster.
 
 - access 2 (API server/Admission Controller to component communication): The Landscaper-Webhook on the Core-Shoot-Cluster
   is a dynamic webhook controlling the creation of Landscaper Installation manifests on the Core-Shoot-Cluster. 
   It calls an endpoint of the Central-Landscaper.
 
 - access 3 (Pod to API server communication): The LaaS access and manipulates custom resources on the Core-Shoot-Cluster
-  like LandscaperDeployments, ServiceTargetConfigs, Installations, Targets etc. via the API server.
+  like LandscaperDeployments, ServiceTargetConfigs, Installations, Targets etc. via the API server of the 
+  Core-Shoot-Cluster.
 
 - access 4 (Pod to API server communication): The Central-Landscaper access and manipulates shoot custom resources and 
   fetches token in the namespace of the Garden-Resource-Cluster-Project located on the Garden cluster, via the API 
-  server.
+  server of the Garden Cluster.
 
 - access 5 (Pod to API server communication): The Central-Landscaper access and manipulates kubernetes objects to
   install and maintain the Landscaper and ls-service-target-shoot-sidecar-server components on the Target-Shoot-Clusters
-  via the API servers.
+  via their API servers.
 
 - access 6 (Pod to API server communication): The Central-Landscaper access and manipulates kubernetes objects to
-  install service accounts and RBAC objects on the Resource-Shoot-Clusters via the API servers.
+  install service accounts and RBAC objects on the Resource-Shoot-Clusters via their API servers.
 
 - access 7 (Pod to API server communication): The Landscaper components on the Target-Shoot-Clusters access and 
-  manipulates kubernetes objects like Secrets, Service Accounts, Pods, etc. via the API server.
+  manipulate kubernetes objects like Secrets, Service Accounts, Pods, etc. via their API servers.
 
 - access 8 (Pod to API server communication): The ls-service-target-shoot-sidecar-server components on the 
-  Target-Shoot-Clusters have the default access to kubernetes objects on their clusters via the API server.
+  Target-Shoot-Clusters have the default access to kubernetes objects on their clusters via the corresponding API 
+  servers.
 
 - access 9 (Pod to API server communication): The Landscaper components on the Target-Shoot-Clusters access and
-  manipulates kubernetes objects like Installations, Executions, Secrets etc. on the Resource-Shoot-Clusters via the 
-  API server.
+  manipulate kubernetes objects like Installations, Executions, Secrets etc. on the Resource-Shoot-Clusters via their
+  API servers.
 
 - access 10 (Pod to API server communication): The ls-service-target-shoot-sidecar-server components on the
-  Target-Shoot-Clusters manipulates kubernetes objects like namespaces, CRDs, subjectlists etc. on the 
-  Resource-Shoot-Clusters via the API server.
+  Target-Shoot-Clusters manipulate kubernetes objects like namespaces, CRDs, SubjectLists etc. on the 
+  Resource-Shoot-Clusters via their API servers.
 
 - access 11 (API server/Admission Controller to component communication): The Landscaper-Webhooks on the 
   Resource-Shoot-Clusters are dynamic webhooks controlling the creation of Landscaper Installation manifests on the 
   clusters. The calls endpoints of the corresponding Landscapers on the Target-Shoot-Clusters.
-
 
 ## Credentials and Credential Rotation for a Landscaper as a Service (LaaS) landscape
 
