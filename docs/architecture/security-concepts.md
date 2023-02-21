@@ -236,8 +236,6 @@ The Installation to deploy the LaaS requires some credentials as input data:
 
 ## 3 Questions and open points
 
-### Open Points
-
 - Describe internal credentials of Landscaper
 
 - Describe internal credentials of LaaS + new controller and how to rotate them?
