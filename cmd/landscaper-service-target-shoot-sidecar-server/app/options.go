@@ -7,8 +7,7 @@ package app
 import (
 	"context"
 	goflag "flag"
-
-	"io/ioutil"
+	"os"
 
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 
@@ -69,7 +68,7 @@ func (o *options) parseConfigurationFile(ctx context.Context) (*config.TargetSho
 	configv1alpha1 := &v1alpha1.TargetShootSidecarConfiguration{}
 
 	if len(o.ConfigPath) != 0 {
-		data, err := ioutil.ReadFile(o.ConfigPath)
+		data, err := os.ReadFile(o.ConfigPath)
 		if err != nil {
 			return nil, err
 		}

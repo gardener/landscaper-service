@@ -8,7 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"os"
 
 	cdv2 "github.com/gardener/component-spec/bindings-go/apis/v2"
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
@@ -141,7 +141,7 @@ func (r *InstallLAASTestRunner) createInstallation() error {
 		return fmt.Errorf("failed to marshal avs configuration: %w", err)
 	}
 
-	kubeConfigContent, err := ioutil.ReadFile(r.config.GardenerServiceAccountKubeconfig)
+	kubeConfigContent, err := os.ReadFile(r.config.GardenerServiceAccountKubeconfig)
 	if err != nil {
 		return fmt.Errorf("cannot read gardener service account kubeconfig: %w", err)
 	}
