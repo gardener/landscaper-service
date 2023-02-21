@@ -75,7 +75,7 @@ require (
 	go.uber.org/zap v1.24.0 // indirect
 	golang.org/x/net v0.6.0 // indirect
 	golang.org/x/oauth2 v0.0.0-20220524215830-622c5d57e401 // indirect
-	golang.org/x/sync v0.0.0-20220601150217-0de741cfad7f // indirect
+	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4 // indirect
 	golang.org/x/sys v0.5.0 // indirect
 	golang.org/x/term v0.5.0 // indirect
 	golang.org/x/text v0.7.0 // indirect
@@ -101,4 +101,5 @@ replace (
 	github.com/containerd/containerd => github.com/containerd/containerd v1.6.18
 	github.com/gardener/component-cli v0.40.0 => github.com/gardener/component-cli v0.44.0
 	github.com/gardener/landscaper-service => ../
+	golang.org/x/net => golang.org/x/net v0.7.0
 )

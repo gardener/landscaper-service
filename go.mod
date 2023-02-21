@@ -111,4 +111,5 @@ require (
 replace (
 	github.com/emicklei/go-restful v2.9.5+incompatible => github.com/emicklei/go-restful v2.16.0+incompatible
 	github.com/go-openapi/jsonreference v0.19.5 => github.com/go-openapi/jsonreference v0.20.0
+	golang.org/x/net => golang.org/x/net v0.7.0
 )
