@@ -37,42 +37,6 @@ deployItems:
       exports:
         defaultTimeout: 10m
         exports:
-        - key: landscaperControllerToken
-          timeout: 10m
-          jsonPath: ".data.token"
-          fromResource:
-            apiVersion: v1
-            kind: Secret
-            name: landscaper-controller-token
-            namespace: {{ .imports.targetClusterNamespace }}
-
-        - key: landscaperControllerCaCrt
-          timeout: 10m
-          jsonPath: ".data.ca\\.crt"
-          fromResource:
-            apiVersion: v1
-            kind: Secret
-            name: landscaper-controller-token
-            namespace: {{ .imports.targetClusterNamespace }}
-
-        - key: landscaperWebhooksToken
-          timeout: 10m
-          jsonPath: ".data.token"
-          fromResource:
-            apiVersion: v1
-            kind: Secret
-            name: landscaper-webhooks-token
-            namespace: {{ .imports.targetClusterNamespace }}
-
-        - key: landscaperWebhooksCaCrt
-          timeout: 10m
-          jsonPath: ".data.ca\\.crt"
-          fromResource:
-            apiVersion: v1
-            kind: Secret
-            name: landscaper-webhooks-token
-            namespace: {{ .imports.targetClusterNamespace }}
-
         - key: landscaperUserToken
           timeout: 10m
           jsonPath: ".data.token"

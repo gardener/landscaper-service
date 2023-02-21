@@ -18,25 +18,4 @@ deployItems:
       values:
         serviceAccount:
           annotations: { }
-          name: sidecar-rbac
-
-      exports:
-        defaultTimeout: 10m
-        exports:
-        - key: rbacSidecarToken
-          timeout: 10m
-          jsonPath: ".data.token"
-          fromResource:
-            apiVersion: v1
-            kind: Secret
-            name: sidecar-token
-            namespace: {{ .imports.targetClusterNamespace }}
-
-        - key: rbacSidecarCaCrt
-          timeout: 10m
-          jsonPath: ".data.ca\\.crt"
-          fromResource:
-            apiVersion: v1
-            kind: Secret
-            name: sidecar-token
-            namespace: {{ .imports.targetClusterNamespace }}
+          name: sidecar

@@ -18,6 +18,13 @@ imports:
     schema:
       type: string
 
+  - name: rotationConfig
+    type: data
+    schema:
+      description: |
+        The configuration for the rotation of credentials.
+      $ref: "cd://resources/rotation-config-definition"
+
 exports:
   - name: sidecarControllerKubeconfigYaml
     type: data

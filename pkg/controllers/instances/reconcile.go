@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+	"time"
 
 	cdv2 "github.com/gardener/component-spec/bindings-go/apis/v2"
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
@@ -48,6 +49,17 @@ const (
 	shootAPIVersion = "core.gardener.cloud/v1beta1"
 	// shootKind is the gardener shoot kind
 	shootKind = "Shoot"
+	// automaticReconcileSeconds is the number of seconds after which installations of landscaper instances are
+	// automatically reconciled. Important: the value must be shorter than tokenExpirationSeconds
+	automaticReconcileSeconds = 14 * 24 * 60 * 60
+	// tokenExpirationSeconds defines how long the tokens are valid	which the landscaper and sidecar controllers use
+	// to access the resource cluster, e.g. for watching installations, namespace registrations etc.
+	// Important: the value must be larger than automaticReconcileSeconds.
+	tokenExpirationSeconds = int64(90 * 24 * 60 * 60)
+	// adminKubeconfigExpirationSeconds defines how long the admin kubeconfig for a resource cluster is valid.
+	// This kubeconfig is used to deploy RBAC objects on the resource cluster. Maximum: 86400 (1 day).
+	// Each reconcile uses a new kubeconfig, so that the short duration suffices.
+	adminKubeconfigExpirationSeconds = int64(24 * 60 * 60)
 )
 
 // reconcile reconciles an instance.
@@ -392,6 +404,12 @@ func (c *Controller) mutateInstallation(ctx context.Context, installation *lsv1a
 		return fmt.Errorf("unable to marshal sidecar config: %w", err)
 	}
 
+	rotationConfig := lsinstallation.NewRotationConfig(tokenExpirationSeconds, adminKubeconfigExpirationSeconds)
+	rotationConfigRaw, err := rotationConfig.ToAnyJSON()
+	if err != nil {
+		return fmt.Errorf("unable to marshal rotation config: %w", err)
+	}
+
 	shootConfig := &lssconfig.ShootConfiguration{}
 	c.Config().ShootConfiguration.DeepCopyInto(shootConfig)
 
@@ -450,6 +468,7 @@ func (c *Controller) mutateInstallation(ctx context.Context, installation *lsv1a
 			lsinstallation.RegistryConfigImportName:          *registryConfigRaw,
 			lsinstallation.LandscaperConfigImportName:        *landscaperConfigRaw,
 			lsinstallation.SidecarConfigImportName:           *sidecarConfigRaw,
+			lsinstallation.RotationConfigImportName:          *rotationConfigRaw,
 			lsinstallation.ShootNameImportName:               utils.StringToAnyJSON(instance.Status.ShootName),
 			lsinstallation.ShootNamespaceImportName:          utils.StringToAnyJSON(instance.Status.ShootNamespace),
 			lsinstallation.ShootSecretBindingImportName:      utils.StringToAnyJSON(c.Config().GardenerConfiguration.ShootSecretBindingName),
@@ -471,6 +490,11 @@ func (c *Controller) mutateInstallation(ctx context.Context, installation *lsv1a
 					Name:    lsinstallation.AdminKubeconfigExportName,
 					DataRef: lsinstallation.AdminKubeconfigExportName,
 				},
+			},
+		},
+		AutomaticReconcile: &lsv1alpha1.AutomaticReconcile{
+			SucceededReconcile: &lsv1alpha1.SucceededReconcile{
+				Interval: &lsv1alpha1.Duration{Duration: time.Duration(automaticReconcileSeconds) * time.Second},
 			},
 		},
 	}

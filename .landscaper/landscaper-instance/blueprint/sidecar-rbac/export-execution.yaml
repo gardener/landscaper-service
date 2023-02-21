@@ -1,20 +1,3 @@
 exports:
   sidecarControllerKubeconfigYaml: |
-    apiVersion: v1
-    kind: Config
-    current-context: landscaper-cluster
-    contexts:
-    - name: landscaper-cluster
-      context:
-        cluster: landscaper-cluster
-        user: sidecar-controller
-    clusters:
-    - name: landscaper-cluster
-      cluster:
-        certificate-authority-data: {{ index .values "deployitems" "sidecar-rbac" "rbacSidecarCaCrt" }}
-        server: {{ index .values "dataobjects" "shootClusterEndpoint" }}:443
-    users:
-    - name: sidecar-controller
-      user:
-        token: {{ index .values "deployitems" "sidecar-rbac" "rbacSidecarToken" | b64dec }}
-
+    {{- getServiceAccountKubeconfig "sidecar" .imports.targetClusterNamespace .imports.rotationConfig.tokenExpirationSeconds .imports.shootCluster | b64dec | nindent 4 }}
