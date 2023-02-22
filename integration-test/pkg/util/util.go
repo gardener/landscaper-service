@@ -529,7 +529,7 @@ func BuildKubeClient(kubeconfig string, scheme *runtime.Scheme) (client.Client, 
 }
 
 // DeleteTestShootClusters tries to delete all existing integration test shoot clusters.
-func DeleteTestShootClusters(ctx context.Context, gardenerServiceAccountKubeconfigFile, gardenerProject string, scheme *runtime.Scheme) error {
+func DeleteTestShootClusters(ctx context.Context, gardenerServiceAccountKubeconfigFile, gardenerProject string, instanceNameFilter string, scheme *runtime.Scheme) error {
 	logger, ctx := logging.FromContextOrNew(ctx, nil)
 
 	kubeconfig, err := os.ReadFile(gardenerServiceAccountKubeconfigFile)
@@ -562,6 +562,21 @@ func DeleteTestShootClusters(ctx context.Context, gardenerServiceAccountKubeconf
 	}
 
 	for _, shoot := range shootList.Items {
+		logger.Info("found shoot", lc.KeyResource, shoot.GetName())
+		labels := shoot.GetLabels()
+		instanceName, ok := labels[lssv1alpha1.ShootInstanceNameLabel]
+		if !ok {
+			logger.Info("ignoring shoot without instance name label")
+			continue
+		}
+
+		if len(instanceNameFilter) > 0 {
+			if !strings.Contains(instanceName, instanceNameFilter) {
+				logger.Info("ignoring shoot that doesn't match instance name filter")
+				continue
+			}
+		}
+
 		if shoot.GetDeletionTimestamp() != nil {
 			logger.Info("shoot is already being deleted", lc.KeyResource, shoot.GetName())
 			continue
@@ -581,6 +596,40 @@ func DeleteTestShootClusters(ctx context.Context, gardenerServiceAccountKubeconf
 		if err := saClient.Delete(ctx, &shoot); err != nil {
 			if !apierrors.IsNotFound(err) {
 				return fmt.Errorf("failed to delete shoot %q: %w", shoot.GetName(), err)
+			}
+		}
+	}
+
+	configMapList := &corev1.ConfigMapList{}
+	if err := saClient.List(ctx, configMapList, &listOptions); err != nil {
+		return fmt.Errorf("failed to list config maps: %w", err)
+	}
+
+	for _, configMap := range configMapList.Items {
+		logger.Info("found config map", lc.KeyResource, configMap.GetName())
+		labels := configMap.GetLabels()
+		instanceName, ok := labels[lssv1alpha1.ShootInstanceNameLabel]
+		if !ok {
+			logger.Info("ignoring config map without instance name label")
+			continue
+		}
+
+		if len(instanceNameFilter) > 0 {
+			if !strings.Contains(instanceName, instanceNameFilter) {
+				logger.Info("ignoring config map that doesn't match instance name filter")
+				continue
+			}
+		}
+
+		if configMap.GetDeletionTimestamp() != nil {
+			logger.Info("config map is already being deleted", lc.KeyResource, configMap.GetName())
+			continue
+		}
+
+		logger.Info("deleting config map", lc.KeyResource, configMap.GetName())
+		if err := saClient.Delete(ctx, &configMap); err != nil {
+			if !apierrors.IsNotFound(err) {
+				return fmt.Errorf("failed to delete config map %q: %w", configMap.GetName(), err)
 			}
 		}
 	}

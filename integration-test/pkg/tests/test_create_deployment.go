@@ -81,6 +81,10 @@ func (r *CreateDeploymentRunner) createDeployment() error {
 		},
 	}
 
+	if len(r.config.TestPurpose) > 0 {
+		deployment.Name = fmt.Sprintf("test-%s", r.config.TestPurpose)
+	}
+
 	if err := r.clusterClients.TestCluster.Create(r.ctx, deployment); err != nil {
 		return fmt.Errorf("failed to create deployment: %w", err)
 	}
