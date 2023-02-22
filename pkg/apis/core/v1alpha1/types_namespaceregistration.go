@@ -53,4 +53,11 @@ var NamespaceRegistrationDefinition = lsschema.CustomResourceDefinition{
 	Storage:           true,
 	Served:            true,
 	SubresourceStatus: true,
+	AdditionalPrinterColumns: []lsschema.CustomResourceColumnDefinition{
+		{
+			Name:     "Phase",
+			Type:     "string",
+			JSONPath: ".status.phase",
+		},
+	},
 }

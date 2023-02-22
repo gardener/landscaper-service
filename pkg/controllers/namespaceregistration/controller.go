@@ -70,7 +70,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	}
 
 	if !strings.HasPrefix(namespaceRegistration.Name, subjectsync.CUSTOM_NS_PREFIX) {
-		namespaceRegistration.Status.Phase = "InvalidName"
+		namespaceRegistration.Status.Phase = fmt.Sprintf("InvalidName: name must start with %s", subjectsync.CUSTOM_NS_PREFIX)
 		if err := c.Client().Status().Update(ctx, namespaceRegistration); err != nil {
 			logger.Error(err, "failed to update namespaceregistration with invalid name - must start with "+subjectsync.CUSTOM_NS_PREFIX)
 			return reconcile.Result{}, err
