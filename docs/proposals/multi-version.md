@@ -21,6 +21,10 @@ Service (LaaS) landscape.
   - to upgrade to its intended LI version. Therefore, an allowed upgrade path must be enforced.
   - see which versions are currently supported, which are recommended and which are outdated and what are the possible
     upgrade paths.
+  - to see the exact timeframes in which 
+    - specific LI versions are supported
+    - specific LI versions are set to "deprecated"
+    - specific LI versions run out of support -> results in a forced-upgrade?
 
 - How to upgrade a customer LI instance if his current version is not supported anymore? This might become even more 
   critical if a security issue came up.
