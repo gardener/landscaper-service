@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
+	"time"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -18,6 +19,11 @@ import (
 
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	"github.com/gardener/landscaper-service/test/integration/pkg/test"
+)
+
+const (
+	// LandscaperDeploymentInstallationTimeout is the timeout at which the landscaper deployment installation is considered to be failed.
+	LandscaperDeploymentInstallationTimeout = 35 * time.Minute
 )
 
 type CreateDeploymentRunner struct {
@@ -75,6 +81,10 @@ func (r *CreateDeploymentRunner) createDeployment() error {
 		},
 	}
 
+	if len(r.config.TestPurpose) > 0 {
+		deployment.Name = fmt.Sprintf("test-%s", r.config.TestPurpose)
+	}
+
 	if err := r.clusterClients.TestCluster.Create(r.ctx, deployment); err != nil {
 		return fmt.Errorf("failed to create deployment: %w", err)
 	}
@@ -128,12 +138,13 @@ func (r *CreateDeploymentRunner) createDeployment() error {
 	}
 
 	logger.Info("waiting for installation being succeeded")
+	maxRetries := int(LandscaperDeploymentInstallationTimeout.Seconds() / r.config.SleepTime.Seconds())
 
 	timeout, err = cliutil.CheckAndWaitUntilLandscaperInstallationSucceeded(
 		r.clusterClients.TestCluster,
 		types.NamespacedName{Name: instance.Status.InstallationRef.Name, Namespace: instance.Status.InstallationRef.Namespace},
 		r.config.SleepTime,
-		r.config.MaxRetries*10)
+		maxRetries)
 
 	if err != nil || timeout {
 		installation := &lsv1alpha1.Installation{}

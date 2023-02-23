@@ -7,13 +7,12 @@ package app
 import (
 	"context"
 	goflag "flag"
-
-	"io/ioutil"
-
-	"github.com/gardener/landscaper/controller-utils/pkg/logging"
+	"os"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
+
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 
 	"github.com/gardener/landscaper-service/pkg/apis/config"
 	configinstall "github.com/gardener/landscaper-service/pkg/apis/config/install"
@@ -69,7 +68,7 @@ func (o *options) parseConfigurationFile(ctx context.Context) (*config.Landscape
 	configv1alpha1 := &v1alpha1.LandscaperServiceConfiguration{}
 
 	if len(o.ConfigPath) != 0 {
-		data, err := ioutil.ReadFile(o.ConfigPath)
+		data, err := os.ReadFile(o.ConfigPath)
 		if err != nil {
 			return nil, err
 		}

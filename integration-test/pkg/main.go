@@ -8,7 +8,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"text/template"
 
@@ -309,7 +308,7 @@ func installLandscaper(ctx context.Context, config *test.TestConfig) error {
 		return fmt.Errorf("cannot template landscaper values: %w", err)
 	}
 
-	tmpFile, err := ioutil.TempFile(".", "landscaper-values-")
+	tmpFile, err := os.CreateTemp(".", "landscaper-values-")
 	if err != nil {
 		return fmt.Errorf("cannot create temporary file: %w", err)
 	}
@@ -319,7 +318,7 @@ func installLandscaper(ctx context.Context, config *test.TestConfig) error {
 		}
 	}()
 
-	if err := ioutil.WriteFile(tmpFile.Name(), []byte(landscaperValues), os.ModePerm); err != nil {
+	if err := os.WriteFile(tmpFile.Name(), []byte(landscaperValues), os.ModePerm); err != nil {
 		return fmt.Errorf("cannot write to file: %w", err)
 	}
 
@@ -388,7 +387,7 @@ func cleanupResources(ctx context.Context, hostingClient, laasClient client.Clie
 		return err
 	}
 
-	if err := util.DeleteTestShootClusters(ctx, config.GardenerServiceAccountKubeconfig, config.GardenerProject, test.Scheme()); err != nil {
+	if err := util.DeleteTestShootClusters(ctx, config.GardenerServiceAccountKubeconfig, config.GardenerProject, config.TestPurpose, test.Scheme()); err != nil {
 		return err
 	}
 	return nil

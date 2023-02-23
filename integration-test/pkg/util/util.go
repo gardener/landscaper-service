@@ -9,7 +9,7 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path"
 	"regexp"
 	"strings"
@@ -47,7 +47,7 @@ func GetLandscaperVersion(repoRootDir string) (string, error) {
 	var landscaperVersion string
 
 	compReferencesFile := path.Join(repoRootDir, ".landscaper", "landscaper-instance", "component-references.yaml")
-	raw, err := ioutil.ReadFile(compReferencesFile)
+	raw, err := os.ReadFile(compReferencesFile)
 	if err != nil {
 		return "", err
 	}
@@ -368,7 +368,7 @@ func DeleteTargetClusterNamespaces(ctx context.Context, kclient client.Client, s
 
 // BuildKubernetesClusterTargetWithSecretRef builds a landscaper target of the given kubeconfig in the given namespace using a secret reference.
 func BuildKubernetesClusterTargetWithSecretRef(ctx context.Context, kclient client.Client, kubeConfig, name, namespace string) (*lsv1alpha1.Target, error) {
-	kubeConfigContent, err := ioutil.ReadFile(kubeConfig)
+	kubeConfigContent, err := os.ReadFile(kubeConfig)
 	if err != nil {
 		return nil, fmt.Errorf("cannot read kubeconfig: %w", err)
 	}
@@ -411,7 +411,7 @@ func BuildKubernetesClusterTargetWithSecretRef(ctx context.Context, kclient clie
 
 // BuildKubernetesClusterTarget builds a landscaper target of the given kubeconfig in the given namespace.
 func BuildKubernetesClusterTarget(ctx context.Context, kclient client.Client, kubeConfig, name, namespace string) (*lsv1alpha1.Target, error) {
-	kubeConfigContent, err := ioutil.ReadFile(kubeConfig)
+	kubeConfigContent, err := os.ReadFile(kubeConfig)
 	if err != nil {
 		return nil, fmt.Errorf("cannot read kubeconfig: %w", err)
 	}
@@ -449,7 +449,7 @@ func BuildKubernetesClusterTarget(ctx context.Context, kclient client.Client, ku
 
 // BuildLandscaperContext builds a landscaper context containing the given registry pull secrets in the given namespace.
 func BuildLandscaperContext(ctx context.Context, kclient client.Client, registryPullSecretsFile, name string, namespaces ...string) error {
-	registryPullSecrets, err := ioutil.ReadFile(registryPullSecretsFile)
+	registryPullSecrets, err := os.ReadFile(registryPullSecretsFile)
 	if err != nil {
 		return fmt.Errorf("failed to read registry pull secret: %w", err)
 	}
@@ -529,10 +529,10 @@ func BuildKubeClient(kubeconfig string, scheme *runtime.Scheme) (client.Client, 
 }
 
 // DeleteTestShootClusters tries to delete all existing integration test shoot clusters.
-func DeleteTestShootClusters(ctx context.Context, gardenerServiceAccountKubeconfigFile, gardenerProject string, scheme *runtime.Scheme) error {
+func DeleteTestShootClusters(ctx context.Context, gardenerServiceAccountKubeconfigFile, gardenerProject string, instanceNameFilter string, scheme *runtime.Scheme) error {
 	logger, ctx := logging.FromContextOrNew(ctx, nil)
 
-	kubeconfig, err := ioutil.ReadFile(gardenerServiceAccountKubeconfigFile)
+	kubeconfig, err := os.ReadFile(gardenerServiceAccountKubeconfigFile)
 	if err != nil {
 		return fmt.Errorf("failed to read gardener service account kubeconfig from file %q: %w", gardenerServiceAccountKubeconfigFile, err)
 	}
@@ -562,6 +562,21 @@ func DeleteTestShootClusters(ctx context.Context, gardenerServiceAccountKubeconf
 	}
 
 	for _, shoot := range shootList.Items {
+		logger.Info("found shoot", lc.KeyResource, shoot.GetName())
+		labels := shoot.GetLabels()
+		instanceName, ok := labels[lssv1alpha1.ShootInstanceNameLabel]
+		if !ok {
+			logger.Info("ignoring shoot without instance name label")
+			continue
+		}
+
+		if len(instanceNameFilter) > 0 {
+			if !strings.Contains(instanceName, instanceNameFilter) {
+				logger.Info("ignoring shoot that doesn't match instance name filter")
+				continue
+			}
+		}
+
 		if shoot.GetDeletionTimestamp() != nil {
 			logger.Info("shoot is already being deleted", lc.KeyResource, shoot.GetName())
 			continue
@@ -585,13 +600,47 @@ func DeleteTestShootClusters(ctx context.Context, gardenerServiceAccountKubeconf
 		}
 	}
 
+	configMapList := &corev1.ConfigMapList{}
+	if err := saClient.List(ctx, configMapList, &listOptions); err != nil {
+		return fmt.Errorf("failed to list config maps: %w", err)
+	}
+
+	for _, configMap := range configMapList.Items {
+		logger.Info("found config map", lc.KeyResource, configMap.GetName())
+		labels := configMap.GetLabels()
+		instanceName, ok := labels[lssv1alpha1.ShootInstanceNameLabel]
+		if !ok {
+			logger.Info("ignoring config map without instance name label")
+			continue
+		}
+
+		if len(instanceNameFilter) > 0 {
+			if !strings.Contains(instanceName, instanceNameFilter) {
+				logger.Info("ignoring config map that doesn't match instance name filter")
+				continue
+			}
+		}
+
+		if configMap.GetDeletionTimestamp() != nil {
+			logger.Info("config map is already being deleted", lc.KeyResource, configMap.GetName())
+			continue
+		}
+
+		logger.Info("deleting config map", lc.KeyResource, configMap.GetName())
+		if err := saClient.Delete(ctx, &configMap); err != nil {
+			if !apierrors.IsNotFound(err) {
+				return fmt.Errorf("failed to delete config map %q: %w", configMap.GetName(), err)
+			}
+		}
+	}
+
 	return nil
 }
 
 // ParseIngressDomain parses the ingress domain out of a kubeconfig file.
 func ParseIngressDomain(kubeconfigFile string) (string, error) {
 	var hostingClusterKubeconfigMap map[string]interface{}
-	hostingClusterKubeconfig, err := ioutil.ReadFile(kubeconfigFile)
+	hostingClusterKubeconfig, err := os.ReadFile(kubeconfigFile)
 	if err != nil {
 		return "", fmt.Errorf("failed to read hosting cluster kubeconfig: %w", err)
 	}

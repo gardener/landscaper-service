@@ -7,7 +7,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 )
@@ -41,7 +41,7 @@ func main() {
 		panic(fmt.Errorf("unexpected response with code: %d", res.StatusCode))
 	}
 
-	resBody, err := ioutil.ReadAll(res.Body)
+	resBody, err := io.ReadAll(res.Body)
 	if err != nil {
 		panic(fmt.Errorf("failed to read response body: %w", err))
 	}
