@@ -27,4 +27,4 @@ export INGRESS_NGINX_IMAGE_VERSION
 export INGRESS_NGINX_CHART_DIGEST=$(go run ${SCRIPT_PATH}/get-digest.go eu.gcr.io gardener-project/landscaper-service/charts/ingress-nginx ${INGRESS_NGINX_CHART_VERSION})
 export INGRESS_NGINX_IMAGE_DIGEST=$(go run ${SCRIPT_PATH}/get-digest.go eu.gcr.io gardener-project/landscaper-service/ingress-nginx/controller ${INGRESS_NGINX_IMAGE_VERSION})
 
-cat ${SCRIPT_PATH}/template/resource-ingress-controller.yaml | envsubst > ${SOURCE_PATH}/.landscaper/ingress-controller/resources.yaml
+cat ${SCRIPT_PATH}/template/resources-ingress-controller.yaml | envsubst > ${SOURCE_PATH}/.landscaper/ingress-controller/resources.yaml
