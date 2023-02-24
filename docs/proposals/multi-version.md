@@ -81,6 +81,9 @@ This chapter defines the rules for supported LI versions in a LaaS landscape:
 - The Central Landscaper should always be on the latest Landscaper version. The version referenced by the
   LaaS project.
 
+- Do we need to decouple the release of the LaaS and the LI component. Otherwise, the frequency of new
+  of LI minor releases is higher than required resulting in more upgrades for the customer. 
+
 - LandscaperDeployments, Instances require the currently deployed version of LI.
 
 - LaaS component version requires list of supported versions, allowed migration paths for LI component.
