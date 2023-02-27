@@ -69,7 +69,7 @@ This chapter defines the rules for supported LI versions in a LaaS landscape:
     - the current version of his LI
     - the supported versions
     - the deprecated supported versions
-    - the exact timeframes when deprecated LI versions are removed
+    - the exact timeframes when deprecated LI versions are removed (-> forced update)
     - the upgrade path according to the rules above
 
 ## Questions:
