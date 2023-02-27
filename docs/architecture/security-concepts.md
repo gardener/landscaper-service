@@ -36,29 +36,33 @@ In the following the different channels are described in more detail:
   fetches token in the namespace of the Garden-Resource-Cluster-Project located on the Garden cluster, via the API 
   server of the Garden Cluster.
 
-- access 5 (Pod to API server communication): The Central-Landscaper access and manipulates kubernetes objects to
+- access 5 (Pod to API server communication): The LaaS access shoot custom resources and the 
+- Garden-Resource-Cluster-Project located on the Garden cluster, via the API server of the Garden Cluster. It requires
+  the names of the existing shoot clusters to infer a new one.
+
+- access 6 (Pod to API server communication): The Central-Landscaper access and manipulates kubernetes objects to
   install and maintain the Landscaper and ls-service-target-shoot-sidecar-server components on the Target-Shoot-Clusters
   via their API servers.
 
-- access 6 (Pod to API server communication): The Central-Landscaper access and manipulates kubernetes objects to
+- access 7 (Pod to API server communication): The Central-Landscaper access and manipulates kubernetes objects to
   install service accounts and RBAC objects on the Resource-Shoot-Clusters via their API servers.
 
-- access 7 (Pod to API server communication): The Landscaper components on the Target-Shoot-Clusters access and 
+- access 8 (Pod to API server communication): The Landscaper components on the Target-Shoot-Clusters access and 
   manipulate kubernetes objects like Secrets, Service Accounts, Pods, etc. via their API servers.
 
-- access 8 (Pod to API server communication): The ls-service-target-shoot-sidecar-server components on the 
+- access 9 (Pod to API server communication): The ls-service-target-shoot-sidecar-server components on the 
   Target-Shoot-Clusters have the default access to kubernetes objects on their clusters via the corresponding API 
   servers.
 
-- access 9 (Pod to API server communication): The Landscaper components on the Target-Shoot-Clusters access and
+- access 10 (Pod to API server communication): The Landscaper components on the Target-Shoot-Clusters access and
   manipulate kubernetes objects like Installations, Executions, Secrets etc. on the Resource-Shoot-Clusters via their
   API servers.
 
-- access 10 (Pod to API server communication): The ls-service-target-shoot-sidecar-server components on the
+- access 11 (Pod to API server communication): The ls-service-target-shoot-sidecar-server components on the
   Target-Shoot-Clusters manipulate kubernetes objects like namespaces, CRDs, SubjectLists etc. on the 
   Resource-Shoot-Clusters via their API servers.
 
-- access 11 (API server/Admission Controller to component communication): The Landscaper-Webhooks on the 
+- access 12 (API server/Admission Controller to component communication): The Landscaper-Webhooks on the 
   Resource-Shoot-Clusters are dynamic webhooks controlling the creation of Landscaper Installation manifests on the 
   clusters. The calls endpoints of the corresponding Landscapers on the Target-Shoot-Clusters.
 
