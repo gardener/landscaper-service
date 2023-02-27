@@ -94,6 +94,32 @@ This chapter defines the rules for supported LI versions in a LaaS landscape:
   new controller (one for every Target-Shoot-Cluster) of the LaaS watches these objects and updates the 
   LanscaperDeployments accordingly.  
 
+### Project Setup
+
+The critical component with respect to the support of multiple version is the LI component. The more different 
+minor (and of course major) versions of this component exits, the more critical upgrades must be done by customers. 
+Therefore, it should be as small as possible to reduce the number of potential minor releases.
+
+- To reduce the complexity of the LI component, the 
+[sidecar component](../../.landscaper/landscaper-instance/blueprint/installation/sidecar-subinst.yaml) should be removed.
+The sidecar component is under our control and new features should not result in a new version of the LI component.
+
+- There is no reason for the LI component to be coupled with the releases of the LaaS project especially if the sidecar 
+  component is removed from it. Decoupling the LI component from the LaaS releases means that minor releases of the LaaS 
+  do not result in minor releases of the LI.  Therefore, it is a natural step that the LI component should not be part 
+  of the LaaS project.
+
+- The LI component could be either part of the Landscaper project of get its own project. Making the LI component part 
+  of the Landscaper means that every PR/release must not only execute the Landscaper integration tests but also LI
+  integration tests. The LI integration tests are very time-consuming because they require the creation of a garden shoot 
+  cluster. Therefore, it might be a good idea to decouple LI and Landscaper in different projects. 
+
+- Testing:
+  - The LI component integration tests must test a minimal feature creating a new shoot cluster 
+  - The LaaS integration tests must include: 
+    - check if upgrades to patch version are possible and still working
+    - upgrade to next minor versions are possible and still working
+
 ## Important considerations
 
 - Different LI versions needs to be tested especially the Landscaper-Shoot-Version-Combination. 
