@@ -221,7 +221,7 @@ Again the controllers of ls-service-target-shoot-sidecar-server automatically ad
 predefined role-bindings and cluster-role-bindings, in the same way as for the service accounts above. 
 
 If the OIDC flow also provides group information, another possibility to authorize users is to add some of their groups
-to the `SubjectList` *subjects*:f
+to the `SubjectList` *subjects*:
 
 ```bash
 apiVersion: landscaper-service.gardener.cloud/v1alpha1
