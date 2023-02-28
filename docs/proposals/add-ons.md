@@ -78,6 +78,6 @@ Landscaper and Kubernetes versions to newer released versions. Otherwise, a LIA 
 the resource-shoot-cluster can schedule new Nodes to provide the required resources for LIAs. However, it might be impossible to install any possible number
 and combinations of LIAs.
 
-## LIAs running on resource-shoot-clusters
+## LIAs running on target-shoot-clusters
 
 TBD
