@@ -22,34 +22,40 @@ first, before they decide to upgrade the LI component of their productive enviro
 This chapter defines the rules for supported LI versions in a LaaS landscape:
 
 - Versioning:
-  - Patch: A new patch version of a LI should only include bugfixes and security fixes. It should not break a customer
+  - Patch: A new patch version of a LI should only include bugfixes and security fixes. It must not break a customer
     setup.
   - Minor: A new minor version of a LI could contain additional features, minor updates of the most important components,
     like Helm or the Garden shoot cluster. Due to its complexity a minor update might break a customer setup. 
-  - Major: Groundbreaking changes. Might break a customer setup.
+  - Major: Groundbreaking changes. Customer setup is very likely to be broken.
 
 - Supported LI version of a LaaS landscape:
-  - The list of supported versions of a LaaS landscape only contains one patch version (usually the latest) for every 
-    supported minor version. 
+  - The list of supported versions of LI of a LaaS landscape is a list of LI versions whereby for every combination of
+    major and minor version there is at most one entry. 
+    - Examples:
+      - v0.1.15, v0.3.0, v1.0.0, v3.2.3, v5.2.3: valid list
+      - v0.1.15, v0.3.0, v0.3.3, v1.0.0, v3.2.3: invalid list because there are two patch versions of v0.3.* listed
+    - The goal of this is that only the latest patch versions of a minor version is supported on a LaaS landscape.
 
 - Basic upgrading rules
-  - A LI instance could be upgraded to the currently supported patch level of its current minor version. 
-  - If a LI instance runs on a currently supported patch level or its current minor version is not supported anymore,
+  - A LI instance is allowed to be upgraded to the currently supported patch level of its current minor version. 
+  - If a LI instance runs on a currently supported version or its current minor version is not supported anymore,
     then: 
-    - it could be upgraded to the next supported minor version or 
-    - if there is no supported higher minor version it could be upgraded to the lowest supported minor version of the 
-      next major version.
+    - it is allowed to be upgraded to the next supported minor version or 
+    - if there is no supported higher minor version it is allowed to be upgraded to the lowest supported minor version 
+      of the next major version.
 
 - An upgrade of a LaaS landscape updates the list of supported LI versions according to the following rules:
   - A supported minor version is set on deprecated, if there is a supported version with a higher major version or
     a supported version with the same major but a higher minor version.
-  - A minor version could only be removed if it was deprecated for more than 3 months.
-  - It is allowed to replace a minor version with one with a higher patch level but not with a lower one. Such a change 
-    will not affect if the minor version was deprecated or not.
+  - A supported minor version can only be removed if the deprecation duration has ended.
+  - It is allowed to replace a minor version with one with a higher patch level but not with a lower one. If the minor 
+    version was already deprecated before, this holds also for the minor version with the higher patch level and also the
+    deprecation duration is not affected.
   - It is not allowed to add a new supported version with a lower minor level than the highest supported minor level of 
     the same major level.
   - It is not allowed to remove a minor version which is the next version of another supported minor version according
     to the update rules above.
+  - Deprecation duration: The deprecation duration is currently 3 months.
 
 - Upgrading LIs
   - Every LI in a LaaS landscape is automatically upgraded to the currently supported patch version of its current
@@ -78,10 +84,10 @@ This chapter defines the rules for supported LI versions in a LaaS landscape:
 
 ## Potential architectural consequences
 
-- The Central Landscaper should always be on the latest Landscaper version. The version referenced by the
-  LaaS project.
+- The version of the Central Landscaper is completely independent of the supported LI versions and their internal 
+  Landscaper versions.
 
-- Do we need to decouple the release of the LaaS and the LI component. Otherwise, the frequency of new
+- Do we need to decouple the release of the LaaS and the LI component? Otherwise, the frequency of new
   of LI minor releases is higher than required resulting in more upgrades for the customer. 
 
 - LandscaperDeployments, Instances require the currently deployed version of LI.
