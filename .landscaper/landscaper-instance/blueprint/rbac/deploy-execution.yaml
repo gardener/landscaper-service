@@ -33,24 +33,3 @@ deployItems:
               create: true
               annotations: {}
               name: landscaper-user
-
-      exports:
-        defaultTimeout: 10m
-        exports:
-        - key: landscaperUserToken
-          timeout: 10m
-          jsonPath: ".data.token"
-          fromResource:
-            apiVersion: v1
-            kind: Secret
-            name: landscaper-user-token
-            namespace: {{ .imports.targetClusterNamespace }}
-
-        - key: landscaperUserCaCrt
-          timeout: 10m
-          jsonPath: ".data.ca\\.crt"
-          fromResource:
-            apiVersion: v1
-            kind: Secret
-            name: landscaper-user-token
-            namespace: {{ .imports.targetClusterNamespace }}
