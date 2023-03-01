@@ -59,6 +59,7 @@ This chapter defines the rules for supported LI versions in a LaaS landscape:
   - Deprecation duration: The deprecation duration is currently 3 months.
 
 - Upgrading LIs
+  - For every LI the must be a customer defined start window when to begin with automatic upgrades 
   - Every LI in a LaaS landscape is automatically upgraded to the currently supported patch version of its current
     minor version.
   - A customer could decide if his LI instance is upgraded automatically to higher minor versions or if this should be
@@ -90,9 +91,6 @@ This chapter defines the rules for supported LI versions in a LaaS landscape:
 - The version of the Central Landscaper is completely independent of the supported LI versions and their internal 
   Landscaper versions.
 
-- Do we need to decouple the release of the LaaS and the LI component? Otherwise, the frequency of new
-  of LI minor releases is higher than required resulting in more upgrades for the customer. 
-
 - LandscaperDeployments, Instances require the currently deployed version of LI.
 
 - LaaS component version requires list of supported versions, allowed migration paths for LI component.
@@ -101,9 +99,9 @@ This chapter defines the rules for supported LI versions in a LaaS landscape:
   migrations paths. User upgrades by creating some upgrade object. This is recognized by some controller running in the 
   same namespace as the sidecar controllers, which creates itself an upgrade object in his namespace. Subsequently, a 
   new controller (one for every Target-Shoot-Cluster) of the LaaS watches these objects and updates the 
-  LanscaperDeployments accordingly.  
+  LanscaperDeployments accordingly.
 
-### Project Setup
+### Potential Changes with respect to the LI component
 
 The critical component with respect to the support of multiple version is the LI component. The more different 
 minor (and of course major) versions of this component exits, the more critical upgrades must be done by customers. 
@@ -131,7 +129,12 @@ The sidecar component is under our control and new features should not result in
       upgrades from unsupported minor versions.
     - Tests require the old list of supported versions (of the current live system) to find out which transitions might occur. 
     - Perhaps it is possible to store already tested upgrades to speed up the test duration. This will not help
-      if an older support minor version and all subsequent minor versions requires a patch. 
+      if an older supported minor version and all subsequent minor versions requires a patch.
+
+- To prevent that an upgrade of a LI component is prevented due to not supported k8s patch versions of the Gardener,
+  it should not have a configured patch but only a minor version for the used Gardener shoot cluster. During the upgrade 
+  of a LI it should select automatically the latest supported k8s patch version (supported by Gardener) with respect to 
+  its configured k8s minor version. 
 
 ## Important considerations
 
@@ -139,3 +142,5 @@ The sidecar component is under our control and new features should not result in
 
 - Every allowed LI upgrade must be tested. LI upgrade must take into consideration, that only particular kubernetes 
   version upgrades in shoots are allowed.
+
+- Do we need tests for a Dev and Canary landscape release? Perhaps this is the right place for the upgrade testing?
