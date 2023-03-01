@@ -123,8 +123,10 @@ The sidecar component is under our control and new features should not result in
 - Testing:
   - The LI component integration tests must test a minimal feature creating a new shoot cluster 
   - The LaaS integration tests must include: 
-    - check if upgrades to patch version are possible and still working
-    - upgrade to next minor versions are possible and still working
+    - Check if upgrades to next supported patch versions are possible and functionality is still working
+    - Check if upgrades to next minor versions are possible and functionality is still working. This must include 
+      upgrades from unsupported minor versions.
+    - Tests require the old list of supported versions (of the current live system) to find out which transitions might occur. 
 
 ## Important considerations
 
