@@ -55,6 +55,7 @@ This chapter defines the rules for supported LI versions in a LaaS landscape:
     the same major level.
   - It is not allowed to remove a minor version which is the next version of another supported minor version according
     to the update rules above.
+  - It is only allowed to remove at most one deprecated version in one upgrade of a LaaS landscape.
   - Deprecation duration: The deprecation duration is currently 3 months.
 
 - Upgrading LIs
@@ -81,6 +82,8 @@ This chapter defines the rules for supported LI versions in a LaaS landscape:
 ## Questions:
 
 - If we release new minor versions too frequently, the customer must test and upgrade quite often.
+  - We should add a recommendation that if a user upgrades his LI, he should always go to a non deprecated LI version 
+    even if this requires several upgrade steps. 
 
 ## Potential architectural consequences
 
@@ -127,6 +130,8 @@ The sidecar component is under our control and new features should not result in
     - Check if upgrades to next minor versions are possible and functionality is still working. This must include 
       upgrades from unsupported minor versions.
     - Tests require the old list of supported versions (of the current live system) to find out which transitions might occur. 
+    - Perhaps it is possible to store already tested upgrades to speed up the test duration. This will not help
+      if an older support minor version and all subsequent minor versions requires a patch. 
 
 ## Important considerations
 
