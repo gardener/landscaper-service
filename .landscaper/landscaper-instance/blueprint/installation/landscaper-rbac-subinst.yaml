@@ -17,6 +17,8 @@ imports:
       dataRef: shootClusterEndpoint
     - name: shootConfig
       dataRef: shootConfig
+    - name: rotationConfig
+      dataRef: rotationConfig
 
 exports:
   data:

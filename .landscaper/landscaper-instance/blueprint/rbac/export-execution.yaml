@@ -1,69 +1,9 @@
 exports:
   landscaperControllerKubeconfigYaml: |
-    apiVersion: v1
-    kind: Config
-    current-context: landscaper-cluster
-    contexts:
-    - name: landscaper-cluster
-      context:
-        cluster: landscaper-cluster
-        user: landscaper-controller
-    clusters:
-    - name: landscaper-cluster
-      cluster:
-        certificate-authority-data: {{ index .values "deployitems" "landscaper-rbac" "landscaperControllerCaCrt" }}
-        server: {{ index .values "dataobjects" "shootClusterEndpoint" }}:443
-    users:
-    - name: landscaper-controller
-      user:
-        token: {{ index .values "deployitems" "landscaper-rbac" "landscaperControllerToken" | b64dec }}
+    {{- getServiceAccountKubeconfig "landscaper-controller" .imports.targetClusterNamespace .imports.rotationConfig.tokenExpirationSeconds .imports.shootCluster | b64dec | nindent 4 }}
 
   landscaperWebhooksKubeconfigYaml: |
-    apiVersion: v1
-    kind: Config
-    current-context: landscaper-cluster
-    contexts:
-    - name: landscaper-cluster
-      context:
-        cluster: landscaper-cluster
-        user: landscaper-webhooks
-    clusters:
-    - name: landscaper-cluster
-      cluster:
-        certificate-authority-data: {{ index .values "deployitems" "landscaper-rbac" "landscaperWebhooksCaCrt" }}
-        server: {{ index .values "dataobjects" "shootClusterEndpoint" }}:443
-    users:
-    - name: landscaper-webhooks
-      user:
-        token: {{ index .values "deployitems" "landscaper-rbac" "landscaperWebhooksToken" | b64dec }}
+    {{- getServiceAccountKubeconfig "landscaper-webhooks" .imports.targetClusterNamespace .imports.rotationConfig.tokenExpirationSeconds .imports.shootCluster | b64dec | nindent 4 }}
 
   landscaperUserKubeconfigYaml: |
-    apiVersion: v1
-    kind: Config
-    current-context: landscaper-cluster
-    contexts:
-    - name: landscaper-cluster
-      context:
-        cluster: landscaper-cluster
-        user: landscaper-user
-    clusters:
-    - name: landscaper-cluster
-      cluster:
-        certificate-authority-data: {{ index .values "deployitems" "landscaper-rbac" "landscaperUserCaCrt" }}
-        server: {{ index .values "dataobjects" "shootClusterEndpoint" }}:443
-    users:
-    - name: landscaper-user
-      user:
-        exec:
-          apiVersion: client.authentication.k8s.io/v1beta1
-          command: kubectl
-          args:
-            - oidc-login
-            - get-token
-            - '--oidc-issuer-url={{ .imports.shootConfig.kubernetes.kubeAPIServer.oidcConfig.issuerURL }}'
-            - '--oidc-client-id={{ .imports.shootConfig.kubernetes.kubeAPIServer.oidcConfig.clientID }}'
-            - '--oidc-extra-scope=email'
-            - '--oidc-extra-scope=profile'
-            - '--oidc-extra-scope=offline_access'
-            - '--oidc-use-pkce'
-            - '--grant-type=auto'
+    {{- getOidcKubeconfig .imports.shootConfig.kubernetes.kubeAPIServer.oidcConfig.issuerURL .imports.shootConfig.kubernetes.kubeAPIServer.oidcConfig.clientID .imports.shootCluster | b64dec | nindent 4 }}

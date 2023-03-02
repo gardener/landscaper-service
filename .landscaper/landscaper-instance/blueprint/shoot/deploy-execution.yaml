@@ -116,7 +116,7 @@ deployItems:
               secretBindingName: {{ .imports.secretBindingName }}
               kubernetes:
                 version: {{ .imports.shootConfig.kubernetes.version }}
-                enableStaticTokenKubeconfig: true
+                enableStaticTokenKubeconfig: false
                 kubeAPIServer:
                   {{ if ((.imports.shootConfig.kubernetes.kubeAPIServer).oidcConfig) }}
                   oidcConfig:
@@ -140,13 +140,6 @@ deployItems:
       exports:
         defaultTimeout: 30m
         exports:
-          - key: shootClusterKubeconfig
-            jsonPath: .data.kubeconfig
-            fromResource:
-              apiVersion: v1
-              kind: Secret
-              name: {{ .imports.name }}.kubeconfig
-              namespace: {{ .imports.namespace }}
           - key: shootClusterEndpoint
             jsonPath: .status.advertisedAddresses[?(@.name == 'external')].url
             fromResource:

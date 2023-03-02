@@ -40,6 +40,8 @@ const (
 	LandscaperConfigImportName = "landscaperConfig"
 	// SidecarConfigImportName is the import for the sidecar configuration.
 	SidecarConfigImportName = "sidecarConfig"
+	// RotationConfigImportName is the import for the rotation configuration.
+	RotationConfigImportName = "rotationConfig"
 	// ShootNameImportName is the import for the shoot name.
 	ShootNameImportName = "shootName"
 	// ShootNamespaceImportName is the import for the shoot namespace.
@@ -98,12 +100,7 @@ func NewRegistryConfig() *RegistryConfig {
 
 // ToAnyJSON marshals this registry configuration to an AnyJSON object.
 func (r *RegistryConfig) ToAnyJSON() (*lsv1alpha1.AnyJSON, error) {
-	raw, err := json.Marshal(r)
-	if err != nil {
-		return nil, err
-	}
-	anyJSON := lsv1alpha1.NewAnyJSON(raw)
-	return &anyJSON, err
+	return toAnyJSON(r)
 }
 
 // Landscaper specifies the landscaper controller configuration.
@@ -153,12 +150,7 @@ func NewLandscaperConfig() *LandscaperConfig {
 
 // ToAnyJSON marshals this landscaper configuration to an AnyJSON object.
 func (l *LandscaperConfig) ToAnyJSON() (*lsv1alpha1.AnyJSON, error) {
-	raw, err := json.Marshal(l)
-	if err != nil {
-		return nil, err
-	}
-	anyJSON := lsv1alpha1.NewAnyJSON(raw)
-	return &anyJSON, err
+	return toAnyJSON(l)
 }
 
 // SidecarConfig specifies the config for the namespace registration and subject sync controller.
@@ -177,7 +169,34 @@ func NewSidecarConfig() *SidecarConfig {
 
 // ToAnyJSON marshals this SidecarConfig to an AnyJSON object.
 func (l *SidecarConfig) ToAnyJSON() (*lsv1alpha1.AnyJSON, error) {
-	raw, err := json.Marshal(l)
+	return toAnyJSON(l)
+}
+
+// RotationConfig specifies the config for the rotation of credentials.
+type RotationConfig struct {
+	// TokenExpirationSeconds defines how long the tokens are valid	which the landscaper and sidecar controllers use
+	// to access the resource cluster, e.g. for watching installations, namespace registrations etc.
+	TokenExpirationSeconds int64 `json:"tokenExpirationSeconds,omitempty"`
+	// AdminKubeconfigExpirationSeconds defines how long the admin kubeconfig for a resource cluster is valid.
+	// The kubeconfig is used to deploy RBAC objects on the resource cluster.
+	AdminKubeconfigExpirationSeconds int64 `json:"adminKubeconfigExpirationSeconds,omitempty"`
+}
+
+// NewRotationConfig creates a new RotationConfig.
+func NewRotationConfig(tokenExpirationSeconds, adminKubeconfigExpirationSeconds int64) *RotationConfig {
+	return &RotationConfig{
+		TokenExpirationSeconds:           tokenExpirationSeconds,
+		AdminKubeconfigExpirationSeconds: adminKubeconfigExpirationSeconds,
+	}
+}
+
+// ToAnyJSON marshals this RotationConfig to an AnyJSON object.
+func (r *RotationConfig) ToAnyJSON() (*lsv1alpha1.AnyJSON, error) {
+	return toAnyJSON(r)
+}
+
+func toAnyJSON(obj any) (*lsv1alpha1.AnyJSON, error) {
+	raw, err := json.Marshal(obj)
 	if err != nil {
 		return nil, err
 	}

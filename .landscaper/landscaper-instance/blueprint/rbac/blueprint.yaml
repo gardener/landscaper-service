@@ -25,6 +25,13 @@ imports:
         The "shootConfig" Specifies the gardener shoot configuration.
       $ref: "cd://resources/shoot-config-definition"
 
+  - name: rotationConfig
+    type: data
+    schema:
+      description: |
+        The configuration for the rotation of credentials.
+      $ref: "cd://resources/rotation-config-definition"
+
 exports:
   - name: landscaperControllerKubeconfigYaml
     type: data

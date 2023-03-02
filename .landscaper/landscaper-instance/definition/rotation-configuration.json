@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "github.com/gardener/landscaper-service/landscaper-instance/definitions/rotation-configuration",
+  "title": "Rotation Configuration",
+  "description": "Describes the configuration for the rotation of credentials.",
+  "type": "object",
+  "properties": {
+    "tokenExpirationSeconds": {
+      "type:": "integer",
+      "format": "int32"
+    },
+    "adminKubeconfigExpirationSeconds": {
+      "type:": "integer",
+      "format": "int32"
+    }
+  }
+}

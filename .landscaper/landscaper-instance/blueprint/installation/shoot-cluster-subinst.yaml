@@ -26,6 +26,8 @@ imports:
       dataRef: auditPolicy
     - name: subaccountId
       dataRef: subaccountId
+    - name: rotationConfig
+      dataRef: rotationConfig
 
 exports:
   targets:

@@ -25,6 +25,6 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 Create the name of the service account to use
 */}}
 {{- define "sidecar.serviceAccountName" -}}
-{{- default "sidecar" .Values.name }}
+{{- default "sidecar" .Values.serviceAccount.name }}
 {{- end }}
 
