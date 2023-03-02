@@ -134,7 +134,12 @@ The sidecar component is under our control and new features should not result in
 - To prevent that an upgrade of a LI component is prevented due to not supported k8s patch versions of the Gardener,
   it should not have a configured patch but only a minor version for the used Gardener shoot cluster. During the upgrade 
   of a LI it should select automatically the latest supported k8s patch version (supported by Gardener) with respect to 
-  its configured k8s minor version. 
+  its configured k8s minor version. The command to fetch the information about supported k8s versions is the following
+  executed against the Garden project namespace:
+
+```bash
+  k get cloudprofiles gcp -ojson | jq ".spec.kubernetes"
+```
 
 ## Important considerations
 
