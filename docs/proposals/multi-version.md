@@ -3,6 +3,9 @@
 This document contains a proposal how to support multiple versions of Landscaper Instances in one Landscaper as a 
 Service (LaaS) landscape.
 
+**Remark: Depending on the Add-On Concept some rework might be required, especially how long we support some minor
+versions and that every minor version is deprecated immediately when a higher minor version appears.**
+
 ## Motivation
 
 A LaaS landscape should support different versions of a Landscaper instance (LI), i.e. different LandscaperDeployments
