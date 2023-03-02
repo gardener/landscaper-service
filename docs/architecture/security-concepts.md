@@ -48,7 +48,8 @@ In the following the different channels are described in more detail:
   install service accounts and RBAC objects on the Resource-Shoot-Clusters via their API servers.
 
 - access 8 (Pod to API server communication): The Landscaper components on the Target-Shoot-Clusters access and 
-  manipulate kubernetes objects like Secrets, Service Accounts, Pods, etc. via their API servers.
+  manipulate kubernetes objects like Secrets, Service Accounts, Pods, etc. via their API servers. It also  
+  installs the deployer in the customer namespace on the Target-Shoot-Cluster.
 
 - access 9 (Pod to API server communication): The ls-service-target-shoot-sidecar-server components on the 
   Target-Shoot-Clusters have the default access to kubernetes objects on their clusters via the corresponding API 
