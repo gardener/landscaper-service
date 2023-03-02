@@ -100,6 +100,9 @@ This chapter defines the rules for supported LI versions in a LaaS landscape:
   same namespace as the sidecar controllers, which creates itself an upgrade object in his namespace. Subsequently, a 
   new controller (one for every Target-Shoot-Cluster) of the LaaS watches these objects and updates the 
   LanscaperDeployments accordingly.
+  - An alternative might be to give the customer access to its namespace on the Core-Shoot-Cluster to request an upgrade.
+    This approach seems to be more complicated as we need another access control to this namespace which should be 
+    based again on OIDC, all the stuff we already have for the Resource cluster.
 
 ### Potential Changes with respect to the LI component
 
@@ -149,3 +152,6 @@ The sidecar component is under our control and new features should not result in
   version upgrades in shoots are allowed.
 
 - Do we need tests for a Dev and Canary landscape release? Perhaps this is the right place for the upgrade testing?
+
+- How to determine the version of the Central Landscaper and the k8s version of its shoot cluster?
+  - It must be tested that the Central Landscaper can deploy all currently supported LI versions? 
