@@ -4,7 +4,7 @@ github.com/beorn7/perks/quantile
 # github.com/cespare/xxhash/v2 v2.1.2
 ## explicit; go 1.11
 github.com/cespare/xxhash/v2
-# github.com/containerd/containerd v1.6.12 => github.com/containerd/containerd v1.6.18
+# github.com/containerd/containerd v1.6.18 => github.com/containerd/containerd v1.6.18
 ## explicit; go 1.17
 github.com/containerd/containerd/archive/compression
 github.com/containerd/containerd/content
@@ -25,7 +25,7 @@ github.com/containerd/containerd/version
 # github.com/davecgh/go-spew v1.1.1
 ## explicit
 github.com/davecgh/go-spew/spew
-# github.com/docker/cli v20.10.17+incompatible
+# github.com/docker/cli v20.10.21+incompatible
 ## explicit
 github.com/docker/cli/cli/config
 github.com/docker/cli/cli/config/configfile
@@ -34,11 +34,11 @@ github.com/docker/cli/cli/config/types
 # github.com/docker/distribution v2.8.1+incompatible
 ## explicit
 github.com/docker/distribution/registry/client/auth/challenge
-# github.com/docker/docker v20.10.17+incompatible
+# github.com/docker/docker v20.10.21+incompatible
 ## explicit
 github.com/docker/docker/pkg/homedir
-# github.com/docker/docker-credential-helpers v0.6.4
-## explicit; go 1.13
+# github.com/docker/docker-credential-helpers v0.7.0
+## explicit; go 1.18
 github.com/docker/docker-credential-helpers/client
 github.com/docker/docker-credential-helpers/credentials
 # github.com/emicklei/go-restful/v3 v3.9.0
@@ -73,7 +73,7 @@ github.com/gardener/component-spec/bindings-go/codec
 github.com/gardener/component-spec/bindings-go/ctf
 github.com/gardener/component-spec/bindings-go/oci
 github.com/gardener/component-spec/bindings-go/utils/selector
-# github.com/gardener/landscaper v0.40.0
+# github.com/gardener/landscaper v0.40.0 => github.com/gardener/landscaper v0.50.0
 ## explicit; go 1.19
 github.com/gardener/landscaper/pkg/api
 github.com/gardener/landscaper/pkg/landscaper/blueprints
@@ -253,8 +253,8 @@ github.com/opencontainers/distribution-spec/specs-go/v1
 # github.com/opencontainers/go-digest v1.0.0
 ## explicit; go 1.13
 github.com/opencontainers/go-digest
-# github.com/opencontainers/image-spec v1.0.3-0.20220114050600-8b9d41f48198
-## explicit; go 1.11
+# github.com/opencontainers/image-spec v1.1.0-rc2
+## explicit; go 1.17
 github.com/opencontainers/image-spec/specs-go
 github.com/opencontainers/image-spec/specs-go/v1
 # github.com/pkg/errors v0.9.1
@@ -279,10 +279,10 @@ github.com/prometheus/common/model
 github.com/prometheus/procfs
 github.com/prometheus/procfs/internal/fs
 github.com/prometheus/procfs/internal/util
-# github.com/sirupsen/logrus v1.8.1
+# github.com/sirupsen/logrus v1.9.0
 ## explicit; go 1.13
 github.com/sirupsen/logrus
-# github.com/spf13/cobra v1.6.0
+# github.com/spf13/cobra v1.6.1
 ## explicit; go 1.15
 github.com/spf13/cobra
 # github.com/spf13/pflag v1.0.5
@@ -324,7 +324,7 @@ golang.org/x/net/idna
 ## explicit; go 1.11
 golang.org/x/oauth2
 golang.org/x/oauth2/internal
-# golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4
+# golang.org/x/sync v0.1.0
 ## explicit
 golang.org/x/sync/errgroup
 golang.org/x/sync/semaphore
@@ -738,5 +738,6 @@ sigs.k8s.io/structured-merge-diff/v4/value
 sigs.k8s.io/yaml
 # github.com/containerd/containerd => github.com/containerd/containerd v1.6.18
 # github.com/gardener/component-cli v0.40.0 => github.com/gardener/component-cli v0.44.0
+# github.com/gardener/landscaper => github.com/gardener/landscaper v0.50.0
 # github.com/gardener/landscaper-service => ../
 # golang.org/x/net => golang.org/x/net v0.7.0
