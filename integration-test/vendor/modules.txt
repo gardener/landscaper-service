@@ -94,7 +94,7 @@ github.com/gardener/landscaper-service/pkg/apis/core
 github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1
 github.com/gardener/landscaper-service/pkg/apis/installation
 github.com/gardener/landscaper-service/pkg/utils
-# github.com/gardener/landscaper/apis v0.49.0
+# github.com/gardener/landscaper/apis v0.50.0
 ## explicit; go 1.19
 github.com/gardener/landscaper/apis/config
 github.com/gardener/landscaper/apis/config/install
@@ -115,7 +115,7 @@ github.com/gardener/landscaper/apis/deployer/utils/readinesschecks
 github.com/gardener/landscaper/apis/errors
 github.com/gardener/landscaper/apis/mediatype
 github.com/gardener/landscaper/apis/schema
-# github.com/gardener/landscaper/controller-utils v0.49.0
+# github.com/gardener/landscaper/controller-utils v0.50.0
 ## explicit; go 1.19
 github.com/gardener/landscaper/controller-utils/pkg/kubernetes
 github.com/gardener/landscaper/controller-utils/pkg/logging
