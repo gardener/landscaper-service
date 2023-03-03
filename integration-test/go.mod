@@ -5,8 +5,8 @@ go 1.19
 require (
 	github.com/gardener/component-spec/bindings-go v0.0.66
 	github.com/gardener/landscaper-service v0.0.0-00010101000000-000000000000
-	github.com/gardener/landscaper/apis v0.49.0
-	github.com/gardener/landscaper/controller-utils v0.49.0
+	github.com/gardener/landscaper/apis v0.50.0
+	github.com/gardener/landscaper/controller-utils v0.50.0
 	github.com/gardener/landscapercli v0.20.0
 	k8s.io/api v0.26.1
 	k8s.io/apimachinery v0.26.1
@@ -17,12 +17,12 @@ require (
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
-	github.com/containerd/containerd v1.6.12 // indirect
+	github.com/containerd/containerd v1.6.18 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/docker/cli v20.10.17+incompatible // indirect
+	github.com/docker/cli v20.10.21+incompatible // indirect
 	github.com/docker/distribution v2.8.1+incompatible // indirect
-	github.com/docker/docker v20.10.17+incompatible // indirect
-	github.com/docker/docker-credential-helpers v0.6.4 // indirect
+	github.com/docker/docker v20.10.21+incompatible // indirect
+	github.com/docker/docker-credential-helpers v0.7.0 // indirect
 	github.com/emicklei/go-restful/v3 v3.9.0 // indirect
 	github.com/evanphx/json-patch/v5 v5.6.0 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
@@ -58,14 +58,14 @@ require (
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/opencontainers/distribution-spec v1.0.1 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
-	github.com/opencontainers/image-spec v1.0.3-0.20220114050600-8b9d41f48198 // indirect
+	github.com/opencontainers/image-spec v1.1.0-rc2 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/prometheus/client_golang v1.14.0 // indirect
 	github.com/prometheus/client_model v0.3.0 // indirect
 	github.com/prometheus/common v0.37.0 // indirect
 	github.com/prometheus/procfs v0.8.0 // indirect
-	github.com/sirupsen/logrus v1.8.1 // indirect
-	github.com/spf13/cobra v1.6.0 // indirect
+	github.com/sirupsen/logrus v1.9.0 // indirect
+	github.com/spf13/cobra v1.6.1 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/xeipuuv/gojsonpointer v0.0.0-20180127040702-4e3ac2762d5f // indirect
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
@@ -75,7 +75,7 @@ require (
 	go.uber.org/zap v1.24.0 // indirect
 	golang.org/x/net v0.6.0 // indirect
 	golang.org/x/oauth2 v0.0.0-20220524215830-622c5d57e401 // indirect
-	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4 // indirect
+	golang.org/x/sync v0.1.0 // indirect
 	golang.org/x/sys v0.5.0 // indirect
 	golang.org/x/term v0.5.0 // indirect
 	golang.org/x/text v0.7.0 // indirect
@@ -100,6 +100,7 @@ require (
 replace (
 	github.com/containerd/containerd => github.com/containerd/containerd v1.6.18
 	github.com/gardener/component-cli v0.40.0 => github.com/gardener/component-cli v0.44.0
+	github.com/gardener/landscaper => github.com/gardener/landscaper v0.50.0
 	github.com/gardener/landscaper-service => ../
 	golang.org/x/net => golang.org/x/net v0.7.0
 )
