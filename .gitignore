@@ -1,0 +1,10 @@
+.idea
+.vscode
+.DS_Store
+
+**/*.report
+gen
+tmp
+*whitesource*
+
+.cache_ggshield
