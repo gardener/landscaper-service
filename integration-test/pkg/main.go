@@ -41,9 +41,7 @@ var (
 		new(tests.HelmDeployerTestRunner),
 		new(tests.ContainerDeployerTestRunner),
 		new(tests.DeleteDeploymentRunner),
-		// TODO: Test is currently not working since the landscaper
-		// deployer pods will not be destroyed automatically.
-		// new(tests.VerifyDeleteRunner),
+		new(tests.VerifyDeleteRunner),
 		new(tests.UninstallLAASTestRunner),
 	}
 )

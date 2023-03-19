@@ -8,30 +8,32 @@ import (
 	"context"
 	"fmt"
 
+	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
+
 	corev1 "k8s.io/api/core/v1"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/errors"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-
-	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
-	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	lsserrors "github.com/gardener/landscaper-service/pkg/apis/errors"
+	"github.com/gardener/landscaper-service/pkg/controllers/healthwatcher"
 	"github.com/gardener/landscaper-service/pkg/utils"
 )
 
 // handleDelete handles the deletion of instances
 func (c *Controller) handleDelete(ctx context.Context, instance *lssv1alpha1.Instance) error {
 	var (
-		err                 error
-		curOp               = "Delete"
-		targetDeleted       = true
-		installationDeleted = true
-		contextDeleted      = true
+		err                           error
+		curOp                         = "Delete"
+		targetDeleted                 = true
+		installationDeleted           = true
+		contextDeleted                = true
+		targetClusterNamespaceDeleted bool
 	)
 
 	if instance.Status.InstallationRef != nil && !instance.Status.InstallationRef.IsEmpty() {
@@ -41,6 +43,14 @@ func (c *Controller) handleDelete(ctx context.Context, instance *lssv1alpha1.Ins
 	}
 
 	if !installationDeleted {
+		return nil
+	}
+
+	if targetClusterNamespaceDeleted, err = c.ensureDeleteTargetClusterNamespace(ctx, instance); err != nil {
+		return lsserrors.NewWrappedError(err, curOp, "DeleteTargetClusterNamespace", err.Error())
+	}
+
+	if !targetClusterNamespaceDeleted {
 		return nil
 	}
 
@@ -201,4 +211,39 @@ func (c *Controller) deleteSecretsForContext(ctx context.Context, landscaperCont
 		}
 	}
 	return errors.NewAggregate(errs)
+}
+
+// ensureDeleteTargetClusterNamespace ensures that the target cluster namespace for an instance has been deleted.
+func (c *Controller) ensureDeleteTargetClusterNamespace(ctx context.Context, instance *lssv1alpha1.Instance) (bool, error) {
+	targetClusterNamespace := fmt.Sprintf("%s-%s", instance.Spec.TenantId, instance.Spec.ID)
+	extr := healthwatcher.ServiceTargetConfigKubeClientExtractor{}
+
+	targetClusterClient, err := extr.GetKubeClientFromServiceTargetConfig(
+		ctx,
+		instance.Spec.ServiceTargetConfigRef.Name,
+		instance.Spec.ServiceTargetConfigRef.Namespace,
+		c.Client())
+
+	if err != nil {
+		return false, fmt.Errorf("failed to get client for target cluster: %w", err)
+	}
+
+	namespace := &corev1.Namespace{}
+
+	if err = targetClusterClient.Get(ctx, types.NamespacedName{Name: targetClusterNamespace}, namespace); err != nil {
+		if apierrors.IsNotFound(err) {
+			return true, nil
+		} else {
+			return false, fmt.Errorf("failed to get target cluster namespace %q: %w", targetClusterNamespace, err)
+		}
+	}
+
+	if namespace.DeletionTimestamp.IsZero() {
+		if err = targetClusterClient.Delete(ctx, namespace); err != nil {
+			return false, fmt.Errorf("failed to delete target cluster namespace %q: %w", targetClusterNamespace, err)
+		}
+		return false, nil
+	}
+
+	return false, nil
 }
