@@ -21,7 +21,6 @@ import (
 
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	lsserrors "github.com/gardener/landscaper-service/pkg/apis/errors"
-	"github.com/gardener/landscaper-service/pkg/controllers/healthwatcher"
 	"github.com/gardener/landscaper-service/pkg/utils"
 )
 
@@ -216,9 +215,8 @@ func (c *Controller) deleteSecretsForContext(ctx context.Context, landscaperCont
 // ensureDeleteTargetClusterNamespace ensures that the target cluster namespace for an instance has been deleted.
 func (c *Controller) ensureDeleteTargetClusterNamespace(ctx context.Context, instance *lssv1alpha1.Instance) (bool, error) {
 	targetClusterNamespace := fmt.Sprintf("%s-%s", instance.Spec.TenantId, instance.Spec.ID)
-	extr := healthwatcher.ServiceTargetConfigKubeClientExtractor{}
 
-	targetClusterClient, err := extr.GetKubeClientFromServiceTargetConfig(
+	targetClusterClient, err := c.kubeClientExtractor.GetKubeClientFromServiceTargetConfig(
 		ctx,
 		instance.Spec.ServiceTargetConfigRef.Name,
 		instance.Spec.ServiceTargetConfigRef.Namespace,
