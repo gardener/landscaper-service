@@ -56,7 +56,9 @@ type AvailabilityMonitoringConfiguration struct {
 
 	//PeriodicCheckInterval defines, how often the HealthWatcher controller collects the landscaper health information
 	PeriodicCheckInterval v1alpha1.Duration `json:"periodicCheckInterval"`
-	//LSHealthCheckTimeout defines the timeout, at which a previously available landscaper is unavailable if no updates occured
+	//LSHealthCheckTimeout defines the timeout, at which
+	// (1) a previously available landscaper is unavailable if no updates occured
+	// (2) a failed landscaper is reported as failed if it does not become available again
 	LSHealthCheckTimeout v1alpha1.Duration `json:"lsHealthCheckTimeout"`
 }
 
