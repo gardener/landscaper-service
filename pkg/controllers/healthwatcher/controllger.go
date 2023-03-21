@@ -13,25 +13,21 @@ import (
 
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
+	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
 	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 	apitypes "k8s.io/apimachinery/pkg/types"
-
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
-
-	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
-
-	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
-	"github.com/gardener/landscaper-service/pkg/apis/installation"
-
-	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	coreconfig "github.com/gardener/landscaper-service/pkg/apis/config"
+	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	"github.com/gardener/landscaper-service/pkg/apis/installation"
 	"github.com/gardener/landscaper-service/pkg/operation"
 )
 
@@ -127,7 +123,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 		}
 
 		//check if installation is not progressing
-		if installation.Status.InstallationPhase == lsv1alpha1.InstallationPhaseProgressing {
+		if installation.Status.InstallationPhase == lsv1alpha1.InstallationPhases.Progressing {
 			logger.Debug("installation for instance is progressing, skip health check monitoring", lc.KeyResource, client.ObjectKeyFromObject(installation).String())
 			continue
 		}
