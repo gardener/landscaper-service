@@ -9,6 +9,8 @@ import (
 	"fmt"
 	"reflect"
 
+	"k8s.io/utils/clock"
+
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 
 	guuid "github.com/google/uuid"
@@ -35,6 +37,7 @@ type Controller struct {
 	operation.Operation
 	log                          logging.Logger
 	gardenerServiceAccountClient client.Client
+	reconcileHelper              *automaticReconcileHelper
 
 	UniqueIDFunc func() string
 
@@ -59,8 +62,9 @@ func defaultUniqueIdFunc() string {
 // NewController returns a new instances controller
 func NewController(logger logging.Logger, c client.Client, scheme *runtime.Scheme, config *coreconfig.LandscaperServiceConfiguration) (reconcile.Reconciler, error) {
 	ctrl := &Controller{
-		log:          logger,
-		UniqueIDFunc: defaultUniqueIdFunc,
+		log:             logger,
+		UniqueIDFunc:    defaultUniqueIdFunc,
+		reconcileHelper: newAutomaticReconcileHelper(c, clock.RealClock{}),
 	}
 	ctrl.ReconcileFunc = ctrl.reconcile
 	ctrl.HandleDeleteFunc = ctrl.handleDelete
@@ -77,6 +81,7 @@ func NewTestActuator(op operation.Operation, logger logging.Logger) *Controller 
 		log:                          logger,
 		UniqueIDFunc:                 defaultUniqueIdFunc,
 		gardenerServiceAccountClient: op.Client(),
+		reconcileHelper:              newAutomaticReconcileHelper(op.Client(), clock.RealClock{}),
 	}
 	ctrl.ReconcileFunc = ctrl.reconcile
 	ctrl.HandleDeleteFunc = ctrl.handleDelete
@@ -124,11 +129,11 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 	if utils.HasOperationAnnotation(instance, lssv1alpha1.LandscaperServiceOperationIgnore) {
 		logger.Info("instance has ignore annotation, skipping reconcile")
-		return reconcile.Result{}, nil
+		return c.reconcileHelper.computeAutomaticReconcile(ctx, instance, nil)
 	}
 
 	// reconcile
-	return reconcile.Result{}, errHdl(ctx, c.ReconcileFunc(ctx, instance))
+	return c.reconcileHelper.computeAutomaticReconcile(ctx, instance, errHdl(ctx, c.ReconcileFunc(ctx, instance)))
 }
 
 // handleErrorFunc updates the error status of an instance

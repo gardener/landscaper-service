@@ -5,6 +5,7 @@
 package v1alpha1
 
 import (
+	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	lsschema "github.com/gardener/landscaper/apis/schema"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -53,6 +54,16 @@ type InstanceSpec struct {
 	// OIDCConfig describes the OIDC config of the customer resource cluster (shoot cluster)
 	// +optional
 	OIDCConfig *OIDCConfig `json:"oidcConfig,omitempty"`
+
+	// AutomaticReconcile specifies the configuration on when this instance is being automatically reconciled.
+	// +optional
+	AutomaticReconcile *AutomaticReconcile `json:"automaticReconcile,omitempty"`
+}
+
+// AutomaticReconcile defines the automatic reconcile configuration.
+type AutomaticReconcile struct {
+	// Interval specifies the interval after which the instance is being automatically reconciled.
+	Interval lsv1alpha1.Duration `json:"interval"`
 }
 
 // InstanceStatus contains the status for an Instance.
@@ -101,6 +112,16 @@ type InstanceStatus struct {
 	// ShootNamespace is the namespace in which the shoot resource is being created.
 	// +optional
 	ShootNamespace string `json:"shootNamespace,omitempty"`
+
+	// AutomaticReconcileStatus contains the status of the automatic reconciliation of this instance.
+	// +optional
+	AutomaticReconcileStatus *AutomaticReconcileStatus `json:"automaticReconcileStatus,omitempty"`
+}
+
+// AutomaticReconcileStatus contains the automatic reconciliation status of an instance.
+type AutomaticReconcileStatus struct {
+	// LastReconcileTime contains the time at which the instance has been reconciled.
+	LastReconcileTime metav1.Time `json:"lastReconcileTime,omitempty"`
 }
 
 var InstanceDefinition = lsschema.CustomResourceDefinition{
