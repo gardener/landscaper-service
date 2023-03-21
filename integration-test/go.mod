@@ -100,7 +100,7 @@ require (
 replace (
 	github.com/containerd/containerd => github.com/containerd/containerd v1.6.18
 	github.com/gardener/component-cli v0.40.0 => github.com/gardener/component-cli v0.44.0
-	github.com/gardener/landscaper => github.com/gardener/landscaper v0.51.0
+	github.com/gardener/landscaper => github.com/gardener/landscaper v0.52.0
 	github.com/gardener/landscaper-service => ../
 	golang.org/x/net => golang.org/x/net v0.7.0
 )
