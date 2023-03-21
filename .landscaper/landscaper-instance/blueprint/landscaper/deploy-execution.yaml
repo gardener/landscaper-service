@@ -11,6 +11,22 @@ deployItems:
       namespace: {{ .imports.hostingClusterNamespace }}
       createNamespace: true
 
+      readinessChecks:
+        disableDefault: false
+        custom:
+          - name: LsHealthCheckOk
+            timeout: 5m
+            resourceSelector:
+              - apiVersion: landscaper.gardener.cloud/v1alpha1
+                kind: LsHealthCheck
+                name: {{ .imports.hostingClusterNamespace }}
+                namespace: {{ .imports.hostingClusterNamespace }}
+            requirements:
+              - jsonPath: .status
+                operator: ==
+                values:
+                  - value: "Ok"
+
       chart:
         {{ $landscaperComponent := getComponent .cd "name" "landscaper" }}
         {{ $resource := getResource $landscaperComponent "name" "landscaper-controller-deployment-chart" }}
