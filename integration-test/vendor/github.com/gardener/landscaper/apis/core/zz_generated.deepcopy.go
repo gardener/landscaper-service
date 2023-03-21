@@ -804,6 +804,11 @@ func (in *DeployItemStatus) DeepCopyInto(out *DeployItemStatus) {
 		in, out := &in.JobIDGenerationTime, &out.JobIDGenerationTime
 		*out = (*in).DeepCopy()
 	}
+	if in.DeployerPhase != nil {
+		in, out := &in.DeployerPhase, &out.DeployerPhase
+		*out = new(string)
+		**out = **in
+	}
 	return
 }
 
@@ -841,6 +846,11 @@ func (in *DeployItemTemplate) DeepCopyInto(out *DeployItemTemplate) {
 		in, out := &in.DependsOn, &out.DependsOn
 		*out = make([]string, len(*in))
 		copy(*out, *in)
+	}
+	if in.Timeout != nil {
+		in, out := &in.Timeout, &out.Timeout
+		*out = new(Duration)
+		**out = **in
 	}
 	return
 }
