@@ -15,7 +15,7 @@ deployItems:
         disableDefault: false
         custom:
           - name: LsHealthCheckOk
-            timeout: 5m
+            timeout: 10m
             resourceSelector:
               - apiVersion: landscaper.gardener.cloud/v1alpha1
                 kind: LsHealthCheck
