@@ -256,10 +256,10 @@ func buildLandscaperValues(namespace string) ([]byte, error) {
 	const valuesTemplate = `
 landscaper:
   landscaper:
-	deployItemTimeouts:
-		pickup: 60m
-		abort: 60m
-		progressingDefault: 600m
+    deployItemTimeouts:
+      pickup: 60m
+      abort: 60m
+      progressingDefault: 600m
     verbosity: debug
     registryConfig: # contains optional oci secrets
       allowPlainHttpRegistries: true
