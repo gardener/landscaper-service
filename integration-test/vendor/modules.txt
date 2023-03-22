@@ -73,7 +73,7 @@ github.com/gardener/component-spec/bindings-go/codec
 github.com/gardener/component-spec/bindings-go/ctf
 github.com/gardener/component-spec/bindings-go/oci
 github.com/gardener/component-spec/bindings-go/utils/selector
-# github.com/gardener/landscaper v0.40.0 => github.com/gardener/landscaper v0.52.0
+# github.com/gardener/landscaper v0.52.0 => github.com/gardener/landscaper v0.52.0
 ## explicit; go 1.19
 github.com/gardener/landscaper/pkg/api
 github.com/gardener/landscaper/pkg/landscaper/blueprints
@@ -120,7 +120,7 @@ github.com/gardener/landscaper/apis/schema
 github.com/gardener/landscaper/controller-utils/pkg/kubernetes
 github.com/gardener/landscaper/controller-utils/pkg/logging
 github.com/gardener/landscaper/controller-utils/pkg/logging/constants
-# github.com/gardener/landscapercli v0.20.0
+# github.com/gardener/landscapercli v0.21.0
 ## explicit; go 1.19
 github.com/gardener/landscapercli/cmd/installations
 github.com/gardener/landscapercli/cmd/installations/inspect
