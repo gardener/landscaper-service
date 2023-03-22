@@ -95,7 +95,7 @@ var _ = Describe("Reconcile", func() {
 		Expect(availabilityCollection.Status.Self.FailedReason).To(ContainSubstring("timeout"))
 	})
 
-	It("should add self monitoring status as failed due to lshealthcheck failed state", func() {
+	It("should add self monitoring status as success with lshealthcheck failed state if it is not in timoueout", func() {
 		var err error
 		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test2")
 		Expect(err).ToNot(HaveOccurred())
@@ -111,8 +111,28 @@ var _ = Describe("Reconcile", func() {
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(availabilityCollection))
 
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(availabilityCollection), availabilityCollection)).To(Succeed())
+		Expect(availabilityCollection.Status.Self.Status).To(Equal(string(lsv1alpha1.LsHealthCheckStatusOk)))
+		Expect(availabilityCollection.Status.Self.FailedReason).To(ContainSubstring("to transition to status=Failed"))
+	})
+	It("should add self monitoring status as failed due to lshealthcheck failed state and in timeout", func() {
+		var err error
+		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test2")
+		Expect(err).ToNot(HaveOccurred())
+		op.Config().AvailabilityMonitoring.AvailabilityCollectionNamespace = state.Namespace
+		op.Config().AvailabilityMonitoring.SelfLandscaperNamespace = state.Namespace
+
+		//set lastUpdateTime of LsHealthCheck to recent
+		lsHealthObject := state.GetLsHealthCheck("default")
+		lsHealthObject.LastUpdateTime = v1.Time{Time: v1.Now().Add(time.Minute * -6)}
+		Expect(testenv.Client.Update(ctx, lsHealthObject)).To(Succeed())
+
+		availabilityCollection := state.GetAvailabilityCollection("availability")
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(availabilityCollection))
+
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(availabilityCollection), availabilityCollection)).To(Succeed())
 		Expect(availabilityCollection.Status.Self.Status).To(Equal(string(lsv1alpha1.LsHealthCheckStatusFailed)))
 		Expect(availabilityCollection.Status.Self.FailedReason).To(ContainSubstring("problems"))
+		Expect(availabilityCollection.Status.Self.FailedReason).To(ContainSubstring("timeout - failed recovering from failed state within time"))
 	})
 
 	It("should collect lshealthcheck from two successful instances", func() {
@@ -146,7 +166,7 @@ var _ = Describe("Reconcile", func() {
 		Expect(availabilityCollection.Status.Instances[1].Status).To(Equal(string(lsv1alpha1.LsHealthCheckStatusOk)))
 	})
 
-	It("should collect lshealthcheck from one successful and one failed instances", func() {
+	It("should collect lshealthcheck from one successful and one failed (and timeouted) instances", func() {
 		var err error
 		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test3")
 		Expect(err).ToNot(HaveOccurred())
@@ -165,7 +185,7 @@ var _ = Describe("Reconcile", func() {
 
 		lshealthcheck2 := state.GetLsHealthCheckInNamespace("default", fmt.Sprintf("instance2namespace-%s", state.Namespace))
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(lshealthcheck2), lshealthcheck2)).To(Succeed())
-		lshealthcheck2.LastUpdateTime = v1.Now()
+		lshealthcheck2.LastUpdateTime = v1.Time{Time: v1.Now().Add(time.Minute * -6)}
 		lshealthcheck2.Status = lsv1alpha1.LsHealthCheckStatusFailed
 		lshealthcheck2.Description = "problems"
 		Expect(testenv.Client.Update(ctx, lshealthcheck2)).To(Succeed())
@@ -196,7 +216,7 @@ var _ = Describe("failed/succeded state handling", func() {
 		healthwatcher.ExportTransferLsHealthCheckStatusToAvailabilityInstance(avInstance, lsHealthChecks, timeout)
 		Expect(avInstance.Status).To(Equal(string(lsv1alpha1.LsHealthCheckStatusOk)))
 	})
-	It("should set status to failed if not timeout but lshealthcheck is failed", func() {
+	It("should set status to successful if lshealthcheck is failed but not timeouted", func() {
 		avInstance := &lssv1alpha1.AvailabilityInstance{}
 		lsHealthChecks := &lsv1alpha1.LsHealthCheckList{
 			Items: []lsv1alpha1.LsHealthCheck{
@@ -209,8 +229,8 @@ var _ = Describe("failed/succeded state handling", func() {
 		}
 		timeout := time.Minute * 5
 		healthwatcher.ExportTransferLsHealthCheckStatusToAvailabilityInstance(avInstance, lsHealthChecks, timeout)
-		Expect(avInstance.Status).To(Equal(string(lsv1alpha1.LsHealthCheckStatusFailed)))
-		Expect(avInstance.FailedReason).To(Equal("Problem Description"))
+		Expect(avInstance.Status).To(Equal(string(lsv1alpha1.LsHealthCheckStatusOk)))
+		Expect(avInstance.FailedReason).To(ContainSubstring("to transition to status=Failed"))
 	})
 	It("should set status to failed if timeout but lshealthcheck is ok", func() {
 		avInstance := &lssv1alpha1.AvailabilityInstance{}
@@ -242,5 +262,6 @@ var _ = Describe("failed/succeded state handling", func() {
 		healthwatcher.ExportTransferLsHealthCheckStatusToAvailabilityInstance(avInstance, lsHealthChecks, timeout)
 		Expect(avInstance.Status).To(Equal(string(lsv1alpha1.LsHealthCheckStatusFailed)))
 		Expect(avInstance.FailedReason).To(ContainSubstring("timeout"))
+		Expect(avInstance.FailedReason).To(ContainSubstring("Problem Description"))
 	})
 })

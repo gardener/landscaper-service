@@ -253,7 +253,7 @@ func transferLsHealthCheckStatusToAvailabilityInstance(availabilityInstance *lss
 		if healthCheck.Status == lsv1alpha1.LsHealthCheckStatusOk {
 			setAvailabilityInstanceStatusToFailed(availabilityInstance, fmt.Sprintf("timeout - last update time not recent enough (timeout %s)", timeout.String()))
 		} else {
-			setAvailabilityInstanceStatusToFailed(availabilityInstance, healthCheck.Description)
+			setAvailabilityInstanceStatusToFailed(availabilityInstance, fmt.Sprintf("timeout - failed recovering from failed state within time (timeout %s): %s", timeout.String(), healthCheck.Description))
 		}
 	} else {
 		if healthCheck.Status == lsv1alpha1.LsHealthCheckStatusOk {
