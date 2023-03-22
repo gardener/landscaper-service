@@ -28,7 +28,7 @@ import (
 )
 
 const (
-	targetClusterNamespaceDeletionRetryDuration = time.Millisecond * 500
+	targetClusterNamespaceDeletionRetryDuration = time.Second * 10
 )
 
 // handleDelete handles the deletion of instances
