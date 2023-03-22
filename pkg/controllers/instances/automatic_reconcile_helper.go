@@ -18,7 +18,7 @@ import (
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 )
 
-var (
+const (
 	// AutomaticReconcileDefaultDuration specifies the default automatic reconcile duration.
 	AutomaticReconcileDefaultDuration = 12 * time.Hour
 )
