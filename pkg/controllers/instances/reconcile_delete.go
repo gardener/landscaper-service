@@ -214,7 +214,12 @@ func (c *Controller) deleteSecretsForContext(ctx context.Context, landscaperCont
 
 // ensureDeleteTargetClusterNamespace ensures that the target cluster namespace for an instance has been deleted.
 func (c *Controller) ensureDeleteTargetClusterNamespace(ctx context.Context, instance *lssv1alpha1.Instance) (bool, error) {
+	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(instance).String()},
+		lc.KeyMethod, "ensureDeleteTargetClusterNamespace")
+
 	targetClusterNamespace := fmt.Sprintf("%s-%s", instance.Spec.TenantId, instance.Spec.ID)
+
+	logger.Info("Delete target cluster namespace for instance", lc.KeyResourceNonNamespaced, targetClusterNamespace)
 
 	targetClusterClient, err := c.kubeClientExtractor.GetKubeClientFromServiceTargetConfig(
 		ctx,
