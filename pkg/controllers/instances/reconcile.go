@@ -129,6 +129,10 @@ func (c *Controller) mutateContext(ctx context.Context, context *lsv1alpha1.Cont
 		logger.Info("Creating context", lc.KeyResource, types.NamespacedName{Name: context.GenerateName, Namespace: context.Namespace}.String())
 	}
 
+	if err := controllerutil.SetControllerReference(instance, context, c.Scheme()); err != nil {
+		return fmt.Errorf("unable to set controller reference for target: %w", err)
+	}
+
 	repositoryContext := &cdv2.UnstructuredTypedObject{}
 	err := json.Unmarshal(c.Config().LandscaperServiceComponent.RepositoryContext.RawMessage, repositoryContext)
 

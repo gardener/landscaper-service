@@ -30,6 +30,7 @@ func AddControllerToManager(logger logging.Logger, mgr manager.Manager, config *
 		For(&lssv1alpha1.Instance{}).
 		Owns(&lsv1alpha1.Installation{}).
 		Owns(&lsv1alpha1.Target{}).
+		Owns(&lsv1alpha1.Context{}).
 		WithLogConstructor(func(r *reconcile.Request) logr.Logger { return log.Logr() }).
 		Complete(ctrl)
 }

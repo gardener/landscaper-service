@@ -41,7 +41,7 @@ type Controller struct {
 	UniqueIDFunc func() string
 
 	ReconcileFunc    func(ctx context.Context, instance *lssv1alpha1.Instance) error
-	HandleDeleteFunc func(ctx context.Context, instance *lssv1alpha1.Instance) error
+	HandleDeleteFunc func(ctx context.Context, instance *lssv1alpha1.Instance) (reconcile.Result, error)
 	ListShootsFunc   func(ctx context.Context, instance *lssv1alpha1.Instance) (*unstructured.UnstructuredList, error)
 
 	kubeClientExtractor healthwatcher.ServiceTargetConfigKubeClientExtractorInterface
@@ -134,7 +134,8 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 	// reconcile delete
 	if !instance.DeletionTimestamp.IsZero() {
-		return reconcile.Result{}, errHdl(ctx, c.HandleDeleteFunc(ctx, instance))
+		result, err := c.HandleDeleteFunc(ctx, instance)
+		return result, errHdl(ctx, err)
 	}
 
 	if utils.HasOperationAnnotation(instance, lssv1alpha1.LandscaperServiceOperationIgnore) {

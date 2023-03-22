@@ -7,6 +7,8 @@ package instances
 import (
 	"context"
 	"fmt"
+	"sigs.k8s.io/controller-runtime/pkg/reconcile"
+	"time"
 
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
@@ -24,8 +26,12 @@ import (
 	"github.com/gardener/landscaper-service/pkg/utils"
 )
 
+const (
+	targetClusterNamespaceDeletionRetryDuration = time.Millisecond * 500
+)
+
 // handleDelete handles the deletion of instances
-func (c *Controller) handleDelete(ctx context.Context, instance *lssv1alpha1.Instance) error {
+func (c *Controller) handleDelete(ctx context.Context, instance *lssv1alpha1.Instance) (reconcile.Result, error) {
 	var (
 		err                           error
 		curOp                         = "Delete"
@@ -37,45 +43,50 @@ func (c *Controller) handleDelete(ctx context.Context, instance *lssv1alpha1.Ins
 
 	if instance.Status.InstallationRef != nil && !instance.Status.InstallationRef.IsEmpty() {
 		if installationDeleted, err = c.ensureDeleteInstallationForInstance(ctx, instance); err != nil {
-			return lsserrors.NewWrappedError(err, curOp, "DeleteInstallation", err.Error())
+			return reconcile.Result{}, lsserrors.NewWrappedError(err, curOp, "DeleteInstallation", err.Error())
 		}
 	}
 
 	if !installationDeleted {
-		return nil
+		return reconcile.Result{}, nil
 	}
 
 	if targetClusterNamespaceDeleted, err = c.ensureDeleteTargetClusterNamespace(ctx, instance); err != nil {
-		return lsserrors.NewWrappedError(err, curOp, "DeleteTargetClusterNamespace", err.Error())
+		return reconcile.Result{}, lsserrors.NewWrappedError(err, curOp, "DeleteTargetClusterNamespace", err.Error())
 	}
 
 	if !targetClusterNamespaceDeleted {
-		return nil
+		// since this namespace is on a different cluster and there is no owner reference set,
+		// the retry has to be triggered manually
+		return reconcile.Result{
+			Requeue:      true,
+			RequeueAfter: targetClusterNamespaceDeletionRetryDuration,
+		}, nil
 	}
 
 	if instance.Status.TargetRef != nil && !instance.Status.TargetRef.IsEmpty() {
 		if targetDeleted, err = c.ensureDeleteTargetForInstance(ctx, instance); err != nil {
-			return lsserrors.NewWrappedError(err, curOp, "DeleteTarget", err.Error())
+			return reconcile.Result{}, lsserrors.NewWrappedError(err, curOp, "DeleteTarget", err.Error())
 		}
 	}
 
 	if !targetDeleted {
-		return nil
+		return reconcile.Result{}, nil
 	}
 
 	if instance.Status.ContextRef != nil && !instance.Status.ContextRef.IsEmpty() {
 		if contextDeleted, err = c.ensureDeleteContextForInstance(ctx, instance); err != nil {
-			return lsserrors.NewWrappedError(err, curOp, "DeleteContext", err.Error())
+			return reconcile.Result{}, lsserrors.NewWrappedError(err, curOp, "DeleteContext", err.Error())
 		}
 	}
 
 	if !contextDeleted {
-		return nil
+		return reconcile.Result{}, nil
 	}
 
 	serviceTargetConfig := &lssv1alpha1.ServiceTargetConfig{}
 	if err := c.Client().Get(ctx, instance.Spec.ServiceTargetConfigRef.NamespacedName(), serviceTargetConfig); err != nil {
-		return lsserrors.NewWrappedError(err, curOp, "GetServiceTargetConfig", err.Error())
+		return reconcile.Result{}, lsserrors.NewWrappedError(err, curOp, "GetServiceTargetConfig", err.Error())
 	}
 
 	// remove instance reference from service target config
@@ -85,15 +96,15 @@ func (c *Controller) handleDelete(ctx context.Context, instance *lssv1alpha1.Ins
 	})
 
 	if err := c.Client().Status().Update(ctx, serviceTargetConfig); err != nil {
-		return lsserrors.NewWrappedError(err, curOp, "RemoveRefFromServiceTargetConfig", err.Error())
+		return reconcile.Result{}, lsserrors.NewWrappedError(err, curOp, "RemoveRefFromServiceTargetConfig", err.Error())
 	}
 
 	controllerutil.RemoveFinalizer(instance, lssv1alpha1.LandscaperServiceFinalizer)
 	if err := c.Client().Update(ctx, instance); err != nil {
-		return lsserrors.NewWrappedError(err, curOp, "RemoveFinalizer", err.Error())
+		return reconcile.Result{}, lsserrors.NewWrappedError(err, curOp, "RemoveFinalizer", err.Error())
 	}
 
-	return nil
+	return reconcile.Result{}, nil
 }
 
 // ensureDeleteInstallationForInstance ensures that the installation for an instance is deleted
