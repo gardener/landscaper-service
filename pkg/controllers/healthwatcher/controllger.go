@@ -246,10 +246,19 @@ func transferLsHealthCheckStatusToAvailabilityInstance(availabilityInstance *lss
 
 	healthCheck := lsHealthChecks.Items[0]
 	if time.Since(healthCheck.LastUpdateTime.Time) > timeout {
-		setAvailabilityInstanceStatusToFailed(availabilityInstance, fmt.Sprintf("timeout - last update time not recent enough (timeout %s)", timeout.String()))
+		if healthCheck.Status == lsv1alpha1.LsHealthCheckStatusOk {
+			setAvailabilityInstanceStatusToFailed(availabilityInstance, fmt.Sprintf("timeout - last update time not recent enough (timeout %s)", timeout.String()))
+		} else {
+			setAvailabilityInstanceStatusToFailed(availabilityInstance, fmt.Sprintf("timeout - failed recovering from failed state within time (timeout %s): %s", timeout.String(), healthCheck.Description))
+		}
 	} else {
-		availabilityInstance.Status = string(healthCheck.Status)
-		availabilityInstance.FailedReason = healthCheck.Description
+		if healthCheck.Status == lsv1alpha1.LsHealthCheckStatusOk {
+			availabilityInstance.Status = string(healthCheck.Status)
+		} else {
+			// if we are status failed but not yet in timeout, remain in Ok but put a remark in failedReason
+			availabilityInstance.Status = string(lsv1alpha1.LsHealthCheckStatusOk)
+			availabilityInstance.FailedReason = fmt.Sprintf("failed - waiting for timeout (%s) to transition to status=Failed", timeout.String())
+		}
 	}
 }
 
