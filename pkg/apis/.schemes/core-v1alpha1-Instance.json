@@ -1,6 +1,35 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
   "definitions": {
+    "core-v1alpha1-AutomaticReconcile": {
+      "description": "AutomaticReconcile defines the automatic reconcile configuration.",
+      "type": "object",
+      "required": [
+        "interval"
+      ],
+      "properties": {
+        "interval": {
+          "description": "Interval specifies the interval after which the instance is being automatically reconciled.",
+          "default": 0,
+          "$ref": "#/definitions/core-v1alpha1-Duration"
+        }
+      }
+    },
+    "core-v1alpha1-AutomaticReconcileStatus": {
+      "description": "AutomaticReconcileStatus contains the automatic reconciliation status of an instance.",
+      "type": "object",
+      "properties": {
+        "lastReconcileTime": {
+          "description": "LastReconcileTime contains the time at which the instance has been reconciled.",
+          "default": {},
+          "$ref": "#/definitions/meta-v1-Time"
+        }
+      }
+    },
+    "core-v1alpha1-Duration": {
+      "description": "Duration is a wrapper for time.Duration that implements JSON marshalling and openapi scheme.",
+      "type": "string"
+    },
     "core-v1alpha1-Error": {
       "description": "Error holds information about an error that occurred.",
       "type": "object",
@@ -49,6 +78,10 @@
         "serviceTargetConfigRef"
       ],
       "properties": {
+        "automaticReconcile": {
+          "description": "AutomaticReconcile specifies the configuration on when this instance is being automatically reconciled.",
+          "$ref": "#/definitions/core-v1alpha1-AutomaticReconcile"
+        },
         "id": {
           "description": "ID is the id of this instance",
           "type": "string",
@@ -82,6 +115,10 @@
         "adminKubeconfig": {
           "description": "AdminKubeconfig contains the admin kubeconfig which can be used for accessing the landscaper cluster.",
           "type": "string"
+        },
+        "automaticReconcileStatus": {
+          "description": "AutomaticReconcileStatus contains the status of the automatic reconciliation of this instance.",
+          "$ref": "#/definitions/core-v1alpha1-AutomaticReconcileStatus"
         },
         "clusterEndpoint": {
           "description": "ClusterEndpointRef contains the URL at which the landscaper cluster is accessible.",

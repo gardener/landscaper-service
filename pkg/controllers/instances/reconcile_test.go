@@ -429,4 +429,47 @@ var _ = Describe("Reconcile", func() {
 
 		Expect(reflect.DeepEqual(auditPolicyOrig, auditPolicyInstallation)).To(BeTrue())
 	})
+
+	It("should handle the automatic reconcile with explicit duration set", func() {
+		var err error
+		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test6")
+		Expect(err).ToNot(HaveOccurred())
+
+		instance := state.GetInstance("test")
+
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
+
+		request := testutils.RequestFromObject(instance)
+		result, err := ctrl.Reconcile(ctx, request)
+
+		Expect(err).ToNot(HaveOccurred())
+		Expect(result.Requeue).To(BeTrue())
+		Expect(result.RequeueAfter).To(Equal(time.Minute * 10))
+
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
+		Expect(instance.Status.AutomaticReconcileStatus).ToNot(BeNil())
+
+		now := time.Now()
+		diff := now.Sub(instance.Status.AutomaticReconcileStatus.LastReconcileTime.Time)
+		Expect(diff < time.Minute).To(BeTrue())
+	})
+
+	It("should handle the automatic reconcile with default duration", func() {
+		var err error
+		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test1")
+		Expect(err).ToNot(HaveOccurred())
+
+		instance := state.GetInstance("test")
+
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
+
+		request := testutils.RequestFromObject(instance)
+		result, err := ctrl.Reconcile(ctx, request)
+
+		Expect(err).ToNot(HaveOccurred())
+		Expect(result.Requeue).To(BeTrue())
+		Expect(result.RequeueAfter).To(Equal(instancescontroller.AutomaticReconcileDefaultDuration))
+	})
 })

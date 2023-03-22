@@ -13,6 +13,7 @@ SPDX-License-Identifier: Apache-2.0
 package openapi
 
 import (
+	v1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	resource "k8s.io/apimachinery/pkg/api/resource"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	common "k8s.io/kube-openapi/pkg/common"
@@ -21,6 +22,8 @@ import (
 
 func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenAPIDefinition {
 	return map[string]common.OpenAPIDefinition{
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AutomaticReconcile":           schema_pkg_apis_core_v1alpha1_AutomaticReconcile(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AutomaticReconcileStatus":     schema_pkg_apis_core_v1alpha1_AutomaticReconcileStatus(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AvailabilityCollection":       schema_pkg_apis_core_v1alpha1_AvailabilityCollection(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AvailabilityCollectionList":   schema_pkg_apis_core_v1alpha1_AvailabilityCollectionList(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AvailabilityCollectionSpec":   schema_pkg_apis_core_v1alpha1_AvailabilityCollectionSpec(ref),
@@ -53,13 +56,107 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SubjectListList":              schema_pkg_apis_core_v1alpha1_SubjectListList(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SubjectListSpec":              schema_pkg_apis_core_v1alpha1_SubjectListSpec(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SubjectListStatus":            schema_pkg_apis_core_v1alpha1_SubjectListStatus(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.AnyJSON":                                  schema_landscaper_apis_core_v1alpha1_AnyJSON(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.AutomaticReconcile":                       schema_landscaper_apis_core_v1alpha1_AutomaticReconcile(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.AutomaticReconcileStatus":                 schema_landscaper_apis_core_v1alpha1_AutomaticReconcileStatus(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.Blueprint":                                schema_landscaper_apis_core_v1alpha1_Blueprint(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.BlueprintDefinition":                      schema_landscaper_apis_core_v1alpha1_BlueprintDefinition(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.BlueprintStaticDataSource":                schema_landscaper_apis_core_v1alpha1_BlueprintStaticDataSource(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.BlueprintStaticDataValueFrom":             schema_landscaper_apis_core_v1alpha1_BlueprintStaticDataValueFrom(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.ClusterRestConfig":                        schema_landscaper_apis_core_v1alpha1_ClusterRestConfig(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.ComponentDescriptorDefinition":            schema_landscaper_apis_core_v1alpha1_ComponentDescriptorDefinition(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.ComponentDescriptorReference":             schema_landscaper_apis_core_v1alpha1_ComponentDescriptorReference(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.ComponentVersionOverwrite":                schema_landscaper_apis_core_v1alpha1_ComponentVersionOverwrite(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.ComponentVersionOverwriteReference":       schema_landscaper_apis_core_v1alpha1_ComponentVersionOverwriteReference(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.ComponentVersionOverwrites":               schema_landscaper_apis_core_v1alpha1_ComponentVersionOverwrites(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.ComponentVersionOverwritesList":           schema_landscaper_apis_core_v1alpha1_ComponentVersionOverwritesList(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.Condition":                                schema_landscaper_apis_core_v1alpha1_Condition(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.ConfigMapReference":                       schema_landscaper_apis_core_v1alpha1_ConfigMapReference(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.Context":                                  schema_landscaper_apis_core_v1alpha1_Context(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.ContextList":                              schema_landscaper_apis_core_v1alpha1_ContextList(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.DataExport":                               schema_landscaper_apis_core_v1alpha1_DataExport(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.DataImport":                               schema_landscaper_apis_core_v1alpha1_DataImport(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.DataObject":                               schema_landscaper_apis_core_v1alpha1_DataObject(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.DataObjectList":                           schema_landscaper_apis_core_v1alpha1_DataObjectList(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.Default":                                  schema_landscaper_apis_core_v1alpha1_Default(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.DeployItem":                               schema_landscaper_apis_core_v1alpha1_DeployItem(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.DeployItemList":                           schema_landscaper_apis_core_v1alpha1_DeployItemList(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.DeployItemSpec":                           schema_landscaper_apis_core_v1alpha1_DeployItemSpec(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.DeployItemStatus":                         schema_landscaper_apis_core_v1alpha1_DeployItemStatus(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.DeployItemTemplate":                       schema_landscaper_apis_core_v1alpha1_DeployItemTemplate(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.DeployerInformation":                      schema_landscaper_apis_core_v1alpha1_DeployerInformation(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.DeployerInstallationTemplate":             schema_landscaper_apis_core_v1alpha1_DeployerInstallationTemplate(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.DeployerRegistration":                     schema_landscaper_apis_core_v1alpha1_DeployerRegistration(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.DeployerRegistrationList":                 schema_landscaper_apis_core_v1alpha1_DeployerRegistrationList(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.DeployerRegistrationSpec":                 schema_landscaper_apis_core_v1alpha1_DeployerRegistrationSpec(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.DeployerRegistrationStatus":               schema_landscaper_apis_core_v1alpha1_DeployerRegistrationStatus(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.Duration":                                 schema_landscaper_apis_core_v1alpha1_Duration(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.Environment":                              schema_landscaper_apis_core_v1alpha1_Environment(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.EnvironmentList":                          schema_landscaper_apis_core_v1alpha1_EnvironmentList(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.EnvironmentSpec":                          schema_landscaper_apis_core_v1alpha1_EnvironmentSpec(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.Error":                                    schema_landscaper_apis_core_v1alpha1_Error(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.Execution":                                schema_landscaper_apis_core_v1alpha1_Execution(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.ExecutionGeneration":                      schema_landscaper_apis_core_v1alpha1_ExecutionGeneration(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.ExecutionList":                            schema_landscaper_apis_core_v1alpha1_ExecutionList(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.ExecutionSpec":                            schema_landscaper_apis_core_v1alpha1_ExecutionSpec(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.ExecutionStatus":                          schema_landscaper_apis_core_v1alpha1_ExecutionStatus(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.ExportDefinition":                         schema_landscaper_apis_core_v1alpha1_ExportDefinition(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.FailedReconcile":                          schema_landscaper_apis_core_v1alpha1_FailedReconcile(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.FieldValueDefinition":                     schema_landscaper_apis_core_v1alpha1_FieldValueDefinition(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.ImportDefinition":                         schema_landscaper_apis_core_v1alpha1_ImportDefinition(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.ImportStatus":                             schema_landscaper_apis_core_v1alpha1_ImportStatus(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.InlineBlueprint":                          schema_landscaper_apis_core_v1alpha1_InlineBlueprint(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.Installation":                             schema_landscaper_apis_core_v1alpha1_Installation(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.InstallationExports":                      schema_landscaper_apis_core_v1alpha1_InstallationExports(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.InstallationImports":                      schema_landscaper_apis_core_v1alpha1_InstallationImports(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.InstallationList":                         schema_landscaper_apis_core_v1alpha1_InstallationList(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.InstallationSpec":                         schema_landscaper_apis_core_v1alpha1_InstallationSpec(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.InstallationStatus":                       schema_landscaper_apis_core_v1alpha1_InstallationStatus(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.InstallationTemplate":                     schema_landscaper_apis_core_v1alpha1_InstallationTemplate(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.InstallationTemplateBlueprintDefinition":  schema_landscaper_apis_core_v1alpha1_InstallationTemplateBlueprintDefinition(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.JSONSchemaDefinition":                     schema_landscaper_apis_core_v1alpha1_JSONSchemaDefinition(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.LocalConfigMapReference":                  schema_landscaper_apis_core_v1alpha1_LocalConfigMapReference(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.LocalSecretReference":                     schema_landscaper_apis_core_v1alpha1_LocalSecretReference(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.LsHealthCheck":                            schema_landscaper_apis_core_v1alpha1_LsHealthCheck(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.LsHealthCheckList":                        schema_landscaper_apis_core_v1alpha1_LsHealthCheckList(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.NamedObjectReference":                     schema_landscaper_apis_core_v1alpha1_NamedObjectReference(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference":                          schema_landscaper_apis_core_v1alpha1_ObjectReference(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.RemoteBlueprintReference":                 schema_landscaper_apis_core_v1alpha1_RemoteBlueprintReference(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.Requirement":                              schema_landscaper_apis_core_v1alpha1_Requirement(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.ResolvedTarget":                           schema_landscaper_apis_core_v1alpha1_ResolvedTarget(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.ResourceReference":                        schema_landscaper_apis_core_v1alpha1_ResourceReference(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.SecretLabelSelectorRef":                   schema_landscaper_apis_core_v1alpha1_SecretLabelSelectorRef(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.SecretReference":                          schema_landscaper_apis_core_v1alpha1_SecretReference(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.StaticDataSource":                         schema_landscaper_apis_core_v1alpha1_StaticDataSource(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.StaticDataValueFrom":                      schema_landscaper_apis_core_v1alpha1_StaticDataValueFrom(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.SubinstallationTemplate":                  schema_landscaper_apis_core_v1alpha1_SubinstallationTemplate(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.SucceededReconcile":                       schema_landscaper_apis_core_v1alpha1_SucceededReconcile(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.TLSClientConfig":                          schema_landscaper_apis_core_v1alpha1_TLSClientConfig(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.Target":                                   schema_landscaper_apis_core_v1alpha1_Target(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.TargetExport":                             schema_landscaper_apis_core_v1alpha1_TargetExport(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.TargetImport":                             schema_landscaper_apis_core_v1alpha1_TargetImport(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.TargetImportStatus":                       schema_landscaper_apis_core_v1alpha1_TargetImportStatus(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.TargetList":                               schema_landscaper_apis_core_v1alpha1_TargetList(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.TargetSelector":                           schema_landscaper_apis_core_v1alpha1_TargetSelector(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.TargetSpec":                               schema_landscaper_apis_core_v1alpha1_TargetSpec(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.TargetSync":                               schema_landscaper_apis_core_v1alpha1_TargetSync(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.TargetSyncList":                           schema_landscaper_apis_core_v1alpha1_TargetSyncList(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.TargetSyncSpec":                           schema_landscaper_apis_core_v1alpha1_TargetSyncSpec(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.TargetSyncStatus":                         schema_landscaper_apis_core_v1alpha1_TargetSyncStatus(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.TargetTemplate":                           schema_landscaper_apis_core_v1alpha1_TargetTemplate(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.TemplateExecutor":                         schema_landscaper_apis_core_v1alpha1_TemplateExecutor(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.TokenRotation":                            schema_landscaper_apis_core_v1alpha1_TokenRotation(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.TypedObjectReference":                     schema_landscaper_apis_core_v1alpha1_TypedObjectReference(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.VersionedNamedObjectReference":            schema_landscaper_apis_core_v1alpha1_VersionedNamedObjectReference(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.VersionedObjectReference":                 schema_landscaper_apis_core_v1alpha1_VersionedObjectReference(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.VersionedResourceReference":               schema_landscaper_apis_core_v1alpha1_VersionedResourceReference(ref),
 		"k8s.io/api/core/v1.AWSElasticBlockStoreVolumeSource":                                        schema_k8sio_api_core_v1_AWSElasticBlockStoreVolumeSource(ref),
-		"k8s.io/api/core/v1.Affinity":                                    schema_k8sio_api_core_v1_Affinity(ref),
-		"k8s.io/api/core/v1.AttachedVolume":                              schema_k8sio_api_core_v1_AttachedVolume(ref),
-		"k8s.io/api/core/v1.AvoidPods":                                   schema_k8sio_api_core_v1_AvoidPods(ref),
-		"k8s.io/api/core/v1.AzureDiskVolumeSource":                       schema_k8sio_api_core_v1_AzureDiskVolumeSource(ref),
-		"k8s.io/api/core/v1.AzureFilePersistentVolumeSource":             schema_k8sio_api_core_v1_AzureFilePersistentVolumeSource(ref),
-		"k8s.io/api/core/v1.AzureFileVolumeSource":                       schema_k8sio_api_core_v1_AzureFileVolumeSource(ref),
+		"k8s.io/api/core/v1.Affinity":                                                                schema_k8sio_api_core_v1_Affinity(ref),
+		"k8s.io/api/core/v1.AttachedVolume":                                                          schema_k8sio_api_core_v1_AttachedVolume(ref),
+		"k8s.io/api/core/v1.AvoidPods":                                                               schema_k8sio_api_core_v1_AvoidPods(ref),
+		"k8s.io/api/core/v1.AzureDiskVolumeSource":                                                   schema_k8sio_api_core_v1_AzureDiskVolumeSource(ref),
+		"k8s.io/api/core/v1.AzureFilePersistentVolumeSource":                                         schema_k8sio_api_core_v1_AzureFilePersistentVolumeSource(ref),
+		"k8s.io/api/core/v1.AzureFileVolumeSource":                                                   schema_k8sio_api_core_v1_AzureFileVolumeSource(ref),
 		"k8s.io/api/core/v1.Binding":                                     schema_k8sio_api_core_v1_Binding(ref),
 		"k8s.io/api/core/v1.CSIPersistentVolumeSource":                   schema_k8sio_api_core_v1_CSIPersistentVolumeSource(ref),
 		"k8s.io/api/core/v1.CSIVolumeSource":                             schema_k8sio_api_core_v1_CSIVolumeSource(ref),
@@ -320,6 +417,51 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"k8s.io/apimachinery/pkg/runtime.RawExtension":                   schema_k8sio_apimachinery_pkg_runtime_RawExtension(ref),
 		"k8s.io/apimachinery/pkg/runtime.TypeMeta":                       schema_k8sio_apimachinery_pkg_runtime_TypeMeta(ref),
 		"k8s.io/apimachinery/pkg/runtime.Unknown":                        schema_k8sio_apimachinery_pkg_runtime_Unknown(ref),
+	}
+}
+
+func schema_pkg_apis_core_v1alpha1_AutomaticReconcile(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "AutomaticReconcile defines the automatic reconcile configuration.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"interval": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Interval specifies the interval after which the instance is being automatically reconciled.",
+							Default:     0,
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.Duration"),
+						},
+					},
+				},
+				Required: []string{"interval"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.Duration"},
+	}
+}
+
+func schema_pkg_apis_core_v1alpha1_AutomaticReconcileStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "AutomaticReconcileStatus contains the automatic reconciliation status of an instance.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"lastReconcileTime": {
+						SchemaProps: spec.SchemaProps{
+							Description: "LastReconcileTime contains the time at which the instance has been reconciled.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
 	}
 }
 
@@ -752,12 +894,18 @@ func schema_pkg_apis_core_v1alpha1_InstanceSpec(ref common.ReferenceCallback) co
 							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.OIDCConfig"),
 						},
 					},
+					"automaticReconcile": {
+						SchemaProps: spec.SchemaProps{
+							Description: "AutomaticReconcile specifies the configuration on when this instance is being automatically reconciled.",
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AutomaticReconcile"),
+						},
+					},
 				},
 				Required: []string{"tenantId", "id", "landscaperConfiguration", "serviceTargetConfigRef"},
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperConfiguration", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.OIDCConfig", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AutomaticReconcile", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperConfiguration", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.OIDCConfig", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference"},
 	}
 }
 
@@ -841,11 +989,17 @@ func schema_pkg_apis_core_v1alpha1_InstanceStatus(ref common.ReferenceCallback) 
 							Format:      "",
 						},
 					},
+					"automaticReconcileStatus": {
+						SchemaProps: spec.SchemaProps{
+							Description: "AutomaticReconcileStatus contains the status of the automatic reconciliation of this instance.",
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AutomaticReconcileStatus"),
+						},
+					},
 				},
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Error", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperServiceComponent", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AutomaticReconcileStatus", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Error", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperServiceComponent", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference"},
 	}
 }
 
@@ -1683,6 +1837,4444 @@ func schema_pkg_apis_core_v1alpha1_SubjectListStatus(ref common.ReferenceCallbac
 					},
 				},
 				Required: []string{"phase", "observedGeneration"},
+			},
+		},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_AnyJSON(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "AnyJSON enhances the json.RawMessages with a dedicated openapi definition so that all it is correctly generated",
+				Type:        v1alpha1.AnyJSON{}.OpenAPISchemaType(),
+				Format:      v1alpha1.AnyJSON{}.OpenAPISchemaFormat(),
+			},
+		},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_AutomaticReconcile(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "AutomaticReconcile allows to configure automatically repeated reconciliations.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"succeededReconcile": {
+						SchemaProps: spec.SchemaProps{
+							Description: "SucceededReconcile allows to configure automatically repeated reconciliations for succeeded installations. If not set, no such automatically repeated reconciliations are triggered.",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.SucceededReconcile"),
+						},
+					},
+					"failedReconcile": {
+						SchemaProps: spec.SchemaProps{
+							Description: "FailedReconcile allows to configure automatically repeated reconciliations for failed installations. If not set, no such automatically repeated reconciliations are triggered.",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.FailedReconcile"),
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.FailedReconcile", "github.com/gardener/landscaper/apis/core/v1alpha1.SucceededReconcile"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_AutomaticReconcileStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "AutomaticReconcileStatus describes the status of automatically triggered reconciles.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"generation": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Generation describes the generation of the installation for which the status holds.",
+							Type:        []string{"integer"},
+							Format:      "int64",
+						},
+					},
+					"numberOfReconciles": {
+						SchemaProps: spec.SchemaProps{
+							Description: "NumberOfReconciles is the number of automatic reconciles for the installation with the stored generation.",
+							Type:        []string{"integer"},
+							Format:      "int32",
+						},
+					},
+					"lastReconcileTime": {
+						SchemaProps: spec.SchemaProps{
+							Description: "LastReconcileTime is the time of the last automatically triggered reconcile.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
+					"onFailed": {
+						SchemaProps: spec.SchemaProps{
+							Description: "OnFailed is true if the last automatically triggered reconcile was done for a failed installation.",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_Blueprint(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "Blueprint contains the configuration of a component",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"annotations": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata.",
+							Type:        []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"jsonSchemaVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "JSONSchemaVersion defines the default jsonschema version of the blueprint. e.g. \"https://json-schema.org/draft/2019-09/schema\"",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"localTypes": {
+						SchemaProps: spec.SchemaProps{
+							Description: "LocalTypes defines additional blueprint local schemas",
+							Type:        []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Ref: ref("github.com/gardener/landscaper/apis/core/v1alpha1.JSONSchemaDefinition"),
+									},
+								},
+							},
+						},
+					},
+					"imports": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Imports define the import values that are needed for the definition and its sub-definitions.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.ImportDefinition"),
+									},
+								},
+							},
+						},
+					},
+					"importExecutions": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ImportExecutions defines the templating executors that are sequentially executed by the landscaper. The templates must return a list of errors",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.TemplateExecutor"),
+									},
+								},
+							},
+						},
+					},
+					"exports": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Exports define the exported values of the definition and its sub-definitions",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.ExportDefinition"),
+									},
+								},
+							},
+						},
+					},
+					"subinstallations": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Subinstallations defines an optional list of subinstallations (for aggregating blueprints).",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.SubinstallationTemplate"),
+									},
+								},
+							},
+						},
+					},
+					"subinstallationExecutions": {
+						SchemaProps: spec.SchemaProps{
+							Description: "SubinstallationExecutions defines the templating executors that are sequentially executed by the landscaper. The templates must return a list of installation templates. Both subinstallations and SubinstallationExecutions are valid options and will be merged.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.TemplateExecutor"),
+									},
+								},
+							},
+						},
+					},
+					"deployExecutions": {
+						SchemaProps: spec.SchemaProps{
+							Description: "DeployExecutions defines the templating executors that are sequentially executed by the landscaper. The templates must return a list of deploy item templates.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.TemplateExecutor"),
+									},
+								},
+							},
+						},
+					},
+					"exportExecutions": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ExportExecutions defines the templating executors that are used to generate the exports.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.TemplateExecutor"),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.ExportDefinition", "github.com/gardener/landscaper/apis/core/v1alpha1.ImportDefinition", "github.com/gardener/landscaper/apis/core/v1alpha1.JSONSchemaDefinition", "github.com/gardener/landscaper/apis/core/v1alpha1.SubinstallationTemplate", "github.com/gardener/landscaper/apis/core/v1alpha1.TemplateExecutor"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_BlueprintDefinition(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "BlueprintDefinition defines the blueprint that should be used for the installation.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"ref": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Reference defines a remote reference to a blueprint",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.RemoteBlueprintReference"),
+						},
+					},
+					"inline": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Inline defines a inline yaml filesystem with a blueprint.",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.InlineBlueprint"),
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.InlineBlueprint", "github.com/gardener/landscaper/apis/core/v1alpha1.RemoteBlueprintReference"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_BlueprintStaticDataSource(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "BlueprintStaticDataSource defines a static data source for a blueprint",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"value": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Value defined inline a raw data",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.AnyJSON"),
+						},
+					},
+					"valueFrom": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ValueFrom defines data from an external resource",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.StaticDataValueFrom"),
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.AnyJSON", "github.com/gardener/landscaper/apis/core/v1alpha1.StaticDataValueFrom"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_BlueprintStaticDataValueFrom(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "BlueprintStaticDataValueFrom defines static data that is read from a external resource.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"localPath": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Selects a key of a secret in the installations's namespace",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_ClusterRestConfig(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "ClusterRestConfig describes parts of a rest.Config that is used to access the",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"host": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Host must be a host string, a host:port pair, or a URL to the base of the apiserver. If a URL is given then the (optional) Path of that URL represents a prefix that must be appended to all request URIs used to access the apiserver. This allows a frontend proxy to easily relocate all of the apiserver endpoints.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiPath": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIPath is a sub-path that points to an API root.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"insecure": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Server should be accessed without verifying the TLS certificate. For testing only.",
+							Default:     false,
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"serverName": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ServerName is passed to the server for SNI and is used in the client to check server ceritificates against. If ServerName is empty, the hostname used to contact the server is used.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"caData": {
+						SchemaProps: spec.SchemaProps{
+							Description: "CAData holds PEM-encoded bytes (typically read from a root certificates bundle). CAData takes precedence over CAFile",
+							Type:        []string{"string"},
+							Format:      "byte",
+						},
+					},
+					"nextProtos": {
+						SchemaProps: spec.SchemaProps{
+							Description: "NextProtos is a list of supported application level protocols, in order of preference. Used to populate tls.Config.NextProtos. To indicate to the server http/1.1 is preferred over http/2, set to [\"http/1.1\", \"h2\"] (though the server is free to ignore that preference). To use only http/1.1, set to [\"http/1.1\"].",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"host", "apiPath"},
+			},
+		},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_ComponentDescriptorDefinition(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "ComponentDescriptorDefinition defines the component descriptor that should be used for the installation",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"ref": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ComponentDescriptorReference is the reference to a component descriptor",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.ComponentDescriptorReference"),
+						},
+					},
+					"inline": {
+						SchemaProps: spec.SchemaProps{
+							Description: "InlineDescriptorReference defines an inline component descriptor",
+							Ref:         ref("github.com/gardener/component-spec/bindings-go/apis/v2.ComponentDescriptor"),
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/component-spec/bindings-go/apis/v2.ComponentDescriptor", "github.com/gardener/landscaper/apis/core/v1alpha1.ComponentDescriptorReference"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_ComponentDescriptorReference(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "ComponentDescriptorReference is the reference to a component descriptor. given an optional context.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"repositoryContext": {
+						SchemaProps: spec.SchemaProps{
+							Description: "RepositoryContext defines the context of the component repository to resolve blueprints.",
+							Ref:         ref("github.com/gardener/component-spec/bindings-go/apis/v2.UnstructuredTypedObject"),
+						},
+					},
+					"componentName": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ComponentName defines the unique of the component containing the resource.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"version": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Version defines the version of the component.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"componentName", "version"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/component-spec/bindings-go/apis/v2.UnstructuredTypedObject"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_ComponentVersionOverwrite(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "ComponentVersionOverwrite defines an overwrite for a specific component and/or version of a component.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"source": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Source defines the component that should be replaced.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.ComponentVersionOverwriteReference"),
+						},
+					},
+					"substitution": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Substitution defines the replacement target for the component or version.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.ComponentVersionOverwriteReference"),
+						},
+					},
+				},
+				Required: []string{"source", "substitution"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.ComponentVersionOverwriteReference"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_ComponentVersionOverwriteReference(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "ComponentVersionOverwriteReference defines a component reference by",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"repositoryContext": {
+						SchemaProps: spec.SchemaProps{
+							Description: "RepositoryContext defines the context of the component repository to resolve blueprints.",
+							Ref:         ref("github.com/gardener/component-spec/bindings-go/apis/v2.UnstructuredTypedObject"),
+						},
+					},
+					"componentName": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ComponentName defines the unique of the component containing the resource.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"version": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Version defines the version of the component.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/component-spec/bindings-go/apis/v2.UnstructuredTypedObject"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_ComponentVersionOverwrites(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "ComponentVersionOverwrites contain overwrites for specific (versions of) components.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"),
+						},
+					},
+					"overwrites": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Overwrites defines a list of component overwrites",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.ComponentVersionOverwrite"),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.ComponentVersionOverwrite", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_ComponentVersionOverwritesList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "ComponentVersionOverwritesList contains a list of ComponentVersionOverwrites",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"),
+						},
+					},
+					"items": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.ComponentVersionOverwrites"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"items"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.ComponentVersionOverwrites", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_Condition(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "Condition holds the information about the state of a resource.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"type": {
+						SchemaProps: spec.SchemaProps{
+							Description: "DataType of the Shoot condition.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"status": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Status of the condition, one of True, False, Unknown.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"lastTransitionTime": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Last time the condition transitioned from one status to another.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
+					"lastUpdateTime": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Last time the condition was updated.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
+					"reason": {
+						SchemaProps: spec.SchemaProps{
+							Description: "The reason for the condition's last transition.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"message": {
+						SchemaProps: spec.SchemaProps{
+							Description: "A human readable message indicating details about the transition.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"codes": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Well-defined error codes in case the condition reports a problem.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"type", "status", "lastTransitionTime", "lastUpdateTime", "reason", "message"},
+			},
+		},
+		Dependencies: []string{
+			"k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_ConfigMapReference(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "ConfigMapReference is reference to data in a configmap. The configmap can also be in a different namespace.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name is the name of the kubernetes object.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"namespace": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Namespace is the namespace of kubernetes object.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"key": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Key is the name of the key in the configmap that holds the data.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"name"},
+			},
+		},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_Context(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "Context is a resource that contains shared information of installations. This includes information about the repository context like the context itself or secrets to access the oci artifacts. But it can also contain deployer specific config.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"),
+						},
+					},
+					"repositoryContext": {
+						SchemaProps: spec.SchemaProps{
+							Description: "RepositoryContext defines the context of the component repository to resolve blueprints.",
+							Ref:         ref("github.com/gardener/component-spec/bindings-go/apis/v2.UnstructuredTypedObject"),
+						},
+					},
+					"registryPullSecrets": {
+						SchemaProps: spec.SchemaProps{
+							Description: "RegistryPullSecrets defines a list of registry credentials that are used to pull blueprints, component descriptors and jsonschemas from the respective registry. For more info see: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ Note that the type information is used to determine the secret key and the type of the secret.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("k8s.io/api/core/v1.LocalObjectReference"),
+									},
+								},
+							},
+						},
+					},
+					"configurations": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Configurations contains arbitrary configuration information for dedicated purposes given by a string key. The key should use a dns-like syntax to express the purpose and avoid conflicts.",
+							Type:        []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Ref: ref("github.com/gardener/landscaper/apis/core/v1alpha1.AnyJSON"),
+									},
+								},
+							},
+						},
+					},
+					"componentVersionOverwrites": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ComponentVersionOverwritesReference is a reference to a ComponentVersionOverwrites object The overwrites object has to be in the same namespace as the context. If the string is empty, no overwrites will be used.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/component-spec/bindings-go/apis/v2.UnstructuredTypedObject", "github.com/gardener/landscaper/apis/core/v1alpha1.AnyJSON", "k8s.io/api/core/v1.LocalObjectReference", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_ContextList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "ContextList contains a list of Contexts",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"),
+						},
+					},
+					"items": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.Context"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"items"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.Context", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_DataExport(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "DataExport is a data object export.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name the internal name of the imported/exported data.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"dataRef": {
+						SchemaProps: spec.SchemaProps{
+							Description: "DataRef is the name of the in-cluster data object.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"name", "dataRef"},
+			},
+		},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_DataImport(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "DataImport is a data object import.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name the internal name of the imported/exported data.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"dataRef": {
+						SchemaProps: spec.SchemaProps{
+							Description: "DataRef is the name of the in-cluster data object. The reference can also be a namespaces name. E.g. \"default/mydataref\"",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"version": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Version specifies the imported data version. defaults to \"v1\"",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"secretRef": {
+						SchemaProps: spec.SchemaProps{
+							Description: "SecretRef defines a data reference from a secret. This method is not allowed in installation templates.",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.LocalSecretReference"),
+						},
+					},
+					"configMapRef": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ConfigMapRef defines a data reference from a configmap. This method is not allowed in installation templates.",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.LocalConfigMapReference"),
+						},
+					},
+				},
+				Required: []string{"name"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.LocalConfigMapReference", "github.com/gardener/landscaper/apis/core/v1alpha1.LocalSecretReference"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_DataObject(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "DataObject are resources that can hold any kind json or yaml data.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"),
+						},
+					},
+					"data": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Data contains the data of the object as string.",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.AnyJSON"),
+						},
+					},
+				},
+				Required: []string{"data"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.AnyJSON", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_DataObjectList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "DataObjectList contains a list of DataObject",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"),
+						},
+					},
+					"items": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.DataObject"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"items"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.DataObject", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_Default(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "Default defines a default value (future idea: also reference?).",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"value": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("github.com/gardener/landscaper/apis/core/v1alpha1.AnyJSON"),
+						},
+					},
+				},
+				Required: []string{"value"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.AnyJSON"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_DeployItem(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "DeployItem defines a resource that should be processed by a external deployer",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"),
+						},
+					},
+					"spec": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.DeployItemSpec"),
+						},
+					},
+					"status": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.DeployItemStatus"),
+						},
+					},
+				},
+				Required: []string{"spec"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.DeployItemSpec", "github.com/gardener/landscaper/apis/core/v1alpha1.DeployItemStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_DeployItemList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "DeployItemList contains a list of DeployItems",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"),
+						},
+					},
+					"items": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.DeployItem"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"items"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.DeployItem", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_DeployItemSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "DeployItemSpec contains the definition of a deploy item.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"type": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Type is the type of the deployer that should handle the item.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"target": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Target specifies an optional target of the deploy item. In most cases it contains the secrets to access a evironment. It is also used by the deployers to determine the ownernship.",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference"),
+						},
+					},
+					"context": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Context defines the current context of the deployitem.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"config": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Configuration contains the deployer type specific configuration.",
+							Ref:         ref("k8s.io/apimachinery/pkg/runtime.RawExtension"),
+						},
+					},
+					"registryPullSecrets": {
+						SchemaProps: spec.SchemaProps{
+							Description: "RegistryPullSecrets defines a list of registry credentials that are used to pull blueprints, component descriptors and jsonschemas from the respective registry. For more info see: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ Note that the type information is used to determine the secret key and the type of the secret.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference"),
+									},
+								},
+							},
+						},
+					},
+					"timeout": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Timeout specifies how long the deployer may take to apply the deploy item. When the time is exceeded, the landscaper will add the abort annotation to the deploy item and later put it in 'Failed' if the deployer doesn't handle the abort properly. Value has to be parsable by time.ParseDuration (or 'none' to deactivate the timeout). Defaults to ten minutes if not specified.",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.Duration"),
+						},
+					},
+					"updateOnChangeOnly": {
+						SchemaProps: spec.SchemaProps{
+							Description: "UpdateOnChangeOnly specifies if redeployment is executed only if the specification of the deploy item has changed.",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"type"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.Duration", "github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference", "k8s.io/apimachinery/pkg/runtime.RawExtension"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_DeployItemStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "DeployItemStatus contains the status of a deploy item. todo: add operation",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"phase": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Phase is the current phase of the DeployItem",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"observedGeneration": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ObservedGeneration is the most recent generation observed for this DeployItem. It corresponds to the DeployItem generation, which is updated on mutation by the landscaper.",
+							Default:     0,
+							Type:        []string{"integer"},
+							Format:      "int64",
+						},
+					},
+					"conditions": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Conditions contains the actual condition of a deploy item",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.Condition"),
+									},
+								},
+							},
+						},
+					},
+					"lastError": {
+						SchemaProps: spec.SchemaProps{
+							Description: "LastError describes the last error that occurred.",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.Error"),
+						},
+					},
+					"lastErrors": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ErrorHistory describes the last n errors that occurred since JobID was changed the last time.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Ref: ref("github.com/gardener/landscaper/apis/core/v1alpha1.Error"),
+									},
+								},
+							},
+						},
+					},
+					"firstError": {
+						SchemaProps: spec.SchemaProps{
+							Description: "FirstError describes the first error that occurred since JobID was changed the last time.",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.Error"),
+						},
+					},
+					"lastReconcileTime": {
+						SchemaProps: spec.SchemaProps{
+							Description: "LastReconcileTime indicates when the reconciliation of the last change to the deploy item has started",
+							Ref:         ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
+					"deployer": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Deployer describes the deployer that has reconciled the deploy item.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.DeployerInformation"),
+						},
+					},
+					"providerStatus": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ProviderStatus contains the provider specific status",
+							Ref:         ref("k8s.io/apimachinery/pkg/runtime.RawExtension"),
+						},
+					},
+					"exportRef": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ExportReference is the reference to the object that contains the exported values.",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference"),
+						},
+					},
+					"jobID": {
+						SchemaProps: spec.SchemaProps{
+							Description: "JobID is the ID of the current working request.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"jobIDFinished": {
+						SchemaProps: spec.SchemaProps{
+							Description: "JobIDFinished is the ID of the finished working request.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"jobIDGenerationTime": {
+						SchemaProps: spec.SchemaProps{
+							Description: "JobIDGenerationTime is the timestamp when the JobID was set.",
+							Ref:         ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
+					"deployItemPhase": {
+						SchemaProps: spec.SchemaProps{
+							Description: "DeployItemPhase is the current phase of the deploy item.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"observedGeneration"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.Condition", "github.com/gardener/landscaper/apis/core/v1alpha1.DeployerInformation", "github.com/gardener/landscaper/apis/core/v1alpha1.Error", "github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference", "k8s.io/apimachinery/pkg/apis/meta/v1.Time", "k8s.io/apimachinery/pkg/runtime.RawExtension"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_DeployItemTemplate(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "DeployItemTemplate defines a execution element that is translated into a deploy item.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name is the unique name of the execution.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"type": {
+						SchemaProps: spec.SchemaProps{
+							Description: "DataType is the DeployItem type of the execution.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"target": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Target is the object reference to the target that the deploy item should deploy to.",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference"),
+						},
+					},
+					"labels": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Labels is the map of labels to be added to the deploy item.",
+							Type:        []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"config": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ProviderConfiguration contains the type specific configuration for the execution.",
+							Ref:         ref("k8s.io/apimachinery/pkg/runtime.RawExtension"),
+						},
+					},
+					"dependsOn": {
+						SchemaProps: spec.SchemaProps{
+							Description: "DependsOn lists deploy items that need to be executed before this one",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"updateOnChangeOnly": {
+						SchemaProps: spec.SchemaProps{
+							Description: "UpdateOnChangeOnly specifies if redeployment is executed only if the specification of the deploy item has changed.",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"name", "type", "config"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference", "k8s.io/apimachinery/pkg/runtime.RawExtension"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_DeployerInformation(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "DeployerInformation holds additional information about the deployer that has reconciled or is reconciling the deploy item.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"identity": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Identity describes the unique identity of the deployer.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name is the name of the deployer.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"version": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Version is the version of the deployer.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"identity", "name", "version"},
+			},
+		},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_DeployerInstallationTemplate(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"componentDescriptor": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ComponentDescriptor is a reference to the installation's component descriptor",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.ComponentDescriptorDefinition"),
+						},
+					},
+					"blueprint": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Blueprint is the resolved reference to the definition.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.BlueprintDefinition"),
+						},
+					},
+					"imports": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Imports define the imported data objects and targets.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.InstallationImports"),
+						},
+					},
+					"importDataMappings": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ImportDataMappings contains a template for restructuring imports. It is expected to contain a key for every blueprint-defined data import. Missing keys will be defaulted to their respective data import. Example: namespace: (( installation.imports.namespace ))",
+							Type:        []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Ref: ref("github.com/gardener/landscaper/apis/core/v1alpha1.AnyJSON"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"blueprint"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.AnyJSON", "github.com/gardener/landscaper/apis/core/v1alpha1.BlueprintDefinition", "github.com/gardener/landscaper/apis/core/v1alpha1.ComponentDescriptorDefinition", "github.com/gardener/landscaper/apis/core/v1alpha1.InstallationImports"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_DeployerRegistration(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "DeployerRegistration defines a installation template for a deployer.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"),
+						},
+					},
+					"spec": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Spec defines the deployer registration configuration.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.DeployerRegistrationSpec"),
+						},
+					},
+					"status": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Status contains the current status of the deployer registration.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.DeployerRegistrationStatus"),
+						},
+					},
+				},
+				Required: []string{"spec"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.DeployerRegistrationSpec", "github.com/gardener/landscaper/apis/core/v1alpha1.DeployerRegistrationStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_DeployerRegistrationList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "DeployerRegistrationList contains a list of DeployerRegistration",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"),
+						},
+					},
+					"items": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.DeployerRegistration"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"items"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.DeployerRegistration", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_DeployerRegistrationSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "DeployerRegistrationSpec defines the configuration of a deployer registration",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"types": {
+						SchemaProps: spec.SchemaProps{
+							Description: "DeployItemTypes defines the types of deploy items that are handled by the deployer.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"installationTemplate": {
+						SchemaProps: spec.SchemaProps{
+							Description: "InstallationTemplate defines the installation template for installing a deployer.´",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.DeployerInstallationTemplate"),
+						},
+					},
+				},
+				Required: []string{"types", "installationTemplate"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.DeployerInstallationTemplate"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_DeployerRegistrationStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "DeployerRegistrationStatus contains the current status of a deployer registration.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"lastError": {
+						SchemaProps: spec.SchemaProps{
+							Description: "LastError describes the last error that occurred.",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.Error"),
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.Error"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_Duration(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "Duration is a wrapper for time.Duration that implements JSON marshalling and openapi scheme.",
+				Type:        v1alpha1.Duration{}.OpenAPISchemaType(),
+				Format:      v1alpha1.Duration{}.OpenAPISchemaFormat(),
+			},
+		},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_Environment(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "Environment defines a environment that is created by a agent.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"),
+						},
+					},
+					"spec": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Spec defines the environment.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.EnvironmentSpec"),
+						},
+					},
+				},
+				Required: []string{"spec"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.EnvironmentSpec", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_EnvironmentList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "EnvironmentList contains a list of Environments",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"),
+						},
+					},
+					"items": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.Environment"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"items"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.Environment", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_EnvironmentSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "EnvironmentSpec defines the environment configuration.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"hostTarget": {
+						SchemaProps: spec.SchemaProps{
+							Description: "HostTarget describes the target that is used for the deployers.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.TargetTemplate"),
+						},
+					},
+					"namespace": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Namespace is the host cluster namespace where the deployers should be installed.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"landscaperClusterConfig": {
+						SchemaProps: spec.SchemaProps{
+							Description: "LandscaperClusterRestConfig describes the connection information to connect to the landscaper cluster. This information should be provided by the agent as the access information may differ when calling from different networking zones.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.ClusterRestConfig"),
+						},
+					},
+					"targetSelectors": {
+						SchemaProps: spec.SchemaProps{
+							Description: "TargetSelector defines the target selector that is applied to all installed deployers",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.TargetSelector"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"hostTarget", "namespace", "landscaperClusterConfig", "targetSelectors"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.ClusterRestConfig", "github.com/gardener/landscaper/apis/core/v1alpha1.TargetSelector", "github.com/gardener/landscaper/apis/core/v1alpha1.TargetTemplate"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_Error(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "Error holds information about an error that occurred.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"operation": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Operation describes the operator where the error occurred.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"lastTransitionTime": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Last time the condition transitioned from one status to another.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
+					"lastUpdateTime": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Last time the condition was updated.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
+					"reason": {
+						SchemaProps: spec.SchemaProps{
+							Description: "The reason for the condition's last transition.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"message": {
+						SchemaProps: spec.SchemaProps{
+							Description: "A human readable message indicating details about the transition.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"codes": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Well-defined error codes in case the condition reports a problem.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"operation", "lastTransitionTime", "lastUpdateTime", "reason", "message"},
+			},
+		},
+		Dependencies: []string{
+			"k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_Execution(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "Execution contains the configuration of a execution and deploy item",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"),
+						},
+					},
+					"spec": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Spec defines a execution and its items",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.ExecutionSpec"),
+						},
+					},
+					"status": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Status contains the current status of the execution.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.ExecutionStatus"),
+						},
+					},
+				},
+				Required: []string{"spec"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.ExecutionSpec", "github.com/gardener/landscaper/apis/core/v1alpha1.ExecutionStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_ExecutionGeneration(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "ExecutionGeneration links a deployitem to the generation of the execution when it was applied.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name is the name of the deployitem this generation refers to.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"observedGeneration": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ObservedGeneration stores the generation which the execution had when it last applied the referenced deployitem.",
+							Default:     0,
+							Type:        []string{"integer"},
+							Format:      "int64",
+						},
+					},
+				},
+				Required: []string{"name", "observedGeneration"},
+			},
+		},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_ExecutionList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "ExecutionList contains a list of Executions‚",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"),
+						},
+					},
+					"items": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.Execution"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"items"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.Execution", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_ExecutionSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "ExecutionSpec defines a execution plan.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"context": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Context defines the current context of the execution.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"deployItems": {
+						SchemaProps: spec.SchemaProps{
+							Description: "DeployItems defines all execution items that need to be scheduled.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.DeployItemTemplate"),
+									},
+								},
+							},
+						},
+					},
+					"registryPullSecrets": {
+						SchemaProps: spec.SchemaProps{
+							Description: "RegistryPullSecrets defines a list of registry credentials that are used to pull blueprints, component descriptors and jsonschemas from the respective registry. For more info see: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ Note that the type information is used to determine the secret key and the type of the secret.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference"),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.DeployItemTemplate", "github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_ExecutionStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "ExecutionStatus contains the current status of a execution.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"observedGeneration": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ObservedGeneration is the most recent generation observed for this Execution. It corresponds to the Execution generation, which is updated on mutation by the landscaper.",
+							Default:     0,
+							Type:        []string{"integer"},
+							Format:      "int64",
+						},
+					},
+					"conditions": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Conditions contains the actual condition of a execution",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.Condition"),
+									},
+								},
+							},
+						},
+					},
+					"lastError": {
+						SchemaProps: spec.SchemaProps{
+							Description: "LastError describes the last error that occurred.",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.Error"),
+						},
+					},
+					"exportRef": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ExportReference references the object that contains the exported values. only used for operation purpose.",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference"),
+						},
+					},
+					"deployItemRefs": {
+						SchemaProps: spec.SchemaProps{
+							Description: "DeployItemReferences contain the state of all deploy items.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.VersionedNamedObjectReference"),
+									},
+								},
+							},
+						},
+					},
+					"execGenerations": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ExecutionGenerations stores which generation the execution had when it last applied a specific deployitem. So in this case, the observedGeneration refers to the executions generation.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.ExecutionGeneration"),
+									},
+								},
+							},
+						},
+					},
+					"jobID": {
+						SchemaProps: spec.SchemaProps{
+							Description: "JobID is the ID of the current working request.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"jobIDFinished": {
+						SchemaProps: spec.SchemaProps{
+							Description: "JobIDFinished is the ID of the finished working request.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"phase": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ExecutionPhase is the current phase of the execution.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.Condition", "github.com/gardener/landscaper/apis/core/v1alpha1.Error", "github.com/gardener/landscaper/apis/core/v1alpha1.ExecutionGeneration", "github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference", "github.com/gardener/landscaper/apis/core/v1alpha1.VersionedNamedObjectReference"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_ExportDefinition(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "ExportDefinition defines a exported value",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name defines the field name to search for the value and map to exports. Ref: https://github.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api-conventions.md#selecting-fields",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"schema": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Schema defines the imported value as jsonschema.",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.JSONSchemaDefinition"),
+						},
+					},
+					"targetType": {
+						SchemaProps: spec.SchemaProps{
+							Description: "TargetType defines the type of the imported target.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"type": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Type specifies which kind of object is being exported. This field should be set and will likely be mandatory in future.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"name"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.JSONSchemaDefinition"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_FailedReconcile(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "FailedReconcile allows to configure automatically repeated reconciliations for failed installations",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"numberOfReconciles": {
+						SchemaProps: spec.SchemaProps{
+							Description: "NumberOfReconciles specifies the maximal number of automatically repeated reconciliations. If not set, no upper limit exists.",
+							Type:        []string{"integer"},
+							Format:      "int32",
+						},
+					},
+					"interval": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Interval specifies the interval between two subsequent repeated reconciliations. If not set, a default of 5 minutes is used.",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.Duration"),
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.Duration"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_FieldValueDefinition(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "FieldValueDefinition defines a im- or exported field. Either schema or target type have to be defined",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name defines the field name to search for the value and map to exports. Ref: https://github.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api-conventions.md#selecting-fields",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"schema": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Schema defines the imported value as jsonschema.",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.JSONSchemaDefinition"),
+						},
+					},
+					"targetType": {
+						SchemaProps: spec.SchemaProps{
+							Description: "TargetType defines the type of the imported target.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"name"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.JSONSchemaDefinition"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_ImportDefinition(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "ImportDefinition defines a imported value",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name defines the field name to search for the value and map to exports. Ref: https://github.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api-conventions.md#selecting-fields",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"schema": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Schema defines the imported value as jsonschema.",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.JSONSchemaDefinition"),
+						},
+					},
+					"targetType": {
+						SchemaProps: spec.SchemaProps{
+							Description: "TargetType defines the type of the imported target.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"type": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Type specifies which kind of object is being imported. This field should be set and will likely be mandatory in future.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"required": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Required specifies whether the import is required for the component to run. Defaults to true.",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"default": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Default sets a default value for the current import that is used if the key is not set.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.Default"),
+						},
+					},
+					"imports": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ConditionalImports are Imports that are only valid if this imports is satisfied. Does only make sense for optional imports.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.ImportDefinition"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"name"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.Default", "github.com/gardener/landscaper/apis/core/v1alpha1.ImportDefinition", "github.com/gardener/landscaper/apis/core/v1alpha1.JSONSchemaDefinition"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_ImportStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "ImportStatus hold the state of a import.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name is the distinct identifier of the import. Can be either from data or target imports",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"type": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Type defines the kind of import. Can be either DataObject, Target, or TargetList",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"target": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Target is the name of the in-cluster target object.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"targetList": {
+						SchemaProps: spec.SchemaProps{
+							Description: "TargetList is a list of import statuses for in-cluster target objects.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.TargetImportStatus"),
+									},
+								},
+							},
+						},
+					},
+					"dataRef": {
+						SchemaProps: spec.SchemaProps{
+							Description: "DataRef is the name of the in-cluster data object.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"secretRef": {
+						SchemaProps: spec.SchemaProps{
+							Description: "SecretRef is the name of the secret.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"configMapRef": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ConfigMapRef is the name of the imported configmap.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"sourceRef": {
+						SchemaProps: spec.SchemaProps{
+							Description: "SourceRef is the reference to the installation from where the value is imported",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference"),
+						},
+					},
+					"configGeneration": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ConfigGeneration is the generation of the imported value.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"name", "type"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference", "github.com/gardener/landscaper/apis/core/v1alpha1.TargetImportStatus"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_InlineBlueprint(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "InlineBlueprint defines a inline blueprint with component descriptor and filesystem.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"filesystem": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Filesystem defines a inline yaml filesystem with a blueprint.",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.AnyJSON"),
+						},
+					},
+				},
+				Required: []string{"filesystem"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.AnyJSON"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_Installation(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "Installation contains the configuration of a component",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"),
+						},
+					},
+					"spec": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Spec contains the specification for a installation.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.InstallationSpec"),
+						},
+					},
+					"status": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Status contains the status of the installation.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.InstallationStatus"),
+						},
+					},
+				},
+				Required: []string{"spec"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.InstallationSpec", "github.com/gardener/landscaper/apis/core/v1alpha1.InstallationStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_InstallationExports(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "InstallationExports defines exports of data objects and targets.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"data": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Data defines all data object exports.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.DataExport"),
+									},
+								},
+							},
+						},
+					},
+					"targets": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Targets defines all target exports.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.TargetExport"),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.DataExport", "github.com/gardener/landscaper/apis/core/v1alpha1.TargetExport"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_InstallationImports(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "InstallationImports defines import of data objects and targets.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"data": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Data defines all data object imports.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.DataImport"),
+									},
+								},
+							},
+						},
+					},
+					"targets": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Targets defines all target imports.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.TargetImport"),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.DataImport", "github.com/gardener/landscaper/apis/core/v1alpha1.TargetImport"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_InstallationList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "InstallationList contains a list of Components",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"),
+						},
+					},
+					"items": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.Installation"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"items"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.Installation", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_InstallationSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "InstallationSpec defines a component installation.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"context": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Context defines the current context of the installation.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"componentDescriptor": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ComponentDescriptor is a reference to the installation's component descriptor",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.ComponentDescriptorDefinition"),
+						},
+					},
+					"blueprint": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Blueprint is the resolved reference to the definition.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.BlueprintDefinition"),
+						},
+					},
+					"registryPullSecrets": {
+						SchemaProps: spec.SchemaProps{
+							Description: "RegistryPullSecrets defines a list of registry credentials that are used to pull blueprints, component descriptors and jsonschemas from the respective registry. For more info see: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ Note that the type information is used to determine the secret key and the type of the secret.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference"),
+									},
+								},
+							},
+						},
+					},
+					"imports": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Imports define the imported data objects and targets.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.InstallationImports"),
+						},
+					},
+					"importDataMappings": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ImportDataMappings contains a template for restructuring imports. It is expected to contain a key for every blueprint-defined data import. Missing keys will be defaulted to their respective data import. Example: namespace: (( installation.imports.namespace ))",
+							Type:        []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Ref: ref("github.com/gardener/landscaper/apis/core/v1alpha1.AnyJSON"),
+									},
+								},
+							},
+						},
+					},
+					"exports": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Exports define the exported data objects and targets.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.InstallationExports"),
+						},
+					},
+					"exportDataMappings": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ExportDataMappings contains a template for restructuring exports. It is expected to contain a key for every blueprint-defined data export. Missing keys will be defaulted to their respective data export. Example: namespace: (( blueprint.exports.namespace ))",
+							Type:        []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Ref: ref("github.com/gardener/landscaper/apis/core/v1alpha1.AnyJSON"),
+									},
+								},
+							},
+						},
+					},
+					"automaticReconcile": {
+						SchemaProps: spec.SchemaProps{
+							Description: "AutomaticReconcile allows to configure automatically repeated reconciliations.",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.AutomaticReconcile"),
+						},
+					},
+				},
+				Required: []string{"blueprint"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.AnyJSON", "github.com/gardener/landscaper/apis/core/v1alpha1.AutomaticReconcile", "github.com/gardener/landscaper/apis/core/v1alpha1.BlueprintDefinition", "github.com/gardener/landscaper/apis/core/v1alpha1.ComponentDescriptorDefinition", "github.com/gardener/landscaper/apis/core/v1alpha1.InstallationExports", "github.com/gardener/landscaper/apis/core/v1alpha1.InstallationImports", "github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_InstallationStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "InstallationStatus contains the current status of a Installation.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"observedGeneration": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ObservedGeneration is the most recent generation observed for this ControllerInstallations. It corresponds to the ControllerInstallations generation, which is updated on mutation by the landscaper.",
+							Default:     0,
+							Type:        []string{"integer"},
+							Format:      "int64",
+						},
+					},
+					"conditions": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Conditions contains the actual condition of a installation",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.Condition"),
+									},
+								},
+							},
+						},
+					},
+					"lastError": {
+						SchemaProps: spec.SchemaProps{
+							Description: "LastError describes the last error that occurred.",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.Error"),
+						},
+					},
+					"configGeneration": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ConfigGeneration is the generation of the exported values.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"imports": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Imports contain the state of the imported values.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.ImportStatus"),
+									},
+								},
+							},
+						},
+					},
+					"installationRefs": {
+						SchemaProps: spec.SchemaProps{
+							Description: "InstallationReferences contain all references to sub-components that are created based on the component definition.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.NamedObjectReference"),
+									},
+								},
+							},
+						},
+					},
+					"executionRef": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ExecutionReference is the reference to the execution that schedules the templated execution items.",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference"),
+						},
+					},
+					"jobID": {
+						SchemaProps: spec.SchemaProps{
+							Description: "JobID is the ID of the current working request.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"jobIDFinished": {
+						SchemaProps: spec.SchemaProps{
+							Description: "JobIDFinished is the ID of the finished working request.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"phase": {
+						SchemaProps: spec.SchemaProps{
+							Description: "InstallationPhase is the current phase of the installation.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"importsHash": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ImportsHash is the hash of the import data.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"automaticReconcileStatus": {
+						SchemaProps: spec.SchemaProps{
+							Description: "AutomaticReconcileStatus describes the status of automatically triggered reconciles.",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.AutomaticReconcileStatus"),
+						},
+					},
+				},
+				Required: []string{"observedGeneration", "configGeneration"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.AutomaticReconcileStatus", "github.com/gardener/landscaper/apis/core/v1alpha1.Condition", "github.com/gardener/landscaper/apis/core/v1alpha1.Error", "github.com/gardener/landscaper/apis/core/v1alpha1.ImportStatus", "github.com/gardener/landscaper/apis/core/v1alpha1.NamedObjectReference", "github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_InstallationTemplate(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "InstallationTemplate defines a subinstallation in a blueprint.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name is the unique name of the step",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"blueprint": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Reference defines a reference to a Blueprint. The blueprint can reside in an OCI or other supported location.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.InstallationTemplateBlueprintDefinition"),
+						},
+					},
+					"imports": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Imports define the imported data objects and targets.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.InstallationImports"),
+						},
+					},
+					"importDataMappings": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ImportDataMappings contains a template for restructuring imports. It is expected to contain a key for every blueprint-defined data import. Missing keys will be defaulted to their respective data import. Example: namespace: (( installation.imports.namespace ))",
+							Type:        []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Ref: ref("github.com/gardener/landscaper/apis/core/v1alpha1.AnyJSON"),
+									},
+								},
+							},
+						},
+					},
+					"exports": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Exports define the exported data objects and targets.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.InstallationExports"),
+						},
+					},
+					"exportDataMappings": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ExportDataMappings contains a template for restructuring exports. It is expected to contain a key for every blueprint-defined data export. Missing keys will be defaulted to their respective data export. Example: namespace: (( blueprint.exports.namespace ))",
+							Type:        []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Ref: ref("github.com/gardener/landscaper/apis/core/v1alpha1.AnyJSON"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"name", "blueprint"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.AnyJSON", "github.com/gardener/landscaper/apis/core/v1alpha1.InstallationExports", "github.com/gardener/landscaper/apis/core/v1alpha1.InstallationImports", "github.com/gardener/landscaper/apis/core/v1alpha1.InstallationTemplateBlueprintDefinition"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_InstallationTemplateBlueprintDefinition(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "InstallationTemplateBlueprintDefinition contains either a reference to a blueprint or an inline definition.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"ref": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Ref is a reference to a blueprint. Only blueprints that are defined by the component descriptor of the current blueprint can be referenced here. Example: cd://componentReference/dns/resources/blueprint",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"filesystem": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Filesystem defines a virtual filesystem with all files needed for a blueprint. The filesystem must be a YAML filesystem.",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.AnyJSON"),
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.AnyJSON"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_JSONSchemaDefinition(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "JSONSchemaDefinition defines a jsonschema.",
+				Type:        v1alpha1.JSONSchemaDefinition{}.OpenAPISchemaType(),
+				Format:      v1alpha1.JSONSchemaDefinition{}.OpenAPISchemaFormat(),
+			},
+		},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_LocalConfigMapReference(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "LocalConfigMapReference is a reference to data in a configmap.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name is the name of the configmap",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"key": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Key is the name of the key in the configmap that holds the data.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"name"},
+			},
+		},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_LocalSecretReference(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "LocalSecretReference is a reference to data in a secret.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name is the name of the secret",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"key": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Key is the name of the key in the secret that holds the data.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"name"},
+			},
+		},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_LsHealthCheck(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "LsHealthCheck is a resource containing information about problems with the landscaper installation",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"),
+						},
+					},
+					"status": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Status defines the overall status of the landscaper and its standard deployers.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"lastUpdateTime": {
+						SchemaProps: spec.SchemaProps{
+							Description: "LastUpdateTime contains last time the check was updated.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
+					"description": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Description contains description of the problem(s)",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"status", "lastUpdateTime", "description"},
+			},
+		},
+		Dependencies: []string{
+			"k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta", "k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_LsHealthCheckList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "LsHealthCheckList contains a list of LsHealthChecks",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"),
+						},
+					},
+					"items": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.LsHealthCheck"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"items"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.LsHealthCheck", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_NamedObjectReference(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "NamedObjectReference is a named reference to a specific resource.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name is the unique name of the reference.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"ref": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Reference is the reference to an object.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference"),
+						},
+					},
+				},
+				Required: []string{"name", "ref"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_ObjectReference(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "ObjectReference is the reference to a kubernetes object.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name is the name of the kubernetes object.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"namespace": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Namespace is the namespace of kubernetes object.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"name"},
+			},
+		},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_RemoteBlueprintReference(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "RemoteBlueprintReference describes a reference to a blueprint defined by a component descriptor.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"resourceName": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ResourceName is the name of the blueprint as defined by a component descriptor.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"resourceName"},
+			},
+		},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_Requirement(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "Requirement contains values, a key, and an operator that relates the key and values. The zero value of Requirement is invalid. Requirement implements both set based match and exact match Requirement should be initialized via NewRequirement constructor for creating a valid Requirement.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"key": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
+						},
+					},
+					"operator": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
+						},
+					},
+					"values": {
+						SchemaProps: spec.SchemaProps{
+							Description: "In huge majority of cases we have at most one value here. It is generally faster to operate on a single-element slice than on a single-element map, so we have a slice here.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"key", "operator"},
+			},
+		},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_ResolvedTarget(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "ResolvedTarget is a helper struct to store a target together with the content of its resolved secret reference.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"target": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Target contains the original target.",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.Target"),
+						},
+					},
+					"content": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Content contains the content of the target. If the target has a secret reference, this field should be filled by a TargetResolver. Otherwise, the inline configuration of the target is put here.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"target", "content"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.Target"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_ResourceReference(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "ResourceReference defines the reference to a resource defined in a component descriptor.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"componentName": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ComponentName defines the unique of the component containing the resource.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"resourceName": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ResourceName defines the name of the resource.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"componentName", "resourceName"},
+			},
+		},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_SecretLabelSelectorRef(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "SecretLabelSelectorRef selects secrets with the given label and key.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"selector": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Selector is a map of labels to select specific secrets.",
+							Type:        []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"key": {
+						SchemaProps: spec.SchemaProps{
+							Description: "The key of the secret to select from.  Must be a valid secret key.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"selector", "key"},
+			},
+		},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_SecretReference(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "SecretReference is reference to data in a secret. The secret can also be in a different namespace.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name is the name of the kubernetes object.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"namespace": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Namespace is the namespace of kubernetes object.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"key": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Key is the name of the key in the secret that holds the data.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"name"},
+			},
+		},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_StaticDataSource(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "StaticDataSource defines a static data source",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"value": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Value defined inline a raw data",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.AnyJSON"),
+						},
+					},
+					"valueFrom": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ValueFrom defines data from an external resource",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.StaticDataValueFrom"),
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.AnyJSON", "github.com/gardener/landscaper/apis/core/v1alpha1.StaticDataValueFrom"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_StaticDataValueFrom(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "StaticDataValueFrom defines a static data that is read from a external resource.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"secretKeyRef": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Selects a key of a secret in the installations's namespace",
+							Ref:         ref("k8s.io/api/core/v1.SecretKeySelector"),
+						},
+					},
+					"secretLabelSelector": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Selects a key from multiple secrets in the installations's namespace that matches the given labels.",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.SecretLabelSelectorRef"),
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.SecretLabelSelectorRef", "k8s.io/api/core/v1.SecretKeySelector"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_SubinstallationTemplate(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "SubinstallationTemplate defines a subinstallation template.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"file": {
+						SchemaProps: spec.SchemaProps{
+							Description: "File references a subinstallation template stored in another file.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name is the unique name of the step",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"blueprint": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Reference defines a reference to a Blueprint. The blueprint can reside in an OCI or other supported location.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.InstallationTemplateBlueprintDefinition"),
+						},
+					},
+					"imports": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Imports define the imported data objects and targets.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.InstallationImports"),
+						},
+					},
+					"importDataMappings": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ImportDataMappings contains a template for restructuring imports. It is expected to contain a key for every blueprint-defined data import. Missing keys will be defaulted to their respective data import. Example: namespace: (( installation.imports.namespace ))",
+							Type:        []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Ref: ref("github.com/gardener/landscaper/apis/core/v1alpha1.AnyJSON"),
+									},
+								},
+							},
+						},
+					},
+					"exports": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Exports define the exported data objects and targets.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.InstallationExports"),
+						},
+					},
+					"exportDataMappings": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ExportDataMappings contains a template for restructuring exports. It is expected to contain a key for every blueprint-defined data export. Missing keys will be defaulted to their respective data export. Example: namespace: (( blueprint.exports.namespace ))",
+							Type:        []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Ref: ref("github.com/gardener/landscaper/apis/core/v1alpha1.AnyJSON"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"name", "blueprint"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.AnyJSON", "github.com/gardener/landscaper/apis/core/v1alpha1.InstallationExports", "github.com/gardener/landscaper/apis/core/v1alpha1.InstallationImports", "github.com/gardener/landscaper/apis/core/v1alpha1.InstallationTemplateBlueprintDefinition"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_SucceededReconcile(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "SucceededReconcile allows to configure automatically repeated reconciliations for succeeded installations",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"interval": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Interval specifies the interval between two subsequent repeated reconciliations. If not set, a default of 24 hours is used.",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.Duration"),
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.Duration"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_TLSClientConfig(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "TLSClientConfig contains settings to enable transport layer security",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"insecure": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Server should be accessed without verifying the TLS certificate. For testing only.",
+							Default:     false,
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"serverName": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ServerName is passed to the server for SNI and is used in the client to check server ceritificates against. If ServerName is empty, the hostname used to contact the server is used.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"caData": {
+						SchemaProps: spec.SchemaProps{
+							Description: "CAData holds PEM-encoded bytes (typically read from a root certificates bundle). CAData takes precedence over CAFile",
+							Type:        []string{"string"},
+							Format:      "byte",
+						},
+					},
+					"nextProtos": {
+						SchemaProps: spec.SchemaProps{
+							Description: "NextProtos is a list of supported application level protocols, in order of preference. Used to populate tls.Config.NextProtos. To indicate to the server http/1.1 is preferred over http/2, set to [\"http/1.1\", \"h2\"] (though the server is free to ignore that preference). To use only http/1.1, set to [\"http/1.1\"].",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_Target(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "Target defines a specific data object that defines target environment. Every deploy item can have a target which is used by the deployer to install the specific application.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"),
+						},
+					},
+					"spec": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.TargetSpec"),
+						},
+					},
+				},
+				Required: []string{"spec"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.TargetSpec", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_TargetExport(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "TargetExport is a single target export.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name the internal name of the exported target.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"target": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Target is the name of the in-cluster target object.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"name"},
+			},
+		},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_TargetImport(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "TargetImport is either a single target or a target list import.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name the internal name of the imported target.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"target": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Target is the name of the in-cluster target object. Exactly one of Target, Targets, and TargetListReference has to be specified.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"targets": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Targets is a list of in-cluster target objects. Exactly one of Target, Targets, and TargetListReference has to be specified.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"targetListRef": {
+						SchemaProps: spec.SchemaProps{
+							Description: "TargetListReference can (only) be used to import a targetlist that has been imported by the parent installation. Exactly one of Target, Targets, and TargetListReference has to be specified.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"name"},
+			},
+		},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_TargetImportStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "TargetImportStatus",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"target": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Target is the name of the in-cluster target object.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"sourceRef": {
+						SchemaProps: spec.SchemaProps{
+							Description: "SourceRef is the reference to the installation from where the value is imported",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference"),
+						},
+					},
+					"configGeneration": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ConfigGeneration is the generation of the imported value.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_TargetList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "TargetList contains a list of Targets",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"),
+						},
+					},
+					"items": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.Target"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"items"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.Target", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_TargetSelector(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "TargetSelector describes a selector that matches specific targets.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"targets": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Targets defines a list of specific targets (name and namespace) that should be reconciled.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference"),
+									},
+								},
+							},
+						},
+					},
+					"annotations": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Annotations matches a target based on annotations.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.Requirement"),
+									},
+								},
+							},
+						},
+					},
+					"labels": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Labels matches a target based on its labels.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.Requirement"),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference", "github.com/gardener/landscaper/apis/core/v1alpha1.Requirement"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_TargetSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "TargetSpec contains the definition of a target.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"type": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Type is the type of the target that defines its data structure. The actual schema may be defined by a target type crd in the future.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"config": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Configuration contains the target type specific configuration. Exactly one of the fields Configuration and SecretRef must be set",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.AnyJSON"),
+						},
+					},
+					"secretRef": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Reference to a secret containing the target type specific configuration. Exactly one of the fields Configuration and SecretRef must be set",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.LocalSecretReference"),
+						},
+					},
+				},
+				Required: []string{"type"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.AnyJSON", "github.com/gardener/landscaper/apis/core/v1alpha1.LocalSecretReference"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_TargetSync(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "The TargetSync is created targets from secrets.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"),
+						},
+					},
+					"spec": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Spec contains the specification",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.TargetSyncSpec"),
+						},
+					},
+					"status": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Status contains the status",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.TargetSyncStatus"),
+						},
+					},
+				},
+				Required: []string{"spec"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.TargetSyncSpec", "github.com/gardener/landscaper/apis/core/v1alpha1.TargetSyncStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_TargetSyncList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "TargetSyncList contains a list of TargetSync objects",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"),
+						},
+					},
+					"items": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.TargetSync"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"items"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.TargetSync", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_TargetSyncSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "TargetSyncSpec contains the specification for a TargetSync.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"sourceNamespace": {
+						SchemaProps: spec.SchemaProps{
+							Description: "SourceNamespace describes the namespace from where the secrets should be synced",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"secretRef": {
+						SchemaProps: spec.SchemaProps{
+							Description: "SecretRef references the secret that contains the kubeconfig to the namespace of the secrets to be synced.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.LocalSecretReference"),
+						},
+					},
+					"createTargetToSource": {
+						SchemaProps: spec.SchemaProps{
+							Description: "CreateTargetToSource specifies if set on true, that also a target is created, which references the secret in SecretRef",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"targetToSourceName": {
+						SchemaProps: spec.SchemaProps{
+							Description: "TargetToSourceName is the name of the target referencing the secret defined in SecretRef if CreateTargetToSource is set on true. If TargetToSourceName is empty SourceNamespace is used instead.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"secretNameExpression": {
+						SchemaProps: spec.SchemaProps{
+							Description: "SecretNameExpression defines the names of the secrets which should be synced via a regular expression according to https://github.com/google/re2/wiki/Syntax with the extension that * is also a valid expression and matches all names. if not set no secrets are synced",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"shootNameExpression": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ShootNameExpression defines the names of shoot clusters for which targets with short living access data to the shoots are created via a regular expression according to https://github.com/google/re2/wiki/Syntax with the extension that * is also a valid expression and matches all names. if not set no targets for the shoots are created",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"tokenRotation": {
+						SchemaProps: spec.SchemaProps{
+							Description: "TokenRotation defines the data to perform an automatic rotation of the token to access the source cluster with the secrets to sync. The token expires after 90 days and will be rotated every 60 days.",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.TokenRotation"),
+						},
+					},
+				},
+				Required: []string{"sourceNamespace", "secretRef"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.LocalSecretReference", "github.com/gardener/landscaper/apis/core/v1alpha1.TokenRotation"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_TargetSyncStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "TargetSyncStatus contains the status of a TargetSync.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"observedGeneration": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ObservedGeneration is the most recent generation observed.",
+							Default:     0,
+							Type:        []string{"integer"},
+							Format:      "int64",
+						},
+					},
+					"lastUpdateTime": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Last time the status was updated",
+							Ref:         ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
+					"lastErrors": {
+						SchemaProps: spec.SchemaProps{
+							Description: "LastErrors describe the last errors",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"lastTokenRotationTime": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Last time the token was rotated",
+							Ref:         ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_TargetTemplate(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "TargetTemplate exposes specific parts of a target that are used in the exports to export a target",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"type": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Type is the type of the target that defines its data structure. The actual schema may be defined by a target type crd in the future.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"config": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Configuration contains the target type specific configuration. Exactly one of the fields Configuration and SecretRef must be set",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.AnyJSON"),
+						},
+					},
+					"secretRef": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Reference to a secret containing the target type specific configuration. Exactly one of the fields Configuration and SecretRef must be set",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.LocalSecretReference"),
+						},
+					},
+					"labels": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Map of string keys and values that can be used to organize and categorize (scope and select) objects. May match selectors of replication controllers and services. More info: http://kubernetes.io/docs/user-guide/labels",
+							Type:        []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"annotations": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects. More info: http://kubernetes.io/docs/user-guide/annotations",
+							Type:        []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"type"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.AnyJSON", "github.com/gardener/landscaper/apis/core/v1alpha1.LocalSecretReference"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_TemplateExecutor(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "TemplateExecutor describes a templating mechanism and configuration.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name is the unique name of the template",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"type": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Type describes the templating mechanism.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"file": {
+						SchemaProps: spec.SchemaProps{
+							Description: "File is the path to the template in the blueprint's content.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"template": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Template contains an optional inline template. The template has to be of string for go template and either a string or valid yaml/json for spiff.",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.AnyJSON"),
+						},
+					},
+				},
+				Required: []string{"name", "type"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.AnyJSON"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_TokenRotation(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"enabled": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Enabled defines if automatic token is executed",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_TypedObjectReference(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "TypedObjectReference is a reference to a typed kubernetes object.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion is the group and version for the resource being referenced. If APIVersion is not specified, the specified Kind must be in the core API group. For any other third-party types, APIVersion is required.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is the type of resource being referenced",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name is the name of the kubernetes object.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"namespace": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Namespace is the namespace of kubernetes object.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"apiVersion", "kind", "name"},
+			},
+		},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_VersionedNamedObjectReference(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "VersionedNamedObjectReference is a named reference to a object with its last observed resource generation. This struct is used by status fields.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name is the unique name of the reference.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"ref": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Reference is the reference to an object.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.VersionedObjectReference"),
+						},
+					},
+				},
+				Required: []string{"name", "ref"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.VersionedObjectReference"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_VersionedObjectReference(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "VersionedObjectReference is a reference to a object with its last observed resource generation. This struct is used by status fields.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name is the name of the kubernetes object.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"namespace": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Namespace is the namespace of kubernetes object.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"observedGeneration": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ObservedGeneration defines the last observed generation of the referenced resource.",
+							Default:     0,
+							Type:        []string{"integer"},
+							Format:      "int64",
+						},
+					},
+				},
+				Required: []string{"name", "observedGeneration"},
+			},
+		},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_VersionedResourceReference(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "VersionedResourceReference defines the reference to a resource with its version.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"componentName": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ComponentName defines the unique of the component containing the resource.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"resourceName": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ResourceName defines the name of the resource.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"version": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Version defines the version of the component.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"componentName", "resourceName", "version"},
 			},
 		},
 	}

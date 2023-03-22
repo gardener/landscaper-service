@@ -45,6 +45,7 @@ ${GOPATH}/bin/openapi-gen "$@" \
   --v 1 \
   --logtostderr \
   --input-dirs=github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1 \
+  --input-dirs=github.com/gardener/landscaper/apis/core/v1alpha1 \
   --input-dirs=k8s.io/api/core/v1 \
   --input-dirs=k8s.io/apimachinery/pkg/apis/meta/v1 \
   --input-dirs=k8s.io/apimachinery/pkg/api/resource \
