@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"os"
 	"text/template"
+	"time"
 
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
@@ -41,9 +42,7 @@ var (
 		new(tests.HelmDeployerTestRunner),
 		new(tests.ContainerDeployerTestRunner),
 		new(tests.DeleteDeploymentRunner),
-		// TODO: Test is currently not working since the landscaper
-		// deployer pods will not be destroyed automatically.
-		// new(tests.VerifyDeleteRunner),
+		new(tests.VerifyDeleteRunner),
 		new(tests.UninstallLAASTestRunner),
 	}
 )
@@ -362,6 +361,9 @@ func cleanupResources(ctx context.Context, hostingClient, laasClient client.Clie
 		return err
 	}
 
+	// this should help prevent race conditions
+	time.Sleep(time.Second * 10)
+
 	if err := cliutil.DeleteNamespace(hostingClient, config.LaasNamespace, config.SleepTime, config.MaxRetries); err != nil {
 		return err
 	}
@@ -378,6 +380,9 @@ func cleanupResources(ctx context.Context, hostingClient, laasClient client.Clie
 	if err := util.RemoveFinalizerLandscaperResources(ctx, hostingClient, config.TestNamespace); err != nil {
 		return err
 	}
+
+	// this should help prevent race conditions
+	time.Sleep(time.Second * 10)
 
 	if err := cliutil.DeleteNamespace(hostingClient, config.TestNamespace, config.SleepTime, config.MaxRetries); err != nil {
 		return err

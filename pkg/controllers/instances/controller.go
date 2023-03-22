@@ -9,14 +9,12 @@ import (
 	"fmt"
 	"reflect"
 
-	"k8s.io/utils/clock"
-
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-
 	guuid "github.com/google/uuid"
 
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/utils/clock"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
@@ -28,6 +26,7 @@ import (
 	coreconfig "github.com/gardener/landscaper-service/pkg/apis/config"
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	lsserrors "github.com/gardener/landscaper-service/pkg/apis/errors"
+	"github.com/gardener/landscaper-service/pkg/controllers/healthwatcher"
 	"github.com/gardener/landscaper-service/pkg/operation"
 	"github.com/gardener/landscaper-service/pkg/utils"
 )
@@ -42,8 +41,10 @@ type Controller struct {
 	UniqueIDFunc func() string
 
 	ReconcileFunc    func(ctx context.Context, instance *lssv1alpha1.Instance) error
-	HandleDeleteFunc func(ctx context.Context, instance *lssv1alpha1.Instance) error
+	HandleDeleteFunc func(ctx context.Context, instance *lssv1alpha1.Instance) (reconcile.Result, error)
 	ListShootsFunc   func(ctx context.Context, instance *lssv1alpha1.Instance) (*unstructured.UnstructuredList, error)
+
+	kubeClientExtractor healthwatcher.ServiceTargetConfigKubeClientExtractorInterface
 }
 
 // NewUniqueID creates a new unique id string with a length of 8.
@@ -62,9 +63,10 @@ func defaultUniqueIdFunc() string {
 // NewController returns a new instances controller
 func NewController(logger logging.Logger, c client.Client, scheme *runtime.Scheme, config *coreconfig.LandscaperServiceConfiguration) (reconcile.Reconciler, error) {
 	ctrl := &Controller{
-		log:             logger,
-		UniqueIDFunc:    defaultUniqueIdFunc,
-		reconcileHelper: newAutomaticReconcileHelper(c, clock.RealClock{}),
+		log:                 logger,
+		UniqueIDFunc:        defaultUniqueIdFunc,
+		reconcileHelper:     newAutomaticReconcileHelper(c, clock.RealClock{}),
+		kubeClientExtractor: &healthwatcher.ServiceTargetConfigKubeClientExtractor{},
 	}
 	ctrl.ReconcileFunc = ctrl.reconcile
 	ctrl.HandleDeleteFunc = ctrl.handleDelete
@@ -72,6 +74,13 @@ func NewController(logger logging.Logger, c client.Client, scheme *runtime.Schem
 	op := operation.NewOperation(c, scheme, config)
 	ctrl.Operation = *op
 	return ctrl, nil
+}
+
+type TestKubeClientExtractor struct {
+}
+
+func (t *TestKubeClientExtractor) GetKubeClientFromServiceTargetConfig(_ context.Context, _ string, _ string, client client.Client) (client.Client, error) {
+	return client, nil
 }
 
 // NewTestActuator creates a new controller for testing purposes.
@@ -82,6 +91,7 @@ func NewTestActuator(op operation.Operation, logger logging.Logger) *Controller 
 		UniqueIDFunc:                 defaultUniqueIdFunc,
 		gardenerServiceAccountClient: op.Client(),
 		reconcileHelper:              newAutomaticReconcileHelper(op.Client(), clock.RealClock{}),
+		kubeClientExtractor:          &TestKubeClientExtractor{},
 	}
 	ctrl.ReconcileFunc = ctrl.reconcile
 	ctrl.HandleDeleteFunc = ctrl.handleDelete
@@ -124,7 +134,8 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 	// reconcile delete
 	if !instance.DeletionTimestamp.IsZero() {
-		return reconcile.Result{}, errHdl(ctx, c.HandleDeleteFunc(ctx, instance))
+		result, err := c.HandleDeleteFunc(ctx, instance)
+		return result, errHdl(ctx, err)
 	}
 
 	if utils.HasOperationAnnotation(instance, lssv1alpha1.LandscaperServiceOperationIgnore) {
