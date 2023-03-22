@@ -7,8 +7,9 @@ package instances
 import (
 	"context"
 	"fmt"
-	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	"time"
+
+	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"

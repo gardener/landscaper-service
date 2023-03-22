@@ -9,6 +9,8 @@ import (
 	"fmt"
 	"time"
 
+	"sigs.k8s.io/controller-runtime/pkg/reconcile"
+
 	lsserrors "github.com/gardener/landscaper-service/pkg/apis/errors"
 
 	. "github.com/onsi/ginkgo"
@@ -149,8 +151,8 @@ var _ = Describe("Delete", func() {
 
 		instance := state.GetInstance("test")
 
-		ctrl.HandleDeleteFunc = func(ctx context.Context, deployment *lssv1alpha1.Instance) error {
-			return lsserrors.NewWrappedError(fmt.Errorf(reason), operation, reason, message)
+		ctrl.HandleDeleteFunc = func(ctx context.Context, deployment *lssv1alpha1.Instance) (reconcile.Result, error) {
+			return reconcile.Result{}, lsserrors.NewWrappedError(fmt.Errorf(reason), operation, reason, message)
 		}
 
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
