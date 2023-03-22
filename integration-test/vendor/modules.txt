@@ -73,7 +73,7 @@ github.com/gardener/component-spec/bindings-go/codec
 github.com/gardener/component-spec/bindings-go/ctf
 github.com/gardener/component-spec/bindings-go/oci
 github.com/gardener/component-spec/bindings-go/utils/selector
-# github.com/gardener/landscaper v0.40.0 => github.com/gardener/landscaper v0.51.0
+# github.com/gardener/landscaper v0.52.0 => github.com/gardener/landscaper v0.52.0
 ## explicit; go 1.19
 github.com/gardener/landscaper/pkg/api
 github.com/gardener/landscaper/pkg/landscaper/blueprints
@@ -94,7 +94,7 @@ github.com/gardener/landscaper-service/pkg/apis/core
 github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1
 github.com/gardener/landscaper-service/pkg/apis/installation
 github.com/gardener/landscaper-service/pkg/utils
-# github.com/gardener/landscaper/apis v0.51.0
+# github.com/gardener/landscaper/apis v0.52.0
 ## explicit; go 1.19
 github.com/gardener/landscaper/apis/config
 github.com/gardener/landscaper/apis/config/install
@@ -115,12 +115,12 @@ github.com/gardener/landscaper/apis/deployer/utils/readinesschecks
 github.com/gardener/landscaper/apis/errors
 github.com/gardener/landscaper/apis/mediatype
 github.com/gardener/landscaper/apis/schema
-# github.com/gardener/landscaper/controller-utils v0.51.0
+# github.com/gardener/landscaper/controller-utils v0.52.0
 ## explicit; go 1.19
 github.com/gardener/landscaper/controller-utils/pkg/kubernetes
 github.com/gardener/landscaper/controller-utils/pkg/logging
 github.com/gardener/landscaper/controller-utils/pkg/logging/constants
-# github.com/gardener/landscapercli v0.20.0
+# github.com/gardener/landscapercli v0.21.0
 ## explicit; go 1.19
 github.com/gardener/landscapercli/cmd/installations
 github.com/gardener/landscapercli/cmd/installations/inspect
@@ -738,6 +738,6 @@ sigs.k8s.io/structured-merge-diff/v4/value
 sigs.k8s.io/yaml
 # github.com/containerd/containerd => github.com/containerd/containerd v1.6.18
 # github.com/gardener/component-cli v0.40.0 => github.com/gardener/component-cli v0.44.0
-# github.com/gardener/landscaper => github.com/gardener/landscaper v0.51.0
+# github.com/gardener/landscaper => github.com/gardener/landscaper v0.52.0
 # github.com/gardener/landscaper-service => ../
 # golang.org/x/net => golang.org/x/net v0.7.0

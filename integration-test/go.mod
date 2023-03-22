@@ -5,9 +5,9 @@ go 1.19
 require (
 	github.com/gardener/component-spec/bindings-go v0.0.66
 	github.com/gardener/landscaper-service v0.0.0-00010101000000-000000000000
-	github.com/gardener/landscaper/apis v0.51.0
-	github.com/gardener/landscaper/controller-utils v0.51.0
-	github.com/gardener/landscapercli v0.20.0
+	github.com/gardener/landscaper/apis v0.52.0
+	github.com/gardener/landscaper/controller-utils v0.52.0
+	github.com/gardener/landscapercli v0.21.0
 	k8s.io/api v0.26.1
 	k8s.io/apimachinery v0.26.1
 	k8s.io/client-go v0.26.1
@@ -27,7 +27,7 @@ require (
 	github.com/evanphx/json-patch/v5 v5.6.0 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/gardener/component-cli v0.44.0 // indirect
-	github.com/gardener/landscaper v0.40.0 // indirect
+	github.com/gardener/landscaper v0.52.0 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/go-logr/logr v1.2.3 // indirect
 	github.com/go-logr/zapr v1.2.3 // indirect
@@ -100,7 +100,7 @@ require (
 replace (
 	github.com/containerd/containerd => github.com/containerd/containerd v1.6.18
 	github.com/gardener/component-cli v0.40.0 => github.com/gardener/component-cli v0.44.0
-	github.com/gardener/landscaper => github.com/gardener/landscaper v0.51.0
+	github.com/gardener/landscaper => github.com/gardener/landscaper v0.52.0
 	github.com/gardener/landscaper-service => ../
 	golang.org/x/net => golang.org/x/net v0.7.0
 )

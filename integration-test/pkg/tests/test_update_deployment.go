@@ -104,7 +104,7 @@ func (r *UpdateDeploymentRunner) updateDeployment(deployment *lssv1alpha1.Landsc
 		return fmt.Errorf("could not get installation for landscaper deployment %s: %w", deployment.Name, err)
 	}
 
-	if installation.Status.InstallationPhase != lsv1alpha1.InstallationPhaseSucceeded {
+	if installation.Status.InstallationPhase != lsv1alpha1.InstallationPhases.Succeeded {
 		return fmt.Errorf("ignore annotation of deployment %s was ignored", deployment.Name)
 	}
 

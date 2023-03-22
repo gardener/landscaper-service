@@ -10,12 +10,11 @@ import (
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	"github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
+	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
-
-	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
 
 	coreconfig "github.com/gardener/landscaper-service/pkg/apis/config"
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
@@ -76,7 +75,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 			continue
 		}
 		//check if installation not progressing
-		if installation.Status.InstallationPhase == lsv1alpha1.InstallationPhaseProgressing {
+		if installation.Status.InstallationPhase == lsv1alpha1.InstallationPhases.Progressing {
 			logger.Info("installation for instance is progressing, skip health check monitoring", lc.KeyResource, client.ObjectKeyFromObject(installation).String())
 			continue
 		}
