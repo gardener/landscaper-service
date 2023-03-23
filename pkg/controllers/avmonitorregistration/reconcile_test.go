@@ -85,7 +85,7 @@ var _ = Describe("Reconcile", func() {
 		Expect(testenv.Client.Get(ctx, types.NamespacedName{Namespace: op.Config().AvailabilityMonitoring.AvailabilityCollectionNamespace, Name: op.Config().AvailabilityMonitoring.AvailabilityCollectionName}, availabilitycollection)).To(Succeed())
 		Expect(len(availabilitycollection.Spec.InstanceRefs)).To(Equal(1))
 
-		//delete instance
+		//delete instance (with a finalizer, simulating a long deletion procedure)
 		Expect(testenv.Client.Delete(ctx, instance)).To(Succeed())
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
 
