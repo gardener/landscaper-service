@@ -62,6 +62,12 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 		logger, ctx := logging.FromContextOrNew(ctx, nil, "instance", types.NamespacedName{Name: instance.Name, Namespace: instance.Namespace}.String())
 		logger.Debug("register instance")
 
+		//skip instances in deletion
+		if !instance.DeletionTimestamp.IsZero() {
+			logger.Debug("skip instance since it is in deletion")
+			continue
+		}
+
 		//get refered installation
 		logger.Debug("fetch referred installation")
 		if instance.Status.InstallationRef == nil || instance.Status.InstallationRef.Name == "" || instance.Status.InstallationRef.Namespace == "" {
