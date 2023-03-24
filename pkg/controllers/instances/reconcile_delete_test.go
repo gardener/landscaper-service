@@ -9,6 +9,12 @@ import (
 	"fmt"
 	"time"
 
+	corev1 "k8s.io/api/core/v1"
+	rbacv1 "k8s.io/api/rbac/v1"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
+
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	lsserrors "github.com/gardener/landscaper-service/pkg/apis/errors"
@@ -25,6 +31,14 @@ import (
 	testutils "github.com/gardener/landscaper-service/test/utils"
 	"github.com/gardener/landscaper-service/test/utils/envtest"
 )
+
+func expectObjectDeleted(err error, obj client.Object) {
+	if err == nil {
+		Expect(obj.GetDeletionTimestamp().IsZero()).To(BeFalse())
+	} else {
+		Expect(apierrors.IsNotFound(err)).To(BeTrue())
+	}
+}
 
 var _ = Describe("Delete", func() {
 	var (
@@ -181,5 +195,80 @@ var _ = Describe("Delete", func() {
 		Expect(instance.Status.LastError.Reason).To(Equal(reason))
 		Expect(instance.Status.LastError.Message).To(Equal(message))
 		Expect(instance.Status.LastError.LastUpdateTime.Time).Should(BeTemporally(">", instance.Status.LastError.LastTransitionTime.Time))
+	})
+
+	It("should delete the target cluster namespace and rbac objects", func() {
+		var err error
+		state, err = testenv.InitResources(ctx, "./testdata/delete/test5")
+		Expect(err).ToNot(HaveOccurred())
+
+		instance := state.GetInstance("test")
+
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
+
+		targetName := fmt.Sprintf("%s-%s", instance.Spec.TenantId, instance.Spec.ID)
+
+		namespace := &corev1.Namespace{
+			ObjectMeta: metav1.ObjectMeta{
+				Name: targetName,
+			},
+		}
+		Expect(testenv.Client.Create(ctx, namespace)).To(Succeed())
+
+		serviceAccount := &corev1.ServiceAccount{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "laas-test-sa",
+				Namespace: targetName,
+			},
+		}
+
+		Expect(testenv.Client.Create(ctx, serviceAccount)).To(Succeed())
+
+		clusterRole := &rbacv1.ClusterRole{
+			ObjectMeta: metav1.ObjectMeta{
+				Name: fmt.Sprintf("helm-%s-tmp", targetName),
+			},
+			Rules: []rbacv1.PolicyRule{
+				{
+					APIGroups: []string{"*"},
+					Resources: []string{"*"},
+					Verbs:     []string{"*"},
+				},
+			},
+		}
+		Expect(testenv.Client.Create(ctx, clusterRole)).To(Succeed())
+
+		clusterRoleBinding := &rbacv1.ClusterRoleBinding{
+			ObjectMeta: metav1.ObjectMeta{
+				Name: fmt.Sprintf("helm-%s-rb-tmp", targetName),
+			},
+			RoleRef: rbacv1.RoleRef{
+				APIGroup: "rbac.authorization.k8s.io",
+				Kind:     "ClusterRole",
+				Name:     clusterRole.GetName(),
+			},
+			Subjects: []rbacv1.Subject{
+				{
+					Kind:      "ServiceAccount",
+					Name:      serviceAccount.GetName(),
+					Namespace: serviceAccount.GetNamespace(),
+				},
+			},
+		}
+
+		Expect(testenv.Client.Create(ctx, clusterRoleBinding)).To(Succeed())
+
+		Expect(testenv.Client.Delete(ctx, instance)).To(Succeed())
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+
+		err = testenv.Client.Get(ctx, client.ObjectKeyFromObject(clusterRoleBinding), clusterRoleBinding)
+		expectObjectDeleted(err, clusterRoleBinding)
+
+		err = testenv.Client.Get(ctx, client.ObjectKeyFromObject(clusterRole), clusterRole)
+		expectObjectDeleted(err, clusterRole)
+
+		err = testenv.Client.Get(ctx, client.ObjectKeyFromObject(namespace), namespace)
+		expectObjectDeleted(err, namespace)
 	})
 })
