@@ -7,6 +7,7 @@ package instances
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
@@ -16,6 +17,7 @@ import (
 	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
 
 	corev1 "k8s.io/api/core/v1"
+	rbacv1 "k8s.io/api/rbac/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/errors"
@@ -229,6 +231,10 @@ func (c *Controller) ensureDeleteTargetClusterNamespace(ctx context.Context, ins
 	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(instance).String()},
 		lc.KeyMethod, "ensureDeleteTargetClusterNamespace")
 
+	if len(instance.Spec.TenantId) == 0 || len(instance.Spec.ID) == 0 {
+		return true, nil
+	}
+
 	targetClusterNamespace := fmt.Sprintf("%s-%s", instance.Spec.TenantId, instance.Spec.ID)
 
 	logger.Info("Delete target cluster namespace for instance", lc.KeyResourceNonNamespaced, targetClusterNamespace)
@@ -242,6 +248,8 @@ func (c *Controller) ensureDeleteTargetClusterNamespace(ctx context.Context, ins
 	if err != nil {
 		return false, fmt.Errorf("failed to get client for target cluster: %w", err)
 	}
+
+	deleteTargetClusterRBAC(ctx, instance, targetClusterClient)
 
 	namespace := &corev1.Namespace{}
 
@@ -261,4 +269,42 @@ func (c *Controller) ensureDeleteTargetClusterNamespace(ctx context.Context, ins
 	}
 
 	return false, nil
+}
+
+// deleteTargetClusterRBAC deletes all clusterroles and bindings associated with this instance.
+func deleteTargetClusterRBAC(ctx context.Context, instance *lssv1alpha1.Instance, cl client.Client) {
+	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(instance).String()},
+		lc.KeyMethod, "deleteTargetClusterRBAC")
+
+	targetClusterName := fmt.Sprintf("%s-%s", instance.Spec.TenantId, instance.Spec.ID)
+
+	clusterRoleBindings := &rbacv1.ClusterRoleBindingList{}
+	if err := cl.List(ctx, clusterRoleBindings, &client.ListOptions{}); err != nil {
+		logger.Error(err, "failed to list target clusterrolebindings")
+	}
+
+	for _, crb := range clusterRoleBindings.Items {
+		if strings.Contains(crb.GetName(), targetClusterName) &&
+			crb.DeletionTimestamp.IsZero() {
+			logger.Info("deleting clusterrolebinding", lc.KeyResourceNonNamespaced, crb.GetName())
+			if err := cl.Delete(ctx, &crb); err != nil {
+				logger.Error(err, "failed to delete clusterrolebinding", lc.KeyResourceNonNamespaced, crb.GetName())
+			}
+		}
+	}
+
+	clusterRoles := &rbacv1.ClusterRoleList{}
+	if err := cl.List(ctx, clusterRoles, &client.ListOptions{}); err != nil {
+		logger.Error(err, "failed to list clusterroles")
+	}
+
+	for _, cr := range clusterRoles.Items {
+		if strings.Contains(cr.GetName(), targetClusterName) &&
+			cr.DeletionTimestamp.IsZero() {
+			logger.Info("deleting clusterrole", lc.KeyResourceNonNamespaced, cr.GetName())
+			if err := cl.Delete(ctx, &cr); err != nil {
+				logger.Error(err, "failed to delete clusterrole", lc.KeyResourceNonNamespaced, cr.GetName())
+			}
+		}
+	}
 }
