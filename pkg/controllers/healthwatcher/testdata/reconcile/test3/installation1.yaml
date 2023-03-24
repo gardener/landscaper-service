@@ -12,5 +12,5 @@ spec:
     hostingClusterNamespace: instance1namespace-{{ .Namespace }}
 
 status:
-  phase: Succeded
+  phase: Succeeded
   configGeneration: ""
