@@ -17,8 +17,8 @@ deployItems:
             resourceSelector:
               - apiVersion: core.gardener.cloud/v1beta1
                 kind: Shoot
-                name: {{ .imports.name }}
-                namespace: {{ .imports.namespace }}
+                name: "{{ .imports.name }}"
+                namespace: "{{ .imports.namespace }}"
             requirements:
               - jsonPath: .status.conditions[?(@.type == 'APIServerAvailable')].status
                 operator: ==
@@ -46,8 +46,8 @@ deployItems:
             apiVersion: v1
             kind: ConfigMap
             metadata:
-              name: {{ .imports.name }}-audit-policy
-              namespace: {{ .imports.namespace }}
+              name: "{{ .imports.name }}-audit-policy"
+              namespace: "{{ .imports.namespace }}"
             {{ if .imports.labels }}
               labels:
 {{ toYaml .imports.labels | indent 16 }}
@@ -64,13 +64,13 @@ deployItems:
             apiVersion: core.gardener.cloud/v1beta1
             kind: Shoot
             metadata:
-              name: {{ .imports.name }}
-              namespace: {{ .imports.namespace }}
+              name: "{{ .imports.name }}"
+              namespace: "{{ .imports.namespace }}"
               annotations:
                 shoot.gardener.cloud/cleanup-extended-apis-finalize-grace-period-seconds: '30'
                 gardener.cloud/operation: reconcile
                 {{ if .imports.subaccountId }}
-                custom.shoot.sapcloud.io/subaccountId: {{ .imports.subaccountId }}
+                custom.shoot.sapcloud.io/subaccountId: "{{ .imports.subaccountId }}"
                 {{ end }}
             {{ if .imports.labels }}
               labels:
@@ -145,5 +145,5 @@ deployItems:
             fromResource:
               apiVersion: core.gardener.cloud/v1beta1
               kind: Shoot
-              name: {{ .imports.name }}
-              namespace: {{ .imports.namespace }}
+              name: "{{ .imports.name }}"
+              namespace: "{{ .imports.namespace }}"
