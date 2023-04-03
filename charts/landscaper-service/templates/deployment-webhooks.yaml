@@ -46,7 +46,7 @@ spec:
           - --disable-webhooks={{ .Values.webhooksServer.disableWebhooks | join "," }}
           {{- end }}
           resources:
-            { { - toYaml .Values.resources | nindent 12 } }
+            {{ - toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
