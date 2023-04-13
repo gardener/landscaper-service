@@ -9,12 +9,12 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
+	admissionv1 "k8s.io/api/admission/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
-
-	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 
 	lsscore "github.com/gardener/landscaper-service/pkg/apis/core"
 	"github.com/gardener/landscaper-service/pkg/apis/validation"
@@ -74,7 +74,15 @@ func (dv *LandscaperDeploymentValidator) Handle(_ context.Context, req admission
 		return admission.Errored(http.StatusBadRequest, err)
 	}
 
-	if errs := validation.ValidateLandscaperDeployment(deployment); len(errs) > 0 {
+	var oldDeployment *lsscore.LandscaperDeployment
+	if req.Operation == admissionv1.Update && req.OldObject.Raw != nil {
+		oldDeployment = &lsscore.LandscaperDeployment{}
+		if _, _, err := dv.decoder.Decode(req.OldObject.Raw, nil, oldDeployment); err != nil {
+			return admission.Errored(http.StatusBadRequest, err)
+		}
+	}
+
+	if errs := validation.ValidateLandscaperDeployment(deployment, oldDeployment); len(errs) > 0 {
 		return admission.Denied(errs.ToAggregate().Error())
 	}
 
@@ -93,7 +101,15 @@ func (iv *InstanceValidator) Handle(_ context.Context, req admission.Request) ad
 		return admission.Errored(http.StatusBadRequest, err)
 	}
 
-	if errs := validation.ValidateInstance(instance); len(errs) > 0 {
+	var oldInstance *lsscore.Instance
+	if req.Operation == admissionv1.Update && req.OldObject.Raw != nil {
+		oldInstance = &lsscore.Instance{}
+		if _, _, err := iv.decoder.Decode(req.OldObject.Raw, nil, oldInstance); err != nil {
+			return admission.Errored(http.StatusBadRequest, err)
+		}
+	}
+
+	if errs := validation.ValidateInstance(instance, oldInstance); len(errs) > 0 {
 		return admission.Denied(errs.ToAggregate().Error())
 	}
 

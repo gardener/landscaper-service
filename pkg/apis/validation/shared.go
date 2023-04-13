@@ -36,3 +36,13 @@ func ValidateObjectReference(ref *lsscore.ObjectReference, fldPath *field.Path) 
 
 	return allErrs
 }
+
+func ValidateHighAvailabilityConfig(haConfig *lsscore.HighAvailabilityConfig, fldPath *field.Path) field.ErrorList {
+	allErrs := field.ErrorList{}
+
+	if haConfig.ControlPlaneFailureTolerance != "zone" && haConfig.ControlPlaneFailureTolerance != "node" {
+		allErrs = append(allErrs, field.Invalid(fldPath.Child("controlPlaneFailureTolerance"), haConfig.ControlPlaneFailureTolerance, "allowed values: \"zone\", \"node\""))
+	}
+
+	return allErrs
+}

@@ -425,6 +425,14 @@ func (c *Controller) mutateInstallation(ctx context.Context, installation *lsv1a
 		shootConfig.Kubernetes.KubeAPIServer.OIDCConfig.GroupsClaim = instance.Spec.OIDCConfig.GroupsClaim
 	}
 
+	if instance.Spec.HighAvailabilityConfig != nil {
+		shootConfig.ControlPlane = &lssconfig.ControlPlane{
+			HighAvailability: lssconfig.HighAvailability{
+				FailureTolerance: instance.Spec.HighAvailabilityConfig.ControlPlaneFailureTolerance,
+			},
+		}
+	}
+
 	shootConfigRaw, err := json.Marshal(shootConfig)
 	if err != nil {
 		return fmt.Errorf("unable to marshal shoot config: %w", err)

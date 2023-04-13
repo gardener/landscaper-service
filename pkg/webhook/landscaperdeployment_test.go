@@ -113,4 +113,97 @@ var _ = Describe("LandscaperDeployment", func() {
 
 		Expect(string(response.Result.Reason)).To(ContainSubstring("spec.purpose"))
 	})
+
+	It("should allow a valid update", func() {
+		testObj := createLandscaperDeployment("test", "lss-system")
+		testObj.Spec = lssv1alpha1.LandscaperDeploymentSpec{
+			TenantId: "test0001",
+			Purpose:  "test",
+			LandscaperConfiguration: lssv1alpha1.LandscaperConfiguration{
+				Deployers: []string{
+					"helm",
+					"manifest",
+				},
+			},
+		}
+
+		request := CreateAdmissionRequest(testObj)
+		response := validator.Handle(ctx, request)
+		Expect(response).ToNot(BeNil())
+		Expect(response.Allowed).To(BeTrue())
+
+		oldObj := testObj.DeepCopyObject()
+		testObj.Spec.LandscaperConfiguration.Deployers = []string{
+			"manifest",
+		}
+
+		request = CreateAdmissionRequestUpdate(testObj, oldObj)
+		response = validator.Handle(ctx, request)
+		Expect(response).ToNot(BeNil())
+		Expect(response.Allowed).To(BeTrue())
+	})
+
+	It("should deny an update of the tenant id", func() {
+		testObj := createLandscaperDeployment("test", "lss-system")
+		testObj.Spec = lssv1alpha1.LandscaperDeploymentSpec{
+			TenantId: "test0001",
+			Purpose:  "test",
+			LandscaperConfiguration: lssv1alpha1.LandscaperConfiguration{
+				Deployers: []string{
+					"helm",
+					"manifest",
+				},
+			},
+		}
+
+		request := CreateAdmissionRequest(testObj)
+		response := validator.Handle(ctx, request)
+		Expect(response).ToNot(BeNil())
+		Expect(response.Allowed).To(BeTrue())
+
+		oldObj := testObj.DeepCopyObject()
+		testObj.Spec.TenantId = "test0002"
+
+		request = CreateAdmissionRequestUpdate(testObj, oldObj)
+		response = validator.Handle(ctx, request)
+		Expect(response).ToNot(BeNil())
+		Expect(response.Allowed).To(BeFalse())
+	})
+
+	It("should validate high availability config", func() {
+		testObj := createLandscaperDeployment("test", "lss-system")
+		testObj.Spec = lssv1alpha1.LandscaperDeploymentSpec{
+			TenantId: "test0001",
+			Purpose:  "test",
+			LandscaperConfiguration: lssv1alpha1.LandscaperConfiguration{
+				Deployers: []string{
+					"helm",
+					"manifest",
+				},
+			},
+		}
+
+		request := CreateAdmissionRequest(testObj)
+		response := validator.Handle(ctx, request)
+		Expect(response).ToNot(BeNil())
+		Expect(response.Allowed).To(BeTrue())
+
+		oldObject := testObj.DeepCopyObject()
+		testObj.Spec.HighAvailabilityConfig = &lssv1alpha1.HighAvailabilityConfig{
+			ControlPlaneFailureTolerance: "node",
+		}
+
+		request = CreateAdmissionRequestUpdate(testObj, oldObject)
+		response = validator.Handle(ctx, request)
+		Expect(response).ToNot(BeNil())
+		Expect(response.Allowed).To(BeTrue())
+
+		oldObject = testObj.DeepCopyObject()
+		testObj.Spec.HighAvailabilityConfig.ControlPlaneFailureTolerance = "zone"
+
+		request = CreateAdmissionRequestUpdate(testObj, oldObject)
+		response = validator.Handle(ctx, request)
+		Expect(response).ToNot(BeNil())
+		Expect(response.Allowed).To(BeFalse())
+	})
 })

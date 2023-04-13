@@ -91,3 +91,10 @@ type OIDCConfig struct {
 	UsernameClaim string `json:"usernameClaim,omitempty"`
 	GroupsClaim   string `json:"groupsClaim,omitempty"`
 }
+
+// HighAvailabilityConfig specifies the HA configuration for the resource cluster (shoot cluster)
+type HighAvailabilityConfig struct {
+	// ControlPlaneFailureTolerance specifies the Kubernetes control plane failure tolerance mode.
+	// Allowed values are: node, zone
+	ControlPlaneFailureTolerance string `json:"controlPlaneFailureTolerance"`
+}

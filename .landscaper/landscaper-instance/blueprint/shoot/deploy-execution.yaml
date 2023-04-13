@@ -136,6 +136,10 @@ deployItems:
                 autoUpdate:
                   kubernetesVersion: {{ dig "shootConfig" "maintenance" "autoUpdate" "kubernetesVersion" true .imports }}
                   machineImageVersion: {{ dig "shootConfig" "maintenance" "autoUpdate" "machineImageVersion" true .imports }}
+              {{ if .imports.shootConfig.controlPlane }}
+              controlPlane:
+{{ toYaml .imports.shootConfig.controlPlane | indent 16 }}
+              {{ end }}
 
       exports:
         defaultTimeout: 30m

@@ -47,6 +47,10 @@ type LandscaperDeploymentSpec struct {
 	// OIDCConfig describes the OIDC config of the customer resource cluster (shoot cluster)
 	// +optional
 	OIDCConfig *OIDCConfig `json:"oidcConfig,omitempty"`
+
+	// HighAvailabilityConfig specifies the HA configuration of the resource cluster (shoot cluster)
+	// +optional
+	HighAvailabilityConfig *HighAvailabilityConfig `json:"highAvailabilityConfig"`
 }
 
 // LandscaperDeploymentStatus contains the status of a LandscaperDeployment.

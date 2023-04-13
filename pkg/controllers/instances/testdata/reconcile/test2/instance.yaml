@@ -19,3 +19,5 @@ spec:
   serviceTargetConfigRef:
     name: default
     namespace: {{ .Namespace }}
+  highAvailabilityConfig:
+    controlPlaneFailureTolerance: zone

@@ -20,10 +20,13 @@ const (
 )
 
 // ValidateInstance validates an instance
-func ValidateInstance(instance *lsscore.Instance) field.ErrorList {
+func ValidateInstance(instance *lsscore.Instance, oldInstance *lsscore.Instance) field.ErrorList {
 	allErrs := field.ErrorList{}
 	allErrs = append(allErrs, validateInstanceObjectMeta(&instance.ObjectMeta, field.NewPath("metadata"))...)
 	allErrs = append(allErrs, validateInstanceSpec(&instance.Spec, field.NewPath("spec"))...)
+	if oldInstance != nil {
+		allErrs = append(allErrs, validateInstanceSpecUpdate(&instance.Spec, &oldInstance.Spec, field.NewPath("spec"))...)
+	}
 	return allErrs
 }
 
@@ -43,6 +46,34 @@ func validateInstanceSpec(spec *lsscore.InstanceSpec, fldPath *field.Path) field
 
 	if len(spec.ID) != InstanceIdLength {
 		allErrs = append(allErrs, field.Invalid(fldPath.Child("id"), spec.TenantId, fmt.Sprintf("must be exactly of size %d", InstanceIdLength)))
+	}
+
+	if spec.HighAvailabilityConfig != nil {
+		allErrs = append(allErrs, ValidateHighAvailabilityConfig(spec.HighAvailabilityConfig, fldPath.Child("highAvailabilityConfig"))...)
+	}
+
+	return allErrs
+}
+
+func validateInstanceSpecUpdate(spec *lsscore.InstanceSpec, oldSpec *lsscore.InstanceSpec, fldPath *field.Path) field.ErrorList {
+	allErrs := field.ErrorList{}
+
+	if spec.TenantId != oldSpec.TenantId {
+		allErrs = append(allErrs, field.Forbidden(fldPath.Child("tenantId"), fmt.Sprintf("is immutable")))
+	}
+
+	if spec.ID != oldSpec.ID {
+		allErrs = append(allErrs, field.Forbidden(fldPath.Child("id"), fmt.Sprintf("is immutable")))
+	}
+
+	if !spec.ServiceTargetConfigRef.Equals(&oldSpec.ServiceTargetConfigRef) {
+		allErrs = append(allErrs, field.Forbidden(fldPath.Child("serviceTargetConfigRef"), fmt.Sprintf("is immutable")))
+	}
+
+	if spec.HighAvailabilityConfig != nil && oldSpec.HighAvailabilityConfig != nil {
+		if spec.HighAvailabilityConfig.ControlPlaneFailureTolerance != oldSpec.HighAvailabilityConfig.ControlPlaneFailureTolerance {
+			allErrs = append(allErrs, field.Forbidden(fldPath.Child("highAvailabilityConfig").Child("controlPlaneFailureTolerance"), fmt.Sprintf("is immutable")))
+		}
 	}
 
 	return allErrs

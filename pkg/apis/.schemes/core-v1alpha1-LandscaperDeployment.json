@@ -39,6 +39,20 @@
         }
       }
     },
+    "core-v1alpha1-HighAvailabilityConfig": {
+      "description": "HighAvailabilityConfig specifies the HA configuration for the resource cluster (shoot cluster)",
+      "type": "object",
+      "required": [
+        "controlPlaneFailureTolerance"
+      ],
+      "properties": {
+        "controlPlaneFailureTolerance": {
+          "description": "ControlPlaneFailureTolerance specifies the Kubernetes control plane failure tolerance mode. Allowed values are: node, zone",
+          "type": "string",
+          "default": ""
+        }
+      }
+    },
     "core-v1alpha1-LandscaperConfiguration": {
       "description": "LandscaperConfiguration contains the configuration for a landscaper service deployment.",
       "type": "object",
@@ -65,6 +79,10 @@
         "landscaperConfiguration"
       ],
       "properties": {
+        "highAvailabilityConfig": {
+          "description": "HighAvailabilityConfig specifies the HA configuration of the resource cluster (shoot cluster)",
+          "$ref": "#/definitions/core-v1alpha1-HighAvailabilityConfig"
+        },
         "landscaperConfiguration": {
           "description": "LandscaperConfiguration contains the configuration for the landscaper service deployment",
           "default": {},

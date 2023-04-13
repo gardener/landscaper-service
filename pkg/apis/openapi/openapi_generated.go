@@ -30,6 +30,7 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AvailabilityCollectionStatus": schema_pkg_apis_core_v1alpha1_AvailabilityCollectionStatus(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AvailabilityInstance":         schema_pkg_apis_core_v1alpha1_AvailabilityInstance(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Error":                        schema_pkg_apis_core_v1alpha1_Error(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.HighAvailabilityConfig":       schema_pkg_apis_core_v1alpha1_HighAvailabilityConfig(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Instance":                     schema_pkg_apis_core_v1alpha1_Instance(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceList":                 schema_pkg_apis_core_v1alpha1_InstanceList(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceSpec":                 schema_pkg_apis_core_v1alpha1_InstanceSpec(ref),
@@ -752,6 +753,28 @@ func schema_pkg_apis_core_v1alpha1_Error(ref common.ReferenceCallback) common.Op
 	}
 }
 
+func schema_pkg_apis_core_v1alpha1_HighAvailabilityConfig(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "HighAvailabilityConfig specifies the HA configuration for the resource cluster (shoot cluster)",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"controlPlaneFailureTolerance": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ControlPlaneFailureTolerance specifies the Kubernetes control plane failure tolerance mode. Allowed values are: node, zone",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"controlPlaneFailureTolerance"},
+			},
+		},
+	}
+}
+
 func schema_pkg_apis_core_v1alpha1_Instance(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
@@ -900,12 +923,18 @@ func schema_pkg_apis_core_v1alpha1_InstanceSpec(ref common.ReferenceCallback) co
 							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AutomaticReconcile"),
 						},
 					},
+					"highAvailabilityConfig": {
+						SchemaProps: spec.SchemaProps{
+							Description: "HighAvailabilityConfig specifies the HA configuration of the resource cluster (shoot cluster)",
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.HighAvailabilityConfig"),
+						},
+					},
 				},
 				Required: []string{"tenantId", "id", "landscaperConfiguration", "serviceTargetConfigRef"},
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AutomaticReconcile", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperConfiguration", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.OIDCConfig", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AutomaticReconcile", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.HighAvailabilityConfig", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperConfiguration", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.OIDCConfig", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference"},
 	}
 }
 
@@ -1167,12 +1196,18 @@ func schema_pkg_apis_core_v1alpha1_LandscaperDeploymentSpec(ref common.Reference
 							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.OIDCConfig"),
 						},
 					},
+					"highAvailabilityConfig": {
+						SchemaProps: spec.SchemaProps{
+							Description: "HighAvailabilityConfig specifies the HA configuration of the resource cluster (shoot cluster)",
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.HighAvailabilityConfig"),
+						},
+					},
 				},
 				Required: []string{"tenantId", "purpose", "landscaperConfiguration"},
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperConfiguration", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.OIDCConfig"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.HighAvailabilityConfig", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperConfiguration", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.OIDCConfig"},
 	}
 }
 
@@ -3040,7 +3075,7 @@ func schema_landscaper_apis_core_v1alpha1_DeployItemSpec(ref common.ReferenceCal
 					},
 					"timeout": {
 						SchemaProps: spec.SchemaProps{
-							Description: "Timeout specifies how long the deployer may take to apply the deploy item. When the time is exceeded, the landscaper will add the abort annotation to the deploy item and later put it in 'Failed' if the deployer doesn't handle the abort properly. Value has to be parsable by time.ParseDuration (or 'none' to deactivate the timeout). Defaults to ten minutes if not specified.",
+							Description: "Timeout specifies how long the deployer may take to apply the deploy item. When the time is exceeded, the deploy item fails. Value has to be parsable by time.ParseDuration (or 'none' to deactivate the timeout). Defaults to ten minutes if not specified.",
 							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.Duration"),
 						},
 					},
@@ -3168,7 +3203,7 @@ func schema_landscaper_apis_core_v1alpha1_DeployItemStatus(ref common.ReferenceC
 					},
 					"deployItemPhase": {
 						SchemaProps: spec.SchemaProps{
-							Description: "DeployItemPhase is the current phase of the deploy item.",
+							Description: "DeployerPhase is DEPRECATED and will soon be removed.",
 							Type:        []string{"string"},
 							Format:      "",
 						},
@@ -3248,6 +3283,12 @@ func schema_landscaper_apis_core_v1alpha1_DeployItemTemplate(ref common.Referenc
 							},
 						},
 					},
+					"timeout": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Timeout specifies how long the deployer may take to apply the deploy item. When the time is exceeded, the deploy item fails. Value has to be parsable by time.ParseDuration (or 'none' to deactivate the timeout). Defaults to ten minutes if not specified.",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.Duration"),
+						},
+					},
 					"updateOnChangeOnly": {
 						SchemaProps: spec.SchemaProps{
 							Description: "UpdateOnChangeOnly specifies if redeployment is executed only if the specification of the deploy item has changed.",
@@ -3260,7 +3301,7 @@ func schema_landscaper_apis_core_v1alpha1_DeployItemTemplate(ref common.Referenc
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference", "k8s.io/apimachinery/pkg/runtime.RawExtension"},
+			"github.com/gardener/landscaper/apis/core/v1alpha1.Duration", "github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference", "k8s.io/apimachinery/pkg/runtime.RawExtension"},
 	}
 }
 
@@ -4003,11 +4044,17 @@ func schema_landscaper_apis_core_v1alpha1_ExecutionStatus(ref common.ReferenceCa
 							Format:      "",
 						},
 					},
+					"phaseTransitionTime": {
+						SchemaProps: spec.SchemaProps{
+							Description: "PhaseTransitionTime is the time when the phase last changed.",
+							Ref:         ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
 				},
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper/apis/core/v1alpha1.Condition", "github.com/gardener/landscaper/apis/core/v1alpha1.Error", "github.com/gardener/landscaper/apis/core/v1alpha1.ExecutionGeneration", "github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference", "github.com/gardener/landscaper/apis/core/v1alpha1.VersionedNamedObjectReference"},
+			"github.com/gardener/landscaper/apis/core/v1alpha1.Condition", "github.com/gardener/landscaper/apis/core/v1alpha1.Error", "github.com/gardener/landscaper/apis/core/v1alpha1.ExecutionGeneration", "github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference", "github.com/gardener/landscaper/apis/core/v1alpha1.VersionedNamedObjectReference", "k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
 	}
 }
 
@@ -4682,6 +4729,12 @@ func schema_landscaper_apis_core_v1alpha1_InstallationStatus(ref common.Referenc
 							Format:      "",
 						},
 					},
+					"phaseTransitionTime": {
+						SchemaProps: spec.SchemaProps{
+							Description: "PhaseTransitionTime is the time when the phase last changed.",
+							Ref:         ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
 					"importsHash": {
 						SchemaProps: spec.SchemaProps{
 							Description: "ImportsHash is the hash of the import data.",
@@ -4700,7 +4753,7 @@ func schema_landscaper_apis_core_v1alpha1_InstallationStatus(ref common.Referenc
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper/apis/core/v1alpha1.AutomaticReconcileStatus", "github.com/gardener/landscaper/apis/core/v1alpha1.Condition", "github.com/gardener/landscaper/apis/core/v1alpha1.Error", "github.com/gardener/landscaper/apis/core/v1alpha1.ImportStatus", "github.com/gardener/landscaper/apis/core/v1alpha1.NamedObjectReference", "github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference"},
+			"github.com/gardener/landscaper/apis/core/v1alpha1.AutomaticReconcileStatus", "github.com/gardener/landscaper/apis/core/v1alpha1.Condition", "github.com/gardener/landscaper/apis/core/v1alpha1.Error", "github.com/gardener/landscaper/apis/core/v1alpha1.ImportStatus", "github.com/gardener/landscaper/apis/core/v1alpha1.NamedObjectReference", "github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference", "k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
 	}
 }
 

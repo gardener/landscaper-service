@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 	"testing"
 
+	admissionv1 "k8s.io/api/admission/v1"
+
 	"k8s.io/apimachinery/pkg/runtime/serializer/json"
 
 	. "github.com/onsi/ginkgo"
@@ -57,6 +59,7 @@ func CreateAdmissionRequest(obj runtime.Object) admission.Request {
 		Resource: gvr.Resource,
 	}
 
+	request.Operation = admissionv1.Create
 	request.Resource = groupVersionResource
 	request.RequestResource = &groupVersionResource
 	request.Object = runtime.RawExtension{Raw: objData}
@@ -66,5 +69,16 @@ func CreateAdmissionRequest(obj runtime.Object) admission.Request {
 		request.Namespace = o.GetNamespace()
 	}
 
+	return request
+}
+
+func CreateAdmissionRequestUpdate(obj runtime.Object, oldObject runtime.Object) admission.Request {
+	request := CreateAdmissionRequest(obj)
+	request.Operation = admissionv1.Update
+
+	oldObjData, err := runtime.Encode(&json.Serializer{}, oldObject)
+	Expect(err).ToNot(HaveOccurred())
+
+	request.OldObject = runtime.RawExtension{Raw: oldObjData}
 	return request
 }
