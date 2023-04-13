@@ -7,6 +7,7 @@ package instances
 import (
 	"context"
 	"fmt"
+	"math/rand"
 	"reflect"
 
 	guuid "github.com/google/uuid"
@@ -30,6 +31,8 @@ import (
 	"github.com/gardener/landscaper-service/pkg/operation"
 	"github.com/gardener/landscaper-service/pkg/utils"
 )
+
+var letterRunes = []rune("abcdefghijklmnopqrstuvwxyz")
 
 // Controller is the instances controller
 type Controller struct {
@@ -57,7 +60,14 @@ func (c *Controller) NewUniqueID() string {
 }
 
 func defaultUniqueIdFunc() string {
-	return guuid.New().String()
+	// it must be prevented that the first 8 chars are numbers
+	// this part is used for generating the shoot name but also machine names of a shoot and this is not allowed
+
+	id := guuid.New().String()
+	id = id[1:]
+	s := string(letterRunes[rand.Intn(len(letterRunes))])
+	t := s + id
+	return t
 }
 
 // NewController returns a new instances controller
