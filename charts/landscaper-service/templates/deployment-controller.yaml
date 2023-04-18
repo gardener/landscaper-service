@@ -16,6 +16,8 @@ spec:
       {{- include "landscaper-service.selectorLabels" . | nindent 6 }}
   template:
     metadata:
+      annotations:
+        checksum/config: {{ include "landscaper-service-config" . | sha256sum }}
       labels:
         {{- include "landscaper-service.selectorLabels" . | nindent 8 }}
     spec:
