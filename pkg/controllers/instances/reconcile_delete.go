@@ -36,12 +36,13 @@ const (
 // handleDelete handles the deletion of instances
 func (c *Controller) handleDelete(ctx context.Context, instance *lssv1alpha1.Instance) (reconcile.Result, error) {
 	var (
-		err                           error
-		curOp                         = "Delete"
-		targetDeleted                 = true
-		installationDeleted           = true
-		contextDeleted                = true
-		targetClusterNamespaceDeleted bool
+		err                                 error
+		curOp                               = "Delete"
+		targetDeleted                       = true
+		gardenerServiceAccountTargetDeleted = true
+		installationDeleted                 = true
+		contextDeleted                      = true
+		targetClusterNamespaceDeleted       bool
 	)
 
 	if instance.Status.InstallationRef != nil && !instance.Status.InstallationRef.IsEmpty() {
@@ -81,6 +82,16 @@ func (c *Controller) handleDelete(ctx context.Context, instance *lssv1alpha1.Ins
 		if contextDeleted, err = c.ensureDeleteContextForInstance(ctx, instance); err != nil {
 			return reconcile.Result{}, lsserrors.NewWrappedError(err, curOp, "DeleteContext", err.Error())
 		}
+	}
+
+	if instance.Status.GardenerServiceAccountRef != nil && !instance.Status.GardenerServiceAccountRef.IsEmpty() {
+		if gardenerServiceAccountTargetDeleted, err = c.ensureDeleteGardenerServiceAccountTargetForInstance(ctx, instance); err != nil {
+			return reconcile.Result{}, lsserrors.NewWrappedError(err, curOp, "DeleteGardenerServiceAccountTarget", err.Error())
+		}
+	}
+
+	if !gardenerServiceAccountTargetDeleted {
+		return reconcile.Result{}, nil
 	}
 
 	if !contextDeleted {
@@ -162,6 +173,35 @@ func (c *Controller) ensureDeleteTargetForInstance(ctx context.Context, instance
 	if target.DeletionTimestamp.IsZero() {
 		if err := c.Client().Delete(ctx, target); err != nil {
 			return false, fmt.Errorf("unable to delete target for instance: %w", err)
+		}
+	}
+
+	return false, nil
+}
+
+// ensureDeleteTargetForInstance ensures that the target for an instance is deleted
+func (c *Controller) ensureDeleteGardenerServiceAccountTargetForInstance(ctx context.Context, instance *lssv1alpha1.Instance) (bool, error) {
+	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(instance).String()},
+		lc.KeyMethod, "ensureDeleteGardenerServiceAccountTargetForInstance")
+
+	logger.Info("Delete gardener service account target for instance", lc.KeyResource, instance.Status.GardenerServiceAccountRef.NamespacedName())
+	target := &lsv1alpha1.Target{}
+
+	if err := c.Client().Get(ctx, instance.Status.GardenerServiceAccountRef.NamespacedName(), target); err != nil {
+		if apierrors.IsNotFound(err) {
+			instance.Status.GardenerServiceAccountRef = nil
+			if err := c.Client().Status().Update(ctx, instance); err != nil {
+				return false, fmt.Errorf("failed to remove gardener service account target reference: %w", err)
+			}
+			return true, nil
+		} else {
+			return false, fmt.Errorf("unable to get gardener service account target for instance: %w", err)
+		}
+	}
+
+	if target.DeletionTimestamp.IsZero() {
+		if err := c.Client().Delete(ctx, target); err != nil {
+			return false, fmt.Errorf("unable to delete gardener service account target for instance: %w", err)
 		}
 	}
 

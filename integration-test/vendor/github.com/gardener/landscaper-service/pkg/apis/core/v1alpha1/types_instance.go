@@ -89,6 +89,10 @@ type InstanceStatus struct {
 	// +optional
 	TargetRef *ObjectReference `json:"targetRef,omitempty"`
 
+	// GardenerServiceAccountRef references the Target for the Gardener service account.
+	// +optional
+	GardenerServiceAccountRef *ObjectReference `json:"gardenerServiceAccountRef"`
+
 	// InstallationRef references the Installation for this Instance.
 	// +optional
 	InstallationRef *ObjectReference `json:"installationRef,omitempty"`

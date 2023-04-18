@@ -129,6 +129,19 @@ spec:
                 required:
                 - name
                 type: object
+              gardenerServiceAccountRef:
+                description: GardenerServiceAccountRef references the Target for the
+                  Gardener service account.
+                properties:
+                  name:
+                    description: Name is the name of the kubernetes object.
+                    type: string
+                  namespace:
+                    description: Namespace is the namespace of kubernetes object.
+                    type: string
+                required:
+                - name
+                type: object
               installationRef:
                 description: InstallationRef references the Installation for this
                   Instance.

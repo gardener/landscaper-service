@@ -27,6 +27,10 @@ status:
       name: test
       namespace: {{ .Namespace }}
 
+    gardenerServiceAccountRef:
+      name: test-gardener-sa
+      namespace: {{ .Namespace }}
+
     contextRef:
       name: test
       namespace: {{ .Namespace }}

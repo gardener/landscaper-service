@@ -43,8 +43,6 @@ var (
 )
 
 const (
-	// gardenerServiceAccountTargetName is the name of the gardener service account target
-	gardenerServiceAccountTargetName = "gardener-service-account"
 	// shootAPIVersion is the gardener shoot version
 	shootAPIVersion = "core.gardener.cloud/v1beta1"
 	// shootKind is the gardener shoot kind
@@ -258,18 +256,43 @@ func (c *Controller) mutateTarget(ctx context.Context, target *lsv1alpha1.Target
 // reconcileGardenerServiceAccountTarget reconciles the target for the gardener service account.
 func (c *Controller) reconcileGardenerServiceAccountTarget(ctx context.Context, instance *lssv1alpha1.Instance) error {
 	target := &lsv1alpha1.Target{}
-	target.Name = gardenerServiceAccountTargetName
+	target.GenerateName = fmt.Sprintf("%s-gardener-sa-", instance.GetName())
 	target.Namespace = instance.GetNamespace()
+
+	if instance.Status.GardenerServiceAccountRef != nil && !instance.Status.GardenerServiceAccountRef.IsEmpty() {
+		target.Name = instance.Status.GardenerServiceAccountRef.Name
+		target.Namespace = instance.Status.GardenerServiceAccountRef.Namespace
+	}
 
 	_, err := kubernetes.CreateOrUpdate(ctx, c.Client(), target, func() error {
 		return c.mutateGardenerServiceAccountTarget(ctx, target, instance)
 	})
+
+	if instance.Status.GardenerServiceAccountRef == nil || !instance.Status.GardenerServiceAccountRef.IsObject(target) {
+		instance.Status.GardenerServiceAccountRef = &lssv1alpha1.ObjectReference{
+			Name:      target.GetName(),
+			Namespace: target.GetNamespace(),
+		}
+
+		if err := c.Client().Status().Update(ctx, instance); err != nil {
+			return fmt.Errorf("unable to gardener service account target reference for instance: %w", err)
+		}
+	}
 
 	return err
 }
 
 // mutateGardenerServiceAccountTarget creates or updates the target for the gardener service account.
 func (c *Controller) mutateGardenerServiceAccountTarget(ctx context.Context, target *lsv1alpha1.Target, instance *lssv1alpha1.Instance) error {
+	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(instance).String()},
+		lc.KeyMethod, "mutateGardenerServiceAccountTarget")
+
+	if len(target.Name) > 0 {
+		logger.Info("Updating target", lc.KeyResource, client.ObjectKeyFromObject(target).String())
+	} else {
+		logger.Info("Creating target", lc.KeyResource, types.NamespacedName{Name: target.GenerateName, Namespace: target.Namespace}.String())
+	}
+
 	if err := controllerutil.SetControllerReference(instance, target, c.Scheme()); err != nil {
 		return fmt.Errorf("unable to set controller reference for target: %w", err)
 	}
@@ -462,7 +485,7 @@ func (c *Controller) mutateInstallation(ctx context.Context, installation *lsv1a
 				},
 				{
 					Name:   "gardenerServiceAccount",
-					Target: gardenerServiceAccountTargetName,
+					Target: fmt.Sprintf("#%s", instance.Status.GardenerServiceAccountRef.Name),
 				},
 			},
 		},
