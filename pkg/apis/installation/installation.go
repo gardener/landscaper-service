@@ -140,7 +140,7 @@ func NewLandscaperConfig() *LandscaperConfig {
 		},
 		Webhooks: Webhooks{
 			ServicePort: WebhooksServicePortDefault,
-			Replicas:    ReplicasDefault,
+			Replicas:    2,
 		},
 		Deployers:       make([]string, 0),
 		DeployersConfig: lsv1alpha1.NewAnyJSON([]byte("{}")),
