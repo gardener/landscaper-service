@@ -481,11 +481,11 @@ func (c *Controller) mutateInstallation(ctx context.Context, installation *lsv1a
 			Targets: []lsv1alpha1.TargetImport{
 				{
 					Name:   "hostingCluster",
-					Target: fmt.Sprintf("#%s", instance.Status.TargetRef.Name),
+					Target: instance.Status.TargetRef.Name,
 				},
 				{
 					Name:   "gardenerServiceAccount",
-					Target: fmt.Sprintf("#%s", instance.Status.GardenerServiceAccountRef.Name),
+					Target: instance.Status.GardenerServiceAccountRef.Name,
 				},
 			},
 		},
