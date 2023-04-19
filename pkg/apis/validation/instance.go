@@ -59,20 +59,20 @@ func validateInstanceSpecUpdate(spec *lsscore.InstanceSpec, oldSpec *lsscore.Ins
 	allErrs := field.ErrorList{}
 
 	if spec.TenantId != oldSpec.TenantId {
-		allErrs = append(allErrs, field.Forbidden(fldPath.Child("tenantId"), fmt.Sprintf("is immutable")))
+		allErrs = append(allErrs, field.Forbidden(fldPath.Child("tenantId"), "is immutable"))
 	}
 
 	if spec.ID != oldSpec.ID {
-		allErrs = append(allErrs, field.Forbidden(fldPath.Child("id"), fmt.Sprintf("is immutable")))
+		allErrs = append(allErrs, field.Forbidden(fldPath.Child("id"), "is immutable"))
 	}
 
 	if !spec.ServiceTargetConfigRef.Equals(&oldSpec.ServiceTargetConfigRef) {
-		allErrs = append(allErrs, field.Forbidden(fldPath.Child("serviceTargetConfigRef"), fmt.Sprintf("is immutable")))
+		allErrs = append(allErrs, field.Forbidden(fldPath.Child("serviceTargetConfigRef"), "is immutable"))
 	}
 
 	if spec.HighAvailabilityConfig != nil && oldSpec.HighAvailabilityConfig != nil {
 		if spec.HighAvailabilityConfig.ControlPlaneFailureTolerance != oldSpec.HighAvailabilityConfig.ControlPlaneFailureTolerance {
-			allErrs = append(allErrs, field.Forbidden(fldPath.Child("highAvailabilityConfig").Child("controlPlaneFailureTolerance"), fmt.Sprintf("is immutable")))
+			allErrs = append(allErrs, field.Forbidden(fldPath.Child("highAvailabilityConfig").Child("controlPlaneFailureTolerance"), "is immutable"))
 		}
 	}
 
