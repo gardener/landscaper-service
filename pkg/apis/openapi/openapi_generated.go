@@ -30,6 +30,7 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AvailabilityCollectionStatus": schema_pkg_apis_core_v1alpha1_AvailabilityCollectionStatus(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AvailabilityInstance":         schema_pkg_apis_core_v1alpha1_AvailabilityInstance(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Error":                        schema_pkg_apis_core_v1alpha1_Error(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.HighAvailabilityConfig":       schema_pkg_apis_core_v1alpha1_HighAvailabilityConfig(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Instance":                     schema_pkg_apis_core_v1alpha1_Instance(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceList":                 schema_pkg_apis_core_v1alpha1_InstanceList(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceSpec":                 schema_pkg_apis_core_v1alpha1_InstanceSpec(ref),
@@ -752,6 +753,28 @@ func schema_pkg_apis_core_v1alpha1_Error(ref common.ReferenceCallback) common.Op
 	}
 }
 
+func schema_pkg_apis_core_v1alpha1_HighAvailabilityConfig(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "HighAvailabilityConfig specifies the HA configuration for the resource cluster (shoot cluster)",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"controlPlaneFailureTolerance": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ControlPlaneFailureTolerance specifies the Kubernetes control plane failure tolerance mode. Allowed values are: node, zone",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"controlPlaneFailureTolerance"},
+			},
+		},
+	}
+}
+
 func schema_pkg_apis_core_v1alpha1_Instance(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
@@ -900,12 +923,18 @@ func schema_pkg_apis_core_v1alpha1_InstanceSpec(ref common.ReferenceCallback) co
 							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AutomaticReconcile"),
 						},
 					},
+					"highAvailabilityConfig": {
+						SchemaProps: spec.SchemaProps{
+							Description: "HighAvailabilityConfig specifies the HA configuration of the resource cluster (shoot cluster)",
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.HighAvailabilityConfig"),
+						},
+					},
 				},
 				Required: []string{"tenantId", "id", "landscaperConfiguration", "serviceTargetConfigRef"},
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AutomaticReconcile", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperConfiguration", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.OIDCConfig", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AutomaticReconcile", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.HighAvailabilityConfig", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperConfiguration", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.OIDCConfig", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference"},
 	}
 }
 
@@ -1173,12 +1202,18 @@ func schema_pkg_apis_core_v1alpha1_LandscaperDeploymentSpec(ref common.Reference
 							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.OIDCConfig"),
 						},
 					},
+					"highAvailabilityConfig": {
+						SchemaProps: spec.SchemaProps{
+							Description: "HighAvailabilityConfig specifies the HA configuration of the resource cluster (shoot cluster)",
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.HighAvailabilityConfig"),
+						},
+					},
 				},
 				Required: []string{"tenantId", "purpose", "landscaperConfiguration"},
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperConfiguration", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.OIDCConfig"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.HighAvailabilityConfig", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperConfiguration", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.OIDCConfig"},
 	}
 }
 

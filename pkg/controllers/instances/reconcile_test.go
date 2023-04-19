@@ -120,15 +120,22 @@ var _ = Describe("Reconcile", func() {
 		Expect(installation.Spec.ImportDataMappings[lsinstallation.ShootNameImportName]).To(Equal(utils.StringToAnyJSON(uniqueId[:8])))
 		Expect(installation.Spec.ImportDataMappings[lsinstallation.ShootNamespaceImportName]).To(Equal(utils.StringToAnyJSON("garden-test")))
 		Expect(installation.Spec.ImportDataMappings[lsinstallation.ShootSecretBindingImportName]).To(Equal(utils.StringToAnyJSON("secret-binding")))
-		Expect(installation.Spec.ImportDataMappings[lsinstallation.ShootLabelsImportName]).ToNot(BeNil())
 
-		shootAnnotationsRaw := installation.Spec.ImportDataMappings[lsinstallation.ShootLabelsImportName]
-		var shootAnnotations map[string]interface{}
-		Expect(json.Unmarshal(shootAnnotationsRaw.RawMessage, &shootAnnotations)).To(Succeed())
-		Expect(shootAnnotations).To(HaveKeyWithValue(lssv1alpha1.ShootTenantIDLabel, instance.Spec.TenantId))
-		Expect(shootAnnotations).To(HaveKeyWithValue(lssv1alpha1.ShootInstanceIDLabel, instance.Spec.ID))
-		Expect(shootAnnotations).To(HaveKeyWithValue(lssv1alpha1.ShootInstanceNameLabel, instance.Name))
-		Expect(shootAnnotations).To(HaveKeyWithValue(lssv1alpha1.ShootInstanceNamespaceLabel, instance.Namespace))
+		Expect(installation.Spec.ImportDataMappings[lsinstallation.ShootConfigImportName]).ToNot(BeNil())
+		shootConfigRaw := installation.Spec.ImportDataMappings[lsinstallation.ShootConfigImportName]
+		var shootConfig lssconfig.ShootConfiguration
+		Expect(json.Unmarshal(shootConfigRaw.RawMessage, &shootConfig)).To(Succeed())
+		Expect(shootConfig.ControlPlane).ToNot(BeNil())
+		Expect(shootConfig.ControlPlane.HighAvailability.FailureTolerance).To(Equal("zone"))
+
+		Expect(installation.Spec.ImportDataMappings[lsinstallation.ShootLabelsImportName]).ToNot(BeNil())
+		shootLabelsRaw := installation.Spec.ImportDataMappings[lsinstallation.ShootLabelsImportName]
+		var shootLabels map[string]interface{}
+		Expect(json.Unmarshal(shootLabelsRaw.RawMessage, &shootLabels)).To(Succeed())
+		Expect(shootLabels).To(HaveKeyWithValue(lssv1alpha1.ShootTenantIDLabel, instance.Spec.TenantId))
+		Expect(shootLabels).To(HaveKeyWithValue(lssv1alpha1.ShootInstanceIDLabel, instance.Spec.ID))
+		Expect(shootLabels).To(HaveKeyWithValue(lssv1alpha1.ShootInstanceNameLabel, instance.Name))
+		Expect(shootLabels).To(HaveKeyWithValue(lssv1alpha1.ShootInstanceNamespaceLabel, instance.Namespace))
 
 		Expect(installation.Annotations).ToNot(BeNil())
 		Expect(installation.Annotations).To(HaveKey(lsv1alpha1.OperationAnnotation))

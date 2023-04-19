@@ -19,6 +19,9 @@
     },
     "maintenance": {
       "$ref": "#definition/maintenanceConfig"
+    },
+    "controlPlane": {
+      "$ref": "#definition/controlPlaneConfig"
     }
   },
   "definitions": {
@@ -119,6 +122,19 @@
             },
             "end": {
               "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "controlPlaneConfig": {
+      "properties": {
+        "highAvailability": {
+          "type": "object",
+          "properties": {
+            "failureTolerance": {
+              "type": "string",
+              "enum": ["node", "zone"]
             }
           }
         }

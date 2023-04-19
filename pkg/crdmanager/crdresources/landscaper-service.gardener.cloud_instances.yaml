@@ -44,6 +44,18 @@ spec:
                 required:
                 - interval
                 type: object
+              highAvailabilityConfig:
+                description: HighAvailabilityConfig specifies the HA configuration
+                  of the resource cluster (shoot cluster)
+                properties:
+                  controlPlaneFailureTolerance:
+                    description: 'ControlPlaneFailureTolerance specifies the Kubernetes
+                      control plane failure tolerance mode. Allowed values are: node,
+                      zone'
+                    type: string
+                required:
+                - controlPlaneFailureTolerance
+                type: object
               id:
                 description: ID is the id of this instance
                 type: string

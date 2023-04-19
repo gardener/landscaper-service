@@ -20,10 +20,13 @@ const (
 )
 
 // ValidateLandscaperDeployment validates a LandscaperDeployment
-func ValidateLandscaperDeployment(deployment *lsscore.LandscaperDeployment) field.ErrorList {
+func ValidateLandscaperDeployment(deployment *lsscore.LandscaperDeployment, oldDeployment *lsscore.LandscaperDeployment) field.ErrorList {
 	allErrs := field.ErrorList{}
 	allErrs = append(allErrs, validateLandscaperDeploymentObjectMeta(&deployment.ObjectMeta, field.NewPath("metadata"))...)
 	allErrs = append(allErrs, validateLandscaperDeploymentSpec(&deployment.Spec, field.NewPath("spec"))...)
+	if oldDeployment != nil {
+		allErrs = append(allErrs, validateLandscaperDeploymentSpecUpdate(&deployment.Spec, &oldDeployment.Spec, field.NewPath("spec"))...)
+	}
 	return allErrs
 }
 
@@ -42,6 +45,26 @@ func validateLandscaperDeploymentSpec(spec *lsscore.LandscaperDeploymentSpec, fl
 
 	if len(spec.Purpose) == 0 {
 		allErrs = append(allErrs, field.Required(fldPath.Child("purpose"), "purpose may not be empty"))
+	}
+
+	if spec.HighAvailabilityConfig != nil {
+		allErrs = append(allErrs, ValidateHighAvailabilityConfig(spec.HighAvailabilityConfig, fldPath.Child("highAvailabilityConfig"))...)
+	}
+
+	return allErrs
+}
+
+func validateLandscaperDeploymentSpecUpdate(spec *lsscore.LandscaperDeploymentSpec, oldSpec *lsscore.LandscaperDeploymentSpec, fldPath *field.Path) field.ErrorList {
+	allErrs := field.ErrorList{}
+
+	if spec.TenantId != oldSpec.TenantId {
+		allErrs = append(allErrs, field.Forbidden(fldPath.Child("tenantId"), "is immutable"))
+	}
+
+	if spec.HighAvailabilityConfig != nil && oldSpec.HighAvailabilityConfig != nil {
+		if spec.HighAvailabilityConfig.ControlPlaneFailureTolerance != oldSpec.HighAvailabilityConfig.ControlPlaneFailureTolerance {
+			allErrs = append(allErrs, field.Forbidden(fldPath.Child("highAvailabilityConfig").Child("controlPlaneFailureTolerance"), "is immutable"))
+		}
 	}
 
 	return allErrs

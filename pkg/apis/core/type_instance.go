@@ -57,6 +57,10 @@ type InstanceSpec struct {
 	// AutomaticReconcile specifies the configuration on when this instance is being automatically reconciled.
 	// +optional
 	AutomaticReconcile *AutomaticReconcile `json:"automaticReconcile,omitempty"`
+
+	// HighAvailabilityConfig specifies the HA configuration of the resource cluster (shoot cluster)
+	// +optional
+	HighAvailabilityConfig *HighAvailabilityConfig `json:"highAvailabilityConfig"`
 }
 
 // AutomaticReconcile defines the automatic reconcile configuration.

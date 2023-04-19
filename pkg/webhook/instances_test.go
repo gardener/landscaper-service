@@ -153,4 +153,173 @@ var _ = Describe("LandscaperDeployment", func() {
 
 		Expect(string(response.Result.Reason)).To(ContainSubstring("spec.serviceTargetConfigRef.name"))
 	})
+
+	It("should allow a valid update", func() {
+		testObj := createInstance("test", "lss-system")
+
+		testObj.Spec = lssv1alpha1.InstanceSpec{
+			TenantId: "test0001",
+			ID:       "inst0001",
+			ServiceTargetConfigRef: lssv1alpha1.ObjectReference{
+				Name:      "test",
+				Namespace: "lss-system",
+			},
+			LandscaperConfiguration: lssv1alpha1.LandscaperConfiguration{
+				Deployers: []string{
+					"helm",
+				},
+			},
+		}
+
+		request := CreateAdmissionRequest(testObj)
+		response := validator.Handle(ctx, request)
+		Expect(response).ToNot(BeNil())
+		Expect(response.Allowed).To(BeTrue())
+
+		oldObject := testObj.DeepCopyObject()
+		testObj.Spec.LandscaperConfiguration.Deployers = []string{
+			"manifest",
+		}
+
+		request = CreateAdmissionRequestUpdate(testObj, oldObject)
+		response = validator.Handle(ctx, request)
+		Expect(response).ToNot(BeNil())
+		Expect(response.Allowed).To(BeTrue())
+	})
+
+	It("should deny an update of the tenant id", func() {
+		testObj := createInstance("test", "lss-system")
+
+		testObj.Spec = lssv1alpha1.InstanceSpec{
+			TenantId: "test0001",
+			ID:       "inst0001",
+			ServiceTargetConfigRef: lssv1alpha1.ObjectReference{
+				Name:      "test",
+				Namespace: "lss-system",
+			},
+			LandscaperConfiguration: lssv1alpha1.LandscaperConfiguration{
+				Deployers: []string{
+					"helm",
+				},
+			},
+		}
+
+		request := CreateAdmissionRequest(testObj)
+		response := validator.Handle(ctx, request)
+		Expect(response).ToNot(BeNil())
+		Expect(response.Allowed).To(BeTrue())
+
+		oldObject := testObj.DeepCopyObject()
+		testObj.Spec.TenantId = "test0002"
+
+		request = CreateAdmissionRequestUpdate(testObj, oldObject)
+		response = validator.Handle(ctx, request)
+		Expect(response).ToNot(BeNil())
+		Expect(response.Allowed).To(BeFalse())
+	})
+
+	It("should deny an update of the instance id", func() {
+		testObj := createInstance("test", "lss-system")
+
+		testObj.Spec = lssv1alpha1.InstanceSpec{
+			TenantId: "test0001",
+			ID:       "inst0001",
+			ServiceTargetConfigRef: lssv1alpha1.ObjectReference{
+				Name:      "test",
+				Namespace: "lss-system",
+			},
+			LandscaperConfiguration: lssv1alpha1.LandscaperConfiguration{
+				Deployers: []string{
+					"helm",
+				},
+			},
+		}
+
+		request := CreateAdmissionRequest(testObj)
+		response := validator.Handle(ctx, request)
+		Expect(response).ToNot(BeNil())
+		Expect(response.Allowed).To(BeTrue())
+
+		oldObject := testObj.DeepCopyObject()
+		testObj.Spec.ID = "inst0002"
+
+		request = CreateAdmissionRequestUpdate(testObj, oldObject)
+		response = validator.Handle(ctx, request)
+		Expect(response).ToNot(BeNil())
+		Expect(response.Allowed).To(BeFalse())
+	})
+
+	It("should deny an update of the service target config ref", func() {
+		testObj := createInstance("test", "lss-system")
+
+		testObj.Spec = lssv1alpha1.InstanceSpec{
+			TenantId: "test0001",
+			ID:       "inst0001",
+			ServiceTargetConfigRef: lssv1alpha1.ObjectReference{
+				Name:      "test",
+				Namespace: "lss-system",
+			},
+			LandscaperConfiguration: lssv1alpha1.LandscaperConfiguration{
+				Deployers: []string{
+					"helm",
+				},
+			},
+		}
+
+		request := CreateAdmissionRequest(testObj)
+		response := validator.Handle(ctx, request)
+		Expect(response).ToNot(BeNil())
+		Expect(response.Allowed).To(BeTrue())
+
+		oldObject := testObj.DeepCopyObject()
+		testObj.Spec.ServiceTargetConfigRef = lssv1alpha1.ObjectReference{
+			Name:      "test1",
+			Namespace: "lss-system",
+		}
+
+		request = CreateAdmissionRequestUpdate(testObj, oldObject)
+		response = validator.Handle(ctx, request)
+		Expect(response).ToNot(BeNil())
+		Expect(response.Allowed).To(BeFalse())
+	})
+
+	It("should validate high availability config", func() {
+		testObj := createInstance("test", "lss-system")
+		testObj.Spec = lssv1alpha1.InstanceSpec{
+			TenantId: "test0001",
+			ID:       "inst0001",
+			ServiceTargetConfigRef: lssv1alpha1.ObjectReference{
+				Name:      "test",
+				Namespace: "lss-system",
+			},
+			LandscaperConfiguration: lssv1alpha1.LandscaperConfiguration{
+				Deployers: []string{
+					"helm",
+				},
+			},
+		}
+
+		request := CreateAdmissionRequest(testObj)
+		response := validator.Handle(ctx, request)
+		Expect(response).ToNot(BeNil())
+		Expect(response.Allowed).To(BeTrue())
+
+		oldObject := testObj.DeepCopyObject()
+		testObj.Spec.HighAvailabilityConfig = &lssv1alpha1.HighAvailabilityConfig{
+			ControlPlaneFailureTolerance: "node",
+		}
+
+		request = CreateAdmissionRequestUpdate(testObj, oldObject)
+		response = validator.Handle(ctx, request)
+		Expect(response).ToNot(BeNil())
+		Expect(response.Allowed).To(BeTrue())
+
+		oldObject = testObj.DeepCopyObject()
+		testObj.Spec.HighAvailabilityConfig.ControlPlaneFailureTolerance = "zone"
+
+		request = CreateAdmissionRequestUpdate(testObj, oldObject)
+		response = validator.Handle(ctx, request)
+		Expect(response).ToNot(BeNil())
+		Expect(response.Allowed).To(BeFalse())
+	})
 })

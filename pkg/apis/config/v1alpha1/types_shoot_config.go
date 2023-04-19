@@ -18,6 +18,9 @@ type ShootConfiguration struct {
 	Kubernetes ShootKubernetesConfig `json:"kubernetes"`
 	// Maintenance is the shoot maintenance configuration.
 	Maintenance ShootMaintenanceConfig `json:"maintenance"`
+	// ControlPlane holds general control plane settings.
+	// +optional
+	ControlPlane *ControlPlane `json:"controlPlane,omitempty"`
 }
 
 // ShootProviderConfiguration is the shoot provider configuration.
@@ -114,4 +117,15 @@ type ShootMaintenanceTimeWindow struct {
 	Begin string `json:"begin"`
 	// Begin specifies the ending of the auto update time window.
 	End string `json:"end"`
+}
+
+// ControlPlane holds general control plane settings.
+type ControlPlane struct {
+	// HighAvailability specifies the control plane high availability settings.
+	HighAvailability HighAvailability `json:"highAvailability"`
+}
+
+// HighAvailability specifies the control plane high availability settings.
+type HighAvailability struct {
+	FailureTolerance string `json:"failureTolerance"`
 }
