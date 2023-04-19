@@ -107,6 +107,7 @@ var _ = Describe("Reconcile", func() {
 
 		target := &lsv1alpha1.Target{}
 		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: instance.Status.TargetRef.Name, Namespace: instance.Status.TargetRef.Namespace}, target)).To(Succeed())
+		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: instance.Status.GardenerServiceAccountRef.Name, Namespace: instance.Status.GardenerServiceAccountRef.Namespace}, target)).To(Succeed())
 
 		installation := &lsv1alpha1.Installation{}
 		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: instance.Status.InstallationRef.Name, Namespace: instance.Status.InstallationRef.Namespace}, installation)).To(Succeed())

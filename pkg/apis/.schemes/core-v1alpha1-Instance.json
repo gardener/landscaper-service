@@ -128,6 +128,10 @@
           "description": "ContextRef references the landscaper context for this Instance.",
           "$ref": "#/definitions/core-v1alpha1-ObjectReference"
         },
+        "gardenerServiceAccountRef": {
+          "description": "GardenerServiceAccountRef references the Target for the Gardener service account.",
+          "$ref": "#/definitions/core-v1alpha1-ObjectReference"
+        },
         "installationRef": {
           "description": "InstallationRef references the Installation for this Instance.",
           "$ref": "#/definitions/core-v1alpha1-ObjectReference"

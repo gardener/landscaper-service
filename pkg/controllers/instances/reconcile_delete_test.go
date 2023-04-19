@@ -108,6 +108,7 @@ var _ = Describe("Delete", func() {
 
 		instance := state.GetInstance("test")
 		target := state.GetTarget("test")
+		gardenerSa := state.GetTarget("test-gardener-sa")
 		installation := state.GetInstallation("test")
 		context := state.GetContext("test")
 
@@ -121,11 +122,14 @@ var _ = Describe("Delete", func() {
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
 		// target
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		// gardener service account
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
 		// context
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
 
 		Expect(testenv.WaitForObjectToBeDeleted(ctx, instance, 5*time.Second)).To(Succeed())
 		Expect(testenv.WaitForObjectToBeDeleted(ctx, target, 5*time.Second)).To(Succeed())
+		Expect(testenv.WaitForObjectToBeDeleted(ctx, gardenerSa, 5*time.Second)).To(Succeed())
 		Expect(testenv.WaitForObjectToBeDeleted(ctx, installation, 5*time.Second)).To(Succeed())
 		Expect(testenv.WaitForObjectToBeDeleted(ctx, context, 5*time.Second)).To(Succeed())
 	})

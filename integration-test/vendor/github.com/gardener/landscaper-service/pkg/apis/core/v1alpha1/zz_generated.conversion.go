@@ -669,6 +669,7 @@ func autoConvert_v1alpha1_InstanceStatus_To_core_InstanceStatus(in *InstanceStat
 	out.LandscaperServiceComponent = (*core.LandscaperServiceComponent)(unsafe.Pointer(in.LandscaperServiceComponent))
 	out.ContextRef = (*core.ObjectReference)(unsafe.Pointer(in.ContextRef))
 	out.TargetRef = (*core.ObjectReference)(unsafe.Pointer(in.TargetRef))
+	out.GardenerServiceAccountRef = (*core.ObjectReference)(unsafe.Pointer(in.GardenerServiceAccountRef))
 	out.InstallationRef = (*core.ObjectReference)(unsafe.Pointer(in.InstallationRef))
 	out.ClusterEndpoint = in.ClusterEndpoint
 	out.UserKubeconfig = in.UserKubeconfig
@@ -690,6 +691,7 @@ func autoConvert_core_InstanceStatus_To_v1alpha1_InstanceStatus(in *core.Instanc
 	out.LandscaperServiceComponent = (*LandscaperServiceComponent)(unsafe.Pointer(in.LandscaperServiceComponent))
 	out.ContextRef = (*ObjectReference)(unsafe.Pointer(in.ContextRef))
 	out.TargetRef = (*ObjectReference)(unsafe.Pointer(in.TargetRef))
+	out.GardenerServiceAccountRef = (*ObjectReference)(unsafe.Pointer(in.GardenerServiceAccountRef))
 	out.InstallationRef = (*ObjectReference)(unsafe.Pointer(in.InstallationRef))
 	out.ClusterEndpoint = in.ClusterEndpoint
 	out.UserKubeconfig = in.UserKubeconfig

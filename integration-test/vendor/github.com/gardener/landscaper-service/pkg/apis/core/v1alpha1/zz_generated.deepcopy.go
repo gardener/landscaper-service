@@ -301,6 +301,11 @@ func (in *InstanceStatus) DeepCopyInto(out *InstanceStatus) {
 		*out = new(ObjectReference)
 		**out = **in
 	}
+	if in.GardenerServiceAccountRef != nil {
+		in, out := &in.GardenerServiceAccountRef, &out.GardenerServiceAccountRef
+		*out = new(ObjectReference)
+		**out = **in
+	}
 	if in.InstallationRef != nil {
 		in, out := &in.InstallationRef, &out.InstallationRef
 		*out = new(ObjectReference)
