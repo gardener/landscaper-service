@@ -15,7 +15,7 @@ relation: external
 version: 4.5.2
 access:
   type: ociRegistry
-  imageReference: eu.gcr.io/gardener-project/landscaper-service/charts/ingress-nginx@sha256:eaa20d802ddb818b590a1ef85d67f985e72b775f41bf1438cbdb045e09fcf19b
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/charts/ingress-nginx@sha256:e3da8f5f8f1c1598572b89c2b597452f4f09011b44be22086bdc6565e402ee76
 ...
 ---
 type: ociImage
