@@ -50,6 +50,8 @@ const (
 	// automaticReconcileSeconds is the number of seconds after which installations of landscaper instances are
 	// automatically reconciled. Important: the value must be shorter than tokenExpirationSeconds
 	automaticReconcileSeconds = 14 * 24 * 60 * 60
+	// failedReconcileSeconds is the number of seconds after which a failed landscaper instance is automatically reconciled.
+	failedReconcileSeconds = 60 * 10
 	// tokenExpirationSeconds defines how long the tokens are valid	which the landscaper and sidecar controllers use
 	// to access the resource cluster, e.g. for watching installations, namespace registrations etc.
 	// Important: the value must be larger than automaticReconcileSeconds.
@@ -530,6 +532,9 @@ func (c *Controller) mutateInstallation(ctx context.Context, installation *lsv1a
 		AutomaticReconcile: &lsv1alpha1.AutomaticReconcile{
 			SucceededReconcile: &lsv1alpha1.SucceededReconcile{
 				Interval: &lsv1alpha1.Duration{Duration: time.Duration(automaticReconcileSeconds) * time.Second},
+			},
+			FailedReconcile: &lsv1alpha1.FailedReconcile{
+				Interval: &lsv1alpha1.Duration{Duration: time.Duration(failedReconcileSeconds) * time.Second},
 			},
 		},
 	}
