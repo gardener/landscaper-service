@@ -134,6 +134,7 @@ func (c *Controller) mutateInstance(ctx context.Context, deployment *lssv1alpha1
 	instance.Spec.TenantId = deployment.Spec.TenantId
 	instance.Spec.LandscaperConfiguration = deployment.Spec.LandscaperConfiguration
 	instance.Spec.OIDCConfig = deployment.Spec.OIDCConfig
+	instance.Spec.HighAvailabilityConfig = deployment.Spec.HighAvailabilityConfig
 
 	c.Operation.Scheme().Default(instance)
 
