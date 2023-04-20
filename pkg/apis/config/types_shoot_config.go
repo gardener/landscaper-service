@@ -127,5 +127,11 @@ type ControlPlane struct {
 
 // HighAvailability specifies the control plane high availability settings.
 type HighAvailability struct {
-	FailureTolerance string `json:"failureTolerance"`
+	// FailureTolerance specifies the failure tolerance type.
+	FailureTolerance FailureTolerance `json:"failureTolerance"`
+}
+
+// FailureTolerance specifies the failure tolerance type.
+type FailureTolerance struct {
+	Type string `json:"type"`
 }

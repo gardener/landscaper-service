@@ -453,7 +453,9 @@ func (c *Controller) mutateInstallation(ctx context.Context, installation *lsv1a
 	if instance.Spec.HighAvailabilityConfig != nil {
 		shootConfig.ControlPlane = &lssconfig.ControlPlane{
 			HighAvailability: lssconfig.HighAvailability{
-				FailureTolerance: instance.Spec.HighAvailabilityConfig.ControlPlaneFailureTolerance,
+				FailureTolerance: lssconfig.FailureTolerance{
+					Type: instance.Spec.HighAvailabilityConfig.ControlPlaneFailureTolerance,
+				},
 			},
 		}
 	}

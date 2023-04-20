@@ -126,7 +126,7 @@ var _ = Describe("Reconcile", func() {
 		var shootConfig lssconfig.ShootConfiguration
 		Expect(json.Unmarshal(shootConfigRaw.RawMessage, &shootConfig)).To(Succeed())
 		Expect(shootConfig.ControlPlane).ToNot(BeNil())
-		Expect(shootConfig.ControlPlane.HighAvailability.FailureTolerance).To(Equal("zone"))
+		Expect(shootConfig.ControlPlane.HighAvailability.FailureTolerance.Type).To(Equal("zone"))
 
 		Expect(installation.Spec.ImportDataMappings[lsinstallation.ShootLabelsImportName]).ToNot(BeNil())
 		shootLabelsRaw := installation.Spec.ImportDataMappings[lsinstallation.ShootLabelsImportName]
