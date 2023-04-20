@@ -12,26 +12,26 @@ input:
 type: helm.io/chart
 name: sap-btp-service-operator-chart
 relation: external
-version: v0.3.6
+version: v0.4.2
 access:
   type: ociRegistry
-  imageReference: eu.gcr.io/gardener-project/landscaper-service/charts/sap-btp-operator@sha256:867ccc3c9deff01eb7dcbb402eb054ed43bbc4e34061eae42a2ef359171265d9
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/charts/sap-btp-operator@sha256:bc2f57cc6c18968a2d3ff42cdd925647818b3f817fede9b3a498876879d0b8f7
 ...
 ---
 type: ociImage
 name: kube-rbac-proxy
-version: v0.11.0
+version: v0.14.1
 relation: external
 access:
   type: ociRegistry
-  imageReference: eu.gcr.io/gardener-project/landscaper-service/kube-rbac-proxy@sha256:a4f6c39b17f2ba68366c6d4e139ed18ede2ad9f3f9d5bf7477bdcbef73b43e54
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/kube-rbac-proxy@sha256:f3a02d19d100c4fde7eaaee96937cc9d2a87e86c6dc15c038eb164e3f5a72dac
 ...
 ---
 type: ociImage
 name: sap-btp-service-operator-controller
-version: v0.3.6
+version: v0.4.2
 relation: external
 access:
   type: ociRegistry
-  imageReference: eu.gcr.io/gardener-project/landscaper-service/sap-btp-service-operator-controller@sha256:bae17bfc5d6c071f76f840026d881b131df714ca08f9a69460d6270e87b4f706
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/sap-btp-service-operator-controller@sha256:f4955fcd9de63ee2ec561ae2aa0b278da0a346ca4011822be2d27579a9193e1c
 ...

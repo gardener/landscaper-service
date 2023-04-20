@@ -26,31 +26,43 @@ gcloud auth print-access-token | helm registry login -u oauth2accesstoken --pass
 
 ## cert-manager
 
+Check new version on [artifacthub.io / cert-manager](https://artifacthub.io/packages/helm/cert-manager/cert-manager)
+
 ```shell
-export CERT_MANAGER_VERSION=v1.11.0
+export CERT_MANAGER_VERSION=v1.11.1
 
 ./hack/dependency-update/cert-manager.sh ${CERT_MANAGER_VERSION}
 ```
 
 ## SAP BTP Operator
 
-```shell
-export SAP_BTP_OPERATOR_VERSION=v0.3.6
+Check new version on [SAP / sap-btp-service-operator](https://github.com/sap/sap-btp-service-operator/pkgs/container/sap-btp-service-operator%2Fcontroller) and [brancz / kube-rbac-proxy](https://quay.io/repository/brancz/kube-rbac-proxy?tab=tags&tag=latest)
 
-./hack/dependency-update/sap-btp-operator.sh ${SAP_BTP_OPERATOR_VERSION}
+```shell
+export SAP_BTP_OPERATOR_VERSION=v0.4.2
+export KUBE_RBAC_PROXY_VERSION=v0.14.1
+
+./hack/dependency-update/sap-btp-operator.sh ${SAP_BTP_OPERATOR_VERSION} ${KUBE_RBAC_PROXY_VERSION}
 ```
 
 ## fluent-bit
+
+Check new version on [fluentbit.io](https://docs.fluentbit.io/manual/installation/docker#tags-and-versions)
+
 ```shell
-export FLUENTBIT_VERSION=2.0.8
+export FLUENTBIT_VERSION=2.0.9
 
 ./hack/dependency-update/fluentbit.sh ${FLUENTBIT_VERSION}
 ```
 
 ## ingress-controller
+
+Check new version for [helm chart & image](https://github.com/kubernetes/ingress-nginx/releases) 
+
+
 ```shell
-export INGRESS_NGINX_CHART_VERSION=4.4.2
-export INGRESS_NGINX_IMAGE_VERSION=v1.5.1
+export INGRESS_NGINX_CHART_VERSION=4.5.2
+export INGRESS_NGINX_IMAGE_VERSION=v1.6.4
 
 ./hack/dependency-update/ingress-controller.sh ${INGRESS_NGINX_CHART_VERSION} ${INGRESS_NGINX_IMAGE_VERSION}
 ```
