@@ -133,8 +133,13 @@
           "type": "object",
           "properties": {
             "failureTolerance": {
-              "type": "string",
-              "enum": ["node", "zone"]
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": ["node", "zone"]
+                }
+              }
             }
           }
         }

@@ -78,6 +78,9 @@ func (r *CreateDeploymentRunner) createDeployment() error {
 					"manifest",
 				},
 			},
+			HighAvailabilityConfig: &lssv1alpha1.HighAvailabilityConfig{
+				ControlPlaneFailureTolerance: "node",
+			},
 		},
 	}
 
