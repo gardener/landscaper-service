@@ -27,7 +27,7 @@ landscaper-service:
             image: eu.gcr.io/gardener-project/landscaper-service/landscaper-service-target-shoot-sidecar-server
     steps:
       verify:
-        image: 'golang:1.19.6'
+        image: 'golang:1.19.8'
       publish-helm-charts:
         depends:
         - verify
