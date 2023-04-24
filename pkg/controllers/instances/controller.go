@@ -37,9 +37,8 @@ var letterRunes = []rune("abcdefghijklmnopqrstuvwxyz")
 // Controller is the instances controller
 type Controller struct {
 	operation.Operation
-	log                          logging.Logger
-	gardenerServiceAccountClient client.Client
-	reconcileHelper              *automaticReconcileHelper
+	log             logging.Logger
+	reconcileHelper *automaticReconcileHelper
 
 	UniqueIDFunc func() string
 
@@ -96,12 +95,11 @@ func (t *TestKubeClientExtractor) GetKubeClientFromServiceTargetConfig(_ context
 // NewTestActuator creates a new controller for testing purposes.
 func NewTestActuator(op operation.Operation, logger logging.Logger) *Controller {
 	ctrl := &Controller{
-		Operation:                    op,
-		log:                          logger,
-		UniqueIDFunc:                 defaultUniqueIdFunc,
-		gardenerServiceAccountClient: op.Client(),
-		reconcileHelper:              newAutomaticReconcileHelper(op.Client(), clock.RealClock{}),
-		kubeClientExtractor:          &TestKubeClientExtractor{},
+		Operation:           op,
+		log:                 logger,
+		UniqueIDFunc:        defaultUniqueIdFunc,
+		reconcileHelper:     newAutomaticReconcileHelper(op.Client(), clock.RealClock{}),
+		kubeClientExtractor: &TestKubeClientExtractor{},
 	}
 	ctrl.ReconcileFunc = ctrl.reconcile
 	ctrl.HandleDeleteFunc = ctrl.handleDelete

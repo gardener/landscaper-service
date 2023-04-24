@@ -690,10 +690,6 @@ func (c *Controller) listShoots(ctx context.Context, instance *lssv1alpha1.Insta
 
 // getGardenerServiceAccountClient retrieves and initializes the gardener service account client, if necessary.
 func (c *Controller) getGardenerServiceAccountClient(ctx context.Context) (client.Client, error) {
-	if c.gardenerServiceAccountClient != nil {
-		return c.gardenerServiceAccountClient, nil
-	}
-
 	gardenerServiceAccountSecret := &corev1.Secret{}
 	if err := c.Client().Get(ctx, c.Config().GardenerConfiguration.ServiceAccountKubeconfig.NamespacedName(), gardenerServiceAccountSecret); err != nil {
 		return nil, fmt.Errorf("failed to load gardener service account secret: %w", err)
@@ -723,6 +719,5 @@ func (c *Controller) getGardenerServiceAccountClient(ctx context.Context) (clien
 		return nil, fmt.Errorf("failed to create client for gardener service account: %w", err)
 	}
 
-	c.gardenerServiceAccountClient = saClient
 	return saClient, nil
 }
