@@ -90,3 +90,8 @@ helm-charts:
 
 .PHONY: build-resources
 build-resources: docker-all helm-charts cnudie
+
+.PHONY: build-int-test-image
+build-int-test-image:
+	@docker build integration-test/docker -t eu.gcr.io/gardener-project/landscaper-service/integration-test:1.19.8-alpine3.17
+	@docker push eu.gcr.io/gardener-project/landscaper-service/integration-test:1.19.8-alpine3.17
