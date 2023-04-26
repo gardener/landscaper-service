@@ -153,7 +153,7 @@ var _ = Describe("Reconcile", func() {
 				Name:      "endpointexport",
 				Namespace: state.Namespace,
 				Labels: map[string]string{
-					lsv1alpha1.DataObjectKeyLabel:        lsinstallation.ClusterEndpointExportName,
+					lsv1alpha1.DataObjectKeyLabel:        lsinstallation.GetInstallationExportDataRef(instance, lsinstallation.ClusterEndpointExportName),
 					lsv1alpha1.DataObjectSourceLabel:     fmt.Sprintf("Inst.%s", installation.Name),
 					lsv1alpha1.DataObjectSourceTypeLabel: string(lsv1alpha1.ExportDataObjectSourceType),
 				},
@@ -168,7 +168,7 @@ var _ = Describe("Reconcile", func() {
 				Name:      "userkubeconfigexport",
 				Namespace: state.Namespace,
 				Labels: map[string]string{
-					lsv1alpha1.DataObjectKeyLabel:        lsinstallation.UserKubeconfigExportName,
+					lsv1alpha1.DataObjectKeyLabel:        lsinstallation.GetInstallationExportDataRef(instance, lsinstallation.UserKubeconfigExportName),
 					lsv1alpha1.DataObjectSourceLabel:     fmt.Sprintf("Inst.%s", installation.Name),
 					lsv1alpha1.DataObjectSourceTypeLabel: string(lsv1alpha1.ExportDataObjectSourceType),
 				},
@@ -183,7 +183,7 @@ var _ = Describe("Reconcile", func() {
 				Name:      "adminkubeconfigexport",
 				Namespace: state.Namespace,
 				Labels: map[string]string{
-					lsv1alpha1.DataObjectKeyLabel:        lsinstallation.AdminKubeconfigExportName,
+					lsv1alpha1.DataObjectKeyLabel:        lsinstallation.GetInstallationExportDataRef(instance, lsinstallation.AdminKubeconfigExportName),
 					lsv1alpha1.DataObjectSourceLabel:     fmt.Sprintf("Inst.%s", installation.Name),
 					lsv1alpha1.DataObjectSourceTypeLabel: string(lsv1alpha1.ExportDataObjectSourceType),
 				},
