@@ -6,6 +6,10 @@ package installation
 
 import (
 	"encoding/json"
+	"fmt"
+	"strings"
+
+	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 
@@ -202,4 +206,11 @@ func toAnyJSON(obj any) (*lsv1alpha1.AnyJSON, error) {
 	}
 	anyJSON := lsv1alpha1.NewAnyJSON(raw)
 	return &anyJSON, err
+}
+
+// GetInstallationExportDataRef returns the export data ref that is dynamically created based on the instance name.
+// The data ref string is compatible to be used as a kubernetes object name.
+func GetInstallationExportDataRef(instance *lssv1alpha1.Instance, exportName string) string {
+	dataRef := fmt.Sprintf("%s-%s", strings.ToLower(exportName), instance.GetName())
+	return dataRef
 }

@@ -519,15 +519,15 @@ func (c *Controller) mutateInstallation(ctx context.Context, installation *lsv1a
 			Data: []lsv1alpha1.DataExport{
 				{
 					Name:    lsinstallation.ClusterEndpointExportName,
-					DataRef: lsinstallation.ClusterEndpointExportName,
+					DataRef: lsinstallation.GetInstallationExportDataRef(instance, lsinstallation.ClusterEndpointExportName),
 				},
 				{
 					Name:    lsinstallation.UserKubeconfigExportName,
-					DataRef: lsinstallation.UserKubeconfigExportName,
+					DataRef: lsinstallation.GetInstallationExportDataRef(instance, lsinstallation.UserKubeconfigExportName),
 				},
 				{
 					Name:    lsinstallation.AdminKubeconfigExportName,
-					DataRef: lsinstallation.AdminKubeconfigExportName,
+					DataRef: lsinstallation.GetInstallationExportDataRef(instance, lsinstallation.AdminKubeconfigExportName),
 				},
 			},
 		},
@@ -587,14 +587,12 @@ func (c *Controller) handleExports(ctx context.Context, instance *lssv1alpha1.In
 		lc.KeyMethod, "handleExports")
 
 	dataObjects := &lsv1alpha1.DataObjectList{}
-	selectorBuilder := strings.Builder{}
 
-	dataObjectSource := fmt.Sprintf("%s=Inst.%s,", lsv1alpha1.DataObjectSourceLabel, installation.GetName())
-	dataObjectType := fmt.Sprintf("%s=%s", lsv1alpha1.DataObjectSourceTypeLabel, lsv1alpha1.ExportDataObjectSourceType)
-	selectorBuilder.WriteString(dataObjectSource)
-	selectorBuilder.WriteString(dataObjectType)
+	labelSelector := labels.SelectorFromSet(map[string]string{
+		lsv1alpha1.DataObjectSourceLabel:     fmt.Sprintf("Inst.%s", installation.GetName()),
+		lsv1alpha1.DataObjectSourceTypeLabel: string(lsv1alpha1.ExportDataObjectSourceType),
+	})
 
-	labelSelector, _ := labels.Parse(selectorBuilder.String())
 	listOptions := client.ListOptions{
 		LabelSelector: labelSelector,
 		Namespace:     installation.GetNamespace(),
@@ -605,6 +603,10 @@ func (c *Controller) handleExports(ctx context.Context, instance *lssv1alpha1.In
 	}
 
 	if len(dataObjects.Items) > 0 {
+		userKubeconfigExportName := lsinstallation.GetInstallationExportDataRef(instance, lsinstallation.UserKubeconfigExportName)
+		adminKubeconfigExportName := lsinstallation.GetInstallationExportDataRef(instance, lsinstallation.AdminKubeconfigExportName)
+		clusterEndpointExportName := lsinstallation.GetInstallationExportDataRef(instance, lsinstallation.ClusterEndpointExportName)
+
 		for _, do := range dataObjects.Items {
 			key, ok := do.Labels[lsv1alpha1.DataObjectKeyLabel]
 			if !ok {
@@ -612,19 +614,19 @@ func (c *Controller) handleExports(ctx context.Context, instance *lssv1alpha1.In
 			}
 
 			switch key {
-			case lsinstallation.UserKubeconfigExportName:
+			case userKubeconfigExportName:
 				logger.Info("found export data object for user kubeconfig",
 					lc.KeyResource, types.NamespacedName{Name: do.Name, Namespace: do.Namespace}.String())
 				if err := json.Unmarshal(do.Data.RawMessage, &instance.Status.UserKubeconfig); err != nil {
 					return fmt.Errorf("unable to unmarshal user kubeconfig: %w", err)
 				}
-			case lsinstallation.AdminKubeconfigExportName:
+			case adminKubeconfigExportName:
 				logger.Info("found export data object for user kubeconfig",
 					lc.KeyResource, types.NamespacedName{Name: do.Name, Namespace: do.Namespace}.String())
 				if err := json.Unmarshal(do.Data.RawMessage, &instance.Status.AdminKubeconfig); err != nil {
 					return fmt.Errorf("unable to unmarshal admin kubeconfig: %w", err)
 				}
-			case lsinstallation.ClusterEndpointExportName:
+			case clusterEndpointExportName:
 				logger.Info("found export data object for cluster endpoint",
 					lc.KeyResource, types.NamespacedName{Name: do.Name, Namespace: do.Namespace}.String())
 				if err := json.Unmarshal(do.Data.RawMessage, &instance.Status.ClusterEndpoint); err != nil {
