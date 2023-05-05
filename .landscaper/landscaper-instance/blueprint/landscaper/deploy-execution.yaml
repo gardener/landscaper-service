@@ -27,6 +27,18 @@ deployItems:
                 values:
                   - value: "Ok"
 
+          - name: IngressOk
+            timeout: 10m
+            resourceSelector:
+              - apiVersion: networking.k8s.io/v1
+                kind: Ingress
+                name: landscaper-{{ .imports.hostingClusterNamespace }}-webhooks
+                namespace: {{ .imports.hostingClusterNamespace }}
+            requirements:
+              - jsonPath: .status.loadBalancer.ingress[0]
+                operator: exists
+                values: []
+
       chart:
         {{ $landscaperComponent := getComponent .cd "name" "landscaper" }}
         {{ $resource := getResource $landscaperComponent "name" "landscaper-controller-deployment-chart" }}
