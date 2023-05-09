@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 # landscaper-service dependency update
 
-landscaper-service uses various external dependencies. All of these dependencies are transported to the `eu.gcr.io/gardener-project` repository
+landscaper-service uses various external dependencies. All of these dependencies are transported to the [`eu.gcr.io/gardener-project`](https://console.cloud.google.com/gcr/images/gardener-project/EU/landscaper-service) repository
 before they are being used in the blueprints.
 To update these dependencies, a set of scripts are available.
 These scripts transport the specified version to the repository and update the resources of their respective OCM component.
