@@ -39,7 +39,7 @@ landscaper-service:
           depends:
             - publish
             - publish-helm-charts
-          image: 'eu.gcr.io/gardener-project/landscaper-service/integration-test:1.19.8-alpine3.17'
+          image: 'eu.gcr.io/gardener-project/landscaper-service/integration-test:1.19.9-alpine3.17'
           execute:
             - "integration_test"
           output_dir: 'integration_test'
@@ -60,7 +60,7 @@ landscaper-service:
           depends: 
           - publish
           - publish-helm-charts
-          image: 'eu.gcr.io/gardener-project/landscaper-service/integration-test:1.19.8-alpine3.17'
+          image: 'eu.gcr.io/gardener-project/landscaper-service/integration-test:1.19.9-alpine3.17'
           execute:
           - "integration_test_pr"
           output_dir: 'integration_test'
@@ -88,7 +88,7 @@ landscaper-service:
           depends:
             - publish
             - publish-helm-charts
-          image: 'eu.gcr.io/gardener-project/landscaper-service/integration-test:1.19.8-alpine3.17'
+          image: 'eu.gcr.io/gardener-project/landscaper-service/integration-test:1.19.9-alpine3.17'
           execute:
             - "integration_test"
           output_dir: 'integration_test'
