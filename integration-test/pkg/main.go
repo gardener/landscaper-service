@@ -103,7 +103,7 @@ func run() error {
 	}
 
 	log.Info("========== Cleaning up before test ==========")
-	if err := cleanupResources(ctx, clusterClients.TestCluster, clusterClients.HostingCluster, config); err != nil {
+	if err := cleanupResources(ctx, clusterClients.TestCluster, clusterClients.HostingCluster, config, log); err != nil {
 		return err
 	}
 
@@ -343,20 +343,24 @@ func installLandscaper(ctx context.Context, config *test.TestConfig) error {
 
 // cleanupResources removes all landscaper and laas resource in the laas and test namespace.
 // It also tries to remove all virtual cluster namespaces that are still present in the cluster.
-func cleanupResources(ctx context.Context, hostingClient, laasClient client.Client, config *test.TestConfig) error {
+func cleanupResources(ctx context.Context, hostingClient, laasClient client.Client, config *test.TestConfig, log logging.Logger) error {
 	// LAAS Namespace
+	log.Info("execute DeleteValidatingWebhookConfiguration")
 	if err := util.DeleteValidatingWebhookConfiguration(ctx, hostingClient, "landscaper-service-validation-webhook", config.LaasNamespace); err != nil {
 		return err
 	}
 
+	log.Info("execute RemoveFinalizerLandscaperResources")
 	if err := util.RemoveFinalizerLandscaperResources(ctx, hostingClient, config.LaasNamespace); err != nil {
 		return err
 	}
 
+	log.Info("execute RemoveFinalizerLaasResources")
 	if err := util.RemoveFinalizerLaasResources(ctx, hostingClient, config.LaasNamespace); err != nil {
 		return err
 	}
 
+	log.Info("execute CleanupLaasResources")
 	if err := util.CleanupLaasResources(ctx, hostingClient, config.LaasNamespace, config.SleepTime, config.MaxRetries); err != nil {
 		return err
 	}
@@ -364,19 +368,23 @@ func cleanupResources(ctx context.Context, hostingClient, laasClient client.Clie
 	// this should help prevent race conditions
 	time.Sleep(time.Second * 10)
 
+	log.Info("execute DeleteNamespace")
 	if err := cliutil.DeleteNamespace(hostingClient, config.LaasNamespace, config.SleepTime, config.MaxRetries); err != nil {
 		return err
 	}
 
 	// Test Namespace
+	log.Info("execute RemoveFinalizerLaasResources")
 	if err := util.RemoveFinalizerLaasResources(ctx, hostingClient, config.TestNamespace); err != nil {
 		return err
 	}
 
+	log.Info("execute CleanupLaasResources")
 	if err := util.CleanupLaasResources(ctx, hostingClient, config.TestNamespace, config.SleepTime, config.MaxRetries); err != nil {
 		return err
 	}
 
+	log.Info("execute RemoveFinalizerLandscaperResources")
 	if err := util.RemoveFinalizerLandscaperResources(ctx, hostingClient, config.TestNamespace); err != nil {
 		return err
 	}
@@ -384,17 +392,22 @@ func cleanupResources(ctx context.Context, hostingClient, laasClient client.Clie
 	// this should help prevent race conditions
 	time.Sleep(time.Second * 10)
 
+	log.Info("execute DeleteNamespace")
 	if err := cliutil.DeleteNamespace(hostingClient, config.TestNamespace, config.SleepTime, config.MaxRetries); err != nil {
 		return err
 	}
 
+	log.Info("execute DeleteTargetClusterNamespaces")
 	if err := util.DeleteTargetClusterNamespaces(ctx, laasClient, config.SleepTime, config.MaxRetries); err != nil {
 		return err
 	}
 
+	log.Info("execute DeleteTestShootClusters")
 	if err := util.DeleteTestShootClusters(ctx, config.GardenerServiceAccountKubeconfig, config.GardenerProject, config.TestPurpose, test.Scheme()); err != nil {
 		return err
 	}
+
+	log.Info("cleanupResources finished")
 	return nil
 }
 
