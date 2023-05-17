@@ -408,6 +408,7 @@ func cleanupResources(ctx context.Context, hostingClient, laasClient client.Clie
 	}
 
 	log.Info("cleanupResources finished")
+
 	return nil
 }
 
