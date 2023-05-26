@@ -35,4 +35,6 @@ deployItems:
           port: 80
 
         resources:
-{{ toYaml .imports.sidecarConfig.resources | indent 10 }}
+          requests:
+            cpu: 10m
+            memory: 30Mi

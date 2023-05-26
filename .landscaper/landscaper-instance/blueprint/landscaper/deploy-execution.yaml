@@ -123,4 +123,6 @@ deployItems:
               name: landscaper-webhooks
 
         resources:
-{{ toYaml .imports.landscaperConfig.landscaper.resources | indent 10 }}
+          requests:
+            cpu: 30m
+            memory: 100Mi
