@@ -10,15 +10,16 @@ import (
 	"fmt"
 	"os"
 
-	cdv2 "github.com/gardener/component-spec/bindings-go/apis/v2"
-	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
-	cliutil "github.com/gardener/landscapercli/pkg/util"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 
+	cdv2 "github.com/gardener/component-spec/bindings-go/apis/v2"
+	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
+	cliutil "github.com/gardener/landscapercli/pkg/util"
 
+	lssconfig "github.com/gardener/landscaper-service/pkg/apis/config"
 	lsscore "github.com/gardener/landscaper-service/pkg/apis/core"
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	lssutils "github.com/gardener/landscaper-service/pkg/utils"
@@ -173,8 +174,44 @@ func (r *InstallLAASTestRunner) createInstallation() error {
 		return fmt.Errorf("failed to marshal gardener configuration: %w", err)
 	}
 
-	auditLogConfiguration := map[string]interface{}{
-		"subaccountId": "abdcdef-123456",
+	auditPolicy := map[string]interface{}{
+		"apiVersion": "audit.k8s.io/v1",
+		"kind":       "Policy",
+		"rules":      []interface{}{},
+	}
+
+	auditPolicyRaw, err := json.Marshal(auditPolicy)
+	if err != nil {
+		return fmt.Errorf("failed to marshal audit policy: %w", err)
+	}
+
+	auditPolicyCm := &corev1.ConfigMap{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "",
+			Namespace: r.config.LaasNamespace,
+		},
+		Data: map[string]string{
+			"policy": string(auditPolicyRaw),
+		},
+	}
+	if err := r.clusterClients.TestCluster.Create(r.ctx, auditPolicyCm); err != nil {
+		return fmt.Errorf("failed to audit policy config map: %w", err)
+	}
+
+	auditLogConfiguration := lssconfig.AuditLogConfiguration{
+		AuditLogService: lssconfig.AuditLogService{
+			TenantId: "aaa-bbb-ccc-ddd",
+			Url:      "https://127.0.0.1:5656",
+			User:     "auditlog-user",
+			Password: "auditlog-password",
+		},
+		AuditPolicy: lsv1alpha1.ConfigMapReference{
+			ObjectReference: lsv1alpha1.ObjectReference{
+				Name:      auditPolicyCm.Name,
+				Namespace: auditPolicyCm.Namespace,
+			},
+			Key: "policy",
+		},
 	}
 	auditLogConfigurationRaw, err := json.Marshal(auditLogConfiguration)
 	if err != nil {

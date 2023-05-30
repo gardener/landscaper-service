@@ -42,6 +42,26 @@ imports:
     schema:
       type: object
 
+  - name: auditLogService
+    required: false
+    type: data
+    schema:
+      type: object
+      properties:
+        tenantId:
+          type: string
+        url:
+          type: string
+        user:
+          type: string
+        password:
+          type: string
+      required:
+        - tenantId
+        - url
+        - user
+        - password
+
   - name: subaccountId
     required: false
     type: data

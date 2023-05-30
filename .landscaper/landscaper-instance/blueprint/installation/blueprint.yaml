@@ -65,11 +65,11 @@ imports:
     schema:
       type: object
 
-  - name: subaccountId
+  - name: auditLogService
     required: false
     type: data
     schema:
-      type: string
+      type: object
 
   - name: registryConfig
     type: data

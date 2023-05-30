@@ -60,8 +60,8 @@ const (
 	WebhooksHostNameImportName = "webhooksHostName"
 	// AuditPolicyImportName is the import for the audit policy configuration.
 	AuditPolicyImportName = "auditPolicy"
-	// SubaccountIdImportName is the import for the subaccount id.
-	SubaccountIdImportName = "subaccountId"
+	// AuditLogServiceImportName is the import for the audit log service settings.
+	AuditLogServiceImportName = "auditLogService"
 
 	// TargetClusterNamespace is the target cluster namespace used for landscaper internals.
 	TargetClusterNamespace = "ls-system"
