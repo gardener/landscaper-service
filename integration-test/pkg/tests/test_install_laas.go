@@ -10,6 +10,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/google/uuid"
+
 	"k8s.io/apimachinery/pkg/api/errors"
 
 	corev1 "k8s.io/api/core/v1"
@@ -214,7 +216,7 @@ func (r *InstallLAASTestRunner) createInstallation() error {
 
 	auditLogConfiguration := lssconfig.AuditLogConfiguration{
 		AuditLogService: lssconfig.AuditLogService{
-			TenantId: "aaa-bbb-ccc-ddd",
+			TenantId: uuid.New().String(),
 			Url:      "https://127.0.0.1:5656",
 			User:     "auditlog-user",
 			Password: "auditlog-password",
