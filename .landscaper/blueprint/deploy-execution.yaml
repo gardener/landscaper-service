@@ -80,7 +80,8 @@ deployItems:
 {{ if .imports.auditLogConfiguration }}
           {{ $auditPolicy := ( fromJson (toString (readFile "./audit-policy.json"))) }}
           auditLogConfiguration:
-            subaccountId: {{ .imports.auditLogConfiguration.subaccountId }}
+            auditLogService:
+{{ toYaml .imports.auditLogConfiguration.auditLogService | indent 14 }}
             auditPolicy:
 {{ toYaml $auditPolicy | indent 14 }}
 {{ end }}

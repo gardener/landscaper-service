@@ -47,7 +47,11 @@ landscaperservice:
 
   # Audit Log configuration (optional)
   # auditLogConfiguration:
-  #   subaccountId: abcdef-12345
+  #   auditLogService:
+  #     tenantId: abcdef-12345
+  #     url: https://api.auditlog.svc
+  #     user: auditlog-user
+  #     password: auditlog-password
   #   auditPolicy: {}
 
 image: {}
