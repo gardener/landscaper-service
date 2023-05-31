@@ -78,16 +78,6 @@ func (r *VerifyDeploymentRunner) verifyDeployment(deployment *lssv1alpha1.Landsc
 		return fmt.Errorf("failed to get installation for instance %q: %w", instance.Name, err)
 	}
 
-	_, ok := installation.Spec.ImportDataMappings[lsinstallation.AuditLogServiceImportName]
-	if !ok {
-		return fmt.Errorf("installation has no subaccoutId setting")
-	}
-
-	_, ok = installation.Spec.ImportDataMappings[lsinstallation.AuditPolicyImportName]
-	if !ok {
-		return fmt.Errorf("installation has no audit policy setting")
-	}
-
 	hostingClusterNamespaceRaw, ok := installation.Spec.ImportDataMappings[lsinstallation.HostingClusterNamespaceImportName]
 
 	if !ok {

@@ -10,10 +10,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/google/uuid"
-
-	"k8s.io/apimachinery/pkg/api/errors"
-
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -23,7 +19,6 @@ import (
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 	cliutil "github.com/gardener/landscapercli/pkg/util"
 
-	lssconfig "github.com/gardener/landscaper-service/pkg/apis/config"
 	lsscore "github.com/gardener/landscaper-service/pkg/apis/core"
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	lssutils "github.com/gardener/landscaper-service/pkg/utils"
@@ -178,62 +173,6 @@ func (r *InstallLAASTestRunner) createInstallation() error {
 		return fmt.Errorf("failed to marshal gardener configuration: %w", err)
 	}
 
-	auditPolicy := map[string]interface{}{
-		"apiVersion": "audit.k8s.io/v1",
-		"kind":       "Policy",
-		"rules":      []interface{}{},
-	}
-
-	auditPolicyRaw, err := json.Marshal(auditPolicy)
-	if err != nil {
-		return fmt.Errorf("failed to marshal audit policy: %w", err)
-	}
-
-	auditPolicyCm := &corev1.ConfigMap{}
-	if err := r.clusterClients.TestCluster.Get(r.ctx, types.NamespacedName{Name: "laas-auditlog", Namespace: r.config.LaasNamespace}, auditPolicyCm); err != nil {
-		if !errors.IsNotFound(err) {
-			return fmt.Errorf("failed to get audit policy config map: %w", err)
-		}
-	} else {
-		if err := r.clusterClients.TestCluster.Delete(r.ctx, auditPolicyCm); err != nil {
-			return fmt.Errorf("failed to delete audit policy config map: %w", err)
-		}
-	}
-
-	auditPolicyCm = &corev1.ConfigMap{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "laas-auditlog",
-			Namespace: r.config.LaasNamespace,
-		},
-		Data: map[string]string{
-			"policy": string(auditPolicyRaw),
-		},
-	}
-
-	if err := r.clusterClients.TestCluster.Create(r.ctx, auditPolicyCm); err != nil {
-		return fmt.Errorf("failed to audit policy config map: %w", err)
-	}
-
-	auditLogConfiguration := lssconfig.AuditLogConfiguration{
-		AuditLogService: lssconfig.AuditLogService{
-			TenantId: uuid.New().String(),
-			Url:      "https://127.0.0.1:5656",
-			User:     "auditlog-user",
-			Password: "auditlog-password",
-		},
-		AuditPolicy: lsv1alpha1.ConfigMapReference{
-			ObjectReference: lsv1alpha1.ObjectReference{
-				Name:      auditPolicyCm.Name,
-				Namespace: auditPolicyCm.Namespace,
-			},
-			Key: "policy",
-		},
-	}
-	auditLogConfigurationRaw, err := json.Marshal(auditLogConfiguration)
-	if err != nil {
-		return fmt.Errorf("failed to marshal audit log configuration: %w", err)
-	}
-
 	shootConfiguration := map[string]interface{}{
 		"kubernetes": map[string]interface{}{
 			"kubeAPIServer": map[string]interface{}{
@@ -290,7 +229,6 @@ func (r *InstallLAASTestRunner) createInstallation() error {
 				"availabilityMonitoring": lsv1alpha1.NewAnyJSON(availabilityMonitoringRaw),
 				"AVSConfiguration":       lsv1alpha1.NewAnyJSON(avsConfigurationRaw),
 				"gardenerConfiguration":  lsv1alpha1.NewAnyJSON(gardenerConfigurationRaw),
-				"auditLogConfiguration":  lsv1alpha1.NewAnyJSON(auditLogConfigurationRaw),
 				"shootConfiguration":     lsv1alpha1.NewAnyJSON(shootConfigurationRaw),
 			},
 		},
