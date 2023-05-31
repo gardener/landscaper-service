@@ -10,6 +10,8 @@ import (
 	"fmt"
 	"os"
 
+	"k8s.io/apimachinery/pkg/api/errors"
+
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -185,15 +187,27 @@ func (r *InstallLAASTestRunner) createInstallation() error {
 		return fmt.Errorf("failed to marshal audit policy: %w", err)
 	}
 
-	auditPolicyCm := &corev1.ConfigMap{
+	auditPolicyCm := &corev1.ConfigMap{}
+	if err := r.clusterClients.TestCluster.Get(r.ctx, types.NamespacedName{Name: "laas-auditlog", Namespace: r.config.LaasNamespace}, auditPolicyCm); err != nil {
+		if !errors.IsNotFound(err) {
+			return fmt.Errorf("failed to get audit policy config map: %w", err)
+		}
+	} else {
+		if err := r.clusterClients.TestCluster.Delete(r.ctx, auditPolicyCm); err != nil {
+			return fmt.Errorf("failed to delete audit policy config map: %w", err)
+		}
+	}
+
+	auditPolicyCm = &corev1.ConfigMap{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      "",
+			Name:      "laas-auditlog",
 			Namespace: r.config.LaasNamespace,
 		},
 		Data: map[string]string{
 			"policy": string(auditPolicyRaw),
 		},
 	}
+
 	if err := r.clusterClients.TestCluster.Create(r.ctx, auditPolicyCm); err != nil {
 		return fmt.Errorf("failed to audit policy config map: %w", err)
 	}
