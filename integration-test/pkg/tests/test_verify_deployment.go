@@ -78,7 +78,7 @@ func (r *VerifyDeploymentRunner) verifyDeployment(deployment *lssv1alpha1.Landsc
 		return fmt.Errorf("failed to get installation for instance %q: %w", instance.Name, err)
 	}
 
-	_, ok := installation.Spec.ImportDataMappings[lsinstallation.SubaccountIdImportName]
+	_, ok := installation.Spec.ImportDataMappings[lsinstallation.AuditLogServiceImportName]
 	if !ok {
 		return fmt.Errorf("installation has no subaccoutId setting")
 	}
