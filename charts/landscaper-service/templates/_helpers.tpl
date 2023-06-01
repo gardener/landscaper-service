@@ -161,7 +161,8 @@ shootConfiguration:
 
 {{- if .Values.landscaperservice.auditLogConfiguration }}
 auditLogConfig:
-  subaccountId: {{ .Values.landscaperservice.auditLogConfiguration.subaccountId }}
+  auditLogService:
+{{ toYaml .Values.landscaperservice.auditLogConfiguration.auditLogService | indent 4 }}
   auditPolicy:
     name: {{ include "landscaper-service.fullname" . }}-audit-policy
     namespace: {{ .Release.Namespace }}

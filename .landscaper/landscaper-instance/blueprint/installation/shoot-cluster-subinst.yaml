@@ -24,8 +24,8 @@ imports:
       dataRef: shootConfig
     - name: auditPolicy
       dataRef: auditPolicy
-    - name: subaccountId
-      dataRef: subaccountId
+    - name: auditLogService
+      dataRef: auditLogService
     - name: rotationConfig
       dataRef: rotationConfig
 

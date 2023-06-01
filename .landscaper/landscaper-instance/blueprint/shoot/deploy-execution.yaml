@@ -57,6 +57,20 @@ deployItems:
 {{ toYaml .imports.auditPolicy | indent 16 }}
         {{ end }}
 
+        {{ if .imports.auditLogService }}
+        - policy: manage
+          manifest:
+            apiVersion: v1
+            kind: Secret
+            metadata:
+              name: "{{ .imports.name }}-auditlog-credentials"
+              namespace: "{{ .imports.namespace }}"
+            type: Opaque
+            stringData:
+              user: {{ .imports.auditLogService.user }}
+              password: {{ .imports.auditLogService.password }}
+        {{ end }}
+
         - policy: manage
           annotateBeforeDelete:
             confirmation.gardener.cloud/deletion: "true"
@@ -69,14 +83,28 @@ deployItems:
               annotations:
                 shoot.gardener.cloud/cleanup-extended-apis-finalize-grace-period-seconds: '30'
                 gardener.cloud/operation: reconcile
-                {{ if .imports.subaccountId }}
-                custom.shoot.sapcloud.io/subaccountId: "{{ .imports.subaccountId }}"
-                {{ end }}
             {{ if .imports.labels }}
               labels:
 {{ toYaml .imports.labels | indent 16 }}
             {{ end }}
             spec:
+              {{ if .imports.auditLogService }}
+              extensions:
+                - type: shoot-auditlog-service
+                  providerConfig:
+                    apiVersion: service.auditlog.extensions.gardener.cloud/v1alpha1
+                    kind: AuditlogConfig
+                    type: standard
+                    tenantID: {{ .imports.auditLogService.tenantId }}
+                    serviceURL: {{ .imports.auditLogService.url }}
+                    secretReferenceName: auditlog-credentials
+              resources:
+                - name: auditlog-credentials
+                  resourceRef:
+                    apiVersion: v1
+                    kind: Secret
+                    name: {{ .imports.name }}-auditlog-credentials
+              {{ end }}
               provider:
                 type: {{ .imports.shootConfig.provider.type }}
                 infrastructureConfig:

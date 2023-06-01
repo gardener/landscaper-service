@@ -87,9 +87,6 @@ imports:
     type: data
     schema:
       type: object
-      properties:
-        subaccountId:
-          type: string
 
   - name: shootConfiguration
     required: false

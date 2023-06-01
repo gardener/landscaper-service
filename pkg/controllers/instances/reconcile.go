@@ -570,8 +570,14 @@ func (c *Controller) mutateInstallation(ctx context.Context, installation *lsv1a
 			return fmt.Errorf("failed to marshal audit policy: %w", err)
 		}
 
-		installation.Spec.ImportDataMappings[lsinstallation.SubaccountIdImportName] = utils.StringToAnyJSON(c.Config().AuditLogConfig.SubAccountId)
 		installation.Spec.ImportDataMappings[lsinstallation.AuditPolicyImportName] = lsv1alpha1.NewAnyJSON(auditPolicyRaw)
+
+		auditLogServiceRaw, err := json.Marshal(c.Config().AuditLogConfig.AuditLogService)
+		if err != nil {
+			return fmt.Errorf("failed to marshal audit log service configuration: %w", err)
+		}
+
+		installation.Spec.ImportDataMappings[lsinstallation.AuditLogServiceImportName] = lsv1alpha1.NewAnyJSON(auditLogServiceRaw)
 	}
 
 	if !InstallationSpecDeepEquals(oldInstallationSpec, installation.Spec.DeepCopy()) {

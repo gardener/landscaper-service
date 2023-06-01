@@ -118,8 +118,20 @@ type GardenerConfiguration struct {
 
 // AuditLogConfiguration specifies the shoot cluster audit log configuration.
 type AuditLogConfiguration struct {
-	// SubAccountId is the subaccount id in which the audit log service is available.
-	SubAccountId string `json:"subaccountId"`
+	// AuditLogService contains the audit log service configuration.
+	AuditLogService AuditLogService `json:"auditLogService"`
 	// AuditPolicy specifies the Kubernetes API server audit policy (audit.k8s.io Policy)
 	AuditPolicy v1alpha1.ConfigMapReference `json:"auditPolicy"`
+}
+
+// AuditLogService contains the audit log service configuration.
+type AuditLogService struct {
+	// TenantId is the tenant id of the BTP subaccount in which the audit log service is available.
+	TenantId string `json:"tenantId"`
+	// Url is the url of the audit log service key credentials.
+	Url string `json:"url"`
+	// User is the user of the audit log service key credentials.
+	User string `json:"user"`
+	// Password is the password of the audit log service key credentials.
+	Password string `json:"password"`
 }

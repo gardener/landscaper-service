@@ -276,7 +276,12 @@ var _ = Describe("Reconcile", func() {
 		Expect(testenv.Client.Update(ctx, installation)).To(Succeed())
 
 		op.Config().AuditLogConfig = &lssconfig.AuditLogConfiguration{
-			SubAccountId: "abcd-1234",
+			AuditLogService: lssconfig.AuditLogService{
+				TenantId: "abcd-1234",
+				Url:      "https://api.auditlog.svc",
+				User:     "auditlog-user",
+				Password: "auditlog-password",
+			},
 			AuditPolicy: lsv1alpha1.ConfigMapReference{
 				ObjectReference: lsv1alpha1.ObjectReference{
 					Name:      "audit-policy",
@@ -299,7 +304,12 @@ var _ = Describe("Reconcile", func() {
 		var err error
 
 		op.Config().AuditLogConfig = &lssconfig.AuditLogConfiguration{
-			SubAccountId: "abcd-1234",
+			AuditLogService: lssconfig.AuditLogService{
+				TenantId: "abcd-1234",
+				Url:      "https://api.auditlog.svc",
+				User:     "auditlog-user",
+				Password: "auditlog-password",
+			},
 			AuditPolicy: lsv1alpha1.ConfigMapReference{
 				ObjectReference: lsv1alpha1.ObjectReference{
 					Name:      "audit-policy",
@@ -403,7 +413,12 @@ var _ = Describe("Reconcile", func() {
 		instance := state.GetInstance("test")
 
 		op.Config().AuditLogConfig = &lssconfig.AuditLogConfiguration{
-			SubAccountId: "abcd-1234",
+			AuditLogService: lssconfig.AuditLogService{
+				TenantId: "abcd-1234",
+				Url:      "https://api.auditlog.svc",
+				User:     "auditlog-user",
+				Password: "auditlog-password",
+			},
 			AuditPolicy: lsv1alpha1.ConfigMapReference{
 				ObjectReference: lsv1alpha1.ObjectReference{
 					Name:      "audit-policy",
@@ -424,7 +439,7 @@ var _ = Describe("Reconcile", func() {
 		installation := &lsv1alpha1.Installation{}
 		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: instance.Status.InstallationRef.Name, Namespace: instance.Status.InstallationRef.Namespace}, installation)).To(Succeed())
 
-		Expect(installation.Spec.ImportDataMappings).To(HaveKeyWithValue(lsinstallation.SubaccountIdImportName, utils.StringToAnyJSON(op.Config().AuditLogConfig.SubAccountId)))
+		Expect(installation.Spec.ImportDataMappings).To(HaveKey(lsinstallation.AuditLogServiceImportName))
 		Expect(installation.Spec.ImportDataMappings).To(HaveKey(lsinstallation.AuditPolicyImportName))
 
 		auditPolicyConfigMap := state.GetConfigMap("audit-policy")
@@ -436,6 +451,13 @@ var _ = Describe("Reconcile", func() {
 		Expect(yaml.Unmarshal(installation.Spec.ImportDataMappings[lsinstallation.AuditPolicyImportName].RawMessage, &auditPolicyInstallation)).To(Succeed())
 
 		Expect(reflect.DeepEqual(auditPolicyOrig, auditPolicyInstallation)).To(BeTrue())
+
+		var auditLogService map[string]string
+		Expect(yaml.Unmarshal(installation.Spec.ImportDataMappings[lsinstallation.AuditLogServiceImportName].RawMessage, &auditLogService)).To(Succeed())
+		Expect(auditLogService).To(HaveKeyWithValue("tenantId", op.Config().AuditLogConfig.AuditLogService.TenantId))
+		Expect(auditLogService).To(HaveKeyWithValue("url", op.Config().AuditLogConfig.AuditLogService.Url))
+		Expect(auditLogService).To(HaveKeyWithValue("user", op.Config().AuditLogConfig.AuditLogService.User))
+		Expect(auditLogService).To(HaveKeyWithValue("password", op.Config().AuditLogConfig.AuditLogService.Password))
 	})
 
 	It("should handle the automatic reconcile with explicit duration set", func() {
