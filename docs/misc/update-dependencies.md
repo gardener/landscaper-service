@@ -36,10 +36,10 @@ export CERT_MANAGER_VERSION=v1.11.1
 
 ## SAP BTP Operator
 
-Check new version on [SAP / sap-btp-service-operator](https://github.com/sap/sap-btp-service-operator/pkgs/container/sap-btp-service-operator%2Fcontroller) and [brancz / kube-rbac-proxy](https://quay.io/repository/brancz/kube-rbac-proxy?tab=tags&tag=latest)
+Check new version on [SAP / sap-btp-service-operator](https://github.com/SAP/sap-btp-service-operator/releases/) and [brancz / kube-rbac-proxy](https://quay.io/repository/brancz/kube-rbac-proxy?tab=tags&tag=latest)
 
 ```shell
-export SAP_BTP_OPERATOR_VERSION=v0.4.2
+export SAP_BTP_OPERATOR_VERSION=v0.4.4
 export KUBE_RBAC_PROXY_VERSION=v0.14.1
 
 ./hack/dependency-update/sap-btp-operator.sh ${SAP_BTP_OPERATOR_VERSION} ${KUBE_RBAC_PROXY_VERSION}
@@ -50,15 +50,14 @@ export KUBE_RBAC_PROXY_VERSION=v0.14.1
 Check new version on [fluentbit.io](https://docs.fluentbit.io/manual/installation/docker#tags-and-versions)
 
 ```shell
-export FLUENTBIT_VERSION=2.0.9
+export FLUENTBIT_VERSION=2.1.4
 
 ./hack/dependency-update/fluentbit.sh ${FLUENTBIT_VERSION}
 ```
 
 ## ingress-controller
 
-Check new version for [helm chart & image](https://github.com/kubernetes/ingress-nginx/releases) 
-
+Check new version for [helm chart & image](https://github.com/kubernetes/ingress-nginx/releases)
 
 ```shell
 export INGRESS_NGINX_CHART_VERSION=4.5.2

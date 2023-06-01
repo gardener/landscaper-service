@@ -11,9 +11,9 @@ input:
 ---
 type: ociImage
 name: fluent-bit
-version: 2.1.2
+version: 2.1.4
 relation: external
 access:
   type: ociRegistry
-  imageReference: eu.gcr.io/gardener-project/landscaper-service/fluent-bit@sha256:86d311f1433d9f8bb877099fc3e1fd5e6f484ea25cf30bba0c9de3969a465dfb
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/fluent-bit@sha256:068b82bc27bfd3eaf05cb725778e724ed1af0bb1a47118cdb37233a6d3ef3585
 ...
