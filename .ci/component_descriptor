@@ -20,6 +20,10 @@ VERSION="$(${SOURCE_PATH}/hack/get-version.sh)"
 COMMIT_SHA="$(git --git-dir ${SOURCE_PATH}/.git rev-parse HEAD)"
 REPO_CTX="${CURRENT_COMPONENT_REPOSITORY}"
 
+echo "DEBUG env $(env)"
+CTF_PATH="component_descriptor_dir/cnudie-transport-format.out"
+echo "DEBUG CTF_PATH=$CTF_PATH"
+
 printf "> Building components with version ${VERSION} - ${COMMIT_SHA}\n"
 
 function buildResourcesArgs()  {
@@ -51,8 +55,6 @@ function buildComponentArchive() {
   fi
 
   RESOURCES_ARGS=$(buildResourcesArgs "${SOURCE_PATH}/.landscaper/${COMPONENT_NAME}" "${RESOURCES}")
-
-  CTF_PATH="component_descriptor_dir/cnudie-transport-format.out"
 
   ${COMP_CLI} ca "${CA_PATH}" "${CTF_PATH}" \
     --component-name=github.com/gardener/landscaper-service/${COMPONENT_NAME} \
