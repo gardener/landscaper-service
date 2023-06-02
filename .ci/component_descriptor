@@ -20,9 +20,7 @@ VERSION="$(${SOURCE_PATH}/hack/get-version.sh)"
 COMMIT_SHA="$(git --git-dir ${SOURCE_PATH}/.git rev-parse HEAD)"
 REPO_CTX="${CURRENT_COMPONENT_REPOSITORY}"
 
-echo "DEBUG env $(env)"
-CTF_PATH="component_descriptor_dir/cnudie-transport-format.out"
-echo "DEBUG CTF_PATH=$CTF_PATH"
+CTF_PATH="cnudie-transport-format.out"
 
 printf "> Building components with version ${VERSION} - ${COMMIT_SHA}\n"
 
