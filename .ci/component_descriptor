@@ -52,7 +52,7 @@ function buildComponentArchive() {
 
   RESOURCES_ARGS=$(buildResourcesArgs "${SOURCE_PATH}/.landscaper/${COMPONENT_NAME}" "${RESOURCES}")
 
-  CTF_PATH="ctfpath"
+  CTF_PATH="component_descriptor_dir/cnudie-transport-format.out"
 
   ${COMP_CLI} ca "${CA_PATH}" "${CTF_PATH}" \
     --component-name=github.com/gardener/landscaper-service/${COMPONENT_NAME} \
