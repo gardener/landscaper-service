@@ -20,7 +20,7 @@ VERSION="$(${SOURCE_PATH}/hack/get-version.sh)"
 COMMIT_SHA="$(git --git-dir ${SOURCE_PATH}/.git rev-parse HEAD)"
 REPO_CTX="${CURRENT_COMPONENT_REPOSITORY}"
 
-CTF_PATH="cnudie-transport-format.out"
+CTF_PATH="ctf-path"
 
 printf "> Building components with version ${VERSION} - ${COMMIT_SHA}\n"
 
