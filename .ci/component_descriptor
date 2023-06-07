@@ -100,3 +100,4 @@ ${COMP_CLI} ctf push --repo-ctx="eu.gcr.io/sap-se-gcr-k8s-private/cnudie/gardene
 # echo "ls=$(ls -la)"
 echo "component_descriptor_v2 in ${CTF_PATH}"
 cp ${CTF_PATH} component_descriptor_v2
+echo "END component_descriptor script"
