@@ -97,4 +97,5 @@ ${COMP_CLI} ctf push --repo-ctx="eu.gcr.io/gardener-project/development" "${CTF_
 # echo "DEBUG:"
 # echo "pwd=$(pwd)"
 # echo "ls=$(ls -la)"
-cp base_component_descriptor_v2 component_descriptor_v2
+echo "component_descriptor_v2 in ${CTF_PATH}"
+cp ${CTF_PATH} component_descriptor_v2
