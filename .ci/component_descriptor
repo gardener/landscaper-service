@@ -92,6 +92,7 @@ ${COMP_CLI} ctf add "${CTF_PATH}" -f "${LS_CA_PATH}"
 # also upload the components to a open source repo
 # todo: remove as soon as the default component repository is public
 ${COMP_CLI} ctf push --repo-ctx="eu.gcr.io/gardener-project/development" "${CTF_PATH}"
+${COMP_CLI} ctf push --repo-ctx="eu.gcr.io/sap-se-gcr-k8s-private/cnudie/gardener/development" "${CTF_PATH}"
 
 # workaround as somehow changed the name of the cd
 # echo "DEBUG:"
