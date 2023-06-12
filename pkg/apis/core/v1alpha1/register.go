@@ -45,6 +45,7 @@ var (
 			ServiceTargetConfigDefinition,
 			NamespaceRegistrationDefinition,
 			SubjectListDefinition,
+			TenantRegistrationDefinition,
 		},
 	}
 )
@@ -65,6 +66,8 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 		&NamespaceRegistrationList{},
 		&SubjectList{},
 		&SubjectListList{},
+		&TenantRegistration{},
+		&TenantRegistrationList{},
 	)
 
 	if err := RegisterConversions(scheme); err != nil {

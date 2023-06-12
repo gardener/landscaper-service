@@ -1,0 +1,52 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  creationTimestamp: null
+  name: tenantregistrations.landscaper-service.gardener.cloud
+spec:
+  group: landscaper-service.gardener.cloud
+  names:
+    kind: TenantRegistration
+    plural: tenantregistrations
+    shortNames:
+    - ten
+    - tenreg
+    singular: tenantregistration
+  scope: Cluster
+  versions:
+  - name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        properties:
+          spec:
+            description: Spec contains the specification for the TenantRegistration.
+            properties:
+              author:
+                type: string
+            required:
+            - author
+            type: object
+          status:
+            description: Status contains the status for the TenantRegistration.
+            properties:
+              ready:
+                type: boolean
+              synced:
+                type: boolean
+            required:
+            - synced
+            - ready
+            type: object
+        required:
+        - spec
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []

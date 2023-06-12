@@ -49,6 +49,8 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 		&NamespaceRegistrationList{},
 		&SubjectList{},
 		&SubjectListList{},
+		&TenantRegistration{},
+		&TenantRegistrationList{},
 	)
 	return nil
 }

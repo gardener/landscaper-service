@@ -29,3 +29,6 @@ func SetDefaults_Instance(_ *Instance) {
 
 func SetDefaults_AvailabilityCollection(_ *AvailabilityCollection) {
 }
+
+func SetDefaults_TenantRegistration(_ *AvailabilityCollection) {
+}

@@ -57,6 +57,10 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SubjectListList":              schema_pkg_apis_core_v1alpha1_SubjectListList(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SubjectListSpec":              schema_pkg_apis_core_v1alpha1_SubjectListSpec(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SubjectListStatus":            schema_pkg_apis_core_v1alpha1_SubjectListStatus(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.TenantRegistration":           schema_pkg_apis_core_v1alpha1_TenantRegistration(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.TenantRegistrationList":       schema_pkg_apis_core_v1alpha1_TenantRegistrationList(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.TenantRegistrationSpec":       schema_pkg_apis_core_v1alpha1_TenantRegistrationSpec(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.TenantRegistrationStatus":     schema_pkg_apis_core_v1alpha1_TenantRegistrationStatus(ref),
 		"github.com/gardener/landscaper/apis/core/v1alpha1.AnyJSON":                                  schema_landscaper_apis_core_v1alpha1_AnyJSON(ref),
 		"github.com/gardener/landscaper/apis/core/v1alpha1.AutomaticReconcile":                       schema_landscaper_apis_core_v1alpha1_AutomaticReconcile(ref),
 		"github.com/gardener/landscaper/apis/core/v1alpha1.AutomaticReconcileStatus":                 schema_landscaper_apis_core_v1alpha1_AutomaticReconcileStatus(ref),
@@ -1880,6 +1884,153 @@ func schema_pkg_apis_core_v1alpha1_SubjectListStatus(ref common.ReferenceCallbac
 					},
 				},
 				Required: []string{"phase", "observedGeneration"},
+			},
+		},
+	}
+}
+
+func schema_pkg_apis_core_v1alpha1_TenantRegistration(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"),
+						},
+					},
+					"spec": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Spec contains the specification for the TenantRegistration.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.TenantRegistrationSpec"),
+						},
+					},
+					"status": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Status contains the status for the TenantRegistration.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.TenantRegistrationStatus"),
+						},
+					},
+				},
+				Required: []string{"spec"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.TenantRegistrationSpec", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.TenantRegistrationStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+	}
+}
+
+func schema_pkg_apis_core_v1alpha1_TenantRegistrationList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "TenantRegistrationList contains a list of TenantRegistration",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"),
+						},
+					},
+					"items": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.TenantRegistration"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"items"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.TenantRegistration", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
+	}
+}
+
+func schema_pkg_apis_core_v1alpha1_TenantRegistrationSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "TenantRegistrationSpec contains the specification for the TenantRegistration.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"author": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
+						},
+					},
+				},
+				Required: []string{"author"},
+			},
+		},
+	}
+}
+
+func schema_pkg_apis_core_v1alpha1_TenantRegistrationStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "TenantRegistrationStatus contains the status for the TenantRegistration.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"synced": {
+						SchemaProps: spec.SchemaProps{
+							Default: false,
+							Type:    []string{"boolean"},
+							Format:  "",
+						},
+					},
+					"ready": {
+						SchemaProps: spec.SchemaProps{
+							Default: false,
+							Type:    []string{"boolean"},
+							Format:  "",
+						},
+					},
+				},
+				Required: []string{"synced", "ready"},
 			},
 		},
 	}
