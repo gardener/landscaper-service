@@ -29,13 +29,18 @@ spec:
           status:
             description: Status contains the status for the TenantRegistration.
             properties:
-              ready:
-                type: boolean
-              synced:
-                type: boolean
+              namespace:
+                type: string
+              observedGeneration:
+                format: int64
+                type: integer
+              syncedGeneration:
+                format: int64
+                type: integer
             required:
-            - synced
-            - ready
+            - syncedGeneration
+            - observedGeneration
+            - namespace
             type: object
         required:
         - spec

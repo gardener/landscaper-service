@@ -2015,22 +2015,29 @@ func schema_pkg_apis_core_v1alpha1_TenantRegistrationStatus(ref common.Reference
 				Description: "TenantRegistrationStatus contains the status for the TenantRegistration.",
 				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
-					"synced": {
+					"syncedGeneration": {
 						SchemaProps: spec.SchemaProps{
-							Default: false,
-							Type:    []string{"boolean"},
-							Format:  "",
+							Default: 0,
+							Type:    []string{"integer"},
+							Format:  "int64",
 						},
 					},
-					"ready": {
+					"observedGeneration": {
 						SchemaProps: spec.SchemaProps{
-							Default: false,
-							Type:    []string{"boolean"},
+							Default: 0,
+							Type:    []string{"integer"},
+							Format:  "int64",
+						},
+					},
+					"namespace": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
 							Format:  "",
 						},
 					},
 				},
-				Required: []string{"synced", "ready"},
+				Required: []string{"syncedGeneration", "observedGeneration", "namespace"},
 			},
 		},
 	}

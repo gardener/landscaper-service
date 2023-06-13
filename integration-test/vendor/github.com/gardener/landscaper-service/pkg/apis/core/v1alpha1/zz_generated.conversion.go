@@ -1396,8 +1396,9 @@ func Convert_core_TenantRegistrationSpec_To_v1alpha1_TenantRegistrationSpec(in *
 }
 
 func autoConvert_v1alpha1_TenantRegistrationStatus_To_core_TenantRegistrationStatus(in *TenantRegistrationStatus, out *core.TenantRegistrationStatus, s conversion.Scope) error {
-	out.Synced = in.Synced
-	out.Ready = in.Ready
+	out.SyncedGeneration = in.SyncedGeneration
+	out.ObservedGeneration = in.ObservedGeneration
+	out.Namespace = in.Namespace
 	return nil
 }
 
@@ -1407,8 +1408,9 @@ func Convert_v1alpha1_TenantRegistrationStatus_To_core_TenantRegistrationStatus(
 }
 
 func autoConvert_core_TenantRegistrationStatus_To_v1alpha1_TenantRegistrationStatus(in *core.TenantRegistrationStatus, out *TenantRegistrationStatus, s conversion.Scope) error {
-	out.Synced = in.Synced
-	out.Ready = in.Ready
+	out.SyncedGeneration = in.SyncedGeneration
+	out.ObservedGeneration = in.ObservedGeneration
+	out.Namespace = in.Namespace
 	return nil
 }
 

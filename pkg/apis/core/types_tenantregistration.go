@@ -34,8 +34,9 @@ type TenantRegistration struct {
 
 // TenantRegistrationStatus contains the status for the TenantRegistration.
 type TenantRegistrationStatus struct {
-	Synced bool `json:"synced"`
-	Ready  bool `json:"ready"`
+	SyncedGeneration   int64  `json:"syncedGeneration"`
+	ObservedGeneration int64  `json:"observedGeneration"`
+	Namespace          string `json:"namespace"`
 }
 
 // TenantRegistrationSpec contains the specification for the TenantRegistration.
