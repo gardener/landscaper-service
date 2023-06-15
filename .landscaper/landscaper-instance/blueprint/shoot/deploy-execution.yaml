@@ -126,7 +126,7 @@ deployItems:
                       type: {{ dig "shootConfig" "workers" "machine" "type" "n1-standard-2" .imports  }}
                       image:
                         name: {{ dig "shootConfig" "workers" "machine" "image" "name" "gardenlinux" .imports }}
-                        version: {{ dig "shootConfig" "workers" "machine" "image" "version" "934.7.0" .imports }}
+                        version: {{ dig "shootConfig" "workers" "machine" "image" "version" "934.8.0" .imports }}
                     zones:
                       - {{ .imports.shootConfig.provider.zone }}
                     cri:
