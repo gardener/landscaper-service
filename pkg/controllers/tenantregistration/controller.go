@@ -115,7 +115,7 @@ func (c *Controller) reconcile(ctx context.Context, tenantRegistration *lssv1alp
 		return reconcile.Result{}, err
 	}
 
-	for _, roleName := range []string{"admin", "viewer", "editor"} {
+	for _, roleName := range []string{"admin", "member", "editor"} {
 		if err := utils.CreateRoleIfNotExistOrUpdate(ctx, roleName, tenantNamespace.Name, getRolePolicyRules(), c.Client()); err != nil {
 			logger.Error(err, "failed creating/updating role")
 			return reconcile.Result{}, err

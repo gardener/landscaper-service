@@ -41,6 +41,11 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentSpec":     schema_pkg_apis_core_v1alpha1_LandscaperDeploymentSpec(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentStatus":   schema_pkg_apis_core_v1alpha1_LandscaperDeploymentStatus(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperServiceComponent":   schema_pkg_apis_core_v1alpha1_LandscaperServiceComponent(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LosSubject":                   schema_pkg_apis_core_v1alpha1_LosSubject(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LosSubjectList":               schema_pkg_apis_core_v1alpha1_LosSubjectList(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LosSubjectListList":           schema_pkg_apis_core_v1alpha1_LosSubjectListList(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LosSubjectListSpec":           schema_pkg_apis_core_v1alpha1_LosSubjectListSpec(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LosSubjectListStatus":         schema_pkg_apis_core_v1alpha1_LosSubjectListStatus(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.NamespaceRegistration":        schema_pkg_apis_core_v1alpha1_NamespaceRegistration(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.NamespaceRegistrationList":    schema_pkg_apis_core_v1alpha1_NamespaceRegistrationList(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.NamespaceRegistrationSpec":    schema_pkg_apis_core_v1alpha1_NamespaceRegistrationSpec(ref),
@@ -158,12 +163,12 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"github.com/gardener/landscaper/apis/core/v1alpha1.VersionedObjectReference":                 schema_landscaper_apis_core_v1alpha1_VersionedObjectReference(ref),
 		"github.com/gardener/landscaper/apis/core/v1alpha1.VersionedResourceReference":               schema_landscaper_apis_core_v1alpha1_VersionedResourceReference(ref),
 		"k8s.io/api/core/v1.AWSElasticBlockStoreVolumeSource":                                        schema_k8sio_api_core_v1_AWSElasticBlockStoreVolumeSource(ref),
-		"k8s.io/api/core/v1.Affinity":                                                                schema_k8sio_api_core_v1_Affinity(ref),
-		"k8s.io/api/core/v1.AttachedVolume":                                                          schema_k8sio_api_core_v1_AttachedVolume(ref),
-		"k8s.io/api/core/v1.AvoidPods":                                                               schema_k8sio_api_core_v1_AvoidPods(ref),
-		"k8s.io/api/core/v1.AzureDiskVolumeSource":                                                   schema_k8sio_api_core_v1_AzureDiskVolumeSource(ref),
-		"k8s.io/api/core/v1.AzureFilePersistentVolumeSource":                                         schema_k8sio_api_core_v1_AzureFilePersistentVolumeSource(ref),
-		"k8s.io/api/core/v1.AzureFileVolumeSource":                                                   schema_k8sio_api_core_v1_AzureFileVolumeSource(ref),
+		"k8s.io/api/core/v1.Affinity":                                    schema_k8sio_api_core_v1_Affinity(ref),
+		"k8s.io/api/core/v1.AttachedVolume":                              schema_k8sio_api_core_v1_AttachedVolume(ref),
+		"k8s.io/api/core/v1.AvoidPods":                                   schema_k8sio_api_core_v1_AvoidPods(ref),
+		"k8s.io/api/core/v1.AzureDiskVolumeSource":                       schema_k8sio_api_core_v1_AzureDiskVolumeSource(ref),
+		"k8s.io/api/core/v1.AzureFilePersistentVolumeSource":             schema_k8sio_api_core_v1_AzureFilePersistentVolumeSource(ref),
+		"k8s.io/api/core/v1.AzureFileVolumeSource":                       schema_k8sio_api_core_v1_AzureFileVolumeSource(ref),
 		"k8s.io/api/core/v1.Binding":                                     schema_k8sio_api_core_v1_Binding(ref),
 		"k8s.io/api/core/v1.CSIPersistentVolumeSource":                   schema_k8sio_api_core_v1_CSIPersistentVolumeSource(ref),
 		"k8s.io/api/core/v1.CSIVolumeSource":                             schema_k8sio_api_core_v1_CSIVolumeSource(ref),
@@ -1283,6 +1288,227 @@ func schema_pkg_apis_core_v1alpha1_LandscaperServiceComponent(ref common.Referen
 					},
 				},
 				Required: []string{"name", "version"},
+			},
+		},
+	}
+}
+
+func schema_pkg_apis_core_v1alpha1_LosSubject(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "Subject is a User, Group or ServiceAccount(with namespace). Similar to rbac.Subject struct but does not depend on it to prevent future k8s version from breaking this logic.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind of object being referenced. Values defined by this API group are \"User\", \"Group\", and \"ServiceAccount\". If the Authorizer does not recognized the kind value, the Authorizer should report an error.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name of the object being referenced.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"kind", "name"},
+			},
+		},
+	}
+}
+
+func schema_pkg_apis_core_v1alpha1_LosSubjectList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"),
+						},
+					},
+					"spec": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Spec contains the specification for the SubjectList.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SubjectListSpec"),
+						},
+					},
+					"status": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Status contains the status for the SubjectList.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SubjectListStatus"),
+						},
+					},
+				},
+				Required: []string{"spec"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SubjectListSpec", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SubjectListStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+	}
+}
+
+func schema_pkg_apis_core_v1alpha1_LosSubjectListList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "NamespaceRegistrationList contains a list of NamespaceRegistration",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"),
+						},
+					},
+					"items": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LosSubjectList"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"items"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LosSubjectList", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
+	}
+}
+
+func schema_pkg_apis_core_v1alpha1_LosSubjectListSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "SubjectListSpec contains the specification for the SubjectList.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"admins": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Admins contains references to the object or user identities the admin role binding applies to.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Subject"),
+									},
+								},
+							},
+						},
+					},
+					"members": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Members contains references to the object or user identities the member role binding applies to.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Subject"),
+									},
+								},
+							},
+						},
+					},
+					"viewer": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Viewer contains references to the object or user identities the viewer role binding applies to.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Subject"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"admins", "members", "viewer"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Subject"},
+	}
+}
+
+func schema_pkg_apis_core_v1alpha1_LosSubjectListStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "SubjectListStatus contains the status for the SubjectList.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"phase": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
+						},
+					},
+					"syncedGeneration": {
+						SchemaProps: spec.SchemaProps{
+							Default: 0,
+							Type:    []string{"integer"},
+							Format:  "int64",
+						},
+					},
+					"observedGeneration": {
+						SchemaProps: spec.SchemaProps{
+							Default: 0,
+							Type:    []string{"integer"},
+							Format:  "int64",
+						},
+					},
+				},
+				Required: []string{"phase", "syncedGeneration", "observedGeneration"},
 			},
 		},
 	}
