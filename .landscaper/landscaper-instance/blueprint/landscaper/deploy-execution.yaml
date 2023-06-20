@@ -1,3 +1,5 @@
+{{ $landscaperComponent := getComponent .cd "name" "landscaper" }}
+
 deployItems:
   - name: landscaper
     type: landscaper.gardener.cloud/helm
@@ -14,13 +16,14 @@ deployItems:
 
       readinessChecks:
         disableDefault: false
+
         custom:
           - name: LsHealthCheckOk
             timeout: 10m
             resourceSelector:
               - apiVersion: landscaper.gardener.cloud/v1alpha1
                 kind: LsHealthCheck
-                name: landscaper
+                name: landscaper-{{ .imports.hostingClusterNamespace }}
                 namespace: {{ .imports.hostingClusterNamespace }}
             requirements:
               - jsonPath: .status
@@ -40,7 +43,6 @@ deployItems:
                 operator: exists
 
       chart:
-        {{ $landscaperComponent := getComponent .cd "name" "landscaper" }}
         {{ $resource := getResource $landscaperComponent "name" "landscaper-controller-deployment-chart" }}
         ref: {{ $resource.access.imageReference }}
 
@@ -61,22 +63,29 @@ deployItems:
 {{ toYaml .imports.landscaperConfig.k8sClientSettings | indent 12 }}
           {{ end }}
 
-          deployers:
-{{ toYaml .imports.landscaperConfig.deployers | indent 12 }}
+          deployers: []
 
           deployerManagement:
-            disable: false
-            namespace: {{ .imports.targetClusterNamespace }}
+            disable: true
             agent:
-              name: {{ .imports.hostingClusterNamespace }}
-              disable: false
-              namespace: {{ .imports.hostingClusterNamespace }}
+              disable: true
 
-          {{ if .imports.landscaperConfig.deployersConfig }}
-          deployersConfig:
-            Deployers:
-{{ toYaml .imports.landscaperConfig.deployersConfig | indent 14 }}
-         {{ end }}
+          deployersConfig: {}
+
+          healthCheck:
+            name: landscaper-{{ .imports.hostingClusterNamespace }}
+            additionalDeployments:
+              deployments:
+                - laas-{{ .imports.hostingClusterNamespace }}-shoot-sidecar
+{{ if has "helm" .imports.landscaperConfig.deployers }}
+                - helm-{{ .imports.hostingClusterNamespace }}-helm-deployer
+{{ end }}
+{{ if has "manifest" .imports.landscaperConfig.deployers }}
+                - manifest-{{ .imports.hostingClusterNamespace }}-manifest-deployer
+{{ end }}
+{{ if has "container" .imports.landscaperConfig.deployers }}
+                - container-{{ .imports.hostingClusterNamespace }}-container-deployer
+{{ end }}
 
         image: {}
 
@@ -86,8 +95,6 @@ deployItems:
           landscaperKubeconfig:
             kubeconfig: |
 {{ .imports.landscaperControllerKubeconfigYaml | indent 14 }}
-
-          {{ $landscaperComponent := getComponent .cd "name" "landscaper" }}
 
           replicaCount: {{ .imports.landscaperConfig.landscaper.replicas | default 1 }}
 
@@ -143,3 +150,168 @@ deployItems:
           requests:
             cpu: 100m
             memory: 100Mi
+
+{{ if has "helm" .imports.landscaperConfig.deployers }}
+  - name: helm-deployer
+    type: landscaper.gardener.cloud/helm
+    target:
+      import: hostingCluster
+    dependsOn:
+      - landscaper
+    config:
+      apiVersion: helm.deployer.landscaper.gardener.cloud/v1alpha1
+      kind: ProviderConfiguration
+      updateStrategy: patch
+      name: helm-{{ .imports.hostingClusterNamespace }}
+      namespace: {{ .imports.hostingClusterNamespace }}
+
+      helmDeployment: false
+      createNamespace: false
+
+      readinessChecks:
+        disableDefault: false
+
+      chart:
+        {{ $helmDeployerComponent := getComponent $landscaperComponent "name" "helm-deployer" }}
+        {{ $helmDeployerChart := getResource $helmDeployerComponent "name" "helm-deployer-chart" }}
+        ref: {{ $helmDeployerChart.access.imageReference }}
+
+      values:
+        nameOverride: helm-deployer
+        fullnameOverride: helm-{{ .imports.hostingClusterNamespace }}-helm-deployer
+
+        identity: helm-{{ .imports.hostingClusterNamespace }}
+
+        deployer:
+          verbosityLevel: {{ .imports.landscaperConfig.landscaper.verbosity | default "info" }}
+          controller:
+            workers: 30
+          landscaperClusterKubeconfig:
+            kubeconfig: |
+{{ .imports.landscaperControllerKubeconfigYaml | indent 14 }}
+
+        image:
+          {{ $image := getResource $helmDeployerComponent "name" "helm-deployer-image" }}
+          {{ $imageRepo := ociRefRepo $image.access.imageReference }}
+          {{ $imageTag := ociRefVersion $image.access.imageReference }}
+          repository: {{ $imageRepo }}
+          tag: {{ $imageTag }}
+          pullPolicy: IfNotPresent
+
+        replicaCount: 1
+
+        resources:
+          requests:
+            cpu: 300m
+            memory: 300Mi
+{{ end }}
+
+{{ if has "manifest" .imports.landscaperConfig.deployers }}
+  - name: manifest-deployer
+    type: landscaper.gardener.cloud/helm
+    target:
+      import: hostingCluster
+    dependsOn:
+      - landscaper
+    config:
+      apiVersion: helm.deployer.landscaper.gardener.cloud/v1alpha1
+      kind: ProviderConfiguration
+      updateStrategy: patch
+      name: manifest-{{ .imports.hostingClusterNamespace }}
+      namespace: {{ .imports.hostingClusterNamespace }}
+
+      helmDeployment: false
+      createNamespace: false
+
+      readinessChecks:
+        disableDefault: false
+
+      chart:
+        {{ $manifestDeployerComponent := getComponent $landscaperComponent "name" "manifest-deployer" }}
+        {{ $manifestDeployerChart := getResource $manifestDeployerComponent "name" "manifest-deployer-chart" }}
+        ref: {{ $manifestDeployerChart.access.imageReference }}
+
+      values:
+        nameOverride: manifest-deployer
+        fullnameOverride: manifest-{{ .imports.hostingClusterNamespace }}-manifest-deployer
+
+        identity: manifest-{{ .imports.hostingClusterNamespace }}
+
+        deployer:
+          verbosityLevel: {{ .imports.landscaperConfig.landscaper.verbosity | default "info" }}
+          controller:
+            workers: 30
+          landscaperClusterKubeconfig:
+            kubeconfig: |
+{{ .imports.landscaperControllerKubeconfigYaml | indent 14 }}
+
+        image:
+          {{ $image := getResource $manifestDeployerComponent "name" "manifest-deployer-image" }}
+          {{ $imageRepo := ociRefRepo $image.access.imageReference }}
+          {{ $imageTag := ociRefVersion $image.access.imageReference }}
+          repository: {{ $imageRepo }}
+          tag: {{ $imageTag }}
+          pullPolicy: IfNotPresent
+
+        replicaCount: 1
+
+        resources:
+          requests:
+            cpu: 10m
+            memory: 100Mi
+{{ end }}
+
+{{ if has "container" .imports.landscaperConfig.deployers }}
+  - name: container-deployer
+    type: landscaper.gardener.cloud/helm
+    target:
+      import: hostingCluster
+    dependsOn:
+      - landscaper
+    config:
+      apiVersion: helm.deployer.landscaper.gardener.cloud/v1alpha1
+      kind: ProviderConfiguration
+      updateStrategy: patch
+      name: container-{{ .imports.hostingClusterNamespace }}
+      namespace: {{ .imports.hostingClusterNamespace }}
+
+      helmDeployment: false
+      createNamespace: false
+
+      readinessChecks:
+        disableDefault: false
+
+      chart:
+        {{ $containerDeployerComponent := getComponent $landscaperComponent "name" "container-deployer" }}
+        {{ $containerDeployerChart := getResource $containerDeployerComponent "name" "container-deployer-chart" }}
+        ref: {{ $containerDeployerChart.access.imageReference }}
+
+      values:
+        nameOverride: container-deployer
+        fullnameOverride: container-{{ .imports.hostingClusterNamespace }}-container-deployer
+
+        identity: container-{{ .imports.hostingClusterNamespace }}
+
+        deployer:
+          verbosityLevel: {{ .imports.landscaperConfig.landscaper.verbosity | default "info" }}
+          controller:
+            workers: 30
+          landscaperClusterKubeconfig:
+            kubeconfig: |
+{{ .imports.landscaperControllerKubeconfigYaml | indent 14 }}
+
+        image:
+          {{ $image := getResource $containerDeployerComponent "name" "container-deployer-image" }}
+          {{ $imageRepo := ociRefRepo $image.access.imageReference }}
+          {{ $imageTag := ociRefVersion $image.access.imageReference }}
+          repository: {{ $imageRepo }}
+          tag: {{ $imageTag }}
+          pullPolicy: IfNotPresent
+
+        replicaCount: 1
+
+        resources:
+          requests:
+            cpu: 10m
+            memory: 100Mi
+{{ end }}

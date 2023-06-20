@@ -11,11 +11,30 @@ deployItems:
       namespace: {{ .imports.hostingClusterNamespace }}
       createNamespace: true
 
+      readinessChecks:
+        disableDefault: false
+        custom:
+          - name: LsHealthCheckOk
+            timeout: 10m
+            resourceSelector:
+              - apiVersion: landscaper.gardener.cloud/v1alpha1
+                kind: LsHealthCheck
+                name: landscaper-{{ .imports.hostingClusterNamespace }}
+                namespace: {{ .imports.hostingClusterNamespace }}
+            requirements:
+              - jsonPath: .status
+                operator: ==
+                values:
+                  - value: "Ok"
+
       chart:
         {{ $resource := getResource .cd "name" "ls-service-target-shoot-sidecar-chart" }}
         ref: {{ $resource.access.imageReference }}
 
       values:
+        nameOverride: laas-{{ .imports.hostingClusterNamespace }}-shoot-sidecar
+        fullnameOverride: laas-{{ .imports.hostingClusterNamespace }}-shoot-sidecar
+
         lsServiceTargetShootSidecar:
           verbosity: {{ .imports.sidecarConfig.verbosity | default "info" }}
 
