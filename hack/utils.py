@@ -61,8 +61,7 @@ def get_shoot_adminkubeconfig(shoot_name: str, service_account_name: str, expira
     with tempfile.TemporaryDirectory() as tmpdir:
         print(f'Getting kubeconfig for service account {service_account_name}, expiration_seconds={expiration_seconds}')
         factory = util.ctx().cfg_factory()
-        laas_admin_core_kubeconfig = factory.kubernetes(service_account_name)
-        service_account = laas_admin_core_kubeconfig.service_account()
+        service_account = factory.kubernetes(service_account_name)
         if service_account is None:
             raise Exception(f'shoots/adminkubeconfig subresource "{service_account_name}" is not a valid service account, please check kubernetes config')
 
