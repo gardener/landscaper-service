@@ -60,7 +60,7 @@ def get_shoot_adminkubeconfig(shoot_name: str, service_account_name: str, namesp
         factory = util.ctx().cfg_factory()
         service_account = factory.kubernetes(service_account_name)
         service_account_kubeconfig_path = os.path.join(tmpdir, 'service_account_kubeconfig')
-        print(f'DEBUG laas_admin_core_kubeconfig_path={laas_admin_core_kubeconfig_path}')
+        print(f'DEBUG laas_admin_core_kubeconfig_path={service_account_kubeconfig_path}')
         write_data(
             service_account_kubeconfig_path,
             yaml.safe_dump(service_account.kubeconfig()),
