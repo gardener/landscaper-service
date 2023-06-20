@@ -74,7 +74,7 @@ def get_shoot_adminkubeconfig(shoot_name: str, service_account_name: str, namesp
         )
 
         print(f'Getting shoots/adminkubeconfig subresource for {shoot_name} in namespace {namespace}')
-        command = f'kubectl --kubeconfig={laas_admin_core_kubeconfig_path} create --raw /apis/core.gardener.cloud/v1beta1/namespaces/{namespace}/shoots/{shoot_name}/adminkubeconfig -f AdminKubeconfigRequest.json'
+        command = f'kubectl --kubeconfig={service_account_kubeconfig_path} create --raw /apis/core.gardener.cloud/v1beta1/namespaces/{namespace}/shoots/{shoot_name}/adminkubeconfig -f AdminKubeconfigRequest.json'
 
         rc = run_command(command)
         rc_json = json.loads(rc)
