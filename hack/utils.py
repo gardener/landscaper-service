@@ -68,13 +68,14 @@ def get_shoot_adminkubeconfig(shoot_name: str, service_account_name: str, namesp
 
         admin_kube_config_request = f'{{"apiVersion": "authentication.gardener.cloud/v1alpha1", "kind": "AdminKubeconfigRequest", "spec": {{"expirationSeconds": {expiration_seconds}}}}}'
 
+        admin_kube_config_request_path = os.path.join(tmpdir, 'AdminKubeconfigRequest.json')
         write_data(
-            'AdminKubeconfigRequest.json',
+            admin_kube_config_request_path,
             admin_kube_config_request,
         )
 
         print(f'Getting shoots/adminkubeconfig subresource for {shoot_name} in namespace {namespace}')
-        command = f'kubectl --kubeconfig={service_account_kubeconfig_path} create --raw /apis/core.gardener.cloud/v1beta1/namespaces/{namespace}/shoots/{shoot_name}/adminkubeconfig -f AdminKubeconfigRequest.json'
+        command = f'kubectl --kubeconfig={service_account_kubeconfig_path} create --raw /apis/core.gardener.cloud/v1beta1/namespaces/{namespace}/shoots/{shoot_name}/adminkubeconfig -f {admin_kube_config_request_path}'
 
         rc = run_command(command)
         rc_json = json.loads(rc)

@@ -42,10 +42,10 @@ with (
     utils.TempFileAuto(prefix="gardener_cluster_kubeconfig_") as gardener_cluster_kubeconfig_temp_file,
     utils.TempFileAuto(prefix="registry_auth_", suffix=".json") as registry_temp_file
 ):
-    test_cluster_kubeconfig_temp_file.write(yaml.safe_dump(test_cluster_kubeconfig.kubeconfig()))
+    test_cluster_kubeconfig_temp_file.write(yaml.safe_dump(test_cluster_kubeconfig))
     test_cluster_kubeconfig_path = test_cluster_kubeconfig_temp_file.switch()
 
-    hosting_cluster_kubeconfig_temp_file.write(yaml.safe_dump(hosting_cluster_kubeconfig.kubeconfig()))
+    hosting_cluster_kubeconfig_temp_file.write(yaml.safe_dump(hosting_cluster_kubeconfig))
     hosting_cluster_kubeconfig_path = hosting_cluster_kubeconfig_temp_file.switch()
 
     gardener_cluster_kubeconfig_temp_file.write(yaml.safe_dump(gardener_cluster_kubeconfig.kubeconfig()))
