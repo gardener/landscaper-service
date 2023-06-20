@@ -39,18 +39,17 @@ def write_data(path: str, data: str):
     with open(path, "w") as file:
         file.write(data)
 
-def run_command(args: any, cwd: str = None, silent: bool = False):
+def run_command(args: any, cwd: str = None):
     if isinstance(args, str):
         command = args.split(' ')
     else:
         command = args
-    print(f'running command "{args}"')
-    if silent:
-        result = subprocess.run(command, cwd=cwd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    else:
-        result = subprocess.run(command, cwd=cwd)
+
+    result = subprocess.run(command, capture_output=True, encoding='utf-8', cwd=cwd)
     if result.returncode != 0:
-        raise RuntimeError(f'Could not run command "{args}"')
+        raise RuntimeError(f"Could not run command: {result.stderr}")
+
+    return result.stdout
 
 # see https://github.com/gardener/gardener/blob/master/docs/usage/shoot_access.md#shootsadminkubeconfig-subresource
 # expirationSeconds: 86400 is 1 day
