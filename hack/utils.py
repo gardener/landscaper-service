@@ -54,26 +54,16 @@ def run_command(args: any, cwd: str = None, silent: bool = False):
 
 # see https://github.com/gardener/gardener/blob/master/docs/usage/shoot_access.md#shootsadminkubeconfig-subresource
 # expirationSeconds: 86400 is 1 day
-def get_shoot_adminkubeconfig(shoot_name: str, service_account_name: str, expiration_seconds=86400):
-    # if not shoot_name.startswith('dev'):
-    #     return get_static_kubeconfig(shoot_name)
-
+def get_shoot_adminkubeconfig(shoot_name: str, service_account_name: str, namespace: str, expiration_seconds=86400):
     with tempfile.TemporaryDirectory() as tmpdir:
         print(f'Getting kubeconfig for service account {service_account_name}, expiration_seconds={expiration_seconds}')
         factory = util.ctx().cfg_factory()
         service_account = factory.kubernetes(service_account_name)
-        if service_account is None:
-            raise Exception(f'shoots/adminkubeconfig subresource "{service_account_name}" is not a valid service account, please check kubernetes config')
-
-        namespace = service_account.namespace()
-        if namespace is None:
-            raise Exception(f'shoots/adminkubeconfig subresource "{service_account_name}" is not a valid service account because of missing namespace, please check kubernetes config')
-
-        laas_admin_core_kubeconfig_path = os.path.join(tmpdir, 'laas_admin_core_kubeconfig')
+        service_account_kubeconfig_path = os.path.join(tmpdir, 'service_account_kubeconfig')
         print(f'DEBUG laas_admin_core_kubeconfig_path={laas_admin_core_kubeconfig_path}')
         write_data(
-            laas_admin_core_kubeconfig_path,
-            yaml.safe_dump(laas_admin_core_kubeconfig.kubeconfig()),
+            service_account_kubeconfig_path,
+            yaml.safe_dump(service_account.kubeconfig()),
         )
 
         admin_kube_config_request = f'{{"apiVersion": "authentication.gardener.cloud/v1alpha1", "kind": "AdminKubeconfigRequest", "spec": {{"expirationSeconds": {expiration_seconds}}}}}'
