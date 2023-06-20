@@ -26,11 +26,11 @@ type LosSubjectList struct {
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
 	// Spec contains the specification for the SubjectList.
-	Spec SubjectListSpec `json:"spec"`
+	Spec LosSubjectListSpec `json:"spec"`
 
 	// Status contains the status for the SubjectList.
 	// +optional
-	Status SubjectListStatus `json:"status"`
+	Status LosSubjectListStatus `json:"status"`
 }
 
 // SubjectListStatus contains the status for the SubjectList.
@@ -43,11 +43,11 @@ type LosSubjectListStatus struct {
 // SubjectListSpec contains the specification for the SubjectList.
 type LosSubjectListSpec struct {
 	//Admins contains references to the object or user identities the admin role binding applies to.
-	Admins []Subject `json:"admins"`
+	Admins []LosSubject `json:"admins"`
 	//Members contains references to the object or user identities the member role binding applies to.
-	Members []Subject `json:"members"`
+	Members []LosSubject `json:"members"`
 	//Viewer contains references to the object or user identities the viewer role binding applies to.
-	Viewer []Subject `json:"viewer"`
+	Viewer []LosSubject `json:"viewer"`
 }
 
 // Subject is a User, Group or ServiceAccount(with namespace). Similar to rbac.Subject struct but does not depend on it to prevent future k8s version from breaking this logic.

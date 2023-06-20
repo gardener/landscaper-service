@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
   "definitions": {
-    "core-v1alpha1-Subject": {
+    "core-v1alpha1-LosSubject": {
       "description": "Subject is a User, Group or ServiceAccount(with namespace). Similar to rbac.Subject struct but does not depend on it to prevent future k8s version from breaking this logic.",
       "type": "object",
       "required": [
@@ -18,35 +18,50 @@
           "description": "Name of the object being referenced.",
           "type": "string",
           "default": ""
-        },
-        "namespace": {
-          "description": "Namespace of the referenced object.  If the object kind is non-namespace, such as \"User\" or \"Group\", and this value is not empty the Authorizer should report an error.",
-          "type": "string"
         }
       }
     },
-    "core-v1alpha1-SubjectListSpec": {
+    "core-v1alpha1-LosSubjectListSpec": {
       "description": "SubjectListSpec contains the specification for the SubjectList.",
       "type": "object",
       "required": [
-        "subjects"
+        "admins",
+        "members",
+        "viewer"
       ],
       "properties": {
-        "subjects": {
-          "description": "Subject contains a reference to the object or user identities a role binding applies to.",
+        "admins": {
+          "description": "Admins contains references to the object or user identities the admin role binding applies to.",
           "type": "array",
           "items": {
             "default": {},
-            "$ref": "#/definitions/core-v1alpha1-Subject"
+            "$ref": "#/definitions/core-v1alpha1-LosSubject"
+          }
+        },
+        "members": {
+          "description": "Members contains references to the object or user identities the member role binding applies to.",
+          "type": "array",
+          "items": {
+            "default": {},
+            "$ref": "#/definitions/core-v1alpha1-LosSubject"
+          }
+        },
+        "viewer": {
+          "description": "Viewer contains references to the object or user identities the viewer role binding applies to.",
+          "type": "array",
+          "items": {
+            "default": {},
+            "$ref": "#/definitions/core-v1alpha1-LosSubject"
           }
         }
       }
     },
-    "core-v1alpha1-SubjectListStatus": {
+    "core-v1alpha1-LosSubjectListStatus": {
       "description": "SubjectListStatus contains the status for the SubjectList.",
       "type": "object",
       "required": [
         "phase",
+        "syncedGeneration",
         "observedGeneration"
       ],
       "properties": {
@@ -58,6 +73,11 @@
         "phase": {
           "type": "string",
           "default": ""
+        },
+        "syncedGeneration": {
+          "type": "integer",
+          "format": "int64",
+          "default": 0
         }
       }
     },
@@ -252,12 +272,12 @@
       "default": {}
     },
     "spec": {
-      "$ref": "#/definitions/core-v1alpha1-SubjectListSpec",
+      "$ref": "#/definitions/core-v1alpha1-LosSubjectListSpec",
       "default": {},
       "description": "Spec contains the specification for the SubjectList."
     },
     "status": {
-      "$ref": "#/definitions/core-v1alpha1-SubjectListStatus",
+      "$ref": "#/definitions/core-v1alpha1-LosSubjectListStatus",
       "default": {},
       "description": "Status contains the status for the SubjectList."
     }

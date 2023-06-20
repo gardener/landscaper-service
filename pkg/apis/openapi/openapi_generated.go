@@ -1353,14 +1353,14 @@ func schema_pkg_apis_core_v1alpha1_LosSubjectList(ref common.ReferenceCallback) 
 						SchemaProps: spec.SchemaProps{
 							Description: "Spec contains the specification for the SubjectList.",
 							Default:     map[string]interface{}{},
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SubjectListSpec"),
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LosSubjectListSpec"),
 						},
 					},
 					"status": {
 						SchemaProps: spec.SchemaProps{
 							Description: "Status contains the status for the SubjectList.",
 							Default:     map[string]interface{}{},
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SubjectListStatus"),
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LosSubjectListStatus"),
 						},
 					},
 				},
@@ -1368,7 +1368,7 @@ func schema_pkg_apis_core_v1alpha1_LosSubjectList(ref common.ReferenceCallback) 
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SubjectListSpec", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SubjectListStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LosSubjectListSpec", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LosSubjectListStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
 	}
 }
 
@@ -1436,7 +1436,7 @@ func schema_pkg_apis_core_v1alpha1_LosSubjectListSpec(ref common.ReferenceCallba
 								Schema: &spec.Schema{
 									SchemaProps: spec.SchemaProps{
 										Default: map[string]interface{}{},
-										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Subject"),
+										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LosSubject"),
 									},
 								},
 							},
@@ -1450,7 +1450,7 @@ func schema_pkg_apis_core_v1alpha1_LosSubjectListSpec(ref common.ReferenceCallba
 								Schema: &spec.Schema{
 									SchemaProps: spec.SchemaProps{
 										Default: map[string]interface{}{},
-										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Subject"),
+										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LosSubject"),
 									},
 								},
 							},
@@ -1464,7 +1464,7 @@ func schema_pkg_apis_core_v1alpha1_LosSubjectListSpec(ref common.ReferenceCallba
 								Schema: &spec.Schema{
 									SchemaProps: spec.SchemaProps{
 										Default: map[string]interface{}{},
-										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Subject"),
+										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LosSubject"),
 									},
 								},
 							},
@@ -1475,7 +1475,7 @@ func schema_pkg_apis_core_v1alpha1_LosSubjectListSpec(ref common.ReferenceCallba
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Subject"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LosSubject"},
 	}
 }
 

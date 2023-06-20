@@ -583,17 +583,17 @@ func (in *LosSubjectListSpec) DeepCopyInto(out *LosSubjectListSpec) {
 	*out = *in
 	if in.Admins != nil {
 		in, out := &in.Admins, &out.Admins
-		*out = make([]Subject, len(*in))
+		*out = make([]LosSubject, len(*in))
 		copy(*out, *in)
 	}
 	if in.Members != nil {
 		in, out := &in.Members, &out.Members
-		*out = make([]Subject, len(*in))
+		*out = make([]LosSubject, len(*in))
 		copy(*out, *in)
 	}
 	if in.Viewer != nil {
 		in, out := &in.Viewer, &out.Viewer
-		*out = make([]Subject, len(*in))
+		*out = make([]LosSubject, len(*in))
 		copy(*out, *in)
 	}
 	return

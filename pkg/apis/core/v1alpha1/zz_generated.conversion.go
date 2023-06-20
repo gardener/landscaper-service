@@ -1005,10 +1005,10 @@ func Convert_core_LosSubject_To_v1alpha1_LosSubject(in *core.LosSubject, out *Lo
 
 func autoConvert_v1alpha1_LosSubjectList_To_core_LosSubjectList(in *LosSubjectList, out *core.LosSubjectList, s conversion.Scope) error {
 	out.ObjectMeta = in.ObjectMeta
-	if err := Convert_v1alpha1_SubjectListSpec_To_core_SubjectListSpec(&in.Spec, &out.Spec, s); err != nil {
+	if err := Convert_v1alpha1_LosSubjectListSpec_To_core_LosSubjectListSpec(&in.Spec, &out.Spec, s); err != nil {
 		return err
 	}
-	if err := Convert_v1alpha1_SubjectListStatus_To_core_SubjectListStatus(&in.Status, &out.Status, s); err != nil {
+	if err := Convert_v1alpha1_LosSubjectListStatus_To_core_LosSubjectListStatus(&in.Status, &out.Status, s); err != nil {
 		return err
 	}
 	return nil
@@ -1021,10 +1021,10 @@ func Convert_v1alpha1_LosSubjectList_To_core_LosSubjectList(in *LosSubjectList, 
 
 func autoConvert_core_LosSubjectList_To_v1alpha1_LosSubjectList(in *core.LosSubjectList, out *LosSubjectList, s conversion.Scope) error {
 	out.ObjectMeta = in.ObjectMeta
-	if err := Convert_core_SubjectListSpec_To_v1alpha1_SubjectListSpec(&in.Spec, &out.Spec, s); err != nil {
+	if err := Convert_core_LosSubjectListSpec_To_v1alpha1_LosSubjectListSpec(&in.Spec, &out.Spec, s); err != nil {
 		return err
 	}
-	if err := Convert_core_SubjectListStatus_To_v1alpha1_SubjectListStatus(&in.Status, &out.Status, s); err != nil {
+	if err := Convert_core_LosSubjectListStatus_To_v1alpha1_LosSubjectListStatus(&in.Status, &out.Status, s); err != nil {
 		return err
 	}
 	return nil
@@ -1058,9 +1058,9 @@ func Convert_core_LosSubjectListList_To_v1alpha1_LosSubjectListList(in *core.Los
 }
 
 func autoConvert_v1alpha1_LosSubjectListSpec_To_core_LosSubjectListSpec(in *LosSubjectListSpec, out *core.LosSubjectListSpec, s conversion.Scope) error {
-	out.Admins = *(*[]core.Subject)(unsafe.Pointer(&in.Admins))
-	out.Members = *(*[]core.Subject)(unsafe.Pointer(&in.Members))
-	out.Viewer = *(*[]core.Subject)(unsafe.Pointer(&in.Viewer))
+	out.Admins = *(*[]core.LosSubject)(unsafe.Pointer(&in.Admins))
+	out.Members = *(*[]core.LosSubject)(unsafe.Pointer(&in.Members))
+	out.Viewer = *(*[]core.LosSubject)(unsafe.Pointer(&in.Viewer))
 	return nil
 }
 
@@ -1070,9 +1070,9 @@ func Convert_v1alpha1_LosSubjectListSpec_To_core_LosSubjectListSpec(in *LosSubje
 }
 
 func autoConvert_core_LosSubjectListSpec_To_v1alpha1_LosSubjectListSpec(in *core.LosSubjectListSpec, out *LosSubjectListSpec, s conversion.Scope) error {
-	out.Admins = *(*[]Subject)(unsafe.Pointer(&in.Admins))
-	out.Members = *(*[]Subject)(unsafe.Pointer(&in.Members))
-	out.Viewer = *(*[]Subject)(unsafe.Pointer(&in.Viewer))
+	out.Admins = *(*[]LosSubject)(unsafe.Pointer(&in.Admins))
+	out.Members = *(*[]LosSubject)(unsafe.Pointer(&in.Members))
+	out.Viewer = *(*[]LosSubject)(unsafe.Pointer(&in.Viewer))
 	return nil
 }
 
