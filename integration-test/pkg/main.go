@@ -97,12 +97,12 @@ func run() error {
 
 	log.Info("========== Uninstalling Landscaper ==========")
 	if err := uninstallLandscaper(ctx, clusterClients.TestCluster, config); err != nil {
-		return err
+		log.Error(err, "uninstall landscaper")
 	}
 
 	log.Info("========== Cleaning up before test ==========")
 	if err := cleanupResources(ctx, clusterClients.TestCluster, clusterClients.HostingCluster, config, log); err != nil {
-		return err
+		log.Error(err, "cleanup resources")
 	}
 
 	log.Info("========== Installing Landscaper ==========")
