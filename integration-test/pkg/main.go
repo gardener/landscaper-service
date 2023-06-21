@@ -67,6 +67,8 @@ func run() error {
 	}
 
 	config.LandscaperVersion = landscaperVersion
+	config.GardenerProject = "laas"
+	config.ShootSecretBindingName = "laas-canary"
 
 	ctx := context.Background()
 	defer ctx.Done()
@@ -90,10 +92,6 @@ func run() error {
 
 	clusterClients, err := test.NewClusterClients(config)
 	if err != nil {
-		return err
-	}
-
-	if err := initFromGardenerSecret(ctx, clusterClients.TestCluster, config); err != nil {
 		return err
 	}
 
@@ -409,25 +407,5 @@ func cleanupResources(ctx context.Context, hostingClient, laasClient client.Clie
 
 	log.Info("cleanupResources finished")
 
-	return nil
-}
-
-func initFromGardenerSecret(ctx context.Context, client client.Client, config *test.TestConfig) error {
-	gardenerSecret := &corev1.Secret{}
-	if err := client.Get(ctx, types.NamespacedName{Name: "gardener-secret", Namespace: "default"}, gardenerSecret); err != nil {
-		return fmt.Errorf("failed to read gardener-secret: %w", err)
-	}
-
-	project, ok := gardenerSecret.Data["project"]
-	if !ok {
-		return fmt.Errorf("project key not found in secret")
-	}
-	secretBindingName, ok := gardenerSecret.Data["secretBindingName"]
-	if !ok {
-		return fmt.Errorf("secretBindingName key not found in secret")
-	}
-
-	config.GardenerProject = string(project)
-	config.ShootSecretBindingName = string(secretBindingName)
 	return nil
 }
