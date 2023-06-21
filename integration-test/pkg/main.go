@@ -12,9 +12,6 @@ import (
 	"text/template"
 	"time"
 
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	"k8s.io/apimachinery/pkg/runtime/schema"
-
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 	cliquickstart "github.com/gardener/landscapercli/cmd/quickstart"
@@ -100,12 +97,12 @@ func run() error {
 
 	log.Info("========== Uninstalling Landscaper ==========")
 	if err := uninstallLandscaper(ctx, clusterClients.TestCluster, config); err != nil {
-		log.Error(err, "uninstall landscaper")
+		return err
 	}
 
 	log.Info("========== Cleaning up before test ==========")
 	if err := cleanupResources(ctx, clusterClients.TestCluster, clusterClients.HostingCluster, config, log); err != nil {
-		log.Error(err, "cleanup resources")
+		return err
 	}
 
 	log.Info("========== Installing Landscaper ==========")
@@ -337,24 +334,6 @@ func installLandscaper(ctx context.Context, config *test.TestConfig, clusterClie
 
 	if err := installCmd.Execute(); err != nil {
 		return fmt.Errorf("install command failed: %w", err)
-	}
-
-	crd := &unstructured.Unstructured{}
-	crd.SetGroupVersionKind(schema.GroupVersionKind{
-		Group:   "apiextensions.k8s.io",
-		Version: "v1",
-		Kind:    "CustomResourceDefinition",
-	})
-
-	for i := 0; i < 20; i += 1 {
-		if err := clusterClients.TestCluster.Get(ctx, types.NamespacedName{Name: "installations.landscaper.gardener.cloud"}, crd); err != nil {
-			if apierrors.IsNotFound(err) {
-				continue
-			} else {
-				return fmt.Errorf("failed to wait for landscaper crds being registered: %w", err)
-			}
-		}
-		break
 	}
 
 	return nil
