@@ -26,12 +26,12 @@ repo_ctx_base_url = os.environ["REPO_CTX_BASE_URL"]
 repo_auth_url = os.environ["REPO_AUTH_URL"]
 
 factory = ctx().cfg_factory()
-print(f"Getting kubeconfig for {test_cluster}")
-test_cluster_kubeconfig = factory.kubernetes(test_cluster)
-print(f"Getting kubeconfig for {hosting_cluster}")
-hosting_cluster_kubeconfig = factory.kubernetes(hosting_cluster)
 print(f"Getting kubeconfig for {gardener_cluster}")
 gardener_cluster_kubeconfig = factory.kubernetes(gardener_cluster)
+print(f"Getting kubeconfig for {test_cluster}")
+test_cluster_kubeconfig = utils.get_shoot_adminkubeconfig(test_cluster, gardener_cluster, "garden-laas")
+print(f"Getting kubeconfig for {hosting_cluster}")
+hosting_cluster_kubeconfig = utils.get_shoot_adminkubeconfig(hosting_cluster, gardener_cluster, "garden-laas")
 
 print(f"Getting credentials for {repo_ctx_base_url}")
 cr_conf = model.container_registry.find_config(repo_ctx_base_url, oa.Privileges.READONLY)
@@ -42,10 +42,10 @@ with (
     utils.TempFileAuto(prefix="gardener_cluster_kubeconfig_") as gardener_cluster_kubeconfig_temp_file,
     utils.TempFileAuto(prefix="registry_auth_", suffix=".json") as registry_temp_file
 ):
-    test_cluster_kubeconfig_temp_file.write(yaml.safe_dump(test_cluster_kubeconfig.kubeconfig()))
+    test_cluster_kubeconfig_temp_file.write(test_cluster_kubeconfig)
     test_cluster_kubeconfig_path = test_cluster_kubeconfig_temp_file.switch()
 
-    hosting_cluster_kubeconfig_temp_file.write(yaml.safe_dump(hosting_cluster_kubeconfig.kubeconfig()))
+    hosting_cluster_kubeconfig_temp_file.write(hosting_cluster_kubeconfig)
     hosting_cluster_kubeconfig_path = hosting_cluster_kubeconfig_temp_file.switch()
 
     gardener_cluster_kubeconfig_temp_file.write(yaml.safe_dump(gardener_cluster_kubeconfig.kubeconfig()))
