@@ -106,7 +106,7 @@ func run() error {
 	}
 
 	log.Info("========== Installing Landscaper ==========")
-	if err := installLandscaper(ctx, config, clusterClients); err != nil {
+	if err := installLandscaper(ctx, config); err != nil {
 		return err
 	}
 
@@ -299,7 +299,7 @@ landscaper:
 }
 
 // installLandscaper installs the landscaper
-func installLandscaper(ctx context.Context, config *test.TestConfig, clusterClients *test.ClusterClients) error {
+func installLandscaper(ctx context.Context, config *test.TestConfig) error {
 	landscaperValues, err := buildLandscaperValues(config.LandscaperNamespace)
 	if err != nil {
 		return fmt.Errorf("cannot template landscaper values: %w", err)
