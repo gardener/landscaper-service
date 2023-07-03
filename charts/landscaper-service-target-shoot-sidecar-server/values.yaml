@@ -47,7 +47,7 @@ service:
 
 resources:
   requests:
-    cpu: 10m
+    cpu: 40m
     memory: 40Mi
   # limits:
   #   cpu: 100m
