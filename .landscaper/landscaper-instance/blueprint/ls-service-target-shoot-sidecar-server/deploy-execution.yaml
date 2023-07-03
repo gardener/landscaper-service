@@ -36,5 +36,5 @@ deployItems:
 
         resources:
           requests:
-            cpu: 10m
+            cpu: 30m
             memory: 30Mi
