@@ -39,7 +39,7 @@ export CERT_MANAGER_VERSION=v1.12.2
 Check new version on [SAP / sap-btp-service-operator](https://github.com/SAP/sap-btp-service-operator/releases/) and [brancz / kube-rbac-proxy](https://quay.io/repository/brancz/kube-rbac-proxy?tab=tags&tag=latest)
 
 ```shell
-export SAP_BTP_OPERATOR_VERSION=v0.4.6
+export SAP_BTP_OPERATOR_VERSION=v0.4.8
 export KUBE_RBAC_PROXY_VERSION=v0.14.2
 
 ./hack/dependency-update/sap-btp-operator.sh ${SAP_BTP_OPERATOR_VERSION} ${KUBE_RBAC_PROXY_VERSION}
@@ -60,8 +60,8 @@ export FLUENTBIT_VERSION=2.1.6
 Check new version for [helm chart & image](https://github.com/kubernetes/ingress-nginx/releases)
 
 ```shell
-export INGRESS_NGINX_CHART_VERSION=4.7.0
-export INGRESS_NGINX_IMAGE_VERSION=v1.8.0
+export INGRESS_NGINX_CHART_VERSION=4.7.1
+export INGRESS_NGINX_IMAGE_VERSION=v1.8.1
 
 ./hack/dependency-update/ingress-controller.sh ${INGRESS_NGINX_CHART_VERSION} ${INGRESS_NGINX_IMAGE_VERSION}
 ```
