@@ -40,6 +40,11 @@ deployItems:
 
           replicaCount: 2
 
+          autoscaling:
+            enabled: true
+            minReplicas: 2
+            maxReplicas: 10
+
           topologySpreadConstraints:
           - maxSkew: 1
             topologyKey: topology.kubernetes.io/zone
