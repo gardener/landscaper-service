@@ -14,17 +14,22 @@ import (
 	rbacv1 "k8s.io/api/rbac/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/selection"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	coreconfig "github.com/gardener/landscaper-service/pkg/apis/config"
+	"github.com/gardener/landscaper-service/pkg/controllers/lossubject"
 
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	"github.com/gardener/landscaper-service/pkg/operation"
 	"github.com/gardener/landscaper-service/pkg/utils"
 )
+
+const TENANT_LABEL_ON_NAMESPACE string = "landscaper-service.gardener.cloud/tenant"
 
 type Controller struct {
 	operation.Operation
@@ -86,8 +91,12 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 }
 
 func (c *Controller) handleDelete(ctx context.Context, tenantRegistration *lssv1alpha1.TenantRegistration) (reconcile.Result, error) {
-	// logger, ctx := logging.FromContextOrNew(ctx, nil)
-
+	logger, ctx := logging.FromContextOrNew(ctx, nil)
+	controllerutil.RemoveFinalizer(tenantRegistration, lssv1alpha1.LandscaperServiceFinalizer)
+	if err := c.Client().Update(ctx, tenantRegistration); err != nil {
+		logger.Error(err, "Failed removing finalizer")
+		return reconcile.Result{}, err
+	}
 	return reconcile.Result{}, nil
 
 }
@@ -105,45 +114,110 @@ func (c *Controller) reconcile(ctx context.Context, tenantRegistration *lssv1alp
 		return reconcile.Result{}, nil
 	}
 
-	tenantNamespace := &corev1.Namespace{
-		ObjectMeta: metav1.ObjectMeta{
-			GenerateName: "t",
-		},
-	}
-	if err := c.Client().Create(ctx, tenantNamespace); err != nil {
-		logger.Error(err, "failed creating tenant namespace")
+	tenantNamespaceName, err := c.createTenantNamespaceIfNotExistAndGetName(ctx, tenantRegistration)
+	if err != nil {
+		logger.Error(err, "failed ensuring tenant namespace exist")
 		return reconcile.Result{}, err
 	}
 
-	for _, roleName := range []string{"admin", "member", "editor"} {
-		if err := utils.CreateRoleIfNotExistOrUpdate(ctx, roleName, tenantNamespace.Name, getRolePolicyRules(), c.Client()); err != nil {
+	for _, roleName := range lossubject.ALL_ROLES() {
+		if err := utils.CreateRoleIfNotExistOrUpdate(ctx, roleName, *tenantNamespaceName, getRolePolicyRules(), c.Client()); err != nil {
 			logger.Error(err, "failed creating/updating role")
 			return reconcile.Result{}, err
 		}
 
 		//create rolebinding
 		roleBindingName := fmt.Sprintf("%s-binding", roleName)
-		if err := utils.CreateRoleBindingIfNotExistOrUpdate(ctx, roleBindingName, tenantNamespace.Name, roleName, c.Client()); err != nil {
+		if err := utils.CreateRoleBindingIfNotExistOrUpdate(ctx, roleBindingName, *tenantNamespaceName, roleName, c.Client()); err != nil {
 			logger.Error(err, "failed creating/updating rolebinding", "name", roleBindingName)
 			return reconcile.Result{}, err
 		}
 	}
 
-	//create subjectsynclist and let other controller write the admin user
-	//TODO
-
-	tenantRegistration.Status.Namespace = tenantNamespace.Name
-	if err := c.Client().Update(ctx, tenantRegistration); err != nil {
-		logger.Error(err, "failed updating tenantRegistration.Status.Namespace")
+	//create subjectsynclist and let other controller handle the initial admin user
+	if err := c.createLosSubjectListIfNotExist(ctx, tenantRegistration.Spec.Author, *tenantNamespaceName); err != nil {
+		logger.Error(err, "failed creating losSubjectList")
 		return reconcile.Result{}, err
 	}
 
-	tenantRegistration.Status.ObservedGeneration = tenantNamespace.Generation
+	tenantRegistration.Status.Namespace = *tenantNamespaceName
+	tenantRegistration.Status.ObservedGeneration = tenantRegistration.Generation
 	if err := c.Client().Status().Update(ctx, tenantRegistration); err != nil {
-		logger.Error(err, "failed updating observed generation")
+		logger.Error(err, "failed updating status")
 		return reconcile.Result{}, err
 	}
 	return reconcile.Result{}, nil
+}
+
+// createTenantNamespaceIfNotExistAndGetName is an idempotent function (running multiple times having the same effect) to only create one namespace no matter the number of calls and returns its name.
+// It uses the tenantRegistration.Name as label value to determine, is a namespace for this tenantRegistration has been created before.
+func (c *Controller) createTenantNamespaceIfNotExistAndGetName(ctx context.Context, tenantRegistration *lssv1alpha1.TenantRegistration) (*string, error) {
+	labelSelector, err := labels.NewRequirement(TENANT_LABEL_ON_NAMESPACE, selection.Equals, []string{tenantRegistration.Name})
+	if err != nil {
+		return nil, fmt.Errorf("failed constructing namespace list label selctor requirement: %w", err)
+	}
+
+	namespaceList := &corev1.NamespaceList{}
+	if err := c.Client().List(ctx, namespaceList, client.MatchingLabelsSelector{Selector: labels.NewSelector().Add(*labelSelector)}); err != nil {
+		return nil, fmt.Errorf("failed listing namespaces with customer label: %w", err)
+	}
+
+	if len(namespaceList.Items) > 1 {
+		return nil, fmt.Errorf("listing namespaces with customer label should return 0 or 1, not %d", len(namespaceList.Items))
+	} else if len(namespaceList.Items) == 1 {
+		return &namespaceList.Items[0].Name, nil
+	} else {
+		tenantNamespace := &corev1.Namespace{
+			ObjectMeta: metav1.ObjectMeta{
+				GenerateName: "t",
+				OwnerReferences: []metav1.OwnerReference{
+					{
+						APIVersion:         "landscaper-service.gardener.cloud/v1alpha1", //TODO: cant read it from tenantRegistration since it is not populated. Maybe get the fields populated or use constants or something
+						Kind:               "TenantRegistration",
+						Name:               tenantRegistration.Name,
+						UID:                tenantRegistration.GetUID(),
+						BlockOwnerDeletion: utils.Ptr(true),
+					},
+				},
+				Labels: map[string]string{
+					TENANT_LABEL_ON_NAMESPACE: tenantRegistration.Name,
+				},
+			},
+		}
+		if err := c.Client().Create(ctx, tenantNamespace); err != nil {
+			return nil, fmt.Errorf("failed creating tenant namespace: %w", err)
+		}
+		return &tenantNamespace.Name, nil
+	}
+}
+
+func (c *Controller) createLosSubjectListIfNotExist(ctx context.Context, initialUser string, namespace string) error {
+	losSubjectSpec := lssv1alpha1.LosSubjectListSpec{
+		Admins: []lssv1alpha1.LosSubject{
+			{
+				Kind: "User",
+				Name: initialUser,
+			},
+		},
+		Members: []lssv1alpha1.LosSubject{},
+		Viewer:  []lssv1alpha1.LosSubject{},
+	}
+
+	losSubjectList := lssv1alpha1.LosSubjectList{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      lossubject.SUBJECTLIST_NAME,
+			Namespace: namespace,
+		},
+		Spec: losSubjectSpec,
+	}
+
+	if err := c.Client().Create(ctx, &losSubjectList); err != nil {
+		if apierrors.IsAlreadyExists(err) {
+			return nil
+		}
+		return fmt.Errorf("failed creating lossubjectlist %s: %w", losSubjectList.Name, err)
+	}
+	return nil
 }
 
 func getRolePolicyRules() []rbacv1.PolicyRule {
