@@ -120,16 +120,15 @@ func (c *Controller) reconcile(ctx context.Context, tenantRegistration *lssv1alp
 		return reconcile.Result{}, err
 	}
 
-	for _, roleName := range lossubject.ALL_ROLES() {
-		if err := utils.CreateRoleIfNotExistOrUpdate(ctx, roleName, *tenantNamespaceName, getRolePolicyRules(), c.Client()); err != nil {
+	for _, roleInfo := range lossubject.ALL_ROLES() {
+		if err := utils.CreateRoleIfNotExistOrUpdate(ctx, roleInfo.RoleName, *tenantNamespaceName, roleInfo.PrivilegeList, c.Client()); err != nil {
 			logger.Error(err, "failed creating/updating role")
 			return reconcile.Result{}, err
 		}
 
 		//create rolebinding
-		roleBindingName := fmt.Sprintf("%s-binding", roleName)
-		if err := utils.CreateRoleBindingIfNotExistOrUpdate(ctx, roleBindingName, *tenantNamespaceName, roleName, c.Client()); err != nil {
-			logger.Error(err, "failed creating/updating rolebinding", "name", roleBindingName)
+		if err := utils.CreateRoleBindingIfNotExistOrUpdate(ctx, roleInfo.RoleBindingName, *tenantNamespaceName, roleInfo.RoleName, c.Client()); err != nil {
+			logger.Error(err, "failed creating/updating rolebinding", "name", roleInfo.RoleBindingName)
 			return reconcile.Result{}, err
 		}
 	}
