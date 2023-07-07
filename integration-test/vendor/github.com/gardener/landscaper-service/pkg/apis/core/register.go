@@ -51,6 +51,8 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 		&SubjectListList{},
 		&TenantRegistration{},
 		&TenantRegistrationList{},
+		&LosSubjectList{},
+		&LosSubjectListList{},
 	)
 	return nil
 }

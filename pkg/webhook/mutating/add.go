@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"path"
 
-	"github.com/gardener/landscaper-service/pkg/webhook"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 	admissionregistrationv1 "k8s.io/api/admissionregistration/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -17,6 +16,8 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	ctrlwebhook "sigs.k8s.io/controller-runtime/pkg/webhook"
+
+	"github.com/gardener/landscaper-service/pkg/webhook"
 
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
