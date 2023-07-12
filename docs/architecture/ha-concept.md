@@ -8,8 +8,9 @@ This document describes the HA concepts of a LaaS landscape. The
 As described in the architecture, every customer has access to its Resource-Cluster on which he maintains k8s Custom 
 Resources (Installations, Targets ...) and Secrets to specify his installation tasks. 
 
-- For a productive scenario, the Resource-Cluster is set up with Control Plane HA which is a Gardener mechanism to
-  guarantee HA of their clusters. 
+- For a productive scenario, the Resource-Cluster is set up with 
+  [Control Plane HA](https://github.com/gardener/gardener/blob/master/docs/usage/shoot_high_availability.md) which is a 
+  Gardener mechanism to guarantee HA of their clusters. 
 
 - All components required for the direct customer interaction, i.e. for the maintenance of its k8s resources, are 
   setup such that at least 2 replicas are running on two different nodes in different zones. The relevant LaaS 
