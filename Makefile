@@ -93,5 +93,4 @@ build-resources: docker-all helm-charts cnudie
 
 .PHONY: build-int-test-image
 build-int-test-image:
-	@docker buildx build --platform linux/amd64 integration-test/docker -t eu.gcr.io/gardener-project/landscaper-service/integration-test:1.20.6-alpine3.18
-	@docker push eu.gcr.io/gardener-project/landscaper-service/integration-test:1.20.6-alpine3.18
+	@docker buildx build --platform linux/amd64 integration-test/docker -t eu.gcr.io/gardener-project/landscaper-service/integration-test:1.20.6-alpine3.18 --push
