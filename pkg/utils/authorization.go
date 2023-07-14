@@ -56,3 +56,43 @@ func CreateRoleBindingIfNotExistOrUpdate(ctx context.Context, name string, names
 
 	return nil
 }
+
+func CreateClusterRoleIfNotExistOrUpdate(ctx context.Context, name string, rules []rbacv1.PolicyRule, client client.Client) error {
+	role := &rbacv1.ClusterRole{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: name,
+		},
+	}
+
+	_, err := kutils.CreateOrUpdate(ctx, client, role, func() error {
+		role.Rules = rules
+		return nil
+	})
+	if err != nil {
+		return fmt.Errorf("failed ensuring cluster role %s: %w", role.Name, err)
+	}
+
+	return nil
+}
+
+func CreateClusterRoleBindingIfNotExistOrUpdate(ctx context.Context, name string, clusterRoleName string, client client.Client) error {
+	//create role binding
+	roleBinding := &rbacv1.ClusterRoleBinding{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: name,
+		},
+	}
+	_, err := kutils.CreateOrUpdate(ctx, client, roleBinding, func() error {
+		roleBinding.RoleRef = rbacv1.RoleRef{
+			APIGroup: "rbac.authorization.k8s.io",
+			Kind:     "ClusterRole",
+			Name:     clusterRoleName,
+		}
+		return nil
+	})
+	if err != nil {
+		return fmt.Errorf("failed ensuring cluster role binding %s: %w", roleBinding.Name, err)
+	}
+
+	return nil
+}

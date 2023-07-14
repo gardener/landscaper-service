@@ -119,6 +119,13 @@ func (c *Controller) reconcile(ctx context.Context, losSubjectList *lssv1alpha1.
 		return reconcile.Result{}, err
 	}
 
+	//assuming tenantid = namespace name
+	tenantId := losSubjectList.Namespace
+	if err := c.updateClusterRoleBinding(ctx, TENANTREGISTRATION_READ_CLUSTER_ROLE_BIDNING_NAME(tenantId), losSubjectList.Spec.Admins); err != nil {
+		logger.Error(err, "Failed updating ClusterRole binding", "Role", ROLE_VIEWER)
+		return reconcile.Result{}, err
+	}
+
 	losSubjectList.Status.ObservedGeneration = losSubjectList.Generation
 	if err := c.Client().Status().Update(ctx, losSubjectList); err != nil {
 		logger.Error(err, "failed updating status")
@@ -139,6 +146,22 @@ func (c *Controller) updateRoleBinding(ctx context.Context, roleName string, nam
 	roleBinding.Subjects = rbacSubjectList
 	if err := c.Client().Update(ctx, roleBinding); err != nil {
 		return fmt.Errorf("failed updating rolebinding %s/%s: %v", namespace, roleName, err)
+	}
+
+	return nil
+}
+
+func (c *Controller) updateClusterRoleBinding(ctx context.Context, clusterRoleName string, subjects []lssv1alpha1.LosSubject) error {
+	rbacSubjectList := CreateSubjectsForLosSubjectList(ctx, &subjects)
+
+	clusterRoleBinding := &rbacv1.ClusterRoleBinding{}
+	if err := c.Client().Get(ctx, types.NamespacedName{Name: clusterRoleName}, clusterRoleBinding); err != nil {
+		return fmt.Errorf("failed loading clusterrolebindings: %v", err)
+	}
+
+	clusterRoleBinding.Subjects = rbacSubjectList
+	if err := c.Client().Update(ctx, clusterRoleBinding); err != nil {
+		return fmt.Errorf("failed updating clusterrolebinding %s: %v", clusterRoleName, err)
 	}
 
 	return nil

@@ -11,7 +11,6 @@ import (
 	kutils "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 	corev1 "k8s.io/api/core/v1"
-	rbacv1 "k8s.io/api/rbac/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -133,6 +132,12 @@ func (c *Controller) reconcile(ctx context.Context, tenantRegistration *lssv1alp
 		}
 	}
 
+	//create ClusterRole+Binding to read TenantRegistration
+	if err := c.createTenantReadClusterRoleAndBinding(ctx, tenantRegistration, *tenantNamespaceName); err != nil {
+		logger.Error(err, "failed creating ClusterRole and Clusterrolebinding for tenantregistration")
+		return reconcile.Result{}, err
+	}
+
 	//create subjectsynclist and let other controller handle the initial admin user
 	if err := c.createLosSubjectListIfNotExist(ctx, tenantRegistration.Spec.Author, *tenantNamespaceName); err != nil {
 		logger.Error(err, "failed creating losSubjectList")
@@ -190,6 +195,17 @@ func (c *Controller) createTenantNamespaceIfNotExistAndGetName(ctx context.Conte
 	}
 }
 
+func (c *Controller) createTenantReadClusterRoleAndBinding(ctx context.Context, tenantRegistration *lssv1alpha1.TenantRegistration, tenantId string) error {
+	clusterRoleInfo := lossubject.TENANTREGISTRATION_READ_CLUSTER_ROLE_INFO(tenantRegistration.Name, tenantId)
+	if err := utils.CreateClusterRoleIfNotExistOrUpdate(ctx, clusterRoleInfo.RoleName, clusterRoleInfo.PrivilegeList, c.Client()); err != nil {
+		return err
+	}
+	if err := utils.CreateClusterRoleBindingIfNotExistOrUpdate(ctx, clusterRoleInfo.RoleBindingName, clusterRoleInfo.RoleName, c.Client()); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (c *Controller) createLosSubjectListIfNotExist(ctx context.Context, initialUser string, namespace string) error {
 	losSubjectSpec := lssv1alpha1.LosSubjectListSpec{
 		Admins: []lssv1alpha1.LosSubject{
@@ -217,15 +233,4 @@ func (c *Controller) createLosSubjectListIfNotExist(ctx context.Context, initial
 		return fmt.Errorf("failed creating lossubjectlist %s: %w", losSubjectList.Name, err)
 	}
 	return nil
-}
-
-func getRolePolicyRules() []rbacv1.PolicyRule {
-	return []rbacv1.PolicyRule{
-		// TODO: add rules that are required
-		// {
-		// 	APIGroups: []string{"landscaper-service.gardener.cloud"},
-		// 	Resources: []string{"*"},
-		// 	Verbs:     []string{"*"},
-		// },
-	}
 }
