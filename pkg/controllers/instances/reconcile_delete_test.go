@@ -75,7 +75,7 @@ var _ = Describe("Delete", func() {
 		Expect(testenv.Client.Delete(ctx, instance)).To(Succeed())
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
 
-		Expect(testenv.WaitForObjectToBeDeleted(ctx, instance, 5*time.Second)).To(Succeed())
+		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, instance, 5*time.Second)).To(Succeed())
 	})
 
 	It("should remove the instance reference from the service target config", func() {
@@ -95,7 +95,7 @@ var _ = Describe("Delete", func() {
 		Expect(testenv.Client.Delete(ctx, instance)).To(Succeed())
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
 
-		Expect(testenv.WaitForObjectToBeDeleted(ctx, instance, 5*time.Second)).To(Succeed())
+		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, instance, 5*time.Second)).To(Succeed())
 
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(config), config)).To(Succeed())
 		Expect(config.Status.InstanceRefs).To(HaveLen(1))
@@ -127,11 +127,11 @@ var _ = Describe("Delete", func() {
 		// context
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
 
-		Expect(testenv.WaitForObjectToBeDeleted(ctx, instance, 5*time.Second)).To(Succeed())
-		Expect(testenv.WaitForObjectToBeDeleted(ctx, target, 5*time.Second)).To(Succeed())
-		Expect(testenv.WaitForObjectToBeDeleted(ctx, gardenerSa, 5*time.Second)).To(Succeed())
-		Expect(testenv.WaitForObjectToBeDeleted(ctx, installation, 5*time.Second)).To(Succeed())
-		Expect(testenv.WaitForObjectToBeDeleted(ctx, context, 5*time.Second)).To(Succeed())
+		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, instance, 5*time.Second)).To(Succeed())
+		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, target, 5*time.Second)).To(Succeed())
+		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, gardenerSa, 5*time.Second)).To(Succeed())
+		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, installation, 5*time.Second)).To(Succeed())
+		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, context, 5*time.Second)).To(Succeed())
 	})
 
 	It("should remove the secrets referenced by the context", func() {
@@ -152,8 +152,8 @@ var _ = Describe("Delete", func() {
 		// context
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
 
-		Expect(testenv.WaitForObjectToBeDeleted(ctx, regpullsecret1, 5*time.Second)).To(Succeed())
-		Expect(testenv.WaitForObjectToBeDeleted(ctx, regpullsecret2, 5*time.Second)).To(Succeed())
+		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, regpullsecret1, 5*time.Second)).To(Succeed())
+		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, regpullsecret2, 5*time.Second)).To(Succeed())
 	})
 
 	It("should handle delete errors", func() {

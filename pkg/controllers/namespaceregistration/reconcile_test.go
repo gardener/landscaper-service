@@ -132,7 +132,7 @@ var _ = Describe("Reconcile", func() {
 		// deletion
 		Expect(testenv.Client.Delete(ctx, namespaceRegistration)).To(Succeed())
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
-		Expect(testenv.WaitForObjectToBeDeleted(ctx, namespaceRegistration, 5*time.Second)).To(Succeed())
+		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, namespaceRegistration, 5*time.Second)).To(Succeed())
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(&namespace), &namespace)).To(Succeed())
 
 		// check for namespace being deleted
