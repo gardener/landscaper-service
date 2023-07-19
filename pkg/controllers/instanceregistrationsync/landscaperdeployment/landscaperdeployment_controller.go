@@ -6,8 +6,6 @@ package landscaperdeployment
 
 import (
 	"context"
-	"fmt"
-	"strings"
 
 	kutils "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
@@ -19,12 +17,12 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	coreconfig "github.com/gardener/landscaper-service/pkg/apis/config"
+	"github.com/gardener/landscaper-service/pkg/controllers/instanceregistrationsync/instanceregistration"
 
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	"github.com/gardener/landscaper-service/pkg/operation"
 )
 
-const INSTANCE_REGISTRATION_LABEL string = "landscaper-service.gardener.cloud/instanceregistration"
 const LANDSCAPEDEPLOYMENT_REGISTRATION_LABEL string = "landscaper-service.gardener.cloud/landscapedeployment"
 
 type Controller struct {
@@ -119,17 +117,18 @@ func (c *Controller) reconcile(ctx context.Context, landscaperDeployment *lssv1a
 	if landscaperDeploymentLabels == nil {
 		return reconcile.Result{}, nil
 	} else {
-		val, ok := landscaperDeploymentLabels[INSTANCE_REGISTRATION_LABEL]
+		name, ok := landscaperDeploymentLabels[instanceregistration.INSTANCE_REGISTRATION_LABEL_NAME]
 		if !ok {
-			logger.Info("missing label on landscaperDeployment", "label", INSTANCE_REGISTRATION_LABEL)
+			logger.Info("missing label on landscaperDeployment", "label", instanceregistration.INSTANCE_REGISTRATION_LABEL_NAME)
 			return reconcile.Result{}, nil
 		}
-		nameNamespace := strings.Split(val, "/")
-		if len(nameNamespace) != 2 {
-			return reconcile.Result{}, fmt.Errorf("failed parsing namespace name for label value: %s", val)
+		namespace, ok := landscaperDeploymentLabels[instanceregistration.INSTANCE_REGISTRATION_LABEL_NAMESPACE]
+		if !ok {
+			logger.Info("missing label on landscaperDeployment", "label", instanceregistration.INSTANCE_REGISTRATION_LABEL_NAMESPACE)
+			return reconcile.Result{}, nil
 		}
-		instanceRegistration.SetNamespace(nameNamespace[0])
-		instanceRegistration.SetName(nameNamespace[1])
+		instanceRegistration.SetNamespace(namespace)
+		instanceRegistration.SetName(name)
 	}
 
 	instanceRegistration.Status.LastError = instance.Status.LastError

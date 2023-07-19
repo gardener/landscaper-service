@@ -6,7 +6,6 @@ package instanceregistration
 
 import (
 	"context"
-	"fmt"
 
 	kutils "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
@@ -25,7 +24,8 @@ import (
 	"github.com/gardener/landscaper-service/pkg/operation"
 )
 
-const INSTANCE_REGISTRATION_LABEL string = "landscaper-service.gardener.cloud/instanceregistration"
+const INSTANCE_REGISTRATION_LABEL_NAME string = "landscaper-service.gardener.cloud/instanceregistration_name"
+const INSTANCE_REGISTRATION_LABEL_NAMESPACE string = "landscaper-service.gardener.cloud/instanceregistration_namespace"
 
 type Controller struct {
 	operation.Operation
@@ -137,7 +137,8 @@ func (c *Controller) reconcile(ctx context.Context, instanceRegistration *lssv1a
 		if labels == nil {
 			labels = map[string]string{}
 		}
-		labels[INSTANCE_REGISTRATION_LABEL] = fmt.Sprintf("%s/%s", instanceRegistration.Namespace, instanceRegistration.Name)
+		labels[INSTANCE_REGISTRATION_LABEL_NAME] = instanceRegistration.Name
+		labels[INSTANCE_REGISTRATION_LABEL_NAMESPACE] = instanceRegistration.Namespace
 		landscaperDeployment.SetLabels(labels)
 
 		landscaperDeployment.Spec.TenantId = tenantId
