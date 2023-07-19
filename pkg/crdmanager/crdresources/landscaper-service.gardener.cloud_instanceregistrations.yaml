@@ -1,0 +1,152 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  creationTimestamp: null
+  name: instanceregistrations.landscaper-service.gardener.cloud
+spec:
+  group: landscaper-service.gardener.cloud
+  names:
+    kind: InstanceRegistration
+    plural: instanceregistrations
+    shortNames:
+    - instreg
+    singular: instanceregistration
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: The InstanceRegistration is created by the tenant and will be
+          translated to a LandscaperDeployment.
+        properties:
+          spec:
+            description: Spec contains the specification for the InstanceRegistration.
+            properties:
+              LandscaperDeploymentSpec:
+                description: LandscaperDeploymentSpec contains the specification for
+                  a LandscaperDeployment.
+                properties:
+                  highAvailabilityConfig:
+                    description: HighAvailabilityConfig specifies the HA configuration
+                      of the resource cluster (shoot cluster)
+                    properties:
+                      controlPlaneFailureTolerance:
+                        description: 'ControlPlaneFailureTolerance specifies the Kubernetes
+                          control plane failure tolerance mode. Allowed values are:
+                          node, zone'
+                        type: string
+                    required:
+                    - controlPlaneFailureTolerance
+                    type: object
+                  landscaperConfiguration:
+                    description: LandscaperConfiguration contains the configuration
+                      for the landscaper service deployment
+                    properties:
+                      deployers:
+                        description: Deployers is the list of deployers that are getting
+                          installed alongside with this Instance.
+                        items:
+                          type: string
+                        type: array
+                    required:
+                    - deployers
+                    type: object
+                  oidcConfig:
+                    description: OIDCConfig describes the OIDC config of the customer
+                      resource cluster (shoot cluster)
+                    properties:
+                      clientID:
+                        type: string
+                      groupsClaim:
+                        type: string
+                      issuerURL:
+                        type: string
+                      usernameClaim:
+                        type: string
+                    type: object
+                  purpose:
+                    description: Purpose contains the purpose of this LandscaperDeployment.
+                    type: string
+                  tenantId:
+                    description: TenantId is the unique identifier of the owning tenant.
+                    type: string
+                required:
+                - tenantId
+                - purpose
+                - landscaperConfiguration
+                type: object
+            required:
+            - LandscaperDeploymentSpec
+            type: object
+          status:
+            description: Status contains the status for the InstanceRegistration.
+            properties:
+              landscaperDeployment:
+                description: LandscaperDeploymentInfo contains the namespace/name
+                  for the corresponding LandscaperDeployment CR
+                properties:
+                  name:
+                    type: string
+                  namespace:
+                    type: string
+                required:
+                - name
+                - namespace
+                type: object
+              lastError:
+                description: LastError describes the last error that occurred.
+                properties:
+                  lastTransitionTime:
+                    description: Last time the condition transitioned from one status
+                      to another.
+                    format: date-time
+                    type: string
+                  lastUpdateTime:
+                    description: Last time the condition was updated.
+                    format: date-time
+                    type: string
+                  message:
+                    description: A human-readable message indicating details about
+                      the transition.
+                    type: string
+                  operation:
+                    description: Operation describes the operator where the error
+                      occurred.
+                    type: string
+                  reason:
+                    description: The reason for the condition's last transition.
+                    type: string
+                required:
+                - operation
+                - lastTransitionTime
+                - lastUpdateTime
+                - reason
+                - message
+                type: object
+              observedGeneration:
+                description: ObservedGeneration is the most recent generation observed
+                  for this InstanceRegistration.
+                format: int64
+                type: integer
+              userKubeconfig:
+                description: UserKubeconfig contains the user kubeconfig which can
+                  be used for accessing the landscaper cluster.
+                type: string
+            type: object
+        required:
+        - spec
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []

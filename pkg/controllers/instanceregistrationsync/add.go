@@ -40,7 +40,7 @@ func AddLandscaperDeploymentSyncControllerToManager(logger logging.Logger, mgr m
 	}
 
 	return builder.ControllerManagedBy(mgr).
-		For(&v1alpha1.InstanceRegistration{}). //TODO: restrict on what to react (only status)
+		For(&v1alpha1.LandscaperDeployment{}).
 		WithLogConstructor(func(r *reconcile.Request) logr.Logger { return log.Logr() }).
 		Complete(ctrl)
 }

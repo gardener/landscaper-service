@@ -47,6 +47,7 @@ var (
 			SubjectListDefinition,
 			TenantRegistrationDefinition,
 			LosSubjectListDefinition,
+			InstanceRegistrationDefinition,
 		},
 	}
 )

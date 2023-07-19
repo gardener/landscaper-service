@@ -41,6 +41,7 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceStatus":               schema_pkg_apis_core_v1alpha1_InstanceStatus(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperConfiguration":      schema_pkg_apis_core_v1alpha1_LandscaperConfiguration(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeployment":         schema_pkg_apis_core_v1alpha1_LandscaperDeployment(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentInfo":     schema_pkg_apis_core_v1alpha1_LandscaperDeploymentInfo(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentList":     schema_pkg_apis_core_v1alpha1_LandscaperDeploymentList(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentSpec":     schema_pkg_apis_core_v1alpha1_LandscaperDeploymentSpec(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentStatus":   schema_pkg_apis_core_v1alpha1_LandscaperDeploymentStatus(ref),
@@ -1026,7 +1027,7 @@ func schema_pkg_apis_core_v1alpha1_InstanceRegistrationStatus(ref common.Referen
 					"landscaperDeployment": {
 						SchemaProps: spec.SchemaProps{
 							Description: "LandscaperDeploymentInfo contains the namespace/name for the corresponding LandscaperDeployment CR",
-							Ref:         ref("k8s.io/apimachinery/pkg/types.NamespacedName"),
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentInfo"),
 						},
 					},
 					"lastError": {
@@ -1035,11 +1036,18 @@ func schema_pkg_apis_core_v1alpha1_InstanceRegistrationStatus(ref common.Referen
 							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Error"),
 						},
 					},
+					"userKubeconfig": {
+						SchemaProps: spec.SchemaProps{
+							Description: "UserKubeconfig contains the user kubeconfig which can be used for accessing the landscaper cluster.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
 				},
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Error", "k8s.io/apimachinery/pkg/types.NamespacedName"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Error", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentInfo"},
 	}
 }
 
@@ -1283,6 +1291,33 @@ func schema_pkg_apis_core_v1alpha1_LandscaperDeployment(ref common.ReferenceCall
 		},
 		Dependencies: []string{
 			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentSpec", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+	}
+}
+
+func schema_pkg_apis_core_v1alpha1_LandscaperDeploymentInfo(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
+						},
+					},
+					"namespace": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
+						},
+					},
+				},
+				Required: []string{"name", "namespace"},
+			},
+		},
 	}
 }
 

@@ -7,7 +7,6 @@ package v1alpha1
 import (
 	lsschema "github.com/gardener/landscaper/apis/schema"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/types"
 )
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
@@ -45,11 +44,20 @@ type InstanceRegistrationStatus struct {
 	ObservedGeneration int64 `json:"observedGeneration"`
 
 	// LandscaperDeploymentInfo contains the namespace/name for the corresponding LandscaperDeployment CR
-	LandscaperDeploymentInfo *types.NamespacedName `json:"landscaperDeployment,omitempty"`
+	LandscaperDeploymentInfo *LandscaperDeploymentInfo `json:"landscaperDeployment,omitempty"`
 
 	// LastError describes the last error that occurred.
 	// +optional
 	LastError *Error `json:"lastError,omitempty"`
+
+	// UserKubeconfig contains the user kubeconfig which can be used for accessing the landscaper cluster.
+	// +optional
+	UserKubeconfig string `json:"userKubeconfig,omitempty"`
+}
+
+type LandscaperDeploymentInfo struct {
+	Name      string `json:"name"`
+	Namespace string `json:"namespace"`
 }
 
 var InstanceRegistrationDefinition = lsschema.CustomResourceDefinition{
