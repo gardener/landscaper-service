@@ -140,7 +140,7 @@ func DeleteValidatingWebhookConfiguration(ctx context.Context, kubeClient client
 
 // RegisterWebhooks generates certificates and registers the webhooks to the manager
 // no-op if WebhookedResources in the given options is either nil or empty
-func RegisterWebhooks(ctx context.Context, webhookServer *ctrlwebhook.Server, client client.Client, scheme *runtime.Scheme, o Options) error {
+func RegisterWebhooks(ctx context.Context, webhookServer ctrlwebhook.Server, client client.Client, scheme *runtime.Scheme, o Options) error {
 	logger, _ := logging.FromContextOrNew(ctx, []interface{}{lc.KeyMethod, "RegisterWebhooks"})
 
 	if o.WebhookedResources == nil || len(o.WebhookedResources) == 0 {
@@ -158,10 +158,6 @@ func RegisterWebhooks(ctx context.Context, webhookServer *ctrlwebhook.Server, cl
 		webhookPath := o.WebhookBasePath + elem.ResourceName
 		rsLogger.Info("Registering webhook", lc.KeyResource, elem.ResourceName, "path", webhookPath)
 		admission := &ctrlwebhook.Admission{Handler: val}
-		_ = admission.InjectLogger(rsLogger.Logr())
-		if err := admission.InjectScheme(scheme); err != nil {
-			return err
-		}
 		webhookServer.Register(webhookPath, admission)
 	}
 

@@ -92,9 +92,9 @@ var _ = Describe("ServiceTargetConfig", func() {
 		Expect(response).ToNot(BeNil())
 		Expect(response.Allowed).To(BeFalse())
 		Expect(response.Result).ToNot(BeNil())
-		Expect(response.Result.Reason).ToNot(BeNil())
+		Expect(response.Result.Message).ToNot(BeNil())
 
-		Expect(string(response.Result.Reason)).To(ContainSubstring("metadata.labels.config.landscaper-service.gardener.cloud/visible"))
+		Expect(response.Result.Message).To(ContainSubstring("metadata.labels.config.landscaper-service.gardener.cloud/visible"))
 	})
 
 	It("should deny resource with invalid visible label", func() {
@@ -120,9 +120,9 @@ var _ = Describe("ServiceTargetConfig", func() {
 		Expect(response).ToNot(BeNil())
 		Expect(response.Allowed).To(BeFalse())
 		Expect(response.Result).ToNot(BeNil())
-		Expect(response.Result.Reason).ToNot(BeNil())
+		Expect(response.Result.Message).ToNot(BeNil())
 
-		Expect(string(response.Result.Reason)).To(ContainSubstring("metadata.labels.config.landscaper-service.gardener.cloud/visible"))
+		Expect(response.Result.Message).To(ContainSubstring("metadata.labels.config.landscaper-service.gardener.cloud/visible"))
 	})
 
 	It("should deny resource with invalid secret reference", func() {
@@ -148,11 +148,11 @@ var _ = Describe("ServiceTargetConfig", func() {
 		Expect(response).ToNot(BeNil())
 		Expect(response.Allowed).To(BeFalse())
 		Expect(response.Result).ToNot(BeNil())
-		Expect(response.Result.Reason).ToNot(BeNil())
+		Expect(response.Result.Message).ToNot(BeNil())
 
-		Expect(string(response.Result.Reason)).To(ContainSubstring("spec.secretRef.key"))
-		Expect(string(response.Result.Reason)).To(ContainSubstring("spec.secretRef.name"))
-		Expect(string(response.Result.Reason)).ToNot(ContainSubstring("spec.secretRef.namespace"))
+		Expect(response.Result.Message).To(ContainSubstring("spec.secretRef.key"))
+		Expect(response.Result.Message).To(ContainSubstring("spec.secretRef.name"))
+		Expect(response.Result.Message).ToNot(ContainSubstring("spec.secretRef.namespace"))
 	})
 
 	It("should deny resource with missing ingress domain", func() {
@@ -177,8 +177,8 @@ var _ = Describe("ServiceTargetConfig", func() {
 		Expect(response).ToNot(BeNil())
 		Expect(response.Allowed).To(BeFalse())
 		Expect(response.Result).ToNot(BeNil())
-		Expect(response.Result.Reason).ToNot(BeNil())
+		Expect(response.Result.Message).ToNot(BeNil())
 
-		Expect(string(response.Result.Reason)).To(ContainSubstring("spec.ingressDomain"))
+		Expect(response.Result.Message).To(ContainSubstring("spec.ingressDomain"))
 	})
 })

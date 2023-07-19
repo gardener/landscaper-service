@@ -207,14 +207,14 @@ func (e *Environment) CleanupResources(ctx context.Context, state *State) error 
 }
 
 // WaitForObjectToBeDeleted waits for the given object to be deleted or the given timout duration to end.
-func (e *Environment) WaitForObjectToBeDeleted(ctx context.Context, obj client.Object, timeout time.Duration) error {
+func (e *Environment) WaitForObjectToBeDeleted(ctx context.Context, c client.Client, obj client.Object, timeout time.Duration) error {
 	var (
 		lastErr error
 		uObj    client.Object
 	)
-	err := wait.PollImmediate(2*time.Second, timeout, func() (done bool, err error) {
+	err := wait.PollUntilContextTimeout(ctx, 1*time.Second, timeout, true, func(ctx context.Context) (done bool, err error) {
 		uObj = obj.DeepCopyObject().(client.Object)
-		if err := e.Client.Get(ctx, client.ObjectKeyFromObject(obj), uObj); err != nil {
+		if err := c.Get(ctx, client.ObjectKey{Name: obj.GetName(), Namespace: obj.GetNamespace()}, uObj); err != nil {
 			if apierrors.IsNotFound(err) {
 				return true, nil
 			}
@@ -275,7 +275,7 @@ func (e *Environment) deleteObject(ctx context.Context, obj client.Object) error
 			return err
 		}
 	}
-	if err := e.WaitForObjectToBeDeleted(ctx, obj, 5*time.Second); err != nil {
+	if err := e.WaitForObjectToBeDeleted(ctx, e.Client, obj, 5*time.Second); err != nil {
 		if err := e.removeFinalizer(ctx, obj); err != nil {
 			return err
 		}

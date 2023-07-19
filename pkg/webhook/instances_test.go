@@ -93,9 +93,9 @@ var _ = Describe("LandscaperDeployment", func() {
 		Expect(response.Allowed).To(BeFalse())
 
 		Expect(response.Result).ToNot(BeNil())
-		Expect(response.Result.Reason).ToNot(BeNil())
+		Expect(response.Result.Message).ToNot(BeNil())
 
-		Expect(string(response.Result.Reason)).To(ContainSubstring("spec.tenantId"))
+		Expect(response.Result.Message).To(ContainSubstring("spec.tenantId"))
 	})
 
 	It("should deny resource with invalid instance id", func() {
@@ -121,9 +121,9 @@ var _ = Describe("LandscaperDeployment", func() {
 		Expect(response.Allowed).To(BeFalse())
 
 		Expect(response.Result).ToNot(BeNil())
-		Expect(response.Result.Reason).ToNot(BeNil())
+		Expect(response.Result.Message).ToNot(BeNil())
 
-		Expect(string(response.Result.Reason)).To(ContainSubstring("spec.id"))
+		Expect(response.Result.Message).To(ContainSubstring("spec.id"))
 	})
 
 	It("should deny resource with invalid service target config ref", func() {
@@ -149,9 +149,9 @@ var _ = Describe("LandscaperDeployment", func() {
 		Expect(response.Allowed).To(BeFalse())
 
 		Expect(response.Result).ToNot(BeNil())
-		Expect(response.Result.Reason).ToNot(BeNil())
+		Expect(response.Result.Message).ToNot(BeNil())
 
-		Expect(string(response.Result.Reason)).To(ContainSubstring("spec.serviceTargetConfigRef.name"))
+		Expect(response.Result.Message).To(ContainSubstring("spec.serviceTargetConfigRef.name"))
 	})
 
 	It("should allow a valid update", func() {

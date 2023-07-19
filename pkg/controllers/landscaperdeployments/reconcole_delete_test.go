@@ -61,7 +61,7 @@ var _ = Describe("Delete", func() {
 		Expect(testenv.Client.Delete(ctx, deployment)).To(Succeed())
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(deployment))
 
-		Expect(testenv.WaitForObjectToBeDeleted(ctx, deployment, 5*time.Second)).To(Succeed())
+		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, deployment, 5*time.Second)).To(Succeed())
 	})
 
 	It("should remove the referenced instance", func() {
@@ -85,8 +85,8 @@ var _ = Describe("Delete", func() {
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(deployment))
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(deployment))
 
-		Expect(testenv.WaitForObjectToBeDeleted(ctx, deployment, 5*time.Second)).To(Succeed())
-		Expect(testenv.WaitForObjectToBeDeleted(ctx, instance, 5*time.Second)).To(Succeed())
+		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, deployment, 5*time.Second)).To(Succeed())
+		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, instance, 5*time.Second)).To(Succeed())
 	})
 
 	It("should handle delete errors", func() {
