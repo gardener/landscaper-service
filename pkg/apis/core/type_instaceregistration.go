@@ -33,7 +33,7 @@ type InstanceRegistration struct {
 }
 
 type InstanceRegistrationSpec struct {
-	LandscaperDeploymentSpec
+	LandscaperDeploymentSpec `json:",inline"`
 }
 
 type InstanceRegistrationStatus struct {

@@ -995,18 +995,47 @@ func schema_pkg_apis_core_v1alpha1_InstanceRegistrationSpec(ref common.Reference
 			SchemaProps: spec.SchemaProps{
 				Type: []string{"object"},
 				Properties: map[string]spec.Schema{
-					"LandscaperDeploymentSpec": {
+					"tenantId": {
 						SchemaProps: spec.SchemaProps{
-							Default: map[string]interface{}{},
-							Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentSpec"),
+							Description: "TenantId is the unique identifier of the owning tenant.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"purpose": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Purpose contains the purpose of this LandscaperDeployment.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"landscaperConfiguration": {
+						SchemaProps: spec.SchemaProps{
+							Description: "LandscaperConfiguration contains the configuration for the landscaper service deployment",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperConfiguration"),
+						},
+					},
+					"oidcConfig": {
+						SchemaProps: spec.SchemaProps{
+							Description: "OIDCConfig describes the OIDC config of the customer resource cluster (shoot cluster)",
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.OIDCConfig"),
+						},
+					},
+					"highAvailabilityConfig": {
+						SchemaProps: spec.SchemaProps{
+							Description: "HighAvailabilityConfig specifies the HA configuration of the resource cluster (shoot cluster)",
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.HighAvailabilityConfig"),
 						},
 					},
 				},
-				Required: []string{"LandscaperDeploymentSpec"},
+				Required: []string{"tenantId", "purpose", "landscaperConfiguration"},
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentSpec"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.HighAvailabilityConfig", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperConfiguration", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.OIDCConfig"},
 	}
 }
 

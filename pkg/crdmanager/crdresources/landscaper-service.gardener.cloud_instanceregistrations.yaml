@@ -26,61 +26,54 @@ spec:
           spec:
             description: Spec contains the specification for the InstanceRegistration.
             properties:
-              LandscaperDeploymentSpec:
-                description: LandscaperDeploymentSpec contains the specification for
-                  a LandscaperDeployment.
+              highAvailabilityConfig:
+                description: HighAvailabilityConfig specifies the HA configuration
+                  of the resource cluster (shoot cluster)
                 properties:
-                  highAvailabilityConfig:
-                    description: HighAvailabilityConfig specifies the HA configuration
-                      of the resource cluster (shoot cluster)
-                    properties:
-                      controlPlaneFailureTolerance:
-                        description: 'ControlPlaneFailureTolerance specifies the Kubernetes
-                          control plane failure tolerance mode. Allowed values are:
-                          node, zone'
-                        type: string
-                    required:
-                    - controlPlaneFailureTolerance
-                    type: object
-                  landscaperConfiguration:
-                    description: LandscaperConfiguration contains the configuration
-                      for the landscaper service deployment
-                    properties:
-                      deployers:
-                        description: Deployers is the list of deployers that are getting
-                          installed alongside with this Instance.
-                        items:
-                          type: string
-                        type: array
-                    required:
-                    - deployers
-                    type: object
-                  oidcConfig:
-                    description: OIDCConfig describes the OIDC config of the customer
-                      resource cluster (shoot cluster)
-                    properties:
-                      clientID:
-                        type: string
-                      groupsClaim:
-                        type: string
-                      issuerURL:
-                        type: string
-                      usernameClaim:
-                        type: string
-                    type: object
-                  purpose:
-                    description: Purpose contains the purpose of this LandscaperDeployment.
-                    type: string
-                  tenantId:
-                    description: TenantId is the unique identifier of the owning tenant.
+                  controlPlaneFailureTolerance:
+                    description: 'ControlPlaneFailureTolerance specifies the Kubernetes
+                      control plane failure tolerance mode. Allowed values are: node,
+                      zone'
                     type: string
                 required:
-                - tenantId
-                - purpose
-                - landscaperConfiguration
+                - controlPlaneFailureTolerance
                 type: object
+              landscaperConfiguration:
+                description: LandscaperConfiguration contains the configuration for
+                  the landscaper service deployment
+                properties:
+                  deployers:
+                    description: Deployers is the list of deployers that are getting
+                      installed alongside with this Instance.
+                    items:
+                      type: string
+                    type: array
+                required:
+                - deployers
+                type: object
+              oidcConfig:
+                description: OIDCConfig describes the OIDC config of the customer
+                  resource cluster (shoot cluster)
+                properties:
+                  clientID:
+                    type: string
+                  groupsClaim:
+                    type: string
+                  issuerURL:
+                    type: string
+                  usernameClaim:
+                    type: string
+                type: object
+              purpose:
+                description: Purpose contains the purpose of this LandscaperDeployment.
+                type: string
+              tenantId:
+                description: TenantId is the unique identifier of the owning tenant.
+                type: string
             required:
-            - LandscaperDeploymentSpec
+            - tenantId
+            - purpose
+            - landscaperConfiguration
             type: object
           status:
             description: Status contains the status for the InstanceRegistration.
