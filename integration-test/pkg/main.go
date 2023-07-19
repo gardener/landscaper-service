@@ -20,7 +20,6 @@ import (
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
-	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
@@ -80,10 +79,6 @@ func run() error {
 	}
 
 	ctx = logging.NewContext(ctx, log)
-
-	// call this to avoid logs like:
-	// [controller-runtime] log.SetLogger(...) was never called, logs will not be displayed:
-	ctrl.SetLogger(log.Logr())
 
 	log.Info("running integration test with flags",
 		"LAAS Component", config.LaasComponent,
