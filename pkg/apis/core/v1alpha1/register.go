@@ -71,6 +71,8 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 		&TenantRegistrationList{},
 		&LosSubjectList{},
 		&LosSubjectListList{},
+		&InstanceRegistration{},
+		&InstanceRegistrationList{},
 	)
 
 	if err := RegisterConversions(scheme); err != nil {

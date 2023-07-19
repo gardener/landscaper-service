@@ -33,6 +33,10 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.HighAvailabilityConfig":       schema_pkg_apis_core_v1alpha1_HighAvailabilityConfig(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Instance":                     schema_pkg_apis_core_v1alpha1_Instance(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceList":                 schema_pkg_apis_core_v1alpha1_InstanceList(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceRegistration":         schema_pkg_apis_core_v1alpha1_InstanceRegistration(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceRegistrationList":     schema_pkg_apis_core_v1alpha1_InstanceRegistrationList(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceRegistrationSpec":     schema_pkg_apis_core_v1alpha1_InstanceRegistrationSpec(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceRegistrationStatus":   schema_pkg_apis_core_v1alpha1_InstanceRegistrationStatus(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceSpec":                 schema_pkg_apis_core_v1alpha1_InstanceSpec(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceStatus":               schema_pkg_apis_core_v1alpha1_InstanceStatus(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperConfiguration":      schema_pkg_apis_core_v1alpha1_LandscaperConfiguration(ref),
@@ -882,6 +886,160 @@ func schema_pkg_apis_core_v1alpha1_InstanceList(ref common.ReferenceCallback) co
 		},
 		Dependencies: []string{
 			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Instance", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
+	}
+}
+
+func schema_pkg_apis_core_v1alpha1_InstanceRegistration(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "The InstanceRegistration is created by the tenant and will be translated to a LandscaperDeployment.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"),
+						},
+					},
+					"spec": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Spec contains the specification for the InstanceRegistration.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceRegistrationSpec"),
+						},
+					},
+					"status": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Status contains the status for the InstanceRegistration.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceRegistrationStatus"),
+						},
+					},
+				},
+				Required: []string{"spec"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceRegistrationSpec", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceRegistrationStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+	}
+}
+
+func schema_pkg_apis_core_v1alpha1_InstanceRegistrationList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "InstanceRegistrationList contains a list of InstanceRegistration",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"),
+						},
+					},
+					"items": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceRegistration"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"items"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceRegistration", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
+	}
+}
+
+func schema_pkg_apis_core_v1alpha1_InstanceRegistrationSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"LandscaperDeploymentSpec": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentSpec"),
+						},
+					},
+				},
+				Required: []string{"LandscaperDeploymentSpec"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentSpec"},
+	}
+}
+
+func schema_pkg_apis_core_v1alpha1_InstanceRegistrationStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"observedGeneration": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ObservedGeneration is the most recent generation observed for this InstanceRegistration.",
+							Default:     0,
+							Type:        []string{"integer"},
+							Format:      "int64",
+						},
+					},
+					"landscaperDeployment": {
+						SchemaProps: spec.SchemaProps{
+							Description: "LandscaperDeploymentInfo contains the namespace/name for the corresponding LandscaperDeployment CR",
+							Ref:         ref("k8s.io/apimachinery/pkg/types.NamespacedName"),
+						},
+					},
+					"lastError": {
+						SchemaProps: spec.SchemaProps{
+							Description: "LastError describes the last error that occurred.",
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Error"),
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Error", "k8s.io/apimachinery/pkg/types.NamespacedName"},
 	}
 }
 
