@@ -39,7 +39,7 @@ export CERT_MANAGER_VERSION=v1.12.2
 Check new version on [SAP / sap-btp-service-operator](https://github.com/SAP/sap-btp-service-operator/releases/) and [brancz / kube-rbac-proxy](https://quay.io/repository/brancz/kube-rbac-proxy?tab=tags&tag=latest)
 
 ```shell
-export SAP_BTP_OPERATOR_VERSION=v0.4.8
+export SAP_BTP_OPERATOR_VERSION=v0.4.9
 export KUBE_RBAC_PROXY_VERSION=v0.14.2
 
 ./hack/dependency-update/sap-btp-operator.sh ${SAP_BTP_OPERATOR_VERSION} ${KUBE_RBAC_PROXY_VERSION}
@@ -50,7 +50,7 @@ export KUBE_RBAC_PROXY_VERSION=v0.14.2
 Check new version on [fluentbit.io](https://docs.fluentbit.io/manual/installation/docker#tags-and-versions)
 
 ```shell
-export FLUENTBIT_VERSION=2.1.6
+export FLUENTBIT_VERSION=2.1.7
 
 ./hack/dependency-update/fluentbit.sh ${FLUENTBIT_VERSION}
 ```
