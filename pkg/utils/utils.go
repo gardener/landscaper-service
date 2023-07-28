@@ -84,3 +84,8 @@ func RemoveOperationAnnotation(object client.Object) {
 		delete(annotations, lssv1alpha1.LandscaperServiceOperationAnnotation)
 	}
 }
+
+// Ptr returns a pointer to the given object.
+func Ptr[T any](value T) *T {
+	return &value
+}

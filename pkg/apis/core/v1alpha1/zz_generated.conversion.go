@@ -136,6 +136,46 @@ func RegisterConversions(s *runtime.Scheme) error {
 	}); err != nil {
 		return err
 	}
+	if err := s.AddGeneratedConversionFunc((*InstanceRegistration)(nil), (*core.InstanceRegistration)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_InstanceRegistration_To_core_InstanceRegistration(a.(*InstanceRegistration), b.(*core.InstanceRegistration), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.InstanceRegistration)(nil), (*InstanceRegistration)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_InstanceRegistration_To_v1alpha1_InstanceRegistration(a.(*core.InstanceRegistration), b.(*InstanceRegistration), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*InstanceRegistrationList)(nil), (*core.InstanceRegistrationList)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_InstanceRegistrationList_To_core_InstanceRegistrationList(a.(*InstanceRegistrationList), b.(*core.InstanceRegistrationList), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.InstanceRegistrationList)(nil), (*InstanceRegistrationList)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_InstanceRegistrationList_To_v1alpha1_InstanceRegistrationList(a.(*core.InstanceRegistrationList), b.(*InstanceRegistrationList), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*InstanceRegistrationSpec)(nil), (*core.InstanceRegistrationSpec)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_InstanceRegistrationSpec_To_core_InstanceRegistrationSpec(a.(*InstanceRegistrationSpec), b.(*core.InstanceRegistrationSpec), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.InstanceRegistrationSpec)(nil), (*InstanceRegistrationSpec)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_InstanceRegistrationSpec_To_v1alpha1_InstanceRegistrationSpec(a.(*core.InstanceRegistrationSpec), b.(*InstanceRegistrationSpec), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*InstanceRegistrationStatus)(nil), (*core.InstanceRegistrationStatus)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_InstanceRegistrationStatus_To_core_InstanceRegistrationStatus(a.(*InstanceRegistrationStatus), b.(*core.InstanceRegistrationStatus), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.InstanceRegistrationStatus)(nil), (*InstanceRegistrationStatus)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_InstanceRegistrationStatus_To_v1alpha1_InstanceRegistrationStatus(a.(*core.InstanceRegistrationStatus), b.(*InstanceRegistrationStatus), scope)
+	}); err != nil {
+		return err
+	}
 	if err := s.AddGeneratedConversionFunc((*InstanceSpec)(nil), (*core.InstanceSpec)(nil), func(a, b interface{}, scope conversion.Scope) error {
 		return Convert_v1alpha1_InstanceSpec_To_core_InstanceSpec(a.(*InstanceSpec), b.(*core.InstanceSpec), scope)
 	}); err != nil {
@@ -176,6 +216,16 @@ func RegisterConversions(s *runtime.Scheme) error {
 	}); err != nil {
 		return err
 	}
+	if err := s.AddGeneratedConversionFunc((*LandscaperDeploymentInfo)(nil), (*core.LandscaperDeploymentInfo)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_LandscaperDeploymentInfo_To_core_LandscaperDeploymentInfo(a.(*LandscaperDeploymentInfo), b.(*core.LandscaperDeploymentInfo), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.LandscaperDeploymentInfo)(nil), (*LandscaperDeploymentInfo)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_LandscaperDeploymentInfo_To_v1alpha1_LandscaperDeploymentInfo(a.(*core.LandscaperDeploymentInfo), b.(*LandscaperDeploymentInfo), scope)
+	}); err != nil {
+		return err
+	}
 	if err := s.AddGeneratedConversionFunc((*LandscaperDeploymentList)(nil), (*core.LandscaperDeploymentList)(nil), func(a, b interface{}, scope conversion.Scope) error {
 		return Convert_v1alpha1_LandscaperDeploymentList_To_core_LandscaperDeploymentList(a.(*LandscaperDeploymentList), b.(*core.LandscaperDeploymentList), scope)
 	}); err != nil {
@@ -213,6 +263,56 @@ func RegisterConversions(s *runtime.Scheme) error {
 	}
 	if err := s.AddGeneratedConversionFunc((*core.LandscaperServiceComponent)(nil), (*LandscaperServiceComponent)(nil), func(a, b interface{}, scope conversion.Scope) error {
 		return Convert_core_LandscaperServiceComponent_To_v1alpha1_LandscaperServiceComponent(a.(*core.LandscaperServiceComponent), b.(*LandscaperServiceComponent), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*LosSubject)(nil), (*core.LosSubject)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_LosSubject_To_core_LosSubject(a.(*LosSubject), b.(*core.LosSubject), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.LosSubject)(nil), (*LosSubject)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_LosSubject_To_v1alpha1_LosSubject(a.(*core.LosSubject), b.(*LosSubject), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*LosSubjectList)(nil), (*core.LosSubjectList)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_LosSubjectList_To_core_LosSubjectList(a.(*LosSubjectList), b.(*core.LosSubjectList), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.LosSubjectList)(nil), (*LosSubjectList)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_LosSubjectList_To_v1alpha1_LosSubjectList(a.(*core.LosSubjectList), b.(*LosSubjectList), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*LosSubjectListList)(nil), (*core.LosSubjectListList)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_LosSubjectListList_To_core_LosSubjectListList(a.(*LosSubjectListList), b.(*core.LosSubjectListList), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.LosSubjectListList)(nil), (*LosSubjectListList)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_LosSubjectListList_To_v1alpha1_LosSubjectListList(a.(*core.LosSubjectListList), b.(*LosSubjectListList), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*LosSubjectListSpec)(nil), (*core.LosSubjectListSpec)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_LosSubjectListSpec_To_core_LosSubjectListSpec(a.(*LosSubjectListSpec), b.(*core.LosSubjectListSpec), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.LosSubjectListSpec)(nil), (*LosSubjectListSpec)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_LosSubjectListSpec_To_v1alpha1_LosSubjectListSpec(a.(*core.LosSubjectListSpec), b.(*LosSubjectListSpec), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*LosSubjectListStatus)(nil), (*core.LosSubjectListStatus)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_LosSubjectListStatus_To_core_LosSubjectListStatus(a.(*LosSubjectListStatus), b.(*core.LosSubjectListStatus), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.LosSubjectListStatus)(nil), (*LosSubjectListStatus)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_LosSubjectListStatus_To_v1alpha1_LosSubjectListStatus(a.(*core.LosSubjectListStatus), b.(*LosSubjectListStatus), scope)
 	}); err != nil {
 		return err
 	}
@@ -373,6 +473,46 @@ func RegisterConversions(s *runtime.Scheme) error {
 	}
 	if err := s.AddGeneratedConversionFunc((*core.SubjectListStatus)(nil), (*SubjectListStatus)(nil), func(a, b interface{}, scope conversion.Scope) error {
 		return Convert_core_SubjectListStatus_To_v1alpha1_SubjectListStatus(a.(*core.SubjectListStatus), b.(*SubjectListStatus), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*TenantRegistration)(nil), (*core.TenantRegistration)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_TenantRegistration_To_core_TenantRegistration(a.(*TenantRegistration), b.(*core.TenantRegistration), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.TenantRegistration)(nil), (*TenantRegistration)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_TenantRegistration_To_v1alpha1_TenantRegistration(a.(*core.TenantRegistration), b.(*TenantRegistration), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*TenantRegistrationList)(nil), (*core.TenantRegistrationList)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_TenantRegistrationList_To_core_TenantRegistrationList(a.(*TenantRegistrationList), b.(*core.TenantRegistrationList), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.TenantRegistrationList)(nil), (*TenantRegistrationList)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_TenantRegistrationList_To_v1alpha1_TenantRegistrationList(a.(*core.TenantRegistrationList), b.(*TenantRegistrationList), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*TenantRegistrationSpec)(nil), (*core.TenantRegistrationSpec)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_TenantRegistrationSpec_To_core_TenantRegistrationSpec(a.(*TenantRegistrationSpec), b.(*core.TenantRegistrationSpec), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.TenantRegistrationSpec)(nil), (*TenantRegistrationSpec)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_TenantRegistrationSpec_To_v1alpha1_TenantRegistrationSpec(a.(*core.TenantRegistrationSpec), b.(*TenantRegistrationSpec), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*TenantRegistrationStatus)(nil), (*core.TenantRegistrationStatus)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_TenantRegistrationStatus_To_core_TenantRegistrationStatus(a.(*TenantRegistrationStatus), b.(*core.TenantRegistrationStatus), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.TenantRegistrationStatus)(nil), (*TenantRegistrationStatus)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_TenantRegistrationStatus_To_v1alpha1_TenantRegistrationStatus(a.(*core.TenantRegistrationStatus), b.(*TenantRegistrationStatus), scope)
 	}); err != nil {
 		return err
 	}
@@ -655,6 +795,110 @@ func Convert_core_InstanceList_To_v1alpha1_InstanceList(in *core.InstanceList, o
 	return autoConvert_core_InstanceList_To_v1alpha1_InstanceList(in, out, s)
 }
 
+func autoConvert_v1alpha1_InstanceRegistration_To_core_InstanceRegistration(in *InstanceRegistration, out *core.InstanceRegistration, s conversion.Scope) error {
+	out.ObjectMeta = in.ObjectMeta
+	if err := Convert_v1alpha1_InstanceRegistrationSpec_To_core_InstanceRegistrationSpec(&in.Spec, &out.Spec, s); err != nil {
+		return err
+	}
+	if err := Convert_v1alpha1_InstanceRegistrationStatus_To_core_InstanceRegistrationStatus(&in.Status, &out.Status, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_v1alpha1_InstanceRegistration_To_core_InstanceRegistration is an autogenerated conversion function.
+func Convert_v1alpha1_InstanceRegistration_To_core_InstanceRegistration(in *InstanceRegistration, out *core.InstanceRegistration, s conversion.Scope) error {
+	return autoConvert_v1alpha1_InstanceRegistration_To_core_InstanceRegistration(in, out, s)
+}
+
+func autoConvert_core_InstanceRegistration_To_v1alpha1_InstanceRegistration(in *core.InstanceRegistration, out *InstanceRegistration, s conversion.Scope) error {
+	out.ObjectMeta = in.ObjectMeta
+	if err := Convert_core_InstanceRegistrationSpec_To_v1alpha1_InstanceRegistrationSpec(&in.Spec, &out.Spec, s); err != nil {
+		return err
+	}
+	if err := Convert_core_InstanceRegistrationStatus_To_v1alpha1_InstanceRegistrationStatus(&in.Status, &out.Status, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_core_InstanceRegistration_To_v1alpha1_InstanceRegistration is an autogenerated conversion function.
+func Convert_core_InstanceRegistration_To_v1alpha1_InstanceRegistration(in *core.InstanceRegistration, out *InstanceRegistration, s conversion.Scope) error {
+	return autoConvert_core_InstanceRegistration_To_v1alpha1_InstanceRegistration(in, out, s)
+}
+
+func autoConvert_v1alpha1_InstanceRegistrationList_To_core_InstanceRegistrationList(in *InstanceRegistrationList, out *core.InstanceRegistrationList, s conversion.Scope) error {
+	out.ListMeta = in.ListMeta
+	out.Items = *(*[]core.InstanceRegistration)(unsafe.Pointer(&in.Items))
+	return nil
+}
+
+// Convert_v1alpha1_InstanceRegistrationList_To_core_InstanceRegistrationList is an autogenerated conversion function.
+func Convert_v1alpha1_InstanceRegistrationList_To_core_InstanceRegistrationList(in *InstanceRegistrationList, out *core.InstanceRegistrationList, s conversion.Scope) error {
+	return autoConvert_v1alpha1_InstanceRegistrationList_To_core_InstanceRegistrationList(in, out, s)
+}
+
+func autoConvert_core_InstanceRegistrationList_To_v1alpha1_InstanceRegistrationList(in *core.InstanceRegistrationList, out *InstanceRegistrationList, s conversion.Scope) error {
+	out.ListMeta = in.ListMeta
+	out.Items = *(*[]InstanceRegistration)(unsafe.Pointer(&in.Items))
+	return nil
+}
+
+// Convert_core_InstanceRegistrationList_To_v1alpha1_InstanceRegistrationList is an autogenerated conversion function.
+func Convert_core_InstanceRegistrationList_To_v1alpha1_InstanceRegistrationList(in *core.InstanceRegistrationList, out *InstanceRegistrationList, s conversion.Scope) error {
+	return autoConvert_core_InstanceRegistrationList_To_v1alpha1_InstanceRegistrationList(in, out, s)
+}
+
+func autoConvert_v1alpha1_InstanceRegistrationSpec_To_core_InstanceRegistrationSpec(in *InstanceRegistrationSpec, out *core.InstanceRegistrationSpec, s conversion.Scope) error {
+	if err := Convert_v1alpha1_LandscaperDeploymentSpec_To_core_LandscaperDeploymentSpec(&in.LandscaperDeploymentSpec, &out.LandscaperDeploymentSpec, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_v1alpha1_InstanceRegistrationSpec_To_core_InstanceRegistrationSpec is an autogenerated conversion function.
+func Convert_v1alpha1_InstanceRegistrationSpec_To_core_InstanceRegistrationSpec(in *InstanceRegistrationSpec, out *core.InstanceRegistrationSpec, s conversion.Scope) error {
+	return autoConvert_v1alpha1_InstanceRegistrationSpec_To_core_InstanceRegistrationSpec(in, out, s)
+}
+
+func autoConvert_core_InstanceRegistrationSpec_To_v1alpha1_InstanceRegistrationSpec(in *core.InstanceRegistrationSpec, out *InstanceRegistrationSpec, s conversion.Scope) error {
+	if err := Convert_core_LandscaperDeploymentSpec_To_v1alpha1_LandscaperDeploymentSpec(&in.LandscaperDeploymentSpec, &out.LandscaperDeploymentSpec, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_core_InstanceRegistrationSpec_To_v1alpha1_InstanceRegistrationSpec is an autogenerated conversion function.
+func Convert_core_InstanceRegistrationSpec_To_v1alpha1_InstanceRegistrationSpec(in *core.InstanceRegistrationSpec, out *InstanceRegistrationSpec, s conversion.Scope) error {
+	return autoConvert_core_InstanceRegistrationSpec_To_v1alpha1_InstanceRegistrationSpec(in, out, s)
+}
+
+func autoConvert_v1alpha1_InstanceRegistrationStatus_To_core_InstanceRegistrationStatus(in *InstanceRegistrationStatus, out *core.InstanceRegistrationStatus, s conversion.Scope) error {
+	out.ObservedGeneration = in.ObservedGeneration
+	out.LandscaperDeploymentInfo = (*core.LandscaperDeploymentInfo)(unsafe.Pointer(in.LandscaperDeploymentInfo))
+	out.LastError = (*core.Error)(unsafe.Pointer(in.LastError))
+	out.UserKubeconfig = in.UserKubeconfig
+	return nil
+}
+
+// Convert_v1alpha1_InstanceRegistrationStatus_To_core_InstanceRegistrationStatus is an autogenerated conversion function.
+func Convert_v1alpha1_InstanceRegistrationStatus_To_core_InstanceRegistrationStatus(in *InstanceRegistrationStatus, out *core.InstanceRegistrationStatus, s conversion.Scope) error {
+	return autoConvert_v1alpha1_InstanceRegistrationStatus_To_core_InstanceRegistrationStatus(in, out, s)
+}
+
+func autoConvert_core_InstanceRegistrationStatus_To_v1alpha1_InstanceRegistrationStatus(in *core.InstanceRegistrationStatus, out *InstanceRegistrationStatus, s conversion.Scope) error {
+	out.ObservedGeneration = in.ObservedGeneration
+	out.LandscaperDeploymentInfo = (*LandscaperDeploymentInfo)(unsafe.Pointer(in.LandscaperDeploymentInfo))
+	out.LastError = (*Error)(unsafe.Pointer(in.LastError))
+	out.UserKubeconfig = in.UserKubeconfig
+	return nil
+}
+
+// Convert_core_InstanceRegistrationStatus_To_v1alpha1_InstanceRegistrationStatus is an autogenerated conversion function.
+func Convert_core_InstanceRegistrationStatus_To_v1alpha1_InstanceRegistrationStatus(in *core.InstanceRegistrationStatus, out *InstanceRegistrationStatus, s conversion.Scope) error {
+	return autoConvert_core_InstanceRegistrationStatus_To_v1alpha1_InstanceRegistrationStatus(in, out, s)
+}
+
 func autoConvert_v1alpha1_InstanceSpec_To_core_InstanceSpec(in *InstanceSpec, out *core.InstanceSpec, s conversion.Scope) error {
 	out.TenantId = in.TenantId
 	out.ID = in.ID
@@ -791,6 +1035,28 @@ func Convert_core_LandscaperDeployment_To_v1alpha1_LandscaperDeployment(in *core
 	return autoConvert_core_LandscaperDeployment_To_v1alpha1_LandscaperDeployment(in, out, s)
 }
 
+func autoConvert_v1alpha1_LandscaperDeploymentInfo_To_core_LandscaperDeploymentInfo(in *LandscaperDeploymentInfo, out *core.LandscaperDeploymentInfo, s conversion.Scope) error {
+	out.Name = in.Name
+	out.Namespace = in.Namespace
+	return nil
+}
+
+// Convert_v1alpha1_LandscaperDeploymentInfo_To_core_LandscaperDeploymentInfo is an autogenerated conversion function.
+func Convert_v1alpha1_LandscaperDeploymentInfo_To_core_LandscaperDeploymentInfo(in *LandscaperDeploymentInfo, out *core.LandscaperDeploymentInfo, s conversion.Scope) error {
+	return autoConvert_v1alpha1_LandscaperDeploymentInfo_To_core_LandscaperDeploymentInfo(in, out, s)
+}
+
+func autoConvert_core_LandscaperDeploymentInfo_To_v1alpha1_LandscaperDeploymentInfo(in *core.LandscaperDeploymentInfo, out *LandscaperDeploymentInfo, s conversion.Scope) error {
+	out.Name = in.Name
+	out.Namespace = in.Namespace
+	return nil
+}
+
+// Convert_core_LandscaperDeploymentInfo_To_v1alpha1_LandscaperDeploymentInfo is an autogenerated conversion function.
+func Convert_core_LandscaperDeploymentInfo_To_v1alpha1_LandscaperDeploymentInfo(in *core.LandscaperDeploymentInfo, out *LandscaperDeploymentInfo, s conversion.Scope) error {
+	return autoConvert_core_LandscaperDeploymentInfo_To_v1alpha1_LandscaperDeploymentInfo(in, out, s)
+}
+
 func autoConvert_v1alpha1_LandscaperDeploymentList_To_core_LandscaperDeploymentList(in *LandscaperDeploymentList, out *core.LandscaperDeploymentList, s conversion.Scope) error {
 	out.ListMeta = in.ListMeta
 	out.Items = *(*[]core.LandscaperDeployment)(unsafe.Pointer(&in.Items))
@@ -889,6 +1155,130 @@ func autoConvert_core_LandscaperServiceComponent_To_v1alpha1_LandscaperServiceCo
 // Convert_core_LandscaperServiceComponent_To_v1alpha1_LandscaperServiceComponent is an autogenerated conversion function.
 func Convert_core_LandscaperServiceComponent_To_v1alpha1_LandscaperServiceComponent(in *core.LandscaperServiceComponent, out *LandscaperServiceComponent, s conversion.Scope) error {
 	return autoConvert_core_LandscaperServiceComponent_To_v1alpha1_LandscaperServiceComponent(in, out, s)
+}
+
+func autoConvert_v1alpha1_LosSubject_To_core_LosSubject(in *LosSubject, out *core.LosSubject, s conversion.Scope) error {
+	out.Kind = in.Kind
+	out.Name = in.Name
+	return nil
+}
+
+// Convert_v1alpha1_LosSubject_To_core_LosSubject is an autogenerated conversion function.
+func Convert_v1alpha1_LosSubject_To_core_LosSubject(in *LosSubject, out *core.LosSubject, s conversion.Scope) error {
+	return autoConvert_v1alpha1_LosSubject_To_core_LosSubject(in, out, s)
+}
+
+func autoConvert_core_LosSubject_To_v1alpha1_LosSubject(in *core.LosSubject, out *LosSubject, s conversion.Scope) error {
+	out.Kind = in.Kind
+	out.Name = in.Name
+	return nil
+}
+
+// Convert_core_LosSubject_To_v1alpha1_LosSubject is an autogenerated conversion function.
+func Convert_core_LosSubject_To_v1alpha1_LosSubject(in *core.LosSubject, out *LosSubject, s conversion.Scope) error {
+	return autoConvert_core_LosSubject_To_v1alpha1_LosSubject(in, out, s)
+}
+
+func autoConvert_v1alpha1_LosSubjectList_To_core_LosSubjectList(in *LosSubjectList, out *core.LosSubjectList, s conversion.Scope) error {
+	out.ObjectMeta = in.ObjectMeta
+	if err := Convert_v1alpha1_LosSubjectListSpec_To_core_LosSubjectListSpec(&in.Spec, &out.Spec, s); err != nil {
+		return err
+	}
+	if err := Convert_v1alpha1_LosSubjectListStatus_To_core_LosSubjectListStatus(&in.Status, &out.Status, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_v1alpha1_LosSubjectList_To_core_LosSubjectList is an autogenerated conversion function.
+func Convert_v1alpha1_LosSubjectList_To_core_LosSubjectList(in *LosSubjectList, out *core.LosSubjectList, s conversion.Scope) error {
+	return autoConvert_v1alpha1_LosSubjectList_To_core_LosSubjectList(in, out, s)
+}
+
+func autoConvert_core_LosSubjectList_To_v1alpha1_LosSubjectList(in *core.LosSubjectList, out *LosSubjectList, s conversion.Scope) error {
+	out.ObjectMeta = in.ObjectMeta
+	if err := Convert_core_LosSubjectListSpec_To_v1alpha1_LosSubjectListSpec(&in.Spec, &out.Spec, s); err != nil {
+		return err
+	}
+	if err := Convert_core_LosSubjectListStatus_To_v1alpha1_LosSubjectListStatus(&in.Status, &out.Status, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_core_LosSubjectList_To_v1alpha1_LosSubjectList is an autogenerated conversion function.
+func Convert_core_LosSubjectList_To_v1alpha1_LosSubjectList(in *core.LosSubjectList, out *LosSubjectList, s conversion.Scope) error {
+	return autoConvert_core_LosSubjectList_To_v1alpha1_LosSubjectList(in, out, s)
+}
+
+func autoConvert_v1alpha1_LosSubjectListList_To_core_LosSubjectListList(in *LosSubjectListList, out *core.LosSubjectListList, s conversion.Scope) error {
+	out.ListMeta = in.ListMeta
+	out.Items = *(*[]core.LosSubjectList)(unsafe.Pointer(&in.Items))
+	return nil
+}
+
+// Convert_v1alpha1_LosSubjectListList_To_core_LosSubjectListList is an autogenerated conversion function.
+func Convert_v1alpha1_LosSubjectListList_To_core_LosSubjectListList(in *LosSubjectListList, out *core.LosSubjectListList, s conversion.Scope) error {
+	return autoConvert_v1alpha1_LosSubjectListList_To_core_LosSubjectListList(in, out, s)
+}
+
+func autoConvert_core_LosSubjectListList_To_v1alpha1_LosSubjectListList(in *core.LosSubjectListList, out *LosSubjectListList, s conversion.Scope) error {
+	out.ListMeta = in.ListMeta
+	out.Items = *(*[]LosSubjectList)(unsafe.Pointer(&in.Items))
+	return nil
+}
+
+// Convert_core_LosSubjectListList_To_v1alpha1_LosSubjectListList is an autogenerated conversion function.
+func Convert_core_LosSubjectListList_To_v1alpha1_LosSubjectListList(in *core.LosSubjectListList, out *LosSubjectListList, s conversion.Scope) error {
+	return autoConvert_core_LosSubjectListList_To_v1alpha1_LosSubjectListList(in, out, s)
+}
+
+func autoConvert_v1alpha1_LosSubjectListSpec_To_core_LosSubjectListSpec(in *LosSubjectListSpec, out *core.LosSubjectListSpec, s conversion.Scope) error {
+	out.Admins = *(*[]core.LosSubject)(unsafe.Pointer(&in.Admins))
+	out.Members = *(*[]core.LosSubject)(unsafe.Pointer(&in.Members))
+	out.Viewer = *(*[]core.LosSubject)(unsafe.Pointer(&in.Viewer))
+	return nil
+}
+
+// Convert_v1alpha1_LosSubjectListSpec_To_core_LosSubjectListSpec is an autogenerated conversion function.
+func Convert_v1alpha1_LosSubjectListSpec_To_core_LosSubjectListSpec(in *LosSubjectListSpec, out *core.LosSubjectListSpec, s conversion.Scope) error {
+	return autoConvert_v1alpha1_LosSubjectListSpec_To_core_LosSubjectListSpec(in, out, s)
+}
+
+func autoConvert_core_LosSubjectListSpec_To_v1alpha1_LosSubjectListSpec(in *core.LosSubjectListSpec, out *LosSubjectListSpec, s conversion.Scope) error {
+	out.Admins = *(*[]LosSubject)(unsafe.Pointer(&in.Admins))
+	out.Members = *(*[]LosSubject)(unsafe.Pointer(&in.Members))
+	out.Viewer = *(*[]LosSubject)(unsafe.Pointer(&in.Viewer))
+	return nil
+}
+
+// Convert_core_LosSubjectListSpec_To_v1alpha1_LosSubjectListSpec is an autogenerated conversion function.
+func Convert_core_LosSubjectListSpec_To_v1alpha1_LosSubjectListSpec(in *core.LosSubjectListSpec, out *LosSubjectListSpec, s conversion.Scope) error {
+	return autoConvert_core_LosSubjectListSpec_To_v1alpha1_LosSubjectListSpec(in, out, s)
+}
+
+func autoConvert_v1alpha1_LosSubjectListStatus_To_core_LosSubjectListStatus(in *LosSubjectListStatus, out *core.LosSubjectListStatus, s conversion.Scope) error {
+	out.Phase = in.Phase
+	out.SyncedGeneration = in.SyncedGeneration
+	out.ObservedGeneration = in.ObservedGeneration
+	return nil
+}
+
+// Convert_v1alpha1_LosSubjectListStatus_To_core_LosSubjectListStatus is an autogenerated conversion function.
+func Convert_v1alpha1_LosSubjectListStatus_To_core_LosSubjectListStatus(in *LosSubjectListStatus, out *core.LosSubjectListStatus, s conversion.Scope) error {
+	return autoConvert_v1alpha1_LosSubjectListStatus_To_core_LosSubjectListStatus(in, out, s)
+}
+
+func autoConvert_core_LosSubjectListStatus_To_v1alpha1_LosSubjectListStatus(in *core.LosSubjectListStatus, out *LosSubjectListStatus, s conversion.Scope) error {
+	out.Phase = in.Phase
+	out.SyncedGeneration = in.SyncedGeneration
+	out.ObservedGeneration = in.ObservedGeneration
+	return nil
+}
+
+// Convert_core_LosSubjectListStatus_To_v1alpha1_LosSubjectListStatus is an autogenerated conversion function.
+func Convert_core_LosSubjectListStatus_To_v1alpha1_LosSubjectListStatus(in *core.LosSubjectListStatus, out *LosSubjectListStatus, s conversion.Scope) error {
+	return autoConvert_core_LosSubjectListStatus_To_v1alpha1_LosSubjectListStatus(in, out, s)
 }
 
 func autoConvert_v1alpha1_NamespaceRegistration_To_core_NamespaceRegistration(in *NamespaceRegistration, out *core.NamespaceRegistration, s conversion.Scope) error {
@@ -1279,4 +1669,102 @@ func autoConvert_core_SubjectListStatus_To_v1alpha1_SubjectListStatus(in *core.S
 // Convert_core_SubjectListStatus_To_v1alpha1_SubjectListStatus is an autogenerated conversion function.
 func Convert_core_SubjectListStatus_To_v1alpha1_SubjectListStatus(in *core.SubjectListStatus, out *SubjectListStatus, s conversion.Scope) error {
 	return autoConvert_core_SubjectListStatus_To_v1alpha1_SubjectListStatus(in, out, s)
+}
+
+func autoConvert_v1alpha1_TenantRegistration_To_core_TenantRegistration(in *TenantRegistration, out *core.TenantRegistration, s conversion.Scope) error {
+	out.ObjectMeta = in.ObjectMeta
+	if err := Convert_v1alpha1_TenantRegistrationSpec_To_core_TenantRegistrationSpec(&in.Spec, &out.Spec, s); err != nil {
+		return err
+	}
+	if err := Convert_v1alpha1_TenantRegistrationStatus_To_core_TenantRegistrationStatus(&in.Status, &out.Status, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_v1alpha1_TenantRegistration_To_core_TenantRegistration is an autogenerated conversion function.
+func Convert_v1alpha1_TenantRegistration_To_core_TenantRegistration(in *TenantRegistration, out *core.TenantRegistration, s conversion.Scope) error {
+	return autoConvert_v1alpha1_TenantRegistration_To_core_TenantRegistration(in, out, s)
+}
+
+func autoConvert_core_TenantRegistration_To_v1alpha1_TenantRegistration(in *core.TenantRegistration, out *TenantRegistration, s conversion.Scope) error {
+	out.ObjectMeta = in.ObjectMeta
+	if err := Convert_core_TenantRegistrationSpec_To_v1alpha1_TenantRegistrationSpec(&in.Spec, &out.Spec, s); err != nil {
+		return err
+	}
+	if err := Convert_core_TenantRegistrationStatus_To_v1alpha1_TenantRegistrationStatus(&in.Status, &out.Status, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_core_TenantRegistration_To_v1alpha1_TenantRegistration is an autogenerated conversion function.
+func Convert_core_TenantRegistration_To_v1alpha1_TenantRegistration(in *core.TenantRegistration, out *TenantRegistration, s conversion.Scope) error {
+	return autoConvert_core_TenantRegistration_To_v1alpha1_TenantRegistration(in, out, s)
+}
+
+func autoConvert_v1alpha1_TenantRegistrationList_To_core_TenantRegistrationList(in *TenantRegistrationList, out *core.TenantRegistrationList, s conversion.Scope) error {
+	out.ListMeta = in.ListMeta
+	out.Items = *(*[]core.TenantRegistration)(unsafe.Pointer(&in.Items))
+	return nil
+}
+
+// Convert_v1alpha1_TenantRegistrationList_To_core_TenantRegistrationList is an autogenerated conversion function.
+func Convert_v1alpha1_TenantRegistrationList_To_core_TenantRegistrationList(in *TenantRegistrationList, out *core.TenantRegistrationList, s conversion.Scope) error {
+	return autoConvert_v1alpha1_TenantRegistrationList_To_core_TenantRegistrationList(in, out, s)
+}
+
+func autoConvert_core_TenantRegistrationList_To_v1alpha1_TenantRegistrationList(in *core.TenantRegistrationList, out *TenantRegistrationList, s conversion.Scope) error {
+	out.ListMeta = in.ListMeta
+	out.Items = *(*[]TenantRegistration)(unsafe.Pointer(&in.Items))
+	return nil
+}
+
+// Convert_core_TenantRegistrationList_To_v1alpha1_TenantRegistrationList is an autogenerated conversion function.
+func Convert_core_TenantRegistrationList_To_v1alpha1_TenantRegistrationList(in *core.TenantRegistrationList, out *TenantRegistrationList, s conversion.Scope) error {
+	return autoConvert_core_TenantRegistrationList_To_v1alpha1_TenantRegistrationList(in, out, s)
+}
+
+func autoConvert_v1alpha1_TenantRegistrationSpec_To_core_TenantRegistrationSpec(in *TenantRegistrationSpec, out *core.TenantRegistrationSpec, s conversion.Scope) error {
+	out.Author = in.Author
+	return nil
+}
+
+// Convert_v1alpha1_TenantRegistrationSpec_To_core_TenantRegistrationSpec is an autogenerated conversion function.
+func Convert_v1alpha1_TenantRegistrationSpec_To_core_TenantRegistrationSpec(in *TenantRegistrationSpec, out *core.TenantRegistrationSpec, s conversion.Scope) error {
+	return autoConvert_v1alpha1_TenantRegistrationSpec_To_core_TenantRegistrationSpec(in, out, s)
+}
+
+func autoConvert_core_TenantRegistrationSpec_To_v1alpha1_TenantRegistrationSpec(in *core.TenantRegistrationSpec, out *TenantRegistrationSpec, s conversion.Scope) error {
+	out.Author = in.Author
+	return nil
+}
+
+// Convert_core_TenantRegistrationSpec_To_v1alpha1_TenantRegistrationSpec is an autogenerated conversion function.
+func Convert_core_TenantRegistrationSpec_To_v1alpha1_TenantRegistrationSpec(in *core.TenantRegistrationSpec, out *TenantRegistrationSpec, s conversion.Scope) error {
+	return autoConvert_core_TenantRegistrationSpec_To_v1alpha1_TenantRegistrationSpec(in, out, s)
+}
+
+func autoConvert_v1alpha1_TenantRegistrationStatus_To_core_TenantRegistrationStatus(in *TenantRegistrationStatus, out *core.TenantRegistrationStatus, s conversion.Scope) error {
+	out.SyncedGeneration = in.SyncedGeneration
+	out.ObservedGeneration = in.ObservedGeneration
+	out.Namespace = in.Namespace
+	return nil
+}
+
+// Convert_v1alpha1_TenantRegistrationStatus_To_core_TenantRegistrationStatus is an autogenerated conversion function.
+func Convert_v1alpha1_TenantRegistrationStatus_To_core_TenantRegistrationStatus(in *TenantRegistrationStatus, out *core.TenantRegistrationStatus, s conversion.Scope) error {
+	return autoConvert_v1alpha1_TenantRegistrationStatus_To_core_TenantRegistrationStatus(in, out, s)
+}
+
+func autoConvert_core_TenantRegistrationStatus_To_v1alpha1_TenantRegistrationStatus(in *core.TenantRegistrationStatus, out *TenantRegistrationStatus, s conversion.Scope) error {
+	out.SyncedGeneration = in.SyncedGeneration
+	out.ObservedGeneration = in.ObservedGeneration
+	out.Namespace = in.Namespace
+	return nil
+}
+
+// Convert_core_TenantRegistrationStatus_To_v1alpha1_TenantRegistrationStatus is an autogenerated conversion function.
+func Convert_core_TenantRegistrationStatus_To_v1alpha1_TenantRegistrationStatus(in *core.TenantRegistrationStatus, out *TenantRegistrationStatus, s conversion.Scope) error {
+	return autoConvert_core_TenantRegistrationStatus_To_v1alpha1_TenantRegistrationStatus(in, out, s)
 }
