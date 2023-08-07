@@ -19,6 +19,9 @@
     },
     "deployersConfig": {
       "$ref": "#definitions/deployerConfig"
+    },
+    "k8sClientSettings": {
+      "type": "object"
     }
   },
   "definitions": {

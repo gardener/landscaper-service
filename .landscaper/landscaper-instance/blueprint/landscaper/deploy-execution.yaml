@@ -56,6 +56,11 @@ deployItems:
           registryConfig:
 {{ toYaml .imports.registryConfig | indent 12 }}
 
+          {{ if .imports.landscaperConfig.k8sClientSettings }}
+          k8sClientSettings:
+{{ toYaml .imports.landscaperConfig.k8sClientSettings | indent 12 }}
+          {{ end }}
+
           deployers:
 {{ toYaml .imports.landscaperConfig.deployers | indent 12 }}
 
