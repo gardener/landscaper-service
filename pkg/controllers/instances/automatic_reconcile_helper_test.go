@@ -48,7 +48,7 @@ var _ = Describe("AutomaticReconcileHelper", func() {
 
 		/// 1. Instance has a changed spec.
 		// Expect the last reconcile time to be set and the requeue interval to equal the duration set in the Instance spec.
-		By("instance has not changed", func() {
+		By("instance has changed", func() {
 			oldInstance := instance.DeepCopy()
 			instance.Spec.LandscaperConfiguration.Deployers = []string{
 				"customDeployer",
