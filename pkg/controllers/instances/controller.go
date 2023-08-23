@@ -38,7 +38,7 @@ var letterRunes = []rune("abcdefghijklmnopqrstuvwxyz")
 type Controller struct {
 	operation.Operation
 	log             logging.Logger
-	reconcileHelper *automaticReconcileHelper
+	reconcileHelper *AutomaticReconcileHelper
 
 	UniqueIDFunc func() string
 
@@ -74,7 +74,7 @@ func NewController(logger logging.Logger, c client.Client, scheme *runtime.Schem
 	ctrl := &Controller{
 		log:                 logger,
 		UniqueIDFunc:        defaultUniqueIdFunc,
-		reconcileHelper:     newAutomaticReconcileHelper(c, clock.RealClock{}),
+		reconcileHelper:     NewAutomaticReconcileHelper(c, clock.RealClock{}),
 		kubeClientExtractor: &healthwatcher.ServiceTargetConfigKubeClientExtractor{},
 	}
 	ctrl.ReconcileFunc = ctrl.reconcile
@@ -98,7 +98,7 @@ func NewTestActuator(op operation.Operation, logger logging.Logger) *Controller 
 		Operation:           op,
 		log:                 logger,
 		UniqueIDFunc:        defaultUniqueIdFunc,
-		reconcileHelper:     newAutomaticReconcileHelper(op.Client(), clock.RealClock{}),
+		reconcileHelper:     NewAutomaticReconcileHelper(op.Client(), clock.RealClock{}),
 		kubeClientExtractor: &TestKubeClientExtractor{},
 	}
 	ctrl.ReconcileFunc = ctrl.reconcile
@@ -119,6 +119,8 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 		}
 		return reconcile.Result{}, err
 	}
+
+	oldInstance := instance.DeepCopy()
 
 	c.Operation.Scheme().Default(instance)
 	errHdl := c.handleErrorFunc(instance)
@@ -148,11 +150,11 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 	if utils.HasOperationAnnotation(instance, lssv1alpha1.LandscaperServiceOperationIgnore) {
 		logger.Info("instance has ignore annotation, skipping reconcile")
-		return c.reconcileHelper.computeAutomaticReconcile(ctx, instance, nil)
+		return c.reconcileHelper.ComputeAutomaticReconcile(ctx, instance, oldInstance, nil)
 	}
 
 	// reconcile
-	return c.reconcileHelper.computeAutomaticReconcile(ctx, instance, errHdl(ctx, c.ReconcileFunc(ctx, instance)))
+	return c.reconcileHelper.ComputeAutomaticReconcile(ctx, instance, oldInstance, errHdl(ctx, c.ReconcileFunc(ctx, instance)))
 }
 
 // handleErrorFunc updates the error status of an instance

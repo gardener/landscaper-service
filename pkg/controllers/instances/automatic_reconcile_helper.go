@@ -6,6 +6,7 @@ package instances
 
 import (
 	"context"
+	"reflect"
 	"time"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -23,37 +24,52 @@ const (
 	AutomaticReconcileDefaultDuration = 12 * time.Hour
 )
 
-type automaticReconcileHelper struct {
+type AutomaticReconcileHelper struct {
 	cl    client.Client
 	clock clock.PassiveClock
 }
 
-func newAutomaticReconcileHelper(cl client.Client, passiveClock clock.PassiveClock) *automaticReconcileHelper {
-	return &automaticReconcileHelper{
+func NewAutomaticReconcileHelper(cl client.Client, passiveClock clock.PassiveClock) *AutomaticReconcileHelper {
+	return &AutomaticReconcileHelper{
 		cl:    cl,
 		clock: passiveClock,
 	}
 }
 
-func (r *automaticReconcileHelper) computeAutomaticReconcile(ctx context.Context, instance *lssv1alpha1.Instance, reconcileError error) (reconcile.Result, error) {
+func (r *AutomaticReconcileHelper) ComputeAutomaticReconcile(ctx context.Context, instance, oldInstance *lssv1alpha1.Instance, reconcileError error) (reconcile.Result, error) {
 	logger, ctx := logging.FromContextOrNew(ctx, nil)
 
-	if err := r.updateReconcileStatus(ctx, instance); err != nil {
-		logger.Error(err, "failed to update instance status")
-		return reconcile.Result{}, err
+	// before modifying any objects, calculate the interval for the next automatic reconcile run
+	reconcileInterval := r.getReconcileInterval(instance)
+
+	// setting the automatic reconcile status to nil before comparing the old instance and the
+	// potentially changed new instance
+	oldInstance.Status.AutomaticReconcileStatus = nil
+	automaticReconcileStatus := instance.Status.AutomaticReconcileStatus
+	instance.Status.AutomaticReconcileStatus = nil
+
+	instanceChanged := !reflect.DeepEqual(oldInstance, instance)
+	instance.Status.AutomaticReconcileStatus = automaticReconcileStatus
+
+	// when the instance has changed, update the last reconcile timestamp
+	if instanceChanged {
+		if err := r.updateReconcileStatus(ctx, instance); err != nil {
+			logger.Error(err, "failed to update instance status")
+			return reconcile.Result{}, err
+		}
 	}
 
 	if reconcileError == nil {
 		return reconcile.Result{
 			Requeue:      true,
-			RequeueAfter: r.getReconcileInterval(instance),
+			RequeueAfter: reconcileInterval,
 		}, nil
 	} else {
 		return reconcile.Result{}, reconcileError
 	}
 }
 
-func (r *automaticReconcileHelper) updateReconcileStatus(ctx context.Context, instance *lssv1alpha1.Instance) error {
+func (r *AutomaticReconcileHelper) updateReconcileStatus(ctx context.Context, instance *lssv1alpha1.Instance) error {
 	logger, ctx := logging.FromContextOrNew(ctx, nil)
 
 	instance.Status.AutomaticReconcileStatus = &lssv1alpha1.AutomaticReconcileStatus{
@@ -68,19 +84,28 @@ func (r *automaticReconcileHelper) updateReconcileStatus(ctx context.Context, in
 	return nil
 }
 
-func (r *automaticReconcileHelper) getReconcileInterval(instance *lssv1alpha1.Instance) time.Duration {
+func (r *AutomaticReconcileHelper) getReconcileInterval(instance *lssv1alpha1.Instance) time.Duration {
 	duration := AutomaticReconcileDefaultDuration
 	if instance.Spec.AutomaticReconcile != nil {
 		duration = instance.Spec.AutomaticReconcile.Interval.Duration
 	}
 
+	// when there is a previous last reconcile timestamp, re-calculate the duration until the next
+	// automatic reconcile run
+	if instance.Status.AutomaticReconcileStatus != nil {
+		durationCalculated := duration - r.now().Sub(instance.Status.AutomaticReconcileStatus.LastReconcileTime.Time)
+		if durationCalculated > 0 {
+			duration = durationCalculated
+		}
+	}
+
 	return duration
 }
 
-func (r *automaticReconcileHelper) now() time.Time {
+func (r *AutomaticReconcileHelper) now() time.Time {
 	return r.clock.Now()
 }
 
-func (r *automaticReconcileHelper) metaNow() metav1.Time {
+func (r *AutomaticReconcileHelper) metaNow() metav1.Time {
 	return metav1.Time{Time: r.now()}
 }
