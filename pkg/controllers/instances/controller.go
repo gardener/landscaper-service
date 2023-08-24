@@ -9,13 +9,13 @@ import (
 	"fmt"
 	"math/rand"
 	"reflect"
+	"time"
 
 	guuid "github.com/google/uuid"
 
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/utils/clock"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
@@ -34,11 +34,15 @@ import (
 
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyz")
 
+const (
+	// AutomaticReconcileDefaultDuration specifies the default automatic reconcile duration.
+	AutomaticReconcileDefaultDuration = 12 * time.Hour
+)
+
 // Controller is the instances controller
 type Controller struct {
 	operation.Operation
-	log             logging.Logger
-	reconcileHelper *AutomaticReconcileHelper
+	log logging.Logger
 
 	UniqueIDFunc func() string
 
@@ -74,7 +78,6 @@ func NewController(logger logging.Logger, c client.Client, scheme *runtime.Schem
 	ctrl := &Controller{
 		log:                 logger,
 		UniqueIDFunc:        defaultUniqueIdFunc,
-		reconcileHelper:     NewAutomaticReconcileHelper(c, clock.RealClock{}),
 		kubeClientExtractor: &healthwatcher.ServiceTargetConfigKubeClientExtractor{},
 	}
 	ctrl.ReconcileFunc = ctrl.reconcile
@@ -98,7 +101,6 @@ func NewTestActuator(op operation.Operation, logger logging.Logger) *Controller 
 		Operation:           op,
 		log:                 logger,
 		UniqueIDFunc:        defaultUniqueIdFunc,
-		reconcileHelper:     NewAutomaticReconcileHelper(op.Client(), clock.RealClock{}),
 		kubeClientExtractor: &TestKubeClientExtractor{},
 	}
 	ctrl.ReconcileFunc = ctrl.reconcile
@@ -119,8 +121,6 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 		}
 		return reconcile.Result{}, err
 	}
-
-	oldInstance := instance.DeepCopy()
 
 	c.Operation.Scheme().Default(instance)
 	errHdl := c.handleErrorFunc(instance)
@@ -150,11 +150,11 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 	if utils.HasOperationAnnotation(instance, lssv1alpha1.LandscaperServiceOperationIgnore) {
 		logger.Info("instance has ignore annotation, skipping reconcile")
-		return c.reconcileHelper.ComputeAutomaticReconcile(ctx, instance, oldInstance, nil)
+		return computeAutomaticReconcile(instance, nil)
 	}
 
 	// reconcile
-	return c.reconcileHelper.ComputeAutomaticReconcile(ctx, instance, oldInstance, errHdl(ctx, c.ReconcileFunc(ctx, instance)))
+	return computeAutomaticReconcile(instance, errHdl(ctx, c.ReconcileFunc(ctx, instance)))
 }
 
 // handleErrorFunc updates the error status of an instance
@@ -180,5 +180,21 @@ func (c *Controller) handleErrorFunc(instance *lssv1alpha1.Instance) func(ctx co
 			}
 		}
 		return err
+	}
+}
+
+func computeAutomaticReconcile(instance *lssv1alpha1.Instance, reconcileError error) (reconcile.Result, error) {
+	reconcileInterval := AutomaticReconcileDefaultDuration
+	if instance.Spec.AutomaticReconcile != nil {
+		reconcileInterval = instance.Spec.AutomaticReconcile.Interval.Duration
+	}
+
+	if reconcileError == nil {
+		return reconcile.Result{
+			Requeue:      true,
+			RequeueAfter: reconcileInterval,
+		}, nil
+	} else {
+		return reconcile.Result{}, reconcileError
 	}
 }

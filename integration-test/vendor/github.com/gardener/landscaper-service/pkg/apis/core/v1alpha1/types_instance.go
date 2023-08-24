@@ -120,16 +120,6 @@ type InstanceStatus struct {
 	// ShootNamespace is the namespace in which the shoot resource is being created.
 	// +optional
 	ShootNamespace string `json:"shootNamespace,omitempty"`
-
-	// AutomaticReconcileStatus contains the status of the automatic reconciliation of this instance.
-	// +optional
-	AutomaticReconcileStatus *AutomaticReconcileStatus `json:"automaticReconcileStatus,omitempty"`
-}
-
-// AutomaticReconcileStatus contains the automatic reconciliation status of an instance.
-type AutomaticReconcileStatus struct {
-	// LastReconcileTime contains the time at which the instance has been reconciled.
-	LastReconcileTime metav1.Time `json:"lastReconcileTime,omitempty"`
 }
 
 var InstanceDefinition = lsschema.CustomResourceDefinition{

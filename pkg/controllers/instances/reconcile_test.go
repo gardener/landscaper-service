@@ -476,13 +476,6 @@ var _ = Describe("Reconcile", func() {
 		Expect(err).ToNot(HaveOccurred())
 		Expect(result.Requeue).To(BeTrue())
 		Expect(result.RequeueAfter).To(Equal(time.Minute * 10))
-
-		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
-		Expect(instance.Status.AutomaticReconcileStatus).ToNot(BeNil())
-
-		now := time.Now()
-		diff := now.Sub(instance.Status.AutomaticReconcileStatus.LastReconcileTime.Time)
-		Expect(diff < time.Minute).To(BeTrue())
 	})
 
 	It("should handle the automatic reconcile with default duration", func() {

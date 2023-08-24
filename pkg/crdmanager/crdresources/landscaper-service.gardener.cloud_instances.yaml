@@ -114,16 +114,6 @@ spec:
                 description: AdminKubeconfig contains the admin kubeconfig which can
                   be used for accessing the landscaper cluster.
                 type: string
-              automaticReconcileStatus:
-                description: AutomaticReconcileStatus contains the status of the automatic
-                  reconciliation of this instance.
-                properties:
-                  lastReconcileTime:
-                    description: LastReconcileTime contains the time at which the
-                      instance has been reconciled.
-                    format: date-time
-                    type: string
-                type: object
               clusterEndpoint:
                 description: ClusterEndpointRef contains the URL at which the landscaper
                   cluster is accessible.
