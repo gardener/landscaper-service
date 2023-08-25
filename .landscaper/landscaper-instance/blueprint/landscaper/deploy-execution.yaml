@@ -20,7 +20,7 @@ deployItems:
             resourceSelector:
               - apiVersion: landscaper.gardener.cloud/v1alpha1
                 kind: LsHealthCheck
-                name: {{ .imports.hostingClusterNamespace }}
+                name: landscaper
                 namespace: {{ .imports.hostingClusterNamespace }}
             requirements:
               - jsonPath: .status

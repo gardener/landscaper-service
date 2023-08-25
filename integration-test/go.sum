@@ -47,10 +47,10 @@ github.com/gardener/component-spec/bindings-go v0.0.66/go.mod h1:qr7kADDXbXB0huu
 github.com/gardener/image-vector v0.10.0 h1:Ysg3hxfiGUG/doajiZ0nQuUaJYwfO5BZCOcijL3tRuo=
 github.com/gardener/landscaper v0.52.0 h1:jIaVtyGjS1OIoDdOXOYnF91hZA0q2YFC4h8LBfOSYbw=
 github.com/gardener/landscaper v0.52.0/go.mod h1:zQdeb1pC75ou9MVSos19MG1MSel5t9u11UWQO1SXK68=
-github.com/gardener/landscaper/apis v0.75.0 h1:4N+UG2rCqz6InttA7ncxvq2KeEiWRuhWOjHE1NKGwnI=
-github.com/gardener/landscaper/apis v0.75.0/go.mod h1:MTl0cPmwUhYB2QUFiCUkVqmH/iWt4PJ55PTPbrXXEQo=
-github.com/gardener/landscaper/controller-utils v0.75.0 h1:o18H1e4jram9KkR8asKgdmaQEk664gzvJ27lFWspt6A=
-github.com/gardener/landscaper/controller-utils v0.75.0/go.mod h1:dWD1WsGePMAILOa37OOW7jACfiTMp8wz9rM3ATYXv5w=
+github.com/gardener/landscaper/apis v0.76.0 h1:e4OQ2/lRtnSaaOIapZ5dYpfMwmHE5dgehCN6AJAqw1E=
+github.com/gardener/landscaper/apis v0.76.0/go.mod h1:MTl0cPmwUhYB2QUFiCUkVqmH/iWt4PJ55PTPbrXXEQo=
+github.com/gardener/landscaper/controller-utils v0.76.0 h1:VeJK38yuAbJ/FqqRXhnWaPwStcX9tpqMTHXPkDID2HQ=
+github.com/gardener/landscaper/controller-utils v0.76.0/go.mod h1:DPP6H935DrtDtAPujx2LFyKU1X5xSCjJYaiIKFLwFu8=
 github.com/gardener/landscapercli v0.21.0 h1:FbIVNMUUQod74uVbh79TiHLDNxbuE1LET8ukfvL8w1Y=
 github.com/gardener/landscapercli v0.21.0/go.mod h1:tZzrKBf8wfMHDZVk6qwO7tymrbC7OWIOAnanotv+ANU=
 github.com/ghodss/yaml v1.0.0 h1:wQHKEahhL6wmXdzwWG11gIVCkOv05bNOh+Rxn0yngAk=
@@ -363,8 +363,8 @@ k8s.io/kube-openapi v0.0.0-20230501164219-8b0f38b5fd1f h1:2kWPakN3i/k81b0gvD5C5F
 k8s.io/kube-openapi v0.0.0-20230501164219-8b0f38b5fd1f/go.mod h1:byini6yhqGC14c3ebc/QwanvYwhuMWF6yz2F8uwW8eg=
 k8s.io/utils v0.0.0-20230406110748-d93618cff8a2 h1:qY1Ad8PODbnymg2pRbkyMT/ylpTrCM8P2RJ0yroCyIk=
 k8s.io/utils v0.0.0-20230406110748-d93618cff8a2/go.mod h1:OLgZIPagt7ERELqWJFomSt595RzquPNLL48iOWgYOg0=
-sigs.k8s.io/controller-runtime v0.15.0 h1:ML+5Adt3qZnMSYxZ7gAverBLNPSMQEibtzAgp0UPojU=
-sigs.k8s.io/controller-runtime v0.15.0/go.mod h1:7ngYvp1MLT+9GeZ+6lH3LOlcHkp/+tzA/fmHa4iq9kk=
+sigs.k8s.io/controller-runtime v0.15.1 h1:9UvgKD4ZJGcj24vefUFgZFP3xej/3igL9BsOUTb/+4c=
+sigs.k8s.io/controller-runtime v0.15.1/go.mod h1:7ngYvp1MLT+9GeZ+6lH3LOlcHkp/+tzA/fmHa4iq9kk=
 sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd h1:EDPBXCAspyGV4jQlpZSudPeMmr1bNJefnuqLsRAsHZo=
 sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd/go.mod h1:B8JuhiUyNFVKdsE8h686QcCxMaH6HrOAZj4vswFpcB0=
 sigs.k8s.io/structured-merge-diff/v4 v4.2.3 h1:PRbqxJClWWYMNV1dhaG4NsibJbArud9kFxnAMREiWFE=

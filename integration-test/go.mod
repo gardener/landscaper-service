@@ -5,13 +5,13 @@ go 1.20
 require (
 	github.com/gardener/component-spec/bindings-go v0.0.66
 	github.com/gardener/landscaper-service v0.0.0-00010101000000-000000000000
-	github.com/gardener/landscaper/apis v0.75.0
-	github.com/gardener/landscaper/controller-utils v0.75.0
+	github.com/gardener/landscaper/apis v0.76.0
+	github.com/gardener/landscaper/controller-utils v0.76.0
 	github.com/gardener/landscapercli v0.21.0
 	k8s.io/api v0.27.3
 	k8s.io/apimachinery v0.27.3
 	k8s.io/client-go v0.27.3
-	sigs.k8s.io/controller-runtime v0.15.0
+	sigs.k8s.io/controller-runtime v0.15.1
 )
 
 require (
