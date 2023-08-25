@@ -23,7 +23,6 @@ import (
 func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenAPIDefinition {
 	return map[string]common.OpenAPIDefinition{
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AutomaticReconcile":           schema_pkg_apis_core_v1alpha1_AutomaticReconcile(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AutomaticReconcileStatus":     schema_pkg_apis_core_v1alpha1_AutomaticReconcileStatus(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AvailabilityCollection":       schema_pkg_apis_core_v1alpha1_AvailabilityCollection(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AvailabilityCollectionList":   schema_pkg_apis_core_v1alpha1_AvailabilityCollectionList(ref),
 		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AvailabilityCollectionSpec":   schema_pkg_apis_core_v1alpha1_AvailabilityCollectionSpec(ref),
@@ -134,6 +133,10 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"github.com/gardener/landscaper/apis/core/v1alpha1.StaticDataValueFrom":                      schema_landscaper_apis_core_v1alpha1_StaticDataValueFrom(ref),
 		"github.com/gardener/landscaper/apis/core/v1alpha1.SubinstallationTemplate":                  schema_landscaper_apis_core_v1alpha1_SubinstallationTemplate(ref),
 		"github.com/gardener/landscaper/apis/core/v1alpha1.SucceededReconcile":                       schema_landscaper_apis_core_v1alpha1_SucceededReconcile(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.SyncObject":                               schema_landscaper_apis_core_v1alpha1_SyncObject(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.SyncObjectList":                           schema_landscaper_apis_core_v1alpha1_SyncObjectList(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.SyncObjectSpec":                           schema_landscaper_apis_core_v1alpha1_SyncObjectSpec(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.SyncObjectStatus":                         schema_landscaper_apis_core_v1alpha1_SyncObjectStatus(ref),
 		"github.com/gardener/landscaper/apis/core/v1alpha1.TLSClientConfig":                          schema_landscaper_apis_core_v1alpha1_TLSClientConfig(ref),
 		"github.com/gardener/landscaper/apis/core/v1alpha1.Target":                                   schema_landscaper_apis_core_v1alpha1_Target(ref),
 		"github.com/gardener/landscaper/apis/core/v1alpha1.TargetExport":                             schema_landscaper_apis_core_v1alpha1_TargetExport(ref),
@@ -149,6 +152,7 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"github.com/gardener/landscaper/apis/core/v1alpha1.TargetTemplate":                           schema_landscaper_apis_core_v1alpha1_TargetTemplate(ref),
 		"github.com/gardener/landscaper/apis/core/v1alpha1.TemplateExecutor":                         schema_landscaper_apis_core_v1alpha1_TemplateExecutor(ref),
 		"github.com/gardener/landscaper/apis/core/v1alpha1.TokenRotation":                            schema_landscaper_apis_core_v1alpha1_TokenRotation(ref),
+		"github.com/gardener/landscaper/apis/core/v1alpha1.TransitionTimes":                          schema_landscaper_apis_core_v1alpha1_TransitionTimes(ref),
 		"github.com/gardener/landscaper/apis/core/v1alpha1.TypedObjectReference":                     schema_landscaper_apis_core_v1alpha1_TypedObjectReference(ref),
 		"github.com/gardener/landscaper/apis/core/v1alpha1.VersionedNamedObjectReference":            schema_landscaper_apis_core_v1alpha1_VersionedNamedObjectReference(ref),
 		"github.com/gardener/landscaper/apis/core/v1alpha1.VersionedObjectReference":                 schema_landscaper_apis_core_v1alpha1_VersionedObjectReference(ref),
@@ -160,266 +164,267 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"k8s.io/api/core/v1.AzureDiskVolumeSource":                                                   schema_k8sio_api_core_v1_AzureDiskVolumeSource(ref),
 		"k8s.io/api/core/v1.AzureFilePersistentVolumeSource":                                         schema_k8sio_api_core_v1_AzureFilePersistentVolumeSource(ref),
 		"k8s.io/api/core/v1.AzureFileVolumeSource":                                                   schema_k8sio_api_core_v1_AzureFileVolumeSource(ref),
-		"k8s.io/api/core/v1.Binding":                                     schema_k8sio_api_core_v1_Binding(ref),
-		"k8s.io/api/core/v1.CSIPersistentVolumeSource":                   schema_k8sio_api_core_v1_CSIPersistentVolumeSource(ref),
-		"k8s.io/api/core/v1.CSIVolumeSource":                             schema_k8sio_api_core_v1_CSIVolumeSource(ref),
-		"k8s.io/api/core/v1.Capabilities":                                schema_k8sio_api_core_v1_Capabilities(ref),
-		"k8s.io/api/core/v1.CephFSPersistentVolumeSource":                schema_k8sio_api_core_v1_CephFSPersistentVolumeSource(ref),
-		"k8s.io/api/core/v1.CephFSVolumeSource":                          schema_k8sio_api_core_v1_CephFSVolumeSource(ref),
-		"k8s.io/api/core/v1.CinderPersistentVolumeSource":                schema_k8sio_api_core_v1_CinderPersistentVolumeSource(ref),
-		"k8s.io/api/core/v1.CinderVolumeSource":                          schema_k8sio_api_core_v1_CinderVolumeSource(ref),
-		"k8s.io/api/core/v1.ClaimSource":                                 schema_k8sio_api_core_v1_ClaimSource(ref),
-		"k8s.io/api/core/v1.ClientIPConfig":                              schema_k8sio_api_core_v1_ClientIPConfig(ref),
-		"k8s.io/api/core/v1.ComponentCondition":                          schema_k8sio_api_core_v1_ComponentCondition(ref),
-		"k8s.io/api/core/v1.ComponentStatus":                             schema_k8sio_api_core_v1_ComponentStatus(ref),
-		"k8s.io/api/core/v1.ComponentStatusList":                         schema_k8sio_api_core_v1_ComponentStatusList(ref),
-		"k8s.io/api/core/v1.ConfigMap":                                   schema_k8sio_api_core_v1_ConfigMap(ref),
-		"k8s.io/api/core/v1.ConfigMapEnvSource":                          schema_k8sio_api_core_v1_ConfigMapEnvSource(ref),
-		"k8s.io/api/core/v1.ConfigMapKeySelector":                        schema_k8sio_api_core_v1_ConfigMapKeySelector(ref),
-		"k8s.io/api/core/v1.ConfigMapList":                               schema_k8sio_api_core_v1_ConfigMapList(ref),
-		"k8s.io/api/core/v1.ConfigMapNodeConfigSource":                   schema_k8sio_api_core_v1_ConfigMapNodeConfigSource(ref),
-		"k8s.io/api/core/v1.ConfigMapProjection":                         schema_k8sio_api_core_v1_ConfigMapProjection(ref),
-		"k8s.io/api/core/v1.ConfigMapVolumeSource":                       schema_k8sio_api_core_v1_ConfigMapVolumeSource(ref),
-		"k8s.io/api/core/v1.Container":                                   schema_k8sio_api_core_v1_Container(ref),
-		"k8s.io/api/core/v1.ContainerImage":                              schema_k8sio_api_core_v1_ContainerImage(ref),
-		"k8s.io/api/core/v1.ContainerPort":                               schema_k8sio_api_core_v1_ContainerPort(ref),
-		"k8s.io/api/core/v1.ContainerState":                              schema_k8sio_api_core_v1_ContainerState(ref),
-		"k8s.io/api/core/v1.ContainerStateRunning":                       schema_k8sio_api_core_v1_ContainerStateRunning(ref),
-		"k8s.io/api/core/v1.ContainerStateTerminated":                    schema_k8sio_api_core_v1_ContainerStateTerminated(ref),
-		"k8s.io/api/core/v1.ContainerStateWaiting":                       schema_k8sio_api_core_v1_ContainerStateWaiting(ref),
-		"k8s.io/api/core/v1.ContainerStatus":                             schema_k8sio_api_core_v1_ContainerStatus(ref),
-		"k8s.io/api/core/v1.DaemonEndpoint":                              schema_k8sio_api_core_v1_DaemonEndpoint(ref),
-		"k8s.io/api/core/v1.DownwardAPIProjection":                       schema_k8sio_api_core_v1_DownwardAPIProjection(ref),
-		"k8s.io/api/core/v1.DownwardAPIVolumeFile":                       schema_k8sio_api_core_v1_DownwardAPIVolumeFile(ref),
-		"k8s.io/api/core/v1.DownwardAPIVolumeSource":                     schema_k8sio_api_core_v1_DownwardAPIVolumeSource(ref),
-		"k8s.io/api/core/v1.EmptyDirVolumeSource":                        schema_k8sio_api_core_v1_EmptyDirVolumeSource(ref),
-		"k8s.io/api/core/v1.EndpointAddress":                             schema_k8sio_api_core_v1_EndpointAddress(ref),
-		"k8s.io/api/core/v1.EndpointPort":                                schema_k8sio_api_core_v1_EndpointPort(ref),
-		"k8s.io/api/core/v1.EndpointSubset":                              schema_k8sio_api_core_v1_EndpointSubset(ref),
-		"k8s.io/api/core/v1.Endpoints":                                   schema_k8sio_api_core_v1_Endpoints(ref),
-		"k8s.io/api/core/v1.EndpointsList":                               schema_k8sio_api_core_v1_EndpointsList(ref),
-		"k8s.io/api/core/v1.EnvFromSource":                               schema_k8sio_api_core_v1_EnvFromSource(ref),
-		"k8s.io/api/core/v1.EnvVar":                                      schema_k8sio_api_core_v1_EnvVar(ref),
-		"k8s.io/api/core/v1.EnvVarSource":                                schema_k8sio_api_core_v1_EnvVarSource(ref),
-		"k8s.io/api/core/v1.EphemeralContainer":                          schema_k8sio_api_core_v1_EphemeralContainer(ref),
-		"k8s.io/api/core/v1.EphemeralContainerCommon":                    schema_k8sio_api_core_v1_EphemeralContainerCommon(ref),
-		"k8s.io/api/core/v1.EphemeralVolumeSource":                       schema_k8sio_api_core_v1_EphemeralVolumeSource(ref),
-		"k8s.io/api/core/v1.Event":                                       schema_k8sio_api_core_v1_Event(ref),
-		"k8s.io/api/core/v1.EventList":                                   schema_k8sio_api_core_v1_EventList(ref),
-		"k8s.io/api/core/v1.EventSeries":                                 schema_k8sio_api_core_v1_EventSeries(ref),
-		"k8s.io/api/core/v1.EventSource":                                 schema_k8sio_api_core_v1_EventSource(ref),
-		"k8s.io/api/core/v1.ExecAction":                                  schema_k8sio_api_core_v1_ExecAction(ref),
-		"k8s.io/api/core/v1.FCVolumeSource":                              schema_k8sio_api_core_v1_FCVolumeSource(ref),
-		"k8s.io/api/core/v1.FlexPersistentVolumeSource":                  schema_k8sio_api_core_v1_FlexPersistentVolumeSource(ref),
-		"k8s.io/api/core/v1.FlexVolumeSource":                            schema_k8sio_api_core_v1_FlexVolumeSource(ref),
-		"k8s.io/api/core/v1.FlockerVolumeSource":                         schema_k8sio_api_core_v1_FlockerVolumeSource(ref),
-		"k8s.io/api/core/v1.GCEPersistentDiskVolumeSource":               schema_k8sio_api_core_v1_GCEPersistentDiskVolumeSource(ref),
-		"k8s.io/api/core/v1.GRPCAction":                                  schema_k8sio_api_core_v1_GRPCAction(ref),
-		"k8s.io/api/core/v1.GitRepoVolumeSource":                         schema_k8sio_api_core_v1_GitRepoVolumeSource(ref),
-		"k8s.io/api/core/v1.GlusterfsPersistentVolumeSource":             schema_k8sio_api_core_v1_GlusterfsPersistentVolumeSource(ref),
-		"k8s.io/api/core/v1.GlusterfsVolumeSource":                       schema_k8sio_api_core_v1_GlusterfsVolumeSource(ref),
-		"k8s.io/api/core/v1.HTTPGetAction":                               schema_k8sio_api_core_v1_HTTPGetAction(ref),
-		"k8s.io/api/core/v1.HTTPHeader":                                  schema_k8sio_api_core_v1_HTTPHeader(ref),
-		"k8s.io/api/core/v1.HostAlias":                                   schema_k8sio_api_core_v1_HostAlias(ref),
-		"k8s.io/api/core/v1.HostPathVolumeSource":                        schema_k8sio_api_core_v1_HostPathVolumeSource(ref),
-		"k8s.io/api/core/v1.ISCSIPersistentVolumeSource":                 schema_k8sio_api_core_v1_ISCSIPersistentVolumeSource(ref),
-		"k8s.io/api/core/v1.ISCSIVolumeSource":                           schema_k8sio_api_core_v1_ISCSIVolumeSource(ref),
-		"k8s.io/api/core/v1.KeyToPath":                                   schema_k8sio_api_core_v1_KeyToPath(ref),
-		"k8s.io/api/core/v1.Lifecycle":                                   schema_k8sio_api_core_v1_Lifecycle(ref),
-		"k8s.io/api/core/v1.LifecycleHandler":                            schema_k8sio_api_core_v1_LifecycleHandler(ref),
-		"k8s.io/api/core/v1.LimitRange":                                  schema_k8sio_api_core_v1_LimitRange(ref),
-		"k8s.io/api/core/v1.LimitRangeItem":                              schema_k8sio_api_core_v1_LimitRangeItem(ref),
-		"k8s.io/api/core/v1.LimitRangeList":                              schema_k8sio_api_core_v1_LimitRangeList(ref),
-		"k8s.io/api/core/v1.LimitRangeSpec":                              schema_k8sio_api_core_v1_LimitRangeSpec(ref),
-		"k8s.io/api/core/v1.List":                                        schema_k8sio_api_core_v1_List(ref),
-		"k8s.io/api/core/v1.LoadBalancerIngress":                         schema_k8sio_api_core_v1_LoadBalancerIngress(ref),
-		"k8s.io/api/core/v1.LoadBalancerStatus":                          schema_k8sio_api_core_v1_LoadBalancerStatus(ref),
-		"k8s.io/api/core/v1.LocalObjectReference":                        schema_k8sio_api_core_v1_LocalObjectReference(ref),
-		"k8s.io/api/core/v1.LocalVolumeSource":                           schema_k8sio_api_core_v1_LocalVolumeSource(ref),
-		"k8s.io/api/core/v1.NFSVolumeSource":                             schema_k8sio_api_core_v1_NFSVolumeSource(ref),
-		"k8s.io/api/core/v1.Namespace":                                   schema_k8sio_api_core_v1_Namespace(ref),
-		"k8s.io/api/core/v1.NamespaceCondition":                          schema_k8sio_api_core_v1_NamespaceCondition(ref),
-		"k8s.io/api/core/v1.NamespaceList":                               schema_k8sio_api_core_v1_NamespaceList(ref),
-		"k8s.io/api/core/v1.NamespaceSpec":                               schema_k8sio_api_core_v1_NamespaceSpec(ref),
-		"k8s.io/api/core/v1.NamespaceStatus":                             schema_k8sio_api_core_v1_NamespaceStatus(ref),
-		"k8s.io/api/core/v1.Node":                                        schema_k8sio_api_core_v1_Node(ref),
-		"k8s.io/api/core/v1.NodeAddress":                                 schema_k8sio_api_core_v1_NodeAddress(ref),
-		"k8s.io/api/core/v1.NodeAffinity":                                schema_k8sio_api_core_v1_NodeAffinity(ref),
-		"k8s.io/api/core/v1.NodeCondition":                               schema_k8sio_api_core_v1_NodeCondition(ref),
-		"k8s.io/api/core/v1.NodeConfigSource":                            schema_k8sio_api_core_v1_NodeConfigSource(ref),
-		"k8s.io/api/core/v1.NodeConfigStatus":                            schema_k8sio_api_core_v1_NodeConfigStatus(ref),
-		"k8s.io/api/core/v1.NodeDaemonEndpoints":                         schema_k8sio_api_core_v1_NodeDaemonEndpoints(ref),
-		"k8s.io/api/core/v1.NodeList":                                    schema_k8sio_api_core_v1_NodeList(ref),
-		"k8s.io/api/core/v1.NodeProxyOptions":                            schema_k8sio_api_core_v1_NodeProxyOptions(ref),
-		"k8s.io/api/core/v1.NodeResources":                               schema_k8sio_api_core_v1_NodeResources(ref),
-		"k8s.io/api/core/v1.NodeSelector":                                schema_k8sio_api_core_v1_NodeSelector(ref),
-		"k8s.io/api/core/v1.NodeSelectorRequirement":                     schema_k8sio_api_core_v1_NodeSelectorRequirement(ref),
-		"k8s.io/api/core/v1.NodeSelectorTerm":                            schema_k8sio_api_core_v1_NodeSelectorTerm(ref),
-		"k8s.io/api/core/v1.NodeSpec":                                    schema_k8sio_api_core_v1_NodeSpec(ref),
-		"k8s.io/api/core/v1.NodeStatus":                                  schema_k8sio_api_core_v1_NodeStatus(ref),
-		"k8s.io/api/core/v1.NodeSystemInfo":                              schema_k8sio_api_core_v1_NodeSystemInfo(ref),
-		"k8s.io/api/core/v1.ObjectFieldSelector":                         schema_k8sio_api_core_v1_ObjectFieldSelector(ref),
-		"k8s.io/api/core/v1.ObjectReference":                             schema_k8sio_api_core_v1_ObjectReference(ref),
-		"k8s.io/api/core/v1.PersistentVolume":                            schema_k8sio_api_core_v1_PersistentVolume(ref),
-		"k8s.io/api/core/v1.PersistentVolumeClaim":                       schema_k8sio_api_core_v1_PersistentVolumeClaim(ref),
-		"k8s.io/api/core/v1.PersistentVolumeClaimCondition":              schema_k8sio_api_core_v1_PersistentVolumeClaimCondition(ref),
-		"k8s.io/api/core/v1.PersistentVolumeClaimList":                   schema_k8sio_api_core_v1_PersistentVolumeClaimList(ref),
-		"k8s.io/api/core/v1.PersistentVolumeClaimSpec":                   schema_k8sio_api_core_v1_PersistentVolumeClaimSpec(ref),
-		"k8s.io/api/core/v1.PersistentVolumeClaimStatus":                 schema_k8sio_api_core_v1_PersistentVolumeClaimStatus(ref),
-		"k8s.io/api/core/v1.PersistentVolumeClaimTemplate":               schema_k8sio_api_core_v1_PersistentVolumeClaimTemplate(ref),
-		"k8s.io/api/core/v1.PersistentVolumeClaimVolumeSource":           schema_k8sio_api_core_v1_PersistentVolumeClaimVolumeSource(ref),
-		"k8s.io/api/core/v1.PersistentVolumeList":                        schema_k8sio_api_core_v1_PersistentVolumeList(ref),
-		"k8s.io/api/core/v1.PersistentVolumeSource":                      schema_k8sio_api_core_v1_PersistentVolumeSource(ref),
-		"k8s.io/api/core/v1.PersistentVolumeSpec":                        schema_k8sio_api_core_v1_PersistentVolumeSpec(ref),
-		"k8s.io/api/core/v1.PersistentVolumeStatus":                      schema_k8sio_api_core_v1_PersistentVolumeStatus(ref),
-		"k8s.io/api/core/v1.PhotonPersistentDiskVolumeSource":            schema_k8sio_api_core_v1_PhotonPersistentDiskVolumeSource(ref),
-		"k8s.io/api/core/v1.Pod":                                         schema_k8sio_api_core_v1_Pod(ref),
-		"k8s.io/api/core/v1.PodAffinity":                                 schema_k8sio_api_core_v1_PodAffinity(ref),
-		"k8s.io/api/core/v1.PodAffinityTerm":                             schema_k8sio_api_core_v1_PodAffinityTerm(ref),
-		"k8s.io/api/core/v1.PodAntiAffinity":                             schema_k8sio_api_core_v1_PodAntiAffinity(ref),
-		"k8s.io/api/core/v1.PodAttachOptions":                            schema_k8sio_api_core_v1_PodAttachOptions(ref),
-		"k8s.io/api/core/v1.PodCondition":                                schema_k8sio_api_core_v1_PodCondition(ref),
-		"k8s.io/api/core/v1.PodDNSConfig":                                schema_k8sio_api_core_v1_PodDNSConfig(ref),
-		"k8s.io/api/core/v1.PodDNSConfigOption":                          schema_k8sio_api_core_v1_PodDNSConfigOption(ref),
-		"k8s.io/api/core/v1.PodExecOptions":                              schema_k8sio_api_core_v1_PodExecOptions(ref),
-		"k8s.io/api/core/v1.PodIP":                                       schema_k8sio_api_core_v1_PodIP(ref),
-		"k8s.io/api/core/v1.PodList":                                     schema_k8sio_api_core_v1_PodList(ref),
-		"k8s.io/api/core/v1.PodLogOptions":                               schema_k8sio_api_core_v1_PodLogOptions(ref),
-		"k8s.io/api/core/v1.PodOS":                                       schema_k8sio_api_core_v1_PodOS(ref),
-		"k8s.io/api/core/v1.PodPortForwardOptions":                       schema_k8sio_api_core_v1_PodPortForwardOptions(ref),
-		"k8s.io/api/core/v1.PodProxyOptions":                             schema_k8sio_api_core_v1_PodProxyOptions(ref),
-		"k8s.io/api/core/v1.PodReadinessGate":                            schema_k8sio_api_core_v1_PodReadinessGate(ref),
-		"k8s.io/api/core/v1.PodResourceClaim":                            schema_k8sio_api_core_v1_PodResourceClaim(ref),
-		"k8s.io/api/core/v1.PodSchedulingGate":                           schema_k8sio_api_core_v1_PodSchedulingGate(ref),
-		"k8s.io/api/core/v1.PodSecurityContext":                          schema_k8sio_api_core_v1_PodSecurityContext(ref),
-		"k8s.io/api/core/v1.PodSignature":                                schema_k8sio_api_core_v1_PodSignature(ref),
-		"k8s.io/api/core/v1.PodSpec":                                     schema_k8sio_api_core_v1_PodSpec(ref),
-		"k8s.io/api/core/v1.PodStatus":                                   schema_k8sio_api_core_v1_PodStatus(ref),
-		"k8s.io/api/core/v1.PodStatusResult":                             schema_k8sio_api_core_v1_PodStatusResult(ref),
-		"k8s.io/api/core/v1.PodTemplate":                                 schema_k8sio_api_core_v1_PodTemplate(ref),
-		"k8s.io/api/core/v1.PodTemplateList":                             schema_k8sio_api_core_v1_PodTemplateList(ref),
-		"k8s.io/api/core/v1.PodTemplateSpec":                             schema_k8sio_api_core_v1_PodTemplateSpec(ref),
-		"k8s.io/api/core/v1.PortStatus":                                  schema_k8sio_api_core_v1_PortStatus(ref),
-		"k8s.io/api/core/v1.PortworxVolumeSource":                        schema_k8sio_api_core_v1_PortworxVolumeSource(ref),
-		"k8s.io/api/core/v1.PreferAvoidPodsEntry":                        schema_k8sio_api_core_v1_PreferAvoidPodsEntry(ref),
-		"k8s.io/api/core/v1.PreferredSchedulingTerm":                     schema_k8sio_api_core_v1_PreferredSchedulingTerm(ref),
-		"k8s.io/api/core/v1.Probe":                                       schema_k8sio_api_core_v1_Probe(ref),
-		"k8s.io/api/core/v1.ProbeHandler":                                schema_k8sio_api_core_v1_ProbeHandler(ref),
-		"k8s.io/api/core/v1.ProjectedVolumeSource":                       schema_k8sio_api_core_v1_ProjectedVolumeSource(ref),
-		"k8s.io/api/core/v1.QuobyteVolumeSource":                         schema_k8sio_api_core_v1_QuobyteVolumeSource(ref),
-		"k8s.io/api/core/v1.RBDPersistentVolumeSource":                   schema_k8sio_api_core_v1_RBDPersistentVolumeSource(ref),
-		"k8s.io/api/core/v1.RBDVolumeSource":                             schema_k8sio_api_core_v1_RBDVolumeSource(ref),
-		"k8s.io/api/core/v1.RangeAllocation":                             schema_k8sio_api_core_v1_RangeAllocation(ref),
-		"k8s.io/api/core/v1.ReplicationController":                       schema_k8sio_api_core_v1_ReplicationController(ref),
-		"k8s.io/api/core/v1.ReplicationControllerCondition":              schema_k8sio_api_core_v1_ReplicationControllerCondition(ref),
-		"k8s.io/api/core/v1.ReplicationControllerList":                   schema_k8sio_api_core_v1_ReplicationControllerList(ref),
-		"k8s.io/api/core/v1.ReplicationControllerSpec":                   schema_k8sio_api_core_v1_ReplicationControllerSpec(ref),
-		"k8s.io/api/core/v1.ReplicationControllerStatus":                 schema_k8sio_api_core_v1_ReplicationControllerStatus(ref),
-		"k8s.io/api/core/v1.ResourceClaim":                               schema_k8sio_api_core_v1_ResourceClaim(ref),
-		"k8s.io/api/core/v1.ResourceFieldSelector":                       schema_k8sio_api_core_v1_ResourceFieldSelector(ref),
-		"k8s.io/api/core/v1.ResourceQuota":                               schema_k8sio_api_core_v1_ResourceQuota(ref),
-		"k8s.io/api/core/v1.ResourceQuotaList":                           schema_k8sio_api_core_v1_ResourceQuotaList(ref),
-		"k8s.io/api/core/v1.ResourceQuotaSpec":                           schema_k8sio_api_core_v1_ResourceQuotaSpec(ref),
-		"k8s.io/api/core/v1.ResourceQuotaStatus":                         schema_k8sio_api_core_v1_ResourceQuotaStatus(ref),
-		"k8s.io/api/core/v1.ResourceRequirements":                        schema_k8sio_api_core_v1_ResourceRequirements(ref),
-		"k8s.io/api/core/v1.SELinuxOptions":                              schema_k8sio_api_core_v1_SELinuxOptions(ref),
-		"k8s.io/api/core/v1.ScaleIOPersistentVolumeSource":               schema_k8sio_api_core_v1_ScaleIOPersistentVolumeSource(ref),
-		"k8s.io/api/core/v1.ScaleIOVolumeSource":                         schema_k8sio_api_core_v1_ScaleIOVolumeSource(ref),
-		"k8s.io/api/core/v1.ScopeSelector":                               schema_k8sio_api_core_v1_ScopeSelector(ref),
-		"k8s.io/api/core/v1.ScopedResourceSelectorRequirement":           schema_k8sio_api_core_v1_ScopedResourceSelectorRequirement(ref),
-		"k8s.io/api/core/v1.SeccompProfile":                              schema_k8sio_api_core_v1_SeccompProfile(ref),
-		"k8s.io/api/core/v1.Secret":                                      schema_k8sio_api_core_v1_Secret(ref),
-		"k8s.io/api/core/v1.SecretEnvSource":                             schema_k8sio_api_core_v1_SecretEnvSource(ref),
-		"k8s.io/api/core/v1.SecretKeySelector":                           schema_k8sio_api_core_v1_SecretKeySelector(ref),
-		"k8s.io/api/core/v1.SecretList":                                  schema_k8sio_api_core_v1_SecretList(ref),
-		"k8s.io/api/core/v1.SecretProjection":                            schema_k8sio_api_core_v1_SecretProjection(ref),
-		"k8s.io/api/core/v1.SecretReference":                             schema_k8sio_api_core_v1_SecretReference(ref),
-		"k8s.io/api/core/v1.SecretVolumeSource":                          schema_k8sio_api_core_v1_SecretVolumeSource(ref),
-		"k8s.io/api/core/v1.SecurityContext":                             schema_k8sio_api_core_v1_SecurityContext(ref),
-		"k8s.io/api/core/v1.SerializedReference":                         schema_k8sio_api_core_v1_SerializedReference(ref),
-		"k8s.io/api/core/v1.Service":                                     schema_k8sio_api_core_v1_Service(ref),
-		"k8s.io/api/core/v1.ServiceAccount":                              schema_k8sio_api_core_v1_ServiceAccount(ref),
-		"k8s.io/api/core/v1.ServiceAccountList":                          schema_k8sio_api_core_v1_ServiceAccountList(ref),
-		"k8s.io/api/core/v1.ServiceAccountTokenProjection":               schema_k8sio_api_core_v1_ServiceAccountTokenProjection(ref),
-		"k8s.io/api/core/v1.ServiceList":                                 schema_k8sio_api_core_v1_ServiceList(ref),
-		"k8s.io/api/core/v1.ServicePort":                                 schema_k8sio_api_core_v1_ServicePort(ref),
-		"k8s.io/api/core/v1.ServiceProxyOptions":                         schema_k8sio_api_core_v1_ServiceProxyOptions(ref),
-		"k8s.io/api/core/v1.ServiceSpec":                                 schema_k8sio_api_core_v1_ServiceSpec(ref),
-		"k8s.io/api/core/v1.ServiceStatus":                               schema_k8sio_api_core_v1_ServiceStatus(ref),
-		"k8s.io/api/core/v1.SessionAffinityConfig":                       schema_k8sio_api_core_v1_SessionAffinityConfig(ref),
-		"k8s.io/api/core/v1.StorageOSPersistentVolumeSource":             schema_k8sio_api_core_v1_StorageOSPersistentVolumeSource(ref),
-		"k8s.io/api/core/v1.StorageOSVolumeSource":                       schema_k8sio_api_core_v1_StorageOSVolumeSource(ref),
-		"k8s.io/api/core/v1.Sysctl":                                      schema_k8sio_api_core_v1_Sysctl(ref),
-		"k8s.io/api/core/v1.TCPSocketAction":                             schema_k8sio_api_core_v1_TCPSocketAction(ref),
-		"k8s.io/api/core/v1.Taint":                                       schema_k8sio_api_core_v1_Taint(ref),
-		"k8s.io/api/core/v1.Toleration":                                  schema_k8sio_api_core_v1_Toleration(ref),
-		"k8s.io/api/core/v1.TopologySelectorLabelRequirement":            schema_k8sio_api_core_v1_TopologySelectorLabelRequirement(ref),
-		"k8s.io/api/core/v1.TopologySelectorTerm":                        schema_k8sio_api_core_v1_TopologySelectorTerm(ref),
-		"k8s.io/api/core/v1.TopologySpreadConstraint":                    schema_k8sio_api_core_v1_TopologySpreadConstraint(ref),
-		"k8s.io/api/core/v1.TypedLocalObjectReference":                   schema_k8sio_api_core_v1_TypedLocalObjectReference(ref),
-		"k8s.io/api/core/v1.TypedObjectReference":                        schema_k8sio_api_core_v1_TypedObjectReference(ref),
-		"k8s.io/api/core/v1.Volume":                                      schema_k8sio_api_core_v1_Volume(ref),
-		"k8s.io/api/core/v1.VolumeDevice":                                schema_k8sio_api_core_v1_VolumeDevice(ref),
-		"k8s.io/api/core/v1.VolumeMount":                                 schema_k8sio_api_core_v1_VolumeMount(ref),
-		"k8s.io/api/core/v1.VolumeNodeAffinity":                          schema_k8sio_api_core_v1_VolumeNodeAffinity(ref),
-		"k8s.io/api/core/v1.VolumeProjection":                            schema_k8sio_api_core_v1_VolumeProjection(ref),
-		"k8s.io/api/core/v1.VolumeSource":                                schema_k8sio_api_core_v1_VolumeSource(ref),
-		"k8s.io/api/core/v1.VsphereVirtualDiskVolumeSource":              schema_k8sio_api_core_v1_VsphereVirtualDiskVolumeSource(ref),
-		"k8s.io/api/core/v1.WeightedPodAffinityTerm":                     schema_k8sio_api_core_v1_WeightedPodAffinityTerm(ref),
-		"k8s.io/api/core/v1.WindowsSecurityContextOptions":               schema_k8sio_api_core_v1_WindowsSecurityContextOptions(ref),
-		"k8s.io/apimachinery/pkg/api/resource.Quantity":                  schema_apimachinery_pkg_api_resource_Quantity(ref),
-		"k8s.io/apimachinery/pkg/api/resource.int64Amount":               schema_apimachinery_pkg_api_resource_int64Amount(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.APIGroup":                  schema_pkg_apis_meta_v1_APIGroup(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.APIGroupList":              schema_pkg_apis_meta_v1_APIGroupList(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.APIResource":               schema_pkg_apis_meta_v1_APIResource(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.APIResourceList":           schema_pkg_apis_meta_v1_APIResourceList(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.APIVersions":               schema_pkg_apis_meta_v1_APIVersions(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.ApplyOptions":              schema_pkg_apis_meta_v1_ApplyOptions(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.Condition":                 schema_pkg_apis_meta_v1_Condition(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.CreateOptions":             schema_pkg_apis_meta_v1_CreateOptions(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.DeleteOptions":             schema_pkg_apis_meta_v1_DeleteOptions(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.Duration":                  schema_pkg_apis_meta_v1_Duration(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.FieldsV1":                  schema_pkg_apis_meta_v1_FieldsV1(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.GetOptions":                schema_pkg_apis_meta_v1_GetOptions(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.GroupKind":                 schema_pkg_apis_meta_v1_GroupKind(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.GroupResource":             schema_pkg_apis_meta_v1_GroupResource(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.GroupVersion":              schema_pkg_apis_meta_v1_GroupVersion(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.GroupVersionForDiscovery":  schema_pkg_apis_meta_v1_GroupVersionForDiscovery(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.GroupVersionKind":          schema_pkg_apis_meta_v1_GroupVersionKind(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.GroupVersionResource":      schema_pkg_apis_meta_v1_GroupVersionResource(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.InternalEvent":             schema_pkg_apis_meta_v1_InternalEvent(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.LabelSelector":             schema_pkg_apis_meta_v1_LabelSelector(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.LabelSelectorRequirement":  schema_pkg_apis_meta_v1_LabelSelectorRequirement(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.List":                      schema_pkg_apis_meta_v1_List(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta":                  schema_pkg_apis_meta_v1_ListMeta(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.ListOptions":               schema_pkg_apis_meta_v1_ListOptions(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.ManagedFieldsEntry":        schema_pkg_apis_meta_v1_ManagedFieldsEntry(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.MicroTime":                 schema_pkg_apis_meta_v1_MicroTime(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta":                schema_pkg_apis_meta_v1_ObjectMeta(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.OwnerReference":            schema_pkg_apis_meta_v1_OwnerReference(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.PartialObjectMetadata":     schema_pkg_apis_meta_v1_PartialObjectMetadata(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.PartialObjectMetadataList": schema_pkg_apis_meta_v1_PartialObjectMetadataList(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.Patch":                     schema_pkg_apis_meta_v1_Patch(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.PatchOptions":              schema_pkg_apis_meta_v1_PatchOptions(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.Preconditions":             schema_pkg_apis_meta_v1_Preconditions(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.RootPaths":                 schema_pkg_apis_meta_v1_RootPaths(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.ServerAddressByClientCIDR": schema_pkg_apis_meta_v1_ServerAddressByClientCIDR(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.Status":                    schema_pkg_apis_meta_v1_Status(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.StatusCause":               schema_pkg_apis_meta_v1_StatusCause(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.StatusDetails":             schema_pkg_apis_meta_v1_StatusDetails(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.Table":                     schema_pkg_apis_meta_v1_Table(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.TableColumnDefinition":     schema_pkg_apis_meta_v1_TableColumnDefinition(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.TableOptions":              schema_pkg_apis_meta_v1_TableOptions(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.TableRow":                  schema_pkg_apis_meta_v1_TableRow(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.TableRowCondition":         schema_pkg_apis_meta_v1_TableRowCondition(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.Time":                      schema_pkg_apis_meta_v1_Time(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.Timestamp":                 schema_pkg_apis_meta_v1_Timestamp(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.TypeMeta":                  schema_pkg_apis_meta_v1_TypeMeta(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.UpdateOptions":             schema_pkg_apis_meta_v1_UpdateOptions(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.WatchEvent":                schema_pkg_apis_meta_v1_WatchEvent(ref),
-		"k8s.io/apimachinery/pkg/runtime.RawExtension":                   schema_k8sio_apimachinery_pkg_runtime_RawExtension(ref),
-		"k8s.io/apimachinery/pkg/runtime.TypeMeta":                       schema_k8sio_apimachinery_pkg_runtime_TypeMeta(ref),
-		"k8s.io/apimachinery/pkg/runtime.Unknown":                        schema_k8sio_apimachinery_pkg_runtime_Unknown(ref),
+		"k8s.io/api/core/v1.Binding":                                                                 schema_k8sio_api_core_v1_Binding(ref),
+		"k8s.io/api/core/v1.CSIPersistentVolumeSource":                                               schema_k8sio_api_core_v1_CSIPersistentVolumeSource(ref),
+		"k8s.io/api/core/v1.CSIVolumeSource":                                                         schema_k8sio_api_core_v1_CSIVolumeSource(ref),
+		"k8s.io/api/core/v1.Capabilities":                                                            schema_k8sio_api_core_v1_Capabilities(ref),
+		"k8s.io/api/core/v1.CephFSPersistentVolumeSource":                                            schema_k8sio_api_core_v1_CephFSPersistentVolumeSource(ref),
+		"k8s.io/api/core/v1.CephFSVolumeSource":                                                      schema_k8sio_api_core_v1_CephFSVolumeSource(ref),
+		"k8s.io/api/core/v1.CinderPersistentVolumeSource":                                            schema_k8sio_api_core_v1_CinderPersistentVolumeSource(ref),
+		"k8s.io/api/core/v1.CinderVolumeSource":                                                      schema_k8sio_api_core_v1_CinderVolumeSource(ref),
+		"k8s.io/api/core/v1.ClaimSource":                                                             schema_k8sio_api_core_v1_ClaimSource(ref),
+		"k8s.io/api/core/v1.ClientIPConfig":                                                          schema_k8sio_api_core_v1_ClientIPConfig(ref),
+		"k8s.io/api/core/v1.ComponentCondition":                                                      schema_k8sio_api_core_v1_ComponentCondition(ref),
+		"k8s.io/api/core/v1.ComponentStatus":                                                         schema_k8sio_api_core_v1_ComponentStatus(ref),
+		"k8s.io/api/core/v1.ComponentStatusList":                                                     schema_k8sio_api_core_v1_ComponentStatusList(ref),
+		"k8s.io/api/core/v1.ConfigMap":                                                               schema_k8sio_api_core_v1_ConfigMap(ref),
+		"k8s.io/api/core/v1.ConfigMapEnvSource":                                                      schema_k8sio_api_core_v1_ConfigMapEnvSource(ref),
+		"k8s.io/api/core/v1.ConfigMapKeySelector":                                                    schema_k8sio_api_core_v1_ConfigMapKeySelector(ref),
+		"k8s.io/api/core/v1.ConfigMapList":                                                           schema_k8sio_api_core_v1_ConfigMapList(ref),
+		"k8s.io/api/core/v1.ConfigMapNodeConfigSource":                                               schema_k8sio_api_core_v1_ConfigMapNodeConfigSource(ref),
+		"k8s.io/api/core/v1.ConfigMapProjection":                                                     schema_k8sio_api_core_v1_ConfigMapProjection(ref),
+		"k8s.io/api/core/v1.ConfigMapVolumeSource":                                                   schema_k8sio_api_core_v1_ConfigMapVolumeSource(ref),
+		"k8s.io/api/core/v1.Container":                                                               schema_k8sio_api_core_v1_Container(ref),
+		"k8s.io/api/core/v1.ContainerImage":                                                          schema_k8sio_api_core_v1_ContainerImage(ref),
+		"k8s.io/api/core/v1.ContainerPort":                                                           schema_k8sio_api_core_v1_ContainerPort(ref),
+		"k8s.io/api/core/v1.ContainerResizePolicy":                                                   schema_k8sio_api_core_v1_ContainerResizePolicy(ref),
+		"k8s.io/api/core/v1.ContainerState":                                                          schema_k8sio_api_core_v1_ContainerState(ref),
+		"k8s.io/api/core/v1.ContainerStateRunning":                                                   schema_k8sio_api_core_v1_ContainerStateRunning(ref),
+		"k8s.io/api/core/v1.ContainerStateTerminated":                                                schema_k8sio_api_core_v1_ContainerStateTerminated(ref),
+		"k8s.io/api/core/v1.ContainerStateWaiting":                                                   schema_k8sio_api_core_v1_ContainerStateWaiting(ref),
+		"k8s.io/api/core/v1.ContainerStatus":                                                         schema_k8sio_api_core_v1_ContainerStatus(ref),
+		"k8s.io/api/core/v1.DaemonEndpoint":                                                          schema_k8sio_api_core_v1_DaemonEndpoint(ref),
+		"k8s.io/api/core/v1.DownwardAPIProjection":                                                   schema_k8sio_api_core_v1_DownwardAPIProjection(ref),
+		"k8s.io/api/core/v1.DownwardAPIVolumeFile":                                                   schema_k8sio_api_core_v1_DownwardAPIVolumeFile(ref),
+		"k8s.io/api/core/v1.DownwardAPIVolumeSource":                                                 schema_k8sio_api_core_v1_DownwardAPIVolumeSource(ref),
+		"k8s.io/api/core/v1.EmptyDirVolumeSource":                                                    schema_k8sio_api_core_v1_EmptyDirVolumeSource(ref),
+		"k8s.io/api/core/v1.EndpointAddress":                                                         schema_k8sio_api_core_v1_EndpointAddress(ref),
+		"k8s.io/api/core/v1.EndpointPort":                                                            schema_k8sio_api_core_v1_EndpointPort(ref),
+		"k8s.io/api/core/v1.EndpointSubset":                                                          schema_k8sio_api_core_v1_EndpointSubset(ref),
+		"k8s.io/api/core/v1.Endpoints":                                                               schema_k8sio_api_core_v1_Endpoints(ref),
+		"k8s.io/api/core/v1.EndpointsList":                                                           schema_k8sio_api_core_v1_EndpointsList(ref),
+		"k8s.io/api/core/v1.EnvFromSource":                                                           schema_k8sio_api_core_v1_EnvFromSource(ref),
+		"k8s.io/api/core/v1.EnvVar":                                                                  schema_k8sio_api_core_v1_EnvVar(ref),
+		"k8s.io/api/core/v1.EnvVarSource":                                                            schema_k8sio_api_core_v1_EnvVarSource(ref),
+		"k8s.io/api/core/v1.EphemeralContainer":                                                      schema_k8sio_api_core_v1_EphemeralContainer(ref),
+		"k8s.io/api/core/v1.EphemeralContainerCommon":                                                schema_k8sio_api_core_v1_EphemeralContainerCommon(ref),
+		"k8s.io/api/core/v1.EphemeralVolumeSource":                                                   schema_k8sio_api_core_v1_EphemeralVolumeSource(ref),
+		"k8s.io/api/core/v1.Event":                                                                   schema_k8sio_api_core_v1_Event(ref),
+		"k8s.io/api/core/v1.EventList":                                                               schema_k8sio_api_core_v1_EventList(ref),
+		"k8s.io/api/core/v1.EventSeries":                                                             schema_k8sio_api_core_v1_EventSeries(ref),
+		"k8s.io/api/core/v1.EventSource":                                                             schema_k8sio_api_core_v1_EventSource(ref),
+		"k8s.io/api/core/v1.ExecAction":                                                              schema_k8sio_api_core_v1_ExecAction(ref),
+		"k8s.io/api/core/v1.FCVolumeSource":                                                          schema_k8sio_api_core_v1_FCVolumeSource(ref),
+		"k8s.io/api/core/v1.FlexPersistentVolumeSource":                                              schema_k8sio_api_core_v1_FlexPersistentVolumeSource(ref),
+		"k8s.io/api/core/v1.FlexVolumeSource":                                                        schema_k8sio_api_core_v1_FlexVolumeSource(ref),
+		"k8s.io/api/core/v1.FlockerVolumeSource":                                                     schema_k8sio_api_core_v1_FlockerVolumeSource(ref),
+		"k8s.io/api/core/v1.GCEPersistentDiskVolumeSource":                                           schema_k8sio_api_core_v1_GCEPersistentDiskVolumeSource(ref),
+		"k8s.io/api/core/v1.GRPCAction":                                                              schema_k8sio_api_core_v1_GRPCAction(ref),
+		"k8s.io/api/core/v1.GitRepoVolumeSource":                                                     schema_k8sio_api_core_v1_GitRepoVolumeSource(ref),
+		"k8s.io/api/core/v1.GlusterfsPersistentVolumeSource":                                         schema_k8sio_api_core_v1_GlusterfsPersistentVolumeSource(ref),
+		"k8s.io/api/core/v1.GlusterfsVolumeSource":                                                   schema_k8sio_api_core_v1_GlusterfsVolumeSource(ref),
+		"k8s.io/api/core/v1.HTTPGetAction":                                                           schema_k8sio_api_core_v1_HTTPGetAction(ref),
+		"k8s.io/api/core/v1.HTTPHeader":                                                              schema_k8sio_api_core_v1_HTTPHeader(ref),
+		"k8s.io/api/core/v1.HostAlias":                                                               schema_k8sio_api_core_v1_HostAlias(ref),
+		"k8s.io/api/core/v1.HostPathVolumeSource":                                                    schema_k8sio_api_core_v1_HostPathVolumeSource(ref),
+		"k8s.io/api/core/v1.ISCSIPersistentVolumeSource":                                             schema_k8sio_api_core_v1_ISCSIPersistentVolumeSource(ref),
+		"k8s.io/api/core/v1.ISCSIVolumeSource":                                                       schema_k8sio_api_core_v1_ISCSIVolumeSource(ref),
+		"k8s.io/api/core/v1.KeyToPath":                                                               schema_k8sio_api_core_v1_KeyToPath(ref),
+		"k8s.io/api/core/v1.Lifecycle":                                                               schema_k8sio_api_core_v1_Lifecycle(ref),
+		"k8s.io/api/core/v1.LifecycleHandler":                                                        schema_k8sio_api_core_v1_LifecycleHandler(ref),
+		"k8s.io/api/core/v1.LimitRange":                                                              schema_k8sio_api_core_v1_LimitRange(ref),
+		"k8s.io/api/core/v1.LimitRangeItem":                                                          schema_k8sio_api_core_v1_LimitRangeItem(ref),
+		"k8s.io/api/core/v1.LimitRangeList":                                                          schema_k8sio_api_core_v1_LimitRangeList(ref),
+		"k8s.io/api/core/v1.LimitRangeSpec":                                                          schema_k8sio_api_core_v1_LimitRangeSpec(ref),
+		"k8s.io/api/core/v1.List":                                                                    schema_k8sio_api_core_v1_List(ref),
+		"k8s.io/api/core/v1.LoadBalancerIngress":                                                     schema_k8sio_api_core_v1_LoadBalancerIngress(ref),
+		"k8s.io/api/core/v1.LoadBalancerStatus":                                                      schema_k8sio_api_core_v1_LoadBalancerStatus(ref),
+		"k8s.io/api/core/v1.LocalObjectReference":                                                    schema_k8sio_api_core_v1_LocalObjectReference(ref),
+		"k8s.io/api/core/v1.LocalVolumeSource":                                                       schema_k8sio_api_core_v1_LocalVolumeSource(ref),
+		"k8s.io/api/core/v1.NFSVolumeSource":                                                         schema_k8sio_api_core_v1_NFSVolumeSource(ref),
+		"k8s.io/api/core/v1.Namespace":                                                               schema_k8sio_api_core_v1_Namespace(ref),
+		"k8s.io/api/core/v1.NamespaceCondition":                                                      schema_k8sio_api_core_v1_NamespaceCondition(ref),
+		"k8s.io/api/core/v1.NamespaceList":                                                           schema_k8sio_api_core_v1_NamespaceList(ref),
+		"k8s.io/api/core/v1.NamespaceSpec":                                                           schema_k8sio_api_core_v1_NamespaceSpec(ref),
+		"k8s.io/api/core/v1.NamespaceStatus":                                                         schema_k8sio_api_core_v1_NamespaceStatus(ref),
+		"k8s.io/api/core/v1.Node":                                                                    schema_k8sio_api_core_v1_Node(ref),
+		"k8s.io/api/core/v1.NodeAddress":                                                             schema_k8sio_api_core_v1_NodeAddress(ref),
+		"k8s.io/api/core/v1.NodeAffinity":                                                            schema_k8sio_api_core_v1_NodeAffinity(ref),
+		"k8s.io/api/core/v1.NodeCondition":                                                           schema_k8sio_api_core_v1_NodeCondition(ref),
+		"k8s.io/api/core/v1.NodeConfigSource":                                                        schema_k8sio_api_core_v1_NodeConfigSource(ref),
+		"k8s.io/api/core/v1.NodeConfigStatus":                                                        schema_k8sio_api_core_v1_NodeConfigStatus(ref),
+		"k8s.io/api/core/v1.NodeDaemonEndpoints":                                                     schema_k8sio_api_core_v1_NodeDaemonEndpoints(ref),
+		"k8s.io/api/core/v1.NodeList":                                                                schema_k8sio_api_core_v1_NodeList(ref),
+		"k8s.io/api/core/v1.NodeProxyOptions":                                                        schema_k8sio_api_core_v1_NodeProxyOptions(ref),
+		"k8s.io/api/core/v1.NodeResources":                                                           schema_k8sio_api_core_v1_NodeResources(ref),
+		"k8s.io/api/core/v1.NodeSelector":                                                            schema_k8sio_api_core_v1_NodeSelector(ref),
+		"k8s.io/api/core/v1.NodeSelectorRequirement":                                                 schema_k8sio_api_core_v1_NodeSelectorRequirement(ref),
+		"k8s.io/api/core/v1.NodeSelectorTerm":                                                        schema_k8sio_api_core_v1_NodeSelectorTerm(ref),
+		"k8s.io/api/core/v1.NodeSpec":                                                                schema_k8sio_api_core_v1_NodeSpec(ref),
+		"k8s.io/api/core/v1.NodeStatus":                                                              schema_k8sio_api_core_v1_NodeStatus(ref),
+		"k8s.io/api/core/v1.NodeSystemInfo":                                                          schema_k8sio_api_core_v1_NodeSystemInfo(ref),
+		"k8s.io/api/core/v1.ObjectFieldSelector":                                                     schema_k8sio_api_core_v1_ObjectFieldSelector(ref),
+		"k8s.io/api/core/v1.ObjectReference":                                                         schema_k8sio_api_core_v1_ObjectReference(ref),
+		"k8s.io/api/core/v1.PersistentVolume":                                                        schema_k8sio_api_core_v1_PersistentVolume(ref),
+		"k8s.io/api/core/v1.PersistentVolumeClaim":                                                   schema_k8sio_api_core_v1_PersistentVolumeClaim(ref),
+		"k8s.io/api/core/v1.PersistentVolumeClaimCondition":                                          schema_k8sio_api_core_v1_PersistentVolumeClaimCondition(ref),
+		"k8s.io/api/core/v1.PersistentVolumeClaimList":                                               schema_k8sio_api_core_v1_PersistentVolumeClaimList(ref),
+		"k8s.io/api/core/v1.PersistentVolumeClaimSpec":                                               schema_k8sio_api_core_v1_PersistentVolumeClaimSpec(ref),
+		"k8s.io/api/core/v1.PersistentVolumeClaimStatus":                                             schema_k8sio_api_core_v1_PersistentVolumeClaimStatus(ref),
+		"k8s.io/api/core/v1.PersistentVolumeClaimTemplate":                                           schema_k8sio_api_core_v1_PersistentVolumeClaimTemplate(ref),
+		"k8s.io/api/core/v1.PersistentVolumeClaimVolumeSource":                                       schema_k8sio_api_core_v1_PersistentVolumeClaimVolumeSource(ref),
+		"k8s.io/api/core/v1.PersistentVolumeList":                                                    schema_k8sio_api_core_v1_PersistentVolumeList(ref),
+		"k8s.io/api/core/v1.PersistentVolumeSource":                                                  schema_k8sio_api_core_v1_PersistentVolumeSource(ref),
+		"k8s.io/api/core/v1.PersistentVolumeSpec":                                                    schema_k8sio_api_core_v1_PersistentVolumeSpec(ref),
+		"k8s.io/api/core/v1.PersistentVolumeStatus":                                                  schema_k8sio_api_core_v1_PersistentVolumeStatus(ref),
+		"k8s.io/api/core/v1.PhotonPersistentDiskVolumeSource":                                        schema_k8sio_api_core_v1_PhotonPersistentDiskVolumeSource(ref),
+		"k8s.io/api/core/v1.Pod":                                                                     schema_k8sio_api_core_v1_Pod(ref),
+		"k8s.io/api/core/v1.PodAffinity":                                                             schema_k8sio_api_core_v1_PodAffinity(ref),
+		"k8s.io/api/core/v1.PodAffinityTerm":                                                         schema_k8sio_api_core_v1_PodAffinityTerm(ref),
+		"k8s.io/api/core/v1.PodAntiAffinity":                                                         schema_k8sio_api_core_v1_PodAntiAffinity(ref),
+		"k8s.io/api/core/v1.PodAttachOptions":                                                        schema_k8sio_api_core_v1_PodAttachOptions(ref),
+		"k8s.io/api/core/v1.PodCondition":                                                            schema_k8sio_api_core_v1_PodCondition(ref),
+		"k8s.io/api/core/v1.PodDNSConfig":                                                            schema_k8sio_api_core_v1_PodDNSConfig(ref),
+		"k8s.io/api/core/v1.PodDNSConfigOption":                                                      schema_k8sio_api_core_v1_PodDNSConfigOption(ref),
+		"k8s.io/api/core/v1.PodExecOptions":                                                          schema_k8sio_api_core_v1_PodExecOptions(ref),
+		"k8s.io/api/core/v1.PodIP":                                                                   schema_k8sio_api_core_v1_PodIP(ref),
+		"k8s.io/api/core/v1.PodList":                                                                 schema_k8sio_api_core_v1_PodList(ref),
+		"k8s.io/api/core/v1.PodLogOptions":                                                           schema_k8sio_api_core_v1_PodLogOptions(ref),
+		"k8s.io/api/core/v1.PodOS":                                                                   schema_k8sio_api_core_v1_PodOS(ref),
+		"k8s.io/api/core/v1.PodPortForwardOptions":                                                   schema_k8sio_api_core_v1_PodPortForwardOptions(ref),
+		"k8s.io/api/core/v1.PodProxyOptions":                                                         schema_k8sio_api_core_v1_PodProxyOptions(ref),
+		"k8s.io/api/core/v1.PodReadinessGate":                                                        schema_k8sio_api_core_v1_PodReadinessGate(ref),
+		"k8s.io/api/core/v1.PodResourceClaim":                                                        schema_k8sio_api_core_v1_PodResourceClaim(ref),
+		"k8s.io/api/core/v1.PodSchedulingGate":                                                       schema_k8sio_api_core_v1_PodSchedulingGate(ref),
+		"k8s.io/api/core/v1.PodSecurityContext":                                                      schema_k8sio_api_core_v1_PodSecurityContext(ref),
+		"k8s.io/api/core/v1.PodSignature":                                                            schema_k8sio_api_core_v1_PodSignature(ref),
+		"k8s.io/api/core/v1.PodSpec":                                                                 schema_k8sio_api_core_v1_PodSpec(ref),
+		"k8s.io/api/core/v1.PodStatus":                                                               schema_k8sio_api_core_v1_PodStatus(ref),
+		"k8s.io/api/core/v1.PodStatusResult":                                                         schema_k8sio_api_core_v1_PodStatusResult(ref),
+		"k8s.io/api/core/v1.PodTemplate":                                                             schema_k8sio_api_core_v1_PodTemplate(ref),
+		"k8s.io/api/core/v1.PodTemplateList":                                                         schema_k8sio_api_core_v1_PodTemplateList(ref),
+		"k8s.io/api/core/v1.PodTemplateSpec":                                                         schema_k8sio_api_core_v1_PodTemplateSpec(ref),
+		"k8s.io/api/core/v1.PortStatus":                                                              schema_k8sio_api_core_v1_PortStatus(ref),
+		"k8s.io/api/core/v1.PortworxVolumeSource":                                                    schema_k8sio_api_core_v1_PortworxVolumeSource(ref),
+		"k8s.io/api/core/v1.PreferAvoidPodsEntry":                                                    schema_k8sio_api_core_v1_PreferAvoidPodsEntry(ref),
+		"k8s.io/api/core/v1.PreferredSchedulingTerm":                                                 schema_k8sio_api_core_v1_PreferredSchedulingTerm(ref),
+		"k8s.io/api/core/v1.Probe":                                                                   schema_k8sio_api_core_v1_Probe(ref),
+		"k8s.io/api/core/v1.ProbeHandler":                                                            schema_k8sio_api_core_v1_ProbeHandler(ref),
+		"k8s.io/api/core/v1.ProjectedVolumeSource":                                                   schema_k8sio_api_core_v1_ProjectedVolumeSource(ref),
+		"k8s.io/api/core/v1.QuobyteVolumeSource":                                                     schema_k8sio_api_core_v1_QuobyteVolumeSource(ref),
+		"k8s.io/api/core/v1.RBDPersistentVolumeSource":                                               schema_k8sio_api_core_v1_RBDPersistentVolumeSource(ref),
+		"k8s.io/api/core/v1.RBDVolumeSource":                                                         schema_k8sio_api_core_v1_RBDVolumeSource(ref),
+		"k8s.io/api/core/v1.RangeAllocation":                                                         schema_k8sio_api_core_v1_RangeAllocation(ref),
+		"k8s.io/api/core/v1.ReplicationController":                                                   schema_k8sio_api_core_v1_ReplicationController(ref),
+		"k8s.io/api/core/v1.ReplicationControllerCondition":                                          schema_k8sio_api_core_v1_ReplicationControllerCondition(ref),
+		"k8s.io/api/core/v1.ReplicationControllerList":                                               schema_k8sio_api_core_v1_ReplicationControllerList(ref),
+		"k8s.io/api/core/v1.ReplicationControllerSpec":                                               schema_k8sio_api_core_v1_ReplicationControllerSpec(ref),
+		"k8s.io/api/core/v1.ReplicationControllerStatus":                                             schema_k8sio_api_core_v1_ReplicationControllerStatus(ref),
+		"k8s.io/api/core/v1.ResourceClaim":                                                           schema_k8sio_api_core_v1_ResourceClaim(ref),
+		"k8s.io/api/core/v1.ResourceFieldSelector":                                                   schema_k8sio_api_core_v1_ResourceFieldSelector(ref),
+		"k8s.io/api/core/v1.ResourceQuota":                                                           schema_k8sio_api_core_v1_ResourceQuota(ref),
+		"k8s.io/api/core/v1.ResourceQuotaList":                                                       schema_k8sio_api_core_v1_ResourceQuotaList(ref),
+		"k8s.io/api/core/v1.ResourceQuotaSpec":                                                       schema_k8sio_api_core_v1_ResourceQuotaSpec(ref),
+		"k8s.io/api/core/v1.ResourceQuotaStatus":                                                     schema_k8sio_api_core_v1_ResourceQuotaStatus(ref),
+		"k8s.io/api/core/v1.ResourceRequirements":                                                    schema_k8sio_api_core_v1_ResourceRequirements(ref),
+		"k8s.io/api/core/v1.SELinuxOptions":                                                          schema_k8sio_api_core_v1_SELinuxOptions(ref),
+		"k8s.io/api/core/v1.ScaleIOPersistentVolumeSource":                                           schema_k8sio_api_core_v1_ScaleIOPersistentVolumeSource(ref),
+		"k8s.io/api/core/v1.ScaleIOVolumeSource":                                                     schema_k8sio_api_core_v1_ScaleIOVolumeSource(ref),
+		"k8s.io/api/core/v1.ScopeSelector":                                                           schema_k8sio_api_core_v1_ScopeSelector(ref),
+		"k8s.io/api/core/v1.ScopedResourceSelectorRequirement":                                       schema_k8sio_api_core_v1_ScopedResourceSelectorRequirement(ref),
+		"k8s.io/api/core/v1.SeccompProfile":                                                          schema_k8sio_api_core_v1_SeccompProfile(ref),
+		"k8s.io/api/core/v1.Secret":                                                                  schema_k8sio_api_core_v1_Secret(ref),
+		"k8s.io/api/core/v1.SecretEnvSource":                                                         schema_k8sio_api_core_v1_SecretEnvSource(ref),
+		"k8s.io/api/core/v1.SecretKeySelector":                                                       schema_k8sio_api_core_v1_SecretKeySelector(ref),
+		"k8s.io/api/core/v1.SecretList":                                                              schema_k8sio_api_core_v1_SecretList(ref),
+		"k8s.io/api/core/v1.SecretProjection":                                                        schema_k8sio_api_core_v1_SecretProjection(ref),
+		"k8s.io/api/core/v1.SecretReference":                                                         schema_k8sio_api_core_v1_SecretReference(ref),
+		"k8s.io/api/core/v1.SecretVolumeSource":                                                      schema_k8sio_api_core_v1_SecretVolumeSource(ref),
+		"k8s.io/api/core/v1.SecurityContext":                                                         schema_k8sio_api_core_v1_SecurityContext(ref),
+		"k8s.io/api/core/v1.SerializedReference":                                                     schema_k8sio_api_core_v1_SerializedReference(ref),
+		"k8s.io/api/core/v1.Service":                                                                 schema_k8sio_api_core_v1_Service(ref),
+		"k8s.io/api/core/v1.ServiceAccount":                                                          schema_k8sio_api_core_v1_ServiceAccount(ref),
+		"k8s.io/api/core/v1.ServiceAccountList":                                                      schema_k8sio_api_core_v1_ServiceAccountList(ref),
+		"k8s.io/api/core/v1.ServiceAccountTokenProjection":                                           schema_k8sio_api_core_v1_ServiceAccountTokenProjection(ref),
+		"k8s.io/api/core/v1.ServiceList":                                                             schema_k8sio_api_core_v1_ServiceList(ref),
+		"k8s.io/api/core/v1.ServicePort":                                                             schema_k8sio_api_core_v1_ServicePort(ref),
+		"k8s.io/api/core/v1.ServiceProxyOptions":                                                     schema_k8sio_api_core_v1_ServiceProxyOptions(ref),
+		"k8s.io/api/core/v1.ServiceSpec":                                                             schema_k8sio_api_core_v1_ServiceSpec(ref),
+		"k8s.io/api/core/v1.ServiceStatus":                                                           schema_k8sio_api_core_v1_ServiceStatus(ref),
+		"k8s.io/api/core/v1.SessionAffinityConfig":                                                   schema_k8sio_api_core_v1_SessionAffinityConfig(ref),
+		"k8s.io/api/core/v1.StorageOSPersistentVolumeSource":                                         schema_k8sio_api_core_v1_StorageOSPersistentVolumeSource(ref),
+		"k8s.io/api/core/v1.StorageOSVolumeSource":                                                   schema_k8sio_api_core_v1_StorageOSVolumeSource(ref),
+		"k8s.io/api/core/v1.Sysctl":                                                                  schema_k8sio_api_core_v1_Sysctl(ref),
+		"k8s.io/api/core/v1.TCPSocketAction":                                                         schema_k8sio_api_core_v1_TCPSocketAction(ref),
+		"k8s.io/api/core/v1.Taint":                                                                   schema_k8sio_api_core_v1_Taint(ref),
+		"k8s.io/api/core/v1.Toleration":                                                              schema_k8sio_api_core_v1_Toleration(ref),
+		"k8s.io/api/core/v1.TopologySelectorLabelRequirement":                                        schema_k8sio_api_core_v1_TopologySelectorLabelRequirement(ref),
+		"k8s.io/api/core/v1.TopologySelectorTerm":                                                    schema_k8sio_api_core_v1_TopologySelectorTerm(ref),
+		"k8s.io/api/core/v1.TopologySpreadConstraint":                                                schema_k8sio_api_core_v1_TopologySpreadConstraint(ref),
+		"k8s.io/api/core/v1.TypedLocalObjectReference":                                               schema_k8sio_api_core_v1_TypedLocalObjectReference(ref),
+		"k8s.io/api/core/v1.TypedObjectReference":                                                    schema_k8sio_api_core_v1_TypedObjectReference(ref),
+		"k8s.io/api/core/v1.Volume":                                                                  schema_k8sio_api_core_v1_Volume(ref),
+		"k8s.io/api/core/v1.VolumeDevice":                                                            schema_k8sio_api_core_v1_VolumeDevice(ref),
+		"k8s.io/api/core/v1.VolumeMount":                                                             schema_k8sio_api_core_v1_VolumeMount(ref),
+		"k8s.io/api/core/v1.VolumeNodeAffinity":                                                      schema_k8sio_api_core_v1_VolumeNodeAffinity(ref),
+		"k8s.io/api/core/v1.VolumeProjection":                                                        schema_k8sio_api_core_v1_VolumeProjection(ref),
+		"k8s.io/api/core/v1.VolumeSource":                                                            schema_k8sio_api_core_v1_VolumeSource(ref),
+		"k8s.io/api/core/v1.VsphereVirtualDiskVolumeSource":                                          schema_k8sio_api_core_v1_VsphereVirtualDiskVolumeSource(ref),
+		"k8s.io/api/core/v1.WeightedPodAffinityTerm":                                                 schema_k8sio_api_core_v1_WeightedPodAffinityTerm(ref),
+		"k8s.io/api/core/v1.WindowsSecurityContextOptions":                                           schema_k8sio_api_core_v1_WindowsSecurityContextOptions(ref),
+		"k8s.io/apimachinery/pkg/api/resource.Quantity":                                              schema_apimachinery_pkg_api_resource_Quantity(ref),
+		"k8s.io/apimachinery/pkg/api/resource.int64Amount":                                           schema_apimachinery_pkg_api_resource_int64Amount(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.APIGroup":                                              schema_pkg_apis_meta_v1_APIGroup(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.APIGroupList":                                          schema_pkg_apis_meta_v1_APIGroupList(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.APIResource":                                           schema_pkg_apis_meta_v1_APIResource(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.APIResourceList":                                       schema_pkg_apis_meta_v1_APIResourceList(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.APIVersions":                                           schema_pkg_apis_meta_v1_APIVersions(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.ApplyOptions":                                          schema_pkg_apis_meta_v1_ApplyOptions(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.Condition":                                             schema_pkg_apis_meta_v1_Condition(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.CreateOptions":                                         schema_pkg_apis_meta_v1_CreateOptions(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.DeleteOptions":                                         schema_pkg_apis_meta_v1_DeleteOptions(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.Duration":                                              schema_pkg_apis_meta_v1_Duration(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.FieldsV1":                                              schema_pkg_apis_meta_v1_FieldsV1(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.GetOptions":                                            schema_pkg_apis_meta_v1_GetOptions(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.GroupKind":                                             schema_pkg_apis_meta_v1_GroupKind(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.GroupResource":                                         schema_pkg_apis_meta_v1_GroupResource(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.GroupVersion":                                          schema_pkg_apis_meta_v1_GroupVersion(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.GroupVersionForDiscovery":                              schema_pkg_apis_meta_v1_GroupVersionForDiscovery(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.GroupVersionKind":                                      schema_pkg_apis_meta_v1_GroupVersionKind(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.GroupVersionResource":                                  schema_pkg_apis_meta_v1_GroupVersionResource(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.InternalEvent":                                         schema_pkg_apis_meta_v1_InternalEvent(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.LabelSelector":                                         schema_pkg_apis_meta_v1_LabelSelector(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.LabelSelectorRequirement":                              schema_pkg_apis_meta_v1_LabelSelectorRequirement(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.List":                                                  schema_pkg_apis_meta_v1_List(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta":                                              schema_pkg_apis_meta_v1_ListMeta(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.ListOptions":                                           schema_pkg_apis_meta_v1_ListOptions(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.ManagedFieldsEntry":                                    schema_pkg_apis_meta_v1_ManagedFieldsEntry(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.MicroTime":                                             schema_pkg_apis_meta_v1_MicroTime(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta":                                            schema_pkg_apis_meta_v1_ObjectMeta(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.OwnerReference":                                        schema_pkg_apis_meta_v1_OwnerReference(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.PartialObjectMetadata":                                 schema_pkg_apis_meta_v1_PartialObjectMetadata(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.PartialObjectMetadataList":                             schema_pkg_apis_meta_v1_PartialObjectMetadataList(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.Patch":                                                 schema_pkg_apis_meta_v1_Patch(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.PatchOptions":                                          schema_pkg_apis_meta_v1_PatchOptions(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.Preconditions":                                         schema_pkg_apis_meta_v1_Preconditions(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.RootPaths":                                             schema_pkg_apis_meta_v1_RootPaths(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.ServerAddressByClientCIDR":                             schema_pkg_apis_meta_v1_ServerAddressByClientCIDR(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.Status":                                                schema_pkg_apis_meta_v1_Status(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.StatusCause":                                           schema_pkg_apis_meta_v1_StatusCause(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.StatusDetails":                                         schema_pkg_apis_meta_v1_StatusDetails(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.Table":                                                 schema_pkg_apis_meta_v1_Table(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.TableColumnDefinition":                                 schema_pkg_apis_meta_v1_TableColumnDefinition(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.TableOptions":                                          schema_pkg_apis_meta_v1_TableOptions(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.TableRow":                                              schema_pkg_apis_meta_v1_TableRow(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.TableRowCondition":                                     schema_pkg_apis_meta_v1_TableRowCondition(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.Time":                                                  schema_pkg_apis_meta_v1_Time(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.Timestamp":                                             schema_pkg_apis_meta_v1_Timestamp(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.TypeMeta":                                              schema_pkg_apis_meta_v1_TypeMeta(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.UpdateOptions":                                         schema_pkg_apis_meta_v1_UpdateOptions(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.WatchEvent":                                            schema_pkg_apis_meta_v1_WatchEvent(ref),
+		"k8s.io/apimachinery/pkg/runtime.RawExtension":                                               schema_k8sio_apimachinery_pkg_runtime_RawExtension(ref),
+		"k8s.io/apimachinery/pkg/runtime.TypeMeta":                                                   schema_k8sio_apimachinery_pkg_runtime_TypeMeta(ref),
+		"k8s.io/apimachinery/pkg/runtime.Unknown":                                                    schema_k8sio_apimachinery_pkg_runtime_Unknown(ref),
 	}
 }
 
@@ -443,28 +448,6 @@ func schema_pkg_apis_core_v1alpha1_AutomaticReconcile(ref common.ReferenceCallba
 		},
 		Dependencies: []string{
 			"github.com/gardener/landscaper/apis/core/v1alpha1.Duration"},
-	}
-}
-
-func schema_pkg_apis_core_v1alpha1_AutomaticReconcileStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
-	return common.OpenAPIDefinition{
-		Schema: spec.Schema{
-			SchemaProps: spec.SchemaProps{
-				Description: "AutomaticReconcileStatus contains the automatic reconciliation status of an instance.",
-				Type:        []string{"object"},
-				Properties: map[string]spec.Schema{
-					"lastReconcileTime": {
-						SchemaProps: spec.SchemaProps{
-							Description: "LastReconcileTime contains the time at which the instance has been reconciled.",
-							Default:     map[string]interface{}{},
-							Ref:         ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
-						},
-					},
-				},
-			},
-		},
-		Dependencies: []string{
-			"k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
 	}
 }
 
@@ -1026,17 +1009,11 @@ func schema_pkg_apis_core_v1alpha1_InstanceStatus(ref common.ReferenceCallback) 
 							Format:      "",
 						},
 					},
-					"automaticReconcileStatus": {
-						SchemaProps: spec.SchemaProps{
-							Description: "AutomaticReconcileStatus contains the status of the automatic reconciliation of this instance.",
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AutomaticReconcileStatus"),
-						},
-					},
 				},
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AutomaticReconcileStatus", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Error", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperServiceComponent", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Error", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperServiceComponent", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference"},
 	}
 }
 
@@ -3241,12 +3218,18 @@ func schema_landscaper_apis_core_v1alpha1_DeployItemStatus(ref common.ReferenceC
 							Format:      "",
 						},
 					},
+					"transitionTimes": {
+						SchemaProps: spec.SchemaProps{
+							Description: "TransitionTimes contains timestamps of status transitions",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.TransitionTimes"),
+						},
+					},
 				},
 				Required: []string{"observedGeneration"},
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper/apis/core/v1alpha1.Condition", "github.com/gardener/landscaper/apis/core/v1alpha1.DeployerInformation", "github.com/gardener/landscaper/apis/core/v1alpha1.Error", "github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference", "k8s.io/apimachinery/pkg/apis/meta/v1.Time", "k8s.io/apimachinery/pkg/runtime.RawExtension"},
+			"github.com/gardener/landscaper/apis/core/v1alpha1.Condition", "github.com/gardener/landscaper/apis/core/v1alpha1.DeployerInformation", "github.com/gardener/landscaper/apis/core/v1alpha1.Error", "github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference", "github.com/gardener/landscaper/apis/core/v1alpha1.TransitionTimes", "k8s.io/apimachinery/pkg/apis/meta/v1.Time", "k8s.io/apimachinery/pkg/runtime.RawExtension"},
 	}
 }
 
@@ -3971,6 +3954,13 @@ func schema_landscaper_apis_core_v1alpha1_ExecutionSpec(ref common.ReferenceCall
 							},
 						},
 					},
+					"deployItemsCompressed": {
+						SchemaProps: spec.SchemaProps{
+							Description: "DeployItemsCompressed as zipped byte array",
+							Type:        []string{"string"},
+							Format:      "byte",
+						},
+					},
 					"registryPullSecrets": {
 						SchemaProps: spec.SchemaProps{
 							Description: "RegistryPullSecrets defines a list of registry credentials that are used to pull blueprints, component descriptors and jsonschemas from the respective registry. For more info see: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ Note that the type information is used to determine the secret key and the type of the secret.",
@@ -4089,11 +4079,17 @@ func schema_landscaper_apis_core_v1alpha1_ExecutionStatus(ref common.ReferenceCa
 							Ref:         ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
 						},
 					},
+					"transitionTimes": {
+						SchemaProps: spec.SchemaProps{
+							Description: "TransitionTimes contains timestamps of status transitions",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.TransitionTimes"),
+						},
+					},
 				},
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper/apis/core/v1alpha1.Condition", "github.com/gardener/landscaper/apis/core/v1alpha1.Error", "github.com/gardener/landscaper/apis/core/v1alpha1.ExecutionGeneration", "github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference", "github.com/gardener/landscaper/apis/core/v1alpha1.VersionedNamedObjectReference", "k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
+			"github.com/gardener/landscaper/apis/core/v1alpha1.Condition", "github.com/gardener/landscaper/apis/core/v1alpha1.Error", "github.com/gardener/landscaper/apis/core/v1alpha1.ExecutionGeneration", "github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference", "github.com/gardener/landscaper/apis/core/v1alpha1.TransitionTimes", "github.com/gardener/landscaper/apis/core/v1alpha1.VersionedNamedObjectReference", "k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
 	}
 }
 
@@ -4801,12 +4797,18 @@ func schema_landscaper_apis_core_v1alpha1_InstallationStatus(ref common.Referenc
 							},
 						},
 					},
+					"transitionTimes": {
+						SchemaProps: spec.SchemaProps{
+							Description: "TransitionTimes contains timestamps of status transitions",
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.TransitionTimes"),
+						},
+					},
 				},
 				Required: []string{"observedGeneration", "configGeneration"},
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper/apis/core/v1alpha1.AutomaticReconcileStatus", "github.com/gardener/landscaper/apis/core/v1alpha1.Condition", "github.com/gardener/landscaper/apis/core/v1alpha1.DependentToTrigger", "github.com/gardener/landscaper/apis/core/v1alpha1.Error", "github.com/gardener/landscaper/apis/core/v1alpha1.ImportStatus", "github.com/gardener/landscaper/apis/core/v1alpha1.NamedObjectReference", "github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference", "k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
+			"github.com/gardener/landscaper/apis/core/v1alpha1.AutomaticReconcileStatus", "github.com/gardener/landscaper/apis/core/v1alpha1.Condition", "github.com/gardener/landscaper/apis/core/v1alpha1.DependentToTrigger", "github.com/gardener/landscaper/apis/core/v1alpha1.Error", "github.com/gardener/landscaper/apis/core/v1alpha1.ImportStatus", "github.com/gardener/landscaper/apis/core/v1alpha1.NamedObjectReference", "github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference", "github.com/gardener/landscaper/apis/core/v1alpha1.TransitionTimes", "k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
 	}
 }
 
@@ -5556,6 +5558,171 @@ func schema_landscaper_apis_core_v1alpha1_SucceededReconcile(ref common.Referenc
 	}
 }
 
+func schema_landscaper_apis_core_v1alpha1_SyncObject(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "The SyncObject helps to sync access to deploy items.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"),
+						},
+					},
+					"spec": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Spec contains the specification",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.SyncObjectSpec"),
+						},
+					},
+					"status": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Status contains the status",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.SyncObjectStatus"),
+						},
+					},
+				},
+				Required: []string{"spec"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.SyncObjectSpec", "github.com/gardener/landscaper/apis/core/v1alpha1.SyncObjectStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_SyncObjectList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "SyncObjectList contains a list of SyncObject objects",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"),
+						},
+					},
+					"items": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.SyncObject"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"items"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper/apis/core/v1alpha1.SyncObject", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_SyncObjectSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "SyncObjectSpec contains the specification.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"podName": {
+						SchemaProps: spec.SchemaProps{
+							Description: "PodName describes the name of the pod of the responsible deployer",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind describes the kind of object that is being locked by this SyncObject",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name is the name of the object that is being locked by this SyncObject",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"lastUpdateTime": {
+						SchemaProps: spec.SchemaProps{
+							Description: "LastUpdateTime contains last time the object was updated.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
+					"prefix": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Prefix is the prefix of the name of the object.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"podName", "kind", "name", "lastUpdateTime", "prefix"},
+			},
+		},
+		Dependencies: []string{
+			"k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
+	}
+}
+
+func schema_landscaper_apis_core_v1alpha1_SyncObjectStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "SyncObjectStatus contains the status.",
+				Type:        []string{"object"},
+			},
+		},
+	}
+}
+
 func schema_landscaper_apis_core_v1alpha1_TLSClientConfig(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
@@ -6253,6 +6420,44 @@ func schema_landscaper_apis_core_v1alpha1_TokenRotation(ref common.ReferenceCall
 	}
 }
 
+func schema_landscaper_apis_core_v1alpha1_TransitionTimes(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"triggerTime": {
+						SchemaProps: spec.SchemaProps{
+							Description: "TriggerTime is the time when the jobID is set.",
+							Ref:         ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
+					"initTime": {
+						SchemaProps: spec.SchemaProps{
+							Description: "InitTime is the time when the Init phase starts.",
+							Ref:         ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
+					"waitTime": {
+						SchemaProps: spec.SchemaProps{
+							Description: "WaitTime is the time when the work is done.",
+							Ref:         ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
+					"finishedTime": {
+						SchemaProps: spec.SchemaProps{
+							Description: "FinishedTime is the time when the finished phase is set.",
+							Ref:         ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
+	}
+}
+
 func schema_landscaper_apis_core_v1alpha1_TypedObjectReference(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
@@ -6799,13 +7004,13 @@ func schema_k8sio_api_core_v1_CSIPersistentVolumeSource(ref common.ReferenceCall
 					},
 					"controllerExpandSecretRef": {
 						SchemaProps: spec.SchemaProps{
-							Description: "controllerExpandSecretRef is a reference to the secret object containing sensitive information to pass to the CSI driver to complete the CSI ControllerExpandVolume call. This is an beta field and requires enabling ExpandCSIVolumes feature gate. This field is optional, and may be empty if no secret is required. If the secret object contains more than one secret, all secrets are passed.",
+							Description: "controllerExpandSecretRef is a reference to the secret object containing sensitive information to pass to the CSI driver to complete the CSI ControllerExpandVolume call. This field is optional, and may be empty if no secret is required. If the secret object contains more than one secret, all secrets are passed.",
 							Ref:         ref("k8s.io/api/core/v1.SecretReference"),
 						},
 					},
 					"nodeExpandSecretRef": {
 						SchemaProps: spec.SchemaProps{
-							Description: "nodeExpandSecretRef is a reference to the secret object containing sensitive information to pass to the CSI driver to complete the CSI NodeExpandVolume call. This is an alpha field and requires enabling CSINodeExpandSecret feature gate. This field is optional, may be omitted if no secret is required. If the secret object contains more than one secret, all secrets are passed.",
+							Description: "nodeExpandSecretRef is a reference to the secret object containing sensitive information to pass to the CSI driver to complete the CSI NodeExpandVolume call. This is a beta field which is enabled default by CSINodeExpandSecret feature gate. This field is optional, may be omitted if no secret is required. If the secret object contains more than one secret, all secrets are passed.",
 							Ref:         ref("k8s.io/api/core/v1.SecretReference"),
 						},
 					},
@@ -7800,6 +8005,25 @@ func schema_k8sio_api_core_v1_Container(ref common.ReferenceCallback) common.Ope
 							Ref:         ref("k8s.io/api/core/v1.ResourceRequirements"),
 						},
 					},
+					"resizePolicy": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "atomic",
+							},
+						},
+						SchemaProps: spec.SchemaProps{
+							Description: "Resources resize policy for the container.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("k8s.io/api/core/v1.ContainerResizePolicy"),
+									},
+								},
+							},
+						},
+					},
 					"volumeMounts": {
 						VendorExtensible: spec.VendorExtensible{
 							Extensions: spec.Extensions{
@@ -7919,7 +8143,7 @@ func schema_k8sio_api_core_v1_Container(ref common.ReferenceCallback) common.Ope
 			},
 		},
 		Dependencies: []string{
-			"k8s.io/api/core/v1.ContainerPort", "k8s.io/api/core/v1.EnvFromSource", "k8s.io/api/core/v1.EnvVar", "k8s.io/api/core/v1.Lifecycle", "k8s.io/api/core/v1.Probe", "k8s.io/api/core/v1.ResourceRequirements", "k8s.io/api/core/v1.SecurityContext", "k8s.io/api/core/v1.VolumeDevice", "k8s.io/api/core/v1.VolumeMount"},
+			"k8s.io/api/core/v1.ContainerPort", "k8s.io/api/core/v1.ContainerResizePolicy", "k8s.io/api/core/v1.EnvFromSource", "k8s.io/api/core/v1.EnvVar", "k8s.io/api/core/v1.Lifecycle", "k8s.io/api/core/v1.Probe", "k8s.io/api/core/v1.ResourceRequirements", "k8s.io/api/core/v1.SecurityContext", "k8s.io/api/core/v1.VolumeDevice", "k8s.io/api/core/v1.VolumeMount"},
 	}
 }
 
@@ -8005,6 +8229,36 @@ func schema_k8sio_api_core_v1_ContainerPort(ref common.ReferenceCallback) common
 					},
 				},
 				Required: []string{"containerPort"},
+			},
+		},
+	}
+}
+
+func schema_k8sio_api_core_v1_ContainerResizePolicy(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "ContainerResizePolicy represents resource resize policy for the container.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"resourceName": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name of the resource to which this resource resize policy applies. Supported values: cpu, memory.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"restartPolicy": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Restart policy to apply when specified resource is resized. If not specified, it defaults to NotRequired.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"resourceName", "restartPolicy"},
 			},
 		},
 	}
@@ -8167,7 +8421,7 @@ func schema_k8sio_api_core_v1_ContainerStatus(ref common.ReferenceCallback) comm
 				Properties: map[string]spec.Schema{
 					"name": {
 						SchemaProps: spec.SchemaProps{
-							Description: "This must be a DNS_LABEL. Each container in a pod must have a unique name. Cannot be updated.",
+							Description: "Name is a DNS_LABEL representing the unique name of the container. Each container in a pod must have a unique name across all container types. Cannot be updated.",
 							Default:     "",
 							Type:        []string{"string"},
 							Format:      "",
@@ -8175,21 +8429,21 @@ func schema_k8sio_api_core_v1_ContainerStatus(ref common.ReferenceCallback) comm
 					},
 					"state": {
 						SchemaProps: spec.SchemaProps{
-							Description: "Details about the container's current condition.",
+							Description: "State holds details about the container's current condition.",
 							Default:     map[string]interface{}{},
 							Ref:         ref("k8s.io/api/core/v1.ContainerState"),
 						},
 					},
 					"lastState": {
 						SchemaProps: spec.SchemaProps{
-							Description: "Details about the container's last termination condition.",
+							Description: "LastTerminationState holds the last termination state of the container to help debug container crashes and restarts. This field is not populated if the container is still running and RestartCount is 0.",
 							Default:     map[string]interface{}{},
 							Ref:         ref("k8s.io/api/core/v1.ContainerState"),
 						},
 					},
 					"ready": {
 						SchemaProps: spec.SchemaProps{
-							Description: "Specifies whether the container has passed its readiness probe.",
+							Description: "Ready specifies whether the container is currently passing its readiness check. The value will change as readiness probes keep executing. If no readiness probes are specified, this field defaults to true once the container is fully started (see Started field).\n\nThe value is typically used to determine whether a container is ready to accept traffic.",
 							Default:     false,
 							Type:        []string{"boolean"},
 							Format:      "",
@@ -8197,7 +8451,7 @@ func schema_k8sio_api_core_v1_ContainerStatus(ref common.ReferenceCallback) comm
 					},
 					"restartCount": {
 						SchemaProps: spec.SchemaProps{
-							Description: "The number of times the container has been restarted.",
+							Description: "RestartCount holds the number of times the container has been restarted. Kubelet makes an effort to always increment the value, but there are cases when the state may be lost due to node restarts and then the value may be reset to 0. The value is never negative.",
 							Default:     0,
 							Type:        []string{"integer"},
 							Format:      "int32",
@@ -8205,7 +8459,7 @@ func schema_k8sio_api_core_v1_ContainerStatus(ref common.ReferenceCallback) comm
 					},
 					"image": {
 						SchemaProps: spec.SchemaProps{
-							Description: "The image the container is running. More info: https://kubernetes.io/docs/concepts/containers/images.",
+							Description: "Image is the name of container image that the container is running. The container image may not match the image used in the PodSpec, as it may have been resolved by the runtime. More info: https://kubernetes.io/docs/concepts/containers/images.",
 							Default:     "",
 							Type:        []string{"string"},
 							Format:      "",
@@ -8213,7 +8467,7 @@ func schema_k8sio_api_core_v1_ContainerStatus(ref common.ReferenceCallback) comm
 					},
 					"imageID": {
 						SchemaProps: spec.SchemaProps{
-							Description: "ImageID of the container's image.",
+							Description: "ImageID is the image ID of the container's image. The image ID may not match the image ID of the image used in the PodSpec, as it may have been resolved by the runtime.",
 							Default:     "",
 							Type:        []string{"string"},
 							Format:      "",
@@ -8221,16 +8475,37 @@ func schema_k8sio_api_core_v1_ContainerStatus(ref common.ReferenceCallback) comm
 					},
 					"containerID": {
 						SchemaProps: spec.SchemaProps{
-							Description: "Container's ID in the format '<type>://<container_id>'.",
+							Description: "ContainerID is the ID of the container in the format '<type>://<container_id>'. Where type is a container runtime identifier, returned from Version call of CRI API (for example \"containerd\").",
 							Type:        []string{"string"},
 							Format:      "",
 						},
 					},
 					"started": {
 						SchemaProps: spec.SchemaProps{
-							Description: "Specifies whether the container has passed its startup probe. Initialized as false, becomes true after startupProbe is considered successful. Resets to false when the container is restarted, or if kubelet loses state temporarily. Is always true when no startupProbe is defined.",
+							Description: "Started indicates whether the container has finished its postStart lifecycle hook and passed its startup probe. Initialized as false, becomes true after startupProbe is considered successful. Resets to false when the container is restarted, or if kubelet loses state temporarily. In both cases, startup probes will run again. Is always true when no startupProbe is defined and container is running and has passed the postStart lifecycle hook. The null value must be treated the same as false.",
 							Type:        []string{"boolean"},
 							Format:      "",
+						},
+					},
+					"allocatedResources": {
+						SchemaProps: spec.SchemaProps{
+							Description: "AllocatedResources represents the compute resources allocated for this container by the node. Kubelet sets this value to Container.Resources.Requests upon successful pod admission and after successfully admitting desired pod resize.",
+							Type:        []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("k8s.io/apimachinery/pkg/api/resource.Quantity"),
+									},
+								},
+							},
+						},
+					},
+					"resources": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Resources represents the compute resource requests and limits that have been successfully enacted on the running container after it has been started or has been successfully resized.",
+							Ref:         ref("k8s.io/api/core/v1.ResourceRequirements"),
 						},
 					},
 				},
@@ -8238,7 +8513,7 @@ func schema_k8sio_api_core_v1_ContainerStatus(ref common.ReferenceCallback) comm
 			},
 		},
 		Dependencies: []string{
-			"k8s.io/api/core/v1.ContainerState"},
+			"k8s.io/api/core/v1.ContainerState", "k8s.io/api/core/v1.ResourceRequirements", "k8s.io/apimachinery/pkg/api/resource.Quantity"},
 	}
 }
 
@@ -8388,7 +8663,7 @@ func schema_k8sio_api_core_v1_EmptyDirVolumeSource(ref common.ReferenceCallback)
 					},
 					"sizeLimit": {
 						SchemaProps: spec.SchemaProps{
-							Description: "sizeLimit is the total amount of local storage required for this EmptyDir volume. The size limit is also applicable for memory medium. The maximum usage on memory medium EmptyDir would be the minimum value between the SizeLimit specified here and the sum of memory limits of all containers in a pod. The default is nil which means that the limit is undefined. More info: http://kubernetes.io/docs/user-guide/volumes#emptydir",
+							Description: "sizeLimit is the total amount of local storage required for this EmptyDir volume. The size limit is also applicable for memory medium. The maximum usage on memory medium EmptyDir would be the minimum value between the SizeLimit specified here and the sum of memory limits of all containers in a pod. The default is nil which means that the limit is undefined. More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir",
 							Ref:         ref("k8s.io/apimachinery/pkg/api/resource.Quantity"),
 						},
 					},
@@ -8409,7 +8684,7 @@ func schema_k8sio_api_core_v1_EndpointAddress(ref common.ReferenceCallback) comm
 				Properties: map[string]spec.Schema{
 					"ip": {
 						SchemaProps: spec.SchemaProps{
-							Description: "The IP of this endpoint. May not be loopback (127.0.0.0/8), link-local (169.254.0.0/16), or link-local multicast ((224.0.0.0/24). IPv6 is also accepted but not fully supported on all platforms. Also, certain kubernetes components, like kube-proxy, are not IPv6 ready.",
+							Description: "The IP of this endpoint. May not be loopback (127.0.0.0/8 or ::1), link-local (169.254.0.0/16 or fe80::/10), or link-local multicast (224.0.0.0/24 or ff02::/16).",
 							Default:     "",
 							Type:        []string{"string"},
 							Format:      "",
@@ -8481,7 +8756,7 @@ func schema_k8sio_api_core_v1_EndpointPort(ref common.ReferenceCallback) common.
 					},
 					"appProtocol": {
 						SchemaProps: spec.SchemaProps{
-							Description: "The application protocol for this port. This field follows standard Kubernetes label syntax. Un-prefixed names are reserved for IANA standard service names (as per RFC-6335 and https://www.iana.org/assignments/service-names). Non-standard protocols should use prefixed names such as mycompany.com/my-custom-protocol.",
+							Description: "The application protocol for this port. This is used as a hint for implementations to offer richer behavior for protocols that they understand. This field follows standard Kubernetes label syntax. Valid values are either:\n\n* Un-prefixed protocol names - reserved for IANA standard service names (as per RFC-6335 and https://www.iana.org/assignments/service-names).\n\n* Kubernetes-defined prefixed names:\n  * 'kubernetes.io/h2c' - HTTP/2 over cleartext as described in https://www.rfc-editor.org/rfc/rfc7540\n\n* Other protocols should use implementation-defined prefixed names such as mycompany.com/my-custom-protocol.",
 							Type:        []string{"string"},
 							Format:      "",
 						},
@@ -8891,6 +9166,25 @@ func schema_k8sio_api_core_v1_EphemeralContainer(ref common.ReferenceCallback) c
 							Ref:         ref("k8s.io/api/core/v1.ResourceRequirements"),
 						},
 					},
+					"resizePolicy": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "atomic",
+							},
+						},
+						SchemaProps: spec.SchemaProps{
+							Description: "Resources resize policy for the container.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("k8s.io/api/core/v1.ContainerResizePolicy"),
+									},
+								},
+							},
+						},
+					},
 					"volumeMounts": {
 						VendorExtensible: spec.VendorExtensible{
 							Extensions: spec.Extensions{
@@ -9017,7 +9311,7 @@ func schema_k8sio_api_core_v1_EphemeralContainer(ref common.ReferenceCallback) c
 			},
 		},
 		Dependencies: []string{
-			"k8s.io/api/core/v1.ContainerPort", "k8s.io/api/core/v1.EnvFromSource", "k8s.io/api/core/v1.EnvVar", "k8s.io/api/core/v1.Lifecycle", "k8s.io/api/core/v1.Probe", "k8s.io/api/core/v1.ResourceRequirements", "k8s.io/api/core/v1.SecurityContext", "k8s.io/api/core/v1.VolumeDevice", "k8s.io/api/core/v1.VolumeMount"},
+			"k8s.io/api/core/v1.ContainerPort", "k8s.io/api/core/v1.ContainerResizePolicy", "k8s.io/api/core/v1.EnvFromSource", "k8s.io/api/core/v1.EnvVar", "k8s.io/api/core/v1.Lifecycle", "k8s.io/api/core/v1.Probe", "k8s.io/api/core/v1.ResourceRequirements", "k8s.io/api/core/v1.SecurityContext", "k8s.io/api/core/v1.VolumeDevice", "k8s.io/api/core/v1.VolumeMount"},
 	}
 }
 
@@ -9146,6 +9440,25 @@ func schema_k8sio_api_core_v1_EphemeralContainerCommon(ref common.ReferenceCallb
 							Ref:         ref("k8s.io/api/core/v1.ResourceRequirements"),
 						},
 					},
+					"resizePolicy": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "atomic",
+							},
+						},
+						SchemaProps: spec.SchemaProps{
+							Description: "Resources resize policy for the container.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("k8s.io/api/core/v1.ContainerResizePolicy"),
+									},
+								},
+							},
+						},
+					},
 					"volumeMounts": {
 						VendorExtensible: spec.VendorExtensible{
 							Extensions: spec.Extensions{
@@ -9265,7 +9578,7 @@ func schema_k8sio_api_core_v1_EphemeralContainerCommon(ref common.ReferenceCallb
 			},
 		},
 		Dependencies: []string{
-			"k8s.io/api/core/v1.ContainerPort", "k8s.io/api/core/v1.EnvFromSource", "k8s.io/api/core/v1.EnvVar", "k8s.io/api/core/v1.Lifecycle", "k8s.io/api/core/v1.Probe", "k8s.io/api/core/v1.ResourceRequirements", "k8s.io/api/core/v1.SecurityContext", "k8s.io/api/core/v1.VolumeDevice", "k8s.io/api/core/v1.VolumeMount"},
+			"k8s.io/api/core/v1.ContainerPort", "k8s.io/api/core/v1.ContainerResizePolicy", "k8s.io/api/core/v1.EnvFromSource", "k8s.io/api/core/v1.EnvVar", "k8s.io/api/core/v1.Lifecycle", "k8s.io/api/core/v1.Probe", "k8s.io/api/core/v1.ResourceRequirements", "k8s.io/api/core/v1.SecurityContext", "k8s.io/api/core/v1.VolumeDevice", "k8s.io/api/core/v1.VolumeMount"},
 	}
 }
 
@@ -10028,7 +10341,7 @@ func schema_k8sio_api_core_v1_HTTPHeader(ref common.ReferenceCallback) common.Op
 				Properties: map[string]spec.Schema{
 					"name": {
 						SchemaProps: spec.SchemaProps{
-							Description: "The header field name",
+							Description: "The header field name. This will be canonicalized upon output, so case-variant names will be understood as the same header.",
 							Default:     "",
 							Type:        []string{"string"},
 							Format:      "",
@@ -11740,7 +12053,7 @@ func schema_k8sio_api_core_v1_NodeStatus(ref common.ReferenceCallback) common.Op
 							},
 						},
 						SchemaProps: spec.SchemaProps{
-							Description: "List of addresses reachable to the node. Queried from cloud provider, if available. More info: https://kubernetes.io/docs/concepts/nodes/node/#addresses Note: This field is declared as mergeable, but the merge key is not sufficiently unique, which can cause data corruption when it is merged. Callers should instead use a full-replacement patch. See https://pr.k8s.io/79391 for an example.",
+							Description: "List of addresses reachable to the node. Queried from cloud provider, if available. More info: https://kubernetes.io/docs/concepts/nodes/node/#addresses Note: This field is declared as mergeable, but the merge key is not sufficiently unique, which can cause data corruption when it is merged. Callers should instead use a full-replacement patch. See https://pr.k8s.io/79391 for an example. Consumers should assume that addresses can change during the lifetime of a Node. However, there are some exceptions where this may not be possible, such as Pods that inherit a Node's address in its own status or consumers of the downward API (status.hostIP).",
 							Type:        []string{"array"},
 							Items: &spec.SchemaOrArray{
 								Schema: &spec.Schema{
@@ -12122,7 +12435,7 @@ func schema_k8sio_api_core_v1_PersistentVolumeClaimCondition(ref common.Referenc
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
-				Description: "PersistentVolumeClaimCondition contails details about state of pvc",
+				Description: "PersistentVolumeClaimCondition contains details about state of pvc",
 				Type:        []string{"object"},
 				Properties: map[string]spec.Schema{
 					"type": {
@@ -13968,7 +14281,7 @@ func schema_k8sio_api_core_v1_PodSpec(ref common.ReferenceCallback) common.OpenA
 					},
 					"restartPolicy": {
 						SchemaProps: spec.SchemaProps{
-							Description: "Restart policy for all containers within the pod. One of Always, OnFailure, Never. Default to Always. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#restart-policy\n\nPossible enum values:\n - `\"Always\"`\n - `\"Never\"`\n - `\"OnFailure\"`",
+							Description: "Restart policy for all containers within the pod. One of Always, OnFailure, Never. In some contexts, only a subset of those values may be permitted. Default to Always. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#restart-policy\n\nPossible enum values:\n - `\"Always\"`\n - `\"Never\"`\n - `\"OnFailure\"`",
 							Type:        []string{"string"},
 							Format:      "",
 							Enum:        []interface{}{"Always", "Never", "OnFailure"},
@@ -14288,7 +14601,7 @@ func schema_k8sio_api_core_v1_PodSpec(ref common.ReferenceCallback) common.OpenA
 							},
 						},
 						SchemaProps: spec.SchemaProps{
-							Description: "SchedulingGates is an opaque list of values that if specified will block scheduling the pod. More info:  https://git.k8s.io/enhancements/keps/sig-scheduling/3521-pod-scheduling-readiness.\n\nThis is an alpha-level feature enabled by PodSchedulingReadiness feature gate.",
+							Description: "SchedulingGates is an opaque list of values that if specified will block scheduling the pod. If schedulingGates is not empty, the pod will stay in the SchedulingGated state and the scheduler will not attempt to schedule the pod.\n\nSchedulingGates can only be set at pod creation time, and be removed only afterwards.\n\nThis is a beta feature enabled by the PodSchedulingReadiness feature gate.",
 							Type:        []string{"array"},
 							Items: &spec.SchemaOrArray{
 								Schema: &spec.Schema{
@@ -14459,7 +14772,7 @@ func schema_k8sio_api_core_v1_PodStatus(ref common.ReferenceCallback) common.Ope
 					},
 					"qosClass": {
 						SchemaProps: spec.SchemaProps{
-							Description: "The Quality of Service (QOS) classification assigned to the pod based on resource requirements See PodQOSClass type for available QOS classes More info: https://git.k8s.io/community/contributors/design-proposals/node/resource-qos.md\n\nPossible enum values:\n - `\"BestEffort\"` is the BestEffort qos class.\n - `\"Burstable\"` is the Burstable qos class.\n - `\"Guaranteed\"` is the Guaranteed qos class.",
+							Description: "The Quality of Service (QOS) classification assigned to the pod based on resource requirements See PodQOSClass type for available QOS classes More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-qos/#quality-of-service-classes\n\nPossible enum values:\n - `\"BestEffort\"` is the BestEffort qos class.\n - `\"Burstable\"` is the Burstable qos class.\n - `\"Guaranteed\"` is the Guaranteed qos class.",
 							Type:        []string{"string"},
 							Format:      "",
 							Enum:        []interface{}{"BestEffort", "Burstable", "Guaranteed"},
@@ -14477,6 +14790,13 @@ func schema_k8sio_api_core_v1_PodStatus(ref common.ReferenceCallback) common.Ope
 									},
 								},
 							},
+						},
+					},
+					"resize": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Status of resources resize desired for pod's containers. It is empty if no resources resize is pending. Any changes to container resources will automatically set this to \"Proposed\"",
+							Type:        []string{"string"},
+							Format:      "",
 						},
 					},
 				},
@@ -14828,7 +15148,7 @@ func schema_k8sio_api_core_v1_Probe(ref common.ReferenceCallback) common.OpenAPI
 					},
 					"grpc": {
 						SchemaProps: spec.SchemaProps{
-							Description: "GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.",
+							Description: "GRPC specifies an action involving a GRPC port.",
 							Ref:         ref("k8s.io/api/core/v1.GRPCAction"),
 						},
 					},
@@ -14909,7 +15229,7 @@ func schema_k8sio_api_core_v1_ProbeHandler(ref common.ReferenceCallback) common.
 					},
 					"grpc": {
 						SchemaProps: spec.SchemaProps{
-							Description: "GRPC specifies an action involving a GRPC port. This is a beta field and requires enabling GRPCContainerProbe feature gate.",
+							Description: "GRPC specifies an action involving a GRPC port.",
 							Ref:         ref("k8s.io/api/core/v1.GRPCAction"),
 						},
 					},
@@ -15425,7 +15745,7 @@ func schema_k8sio_api_core_v1_ReplicationControllerSpec(ref common.ReferenceCall
 					},
 					"template": {
 						SchemaProps: spec.SchemaProps{
-							Description: "Template is the object that describes the pod that will be created if insufficient replicas are detected. This takes precedence over a TemplateRef. More info: https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller#pod-template",
+							Description: "Template is the object that describes the pod that will be created if insufficient replicas are detected. This takes precedence over a TemplateRef. The only allowed template.spec.restartPolicy value is \"Always\". More info: https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller#pod-template",
 							Ref:         ref("k8s.io/api/core/v1.PodTemplateSpec"),
 						},
 					},
@@ -15795,7 +16115,7 @@ func schema_k8sio_api_core_v1_ResourceRequirements(ref common.ReferenceCallback)
 					},
 					"requests": {
 						SchemaProps: spec.SchemaProps{
-							Description: "Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/",
+							Description: "Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. Requests cannot exceed Limits. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/",
 							Type:        []string{"object"},
 							AdditionalProperties: &spec.SchemaOrBool{
 								Allows: true,
@@ -15818,7 +16138,7 @@ func schema_k8sio_api_core_v1_ResourceRequirements(ref common.ReferenceCallback)
 							},
 						},
 						SchemaProps: spec.SchemaProps{
-							Description: "Claims lists the names of resources, defined in spec.resourceClaims, that are used by this container.\n\nThis is an alpha field and requires enabling the DynamicResourceAllocation feature gate.\n\nThis field is immutable.",
+							Description: "Claims lists the names of resources, defined in spec.resourceClaims, that are used by this container.\n\nThis is an alpha field and requires enabling the DynamicResourceAllocation feature gate.\n\nThis field is immutable. It can only be set for containers.",
 							Type:        []string{"array"},
 							Items: &spec.SchemaOrArray{
 								Schema: &spec.Schema{
@@ -17128,10 +17448,10 @@ func schema_k8sio_api_core_v1_ServiceSpec(ref common.ReferenceCallback) common.O
 					},
 					"externalTrafficPolicy": {
 						SchemaProps: spec.SchemaProps{
-							Description: "externalTrafficPolicy describes how nodes distribute service traffic they receive on one of the Service's \"externally-facing\" addresses (NodePorts, ExternalIPs, and LoadBalancer IPs). If set to \"Local\", the proxy will configure the service in a way that assumes that external load balancers will take care of balancing the service traffic between nodes, and so each node will deliver traffic only to the node-local endpoints of the service, without masquerading the client source IP. (Traffic mistakenly sent to a node with no endpoints will be dropped.) The default value, \"Cluster\", uses the standard behavior of routing to all endpoints evenly (possibly modified by topology and other features). Note that traffic sent to an External IP or LoadBalancer IP from within the cluster will always get \"Cluster\" semantics, but clients sending to a NodePort from within the cluster may need to take traffic policy into account when picking a node.\n\nPossible enum values:\n - `\"Cluster\"` routes traffic to all endpoints.\n - `\"Local\"` preserves the source IP of the traffic by routing only to endpoints on the same node as the traffic was received on (dropping the traffic if there are no local endpoints).",
+							Description: "externalTrafficPolicy describes how nodes distribute service traffic they receive on one of the Service's \"externally-facing\" addresses (NodePorts, ExternalIPs, and LoadBalancer IPs). If set to \"Local\", the proxy will configure the service in a way that assumes that external load balancers will take care of balancing the service traffic between nodes, and so each node will deliver traffic only to the node-local endpoints of the service, without masquerading the client source IP. (Traffic mistakenly sent to a node with no endpoints will be dropped.) The default value, \"Cluster\", uses the standard behavior of routing to all endpoints evenly (possibly modified by topology and other features). Note that traffic sent to an External IP or LoadBalancer IP from within the cluster will always get \"Cluster\" semantics, but clients sending to a NodePort from within the cluster may need to take traffic policy into account when picking a node.\n\nPossible enum values:\n - `\"Cluster\"`\n - `\"Cluster\"` routes traffic to all endpoints.\n - `\"Local\"`\n - `\"Local\"` preserves the source IP of the traffic by routing only to endpoints on the same node as the traffic was received on (dropping the traffic if there are no local endpoints).",
 							Type:        []string{"string"},
 							Format:      "",
-							Enum:        []interface{}{"Cluster", "Local"},
+							Enum:        []interface{}{"Cluster", "Cluster", "Local", "Local"},
 						},
 					},
 					"healthCheckNodePort": {
@@ -17672,7 +17992,7 @@ func schema_k8sio_api_core_v1_TopologySpreadConstraint(ref common.ReferenceCallb
 							},
 						},
 						SchemaProps: spec.SchemaProps{
-							Description: "MatchLabelKeys is a set of pod label keys to select the pods over which spreading will be calculated. The keys are used to lookup values from the incoming pod labels, those key-value labels are ANDed with labelSelector to select the group of existing pods over which spreading will be calculated for the incoming pod. Keys that don't exist in the incoming pod labels will be ignored. A null or empty list means only match against labelSelector.",
+							Description: "MatchLabelKeys is a set of pod label keys to select the pods over which spreading will be calculated. The keys are used to lookup values from the incoming pod labels, those key-value labels are ANDed with labelSelector to select the group of existing pods over which spreading will be calculated for the incoming pod. The same key is forbidden to exist in both MatchLabelKeys and LabelSelector. MatchLabelKeys cannot be set when LabelSelector isn't set. Keys that don't exist in the incoming pod labels will be ignored. A null or empty list means only match against labelSelector.\n\nThis is a beta field and requires the MatchLabelKeysInPodTopologySpread feature gate to be enabled (enabled by default).",
 							Type:        []string{"array"},
 							Items: &spec.SchemaOrArray{
 								Schema: &spec.Schema{
@@ -18984,7 +19304,7 @@ func schema_pkg_apis_meta_v1_CreateOptions(ref common.ReferenceCallback) common.
 					},
 					"fieldValidation": {
 						SchemaProps: spec.SchemaProps{
-							Description: "fieldValidation instructs the server on how to handle objects in the request (POST/PUT/PATCH) containing unknown or duplicate fields, provided that the `ServerSideFieldValidation` feature gate is also enabled. Valid values are: - Ignore: This will ignore any unknown fields that are silently dropped from the object, and will ignore all but the last duplicate field that the decoder encounters. This is the default behavior prior to v1.23 and is the default behavior when the `ServerSideFieldValidation` feature gate is disabled. - Warn: This will send a warning via the standard warning response header for each unknown field that is dropped from the object, and for each duplicate field that is encountered. The request will still succeed if there are no other errors, and will only persist the last of any duplicate fields. This is the default when the `ServerSideFieldValidation` feature gate is enabled. - Strict: This will fail the request with a BadRequest error if any unknown fields would be dropped from the object, or if any duplicate fields are present. The error returned from the server will contain all unknown and duplicate fields encountered.",
+							Description: "fieldValidation instructs the server on how to handle objects in the request (POST/PUT/PATCH) containing unknown or duplicate fields. Valid values are: - Ignore: This will ignore any unknown fields that are silently dropped from the object, and will ignore all but the last duplicate field that the decoder encounters. This is the default behavior prior to v1.23. - Warn: This will send a warning via the standard warning response header for each unknown field that is dropped from the object, and for each duplicate field that is encountered. The request will still succeed if there are no other errors, and will only persist the last of any duplicate fields. This is the default in v1.23+ - Strict: This will fail the request with a BadRequest error if any unknown fields would be dropped from the object, or if any duplicate fields are present. The error returned from the server will contain all unknown and duplicate fields encountered.",
 							Type:        []string{"string"},
 							Format:      "",
 						},
@@ -19613,6 +19933,13 @@ func schema_pkg_apis_meta_v1_ListOptions(ref common.ReferenceCallback) common.Op
 							Format:      "",
 						},
 					},
+					"sendInitialEvents": {
+						SchemaProps: spec.SchemaProps{
+							Description: "`sendInitialEvents=true` may be set together with `watch=true`. In that case, the watch stream will begin with synthetic events to produce the current state of objects in the collection. Once all such events have been sent, a synthetic \"Bookmark\" event  will be sent. The bookmark will report the ResourceVersion (RV) corresponding to the set of objects, and be marked with `\"k8s.io/initial-events-end\": \"true\"` annotation. Afterwards, the watch stream will proceed as usual, sending watch events corresponding to changes (subsequent to the RV) to objects watched.\n\nWhen `sendInitialEvents` option is set, we require `resourceVersionMatch` option to also be set. The semantic of the watch request is as following: - `resourceVersionMatch` = NotOlderThan\n  is interpreted as \"data at least as new as the provided `resourceVersion`\"\n  and the bookmark event is send when the state is synced\n  to a `resourceVersion` at least as fresh as the one provided by the ListOptions.\n  If `resourceVersion` is unset, this is interpreted as \"consistent read\" and the\n  bookmark event is send when the state is synced at least to the moment\n  when request started being processed.\n- `resourceVersionMatch` set to any other value or unset\n  Invalid error is returned.\n\nDefaults to true if `resourceVersion=\"\"` or `resourceVersion=\"0\"` (for backward compatibility reasons) and to false otherwise.",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
 				},
 			},
 		},
@@ -19702,7 +20029,7 @@ func schema_pkg_apis_meta_v1_ObjectMeta(ref common.ReferenceCallback) common.Ope
 				Properties: map[string]spec.Schema{
 					"name": {
 						SchemaProps: spec.SchemaProps{
-							Description: "Name must be unique within a namespace. Is required when creating resources, although some resources may allow a client to request the generation of an appropriate name automatically. Name is primarily intended for creation idempotence and configuration definition. Cannot be updated. More info: http://kubernetes.io/docs/user-guide/identifiers#names",
+							Description: "Name must be unique within a namespace. Is required when creating resources, although some resources may allow a client to request the generation of an appropriate name automatically. Name is primarily intended for creation idempotence and configuration definition. Cannot be updated. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names#names",
 							Type:        []string{"string"},
 							Format:      "",
 						},
@@ -19716,7 +20043,7 @@ func schema_pkg_apis_meta_v1_ObjectMeta(ref common.ReferenceCallback) common.Ope
 					},
 					"namespace": {
 						SchemaProps: spec.SchemaProps{
-							Description: "Namespace defines the space within which each name must be unique. An empty namespace is equivalent to the \"default\" namespace, but \"default\" is the canonical representation. Not all objects are required to be scoped to a namespace - the value of this field for those objects will be empty.\n\nMust be a DNS_LABEL. Cannot be updated. More info: http://kubernetes.io/docs/user-guide/namespaces",
+							Description: "Namespace defines the space within which each name must be unique. An empty namespace is equivalent to the \"default\" namespace, but \"default\" is the canonical representation. Not all objects are required to be scoped to a namespace - the value of this field for those objects will be empty.\n\nMust be a DNS_LABEL. Cannot be updated. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces",
 							Type:        []string{"string"},
 							Format:      "",
 						},
@@ -19730,7 +20057,7 @@ func schema_pkg_apis_meta_v1_ObjectMeta(ref common.ReferenceCallback) common.Ope
 					},
 					"uid": {
 						SchemaProps: spec.SchemaProps{
-							Description: "UID is the unique in time and space value for this object. It is typically generated by the server on successful creation of a resource and is not allowed to change on PUT operations.\n\nPopulated by the system. Read-only. More info: http://kubernetes.io/docs/user-guide/identifiers#uids",
+							Description: "UID is the unique in time and space value for this object. It is typically generated by the server on successful creation of a resource and is not allowed to change on PUT operations.\n\nPopulated by the system. Read-only. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names#uids",
 							Type:        []string{"string"},
 							Format:      "",
 						},
@@ -19771,7 +20098,7 @@ func schema_pkg_apis_meta_v1_ObjectMeta(ref common.ReferenceCallback) common.Ope
 					},
 					"labels": {
 						SchemaProps: spec.SchemaProps{
-							Description: "Map of string keys and values that can be used to organize and categorize (scope and select) objects. May match selectors of replication controllers and services. More info: http://kubernetes.io/docs/user-guide/labels",
+							Description: "Map of string keys and values that can be used to organize and categorize (scope and select) objects. May match selectors of replication controllers and services. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels",
 							Type:        []string{"object"},
 							AdditionalProperties: &spec.SchemaOrBool{
 								Allows: true,
@@ -19787,7 +20114,7 @@ func schema_pkg_apis_meta_v1_ObjectMeta(ref common.ReferenceCallback) common.Ope
 					},
 					"annotations": {
 						SchemaProps: spec.SchemaProps{
-							Description: "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects. More info: http://kubernetes.io/docs/user-guide/annotations",
+							Description: "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations",
 							Type:        []string{"object"},
 							AdditionalProperties: &spec.SchemaOrBool{
 								Allows: true,
@@ -19888,7 +20215,7 @@ func schema_pkg_apis_meta_v1_OwnerReference(ref common.ReferenceCallback) common
 					},
 					"name": {
 						SchemaProps: spec.SchemaProps{
-							Description: "Name of the referent. More info: http://kubernetes.io/docs/user-guide/identifiers#names",
+							Description: "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names#names",
 							Default:     "",
 							Type:        []string{"string"},
 							Format:      "",
@@ -19896,7 +20223,7 @@ func schema_pkg_apis_meta_v1_OwnerReference(ref common.ReferenceCallback) common
 					},
 					"uid": {
 						SchemaProps: spec.SchemaProps{
-							Description: "UID of the referent. More info: http://kubernetes.io/docs/user-guide/identifiers#uids",
+							Description: "UID of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names#uids",
 							Default:     "",
 							Type:        []string{"string"},
 							Format:      "",
@@ -20078,7 +20405,7 @@ func schema_pkg_apis_meta_v1_PatchOptions(ref common.ReferenceCallback) common.O
 					},
 					"fieldValidation": {
 						SchemaProps: spec.SchemaProps{
-							Description: "fieldValidation instructs the server on how to handle objects in the request (POST/PUT/PATCH) containing unknown or duplicate fields, provided that the `ServerSideFieldValidation` feature gate is also enabled. Valid values are: - Ignore: This will ignore any unknown fields that are silently dropped from the object, and will ignore all but the last duplicate field that the decoder encounters. This is the default behavior prior to v1.23 and is the default behavior when the `ServerSideFieldValidation` feature gate is disabled. - Warn: This will send a warning via the standard warning response header for each unknown field that is dropped from the object, and for each duplicate field that is encountered. The request will still succeed if there are no other errors, and will only persist the last of any duplicate fields. This is the default when the `ServerSideFieldValidation` feature gate is enabled. - Strict: This will fail the request with a BadRequest error if any unknown fields would be dropped from the object, or if any duplicate fields are present. The error returned from the server will contain all unknown and duplicate fields encountered.",
+							Description: "fieldValidation instructs the server on how to handle objects in the request (POST/PUT/PATCH) containing unknown or duplicate fields. Valid values are: - Ignore: This will ignore any unknown fields that are silently dropped from the object, and will ignore all but the last duplicate field that the decoder encounters. This is the default behavior prior to v1.23. - Warn: This will send a warning via the standard warning response header for each unknown field that is dropped from the object, and for each duplicate field that is encountered. The request will still succeed if there are no other errors, and will only persist the last of any duplicate fields. This is the default in v1.23+ - Strict: This will fail the request with a BadRequest error if any unknown fields would be dropped from the object, or if any duplicate fields are present. The error returned from the server will contain all unknown and duplicate fields encountered.",
 							Type:        []string{"string"},
 							Format:      "",
 						},
@@ -20309,7 +20636,7 @@ func schema_pkg_apis_meta_v1_StatusDetails(ref common.ReferenceCallback) common.
 					},
 					"uid": {
 						SchemaProps: spec.SchemaProps{
-							Description: "UID of the resource. (when there is a single resource which can be described). More info: http://kubernetes.io/docs/user-guide/identifiers#uids",
+							Description: "UID of the resource. (when there is a single resource which can be described). More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names#uids",
 							Type:        []string{"string"},
 							Format:      "",
 						},
@@ -20705,7 +21032,7 @@ func schema_pkg_apis_meta_v1_UpdateOptions(ref common.ReferenceCallback) common.
 					},
 					"fieldValidation": {
 						SchemaProps: spec.SchemaProps{
-							Description: "fieldValidation instructs the server on how to handle objects in the request (POST/PUT/PATCH) containing unknown or duplicate fields, provided that the `ServerSideFieldValidation` feature gate is also enabled. Valid values are: - Ignore: This will ignore any unknown fields that are silently dropped from the object, and will ignore all but the last duplicate field that the decoder encounters. This is the default behavior prior to v1.23 and is the default behavior when the `ServerSideFieldValidation` feature gate is disabled. - Warn: This will send a warning via the standard warning response header for each unknown field that is dropped from the object, and for each duplicate field that is encountered. The request will still succeed if there are no other errors, and will only persist the last of any duplicate fields. This is the default when the `ServerSideFieldValidation` feature gate is enabled. - Strict: This will fail the request with a BadRequest error if any unknown fields would be dropped from the object, or if any duplicate fields are present. The error returned from the server will contain all unknown and duplicate fields encountered.",
+							Description: "fieldValidation instructs the server on how to handle objects in the request (POST/PUT/PATCH) containing unknown or duplicate fields. Valid values are: - Ignore: This will ignore any unknown fields that are silently dropped from the object, and will ignore all but the last duplicate field that the decoder encounters. This is the default behavior prior to v1.23. - Warn: This will send a warning via the standard warning response header for each unknown field that is dropped from the object, and for each duplicate field that is encountered. The request will still succeed if there are no other errors, and will only persist the last of any duplicate fields. This is the default in v1.23+ - Strict: This will fail the request with a BadRequest error if any unknown fields would be dropped from the object, or if any duplicate fields are present. The error returned from the server will contain all unknown and duplicate fields encountered.",
 							Type:        []string{"string"},
 							Format:      "",
 						},
@@ -20801,13 +21128,6 @@ func schema_k8sio_apimachinery_pkg_runtime_Unknown(ref common.ReferenceCallback)
 							Format: "",
 						},
 					},
-					"Raw": {
-						SchemaProps: spec.SchemaProps{
-							Description: "Raw will hold the complete serialized object which couldn't be matched with a registered type. Most likely, nothing should be done with this except for passing it through the system.",
-							Type:        []string{"string"},
-							Format:      "byte",
-						},
-					},
 					"ContentEncoding": {
 						SchemaProps: spec.SchemaProps{
 							Description: "ContentEncoding is encoding used to encode 'Raw' data. Unspecified means no encoding.",
@@ -20825,7 +21145,7 @@ func schema_k8sio_apimachinery_pkg_runtime_Unknown(ref common.ReferenceCallback)
 						},
 					},
 				},
-				Required: []string{"Raw", "ContentEncoding", "ContentType"},
+				Required: []string{"ContentEncoding", "ContentType"},
 			},
 		},
 	}

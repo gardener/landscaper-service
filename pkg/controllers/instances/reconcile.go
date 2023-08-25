@@ -381,12 +381,7 @@ func (c *Controller) reconcileInstallation(ctx context.Context, instance *lssv1a
 		return err
 	}
 
-	// we must prevent to update only because of a new date
-	newAutomaticReconcileStatus := instance.Status.AutomaticReconcileStatus
-	instance.Status.AutomaticReconcileStatus = old.Status.AutomaticReconcileStatus
-
 	if !reflect.DeepEqual(old.Status, instance.Status) {
-		instance.Status.AutomaticReconcileStatus = newAutomaticReconcileStatus
 		if err := c.Client().Status().Update(ctx, instance); err != nil {
 			return fmt.Errorf("unable to update instance status: %w", err)
 		}
