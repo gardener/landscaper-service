@@ -18,19 +18,6 @@ deployItems:
         disableDefault: false
 
         custom:
-          - name: LsHealthCheckOk
-            timeout: 10m
-            resourceSelector:
-              - apiVersion: landscaper.gardener.cloud/v1alpha1
-                kind: LsHealthCheck
-                name: landscaper-{{ .imports.hostingClusterNamespace }}
-                namespace: {{ .imports.hostingClusterNamespace }}
-            requirements:
-              - jsonPath: .status
-                operator: ==
-                values:
-                  - value: "Ok"
-
           - name: WebhookIngressReady
             timeout: 10m
             resourceSelector:
