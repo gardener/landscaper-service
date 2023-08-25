@@ -134,10 +134,13 @@ func registerWebhooks(ctx context.Context,
 	// generate certificates
 	var err error
 	dnsNames := webhookcert.GeDNSNamesFromNamespacedName(wo.ServiceNamespace, wo.ServiceName)
-	wo.CABundle, err = webhookcert.GenerateCertificates(ctx, kubeClient, certDir, o.webhook.certificatesNamespace, "landscaper-service-webhook", "landscaper-service-webhook-cert", dnsNames)
+	caCert, _, err := webhookcert.GenerateCertificates(ctx, kubeClient, certDir, o.webhook.certificatesNamespace,
+		"landscaper-service-webhook", "landscaper-service-webhook-cert", dnsNames)
 	if err != nil {
 		return fmt.Errorf("unable to generate webhook certificates: %w", err)
 	}
+
+	wo.CABundle = caCert.CertificatePEM
 
 	// log which resources are being watched
 	webhookedResourcesLog := []string{}
