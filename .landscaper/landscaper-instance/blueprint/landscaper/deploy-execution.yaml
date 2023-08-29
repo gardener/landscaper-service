@@ -176,7 +176,8 @@ deployItems:
           landscaperClusterKubeconfig:
             kubeconfig: |
 {{ .imports.landscaperControllerKubeconfigYaml | indent 14 }}
-          {{- if .imports.landscaperConfig.deployersConfig.helm.deployer.k8sClientSettings }}
+          {{- $path := dig landscaperConfig deployersConfig helm deployer k8sClientSettings "false" .imports }}
+          {{- if ne $path "false" }}
           k8sClientSettings:
 {{ toYaml .imports.landscaperConfig.deployersConfig.helm.deployer.k8sClientSettings | indent 14 }}
           {{- end }}
@@ -235,10 +236,6 @@ deployItems:
           landscaperClusterKubeconfig:
             kubeconfig: |
 {{ .imports.landscaperControllerKubeconfigYaml | indent 14 }}
-          {{- if .imports.landscaperConfig.deployersConfig.manifest.deployer.k8sClientSettings }}
-          k8sClientSettings:
-{{ toYaml .imports.landscaperConfig.deployersConfig.manifest.deployer.k8sClientSettings | indent 14 }}
-          {{- end }}
 
         image:
           {{ $image := getResource $manifestDeployerComponent "name" "manifest-deployer-image" }}
@@ -294,10 +291,6 @@ deployItems:
           landscaperClusterKubeconfig:
             kubeconfig: |
 {{ .imports.landscaperControllerKubeconfigYaml | indent 14 }}
-          {{- if .imports.landscaperConfig.deployersConfig.container.deployer.k8sClientSettings }}
-          k8sClientSettings:
-{{ toYaml .imports.landscaperConfig.deployersConfig.container.deployer.k8sClientSettings | indent 14 }}
-          {{- end }}
 
         image:
           {{ $image := getResource $containerDeployerComponent "name" "container-deployer-image" }}
