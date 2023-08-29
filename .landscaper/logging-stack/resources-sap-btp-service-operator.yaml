@@ -12,10 +12,10 @@ input:
 type: helm.io/chart
 name: sap-btp-service-operator-chart
 relation: external
-version: v0.4.9
+version: v0.5.1
 access:
   type: ociRegistry
-  imageReference: eu.gcr.io/gardener-project/landscaper-service/charts/sap-btp-operator@sha256:c1ddbe6ca593b228f830c8f98c7746bdab95c0532853a1cf15fc6f51bb1bac82
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/charts/sap-btp-operator@sha256:cf262e85df65c44ea70a92ca306f24ea90b6d58cea846ac2902c0050ba3c1eae
 ...
 ---
 type: ociImage
@@ -24,14 +24,14 @@ version: v0.14.2
 relation: external
 access:
   type: ociRegistry
-  imageReference: eu.gcr.io/gardener-project/landscaper-service/kube-rbac-proxy@sha256:f057c5d6707e8dc8c4d9a1ab078f509798c497546941c120e9a5635dd8e432da
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/kube-rbac-proxy@sha256:d4d4d18823960e87bd760436ebcf7145783fa118cd964a0d02a209212d607d5b
 ...
 ---
 type: ociImage
 name: sap-btp-service-operator-controller
-version: v0.4.9
+version: v0.5.1
 relation: external
 access:
   type: ociRegistry
-  imageReference: eu.gcr.io/gardener-project/landscaper-service/sap-btp-service-operator-controller@sha256:6fcab80b422b97e1f3373d0c6079ebcfbf0fe8caa81d75575adef545429f802d
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/sap-btp-service-operator-controller@sha256:9eaaff04690238d475248b4140cd3dee35490326f2cbb78bafdfe375d5a8839e
 ...
