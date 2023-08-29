@@ -176,9 +176,7 @@ deployItems:
           landscaperClusterKubeconfig:
             kubeconfig: |
 {{ .imports.landscaperControllerKubeconfigYaml | indent 14 }}
-          {{- $pathhelm := dig "landscaperConfig" "deployersConfig" "helm" "deployer" "k8sClientSettings" "false" .imports }}
-          {{- $pathhelm := toYaml $pathhelm }}
-          {{- if ne $pathhelm "false" }}
+          {{- if (dig "landscaperConfig" "deployersConfig" "helm" "deployer" "k8sClientSettings" false .imports) }}
           k8sClientSettings:
 {{ toYaml .imports.landscaperConfig.deployersConfig.helm.deployer.k8sClientSettings | indent 14 }}
           {{- end }}
