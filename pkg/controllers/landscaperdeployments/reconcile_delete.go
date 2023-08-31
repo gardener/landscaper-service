@@ -51,7 +51,7 @@ func (c *Controller) ensureDeleteInstanceForDeployment(ctx context.Context, depl
 	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(deployment).String()},
 		lc.KeyMethod, "ensureDeleteInstanceForDeployment")
 
-	logger.Info("Delete instance for landscaper deployment", lc.KeyResource, deployment.Status.InstanceRef.NamespacedName())
+	logger.Info("Delete instance for landscaper deployment", lc.KeyResource, deployment.Status.InstanceRef.NamespacedName().String())
 	instance := &lssv1alpha1.Instance{}
 
 	if err := c.Client().Get(ctx, deployment.Status.InstanceRef.NamespacedName(), instance); err != nil {

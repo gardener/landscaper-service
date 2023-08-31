@@ -126,7 +126,7 @@ func (c *Controller) ensureDeleteInstallationForInstance(ctx context.Context, in
 	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(instance).String()},
 		lc.KeyMethod, "ensureDeleteInstallationForInstance")
 
-	logger.Info("Delete installation for instance", lc.KeyResource, instance.Status.InstallationRef.NamespacedName())
+	logger.Info("Delete installation for instance", lc.KeyResource, instance.Status.InstallationRef.NamespacedName().String())
 	installation := &lsv1alpha1.Installation{}
 
 	if err := c.Client().Get(ctx, instance.Status.InstallationRef.NamespacedName(), installation); err != nil {
@@ -155,7 +155,7 @@ func (c *Controller) ensureDeleteTargetForInstance(ctx context.Context, instance
 	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(instance).String()},
 		lc.KeyMethod, "ensureDeleteTargetForInstance")
 
-	logger.Info("Delete target for instance", lc.KeyResource, instance.Status.TargetRef.NamespacedName())
+	logger.Info("Delete target for instance", lc.KeyResource, instance.Status.TargetRef.NamespacedName().String())
 	target := &lsv1alpha1.Target{}
 
 	if err := c.Client().Get(ctx, instance.Status.TargetRef.NamespacedName(), target); err != nil {
@@ -184,7 +184,7 @@ func (c *Controller) ensureDeleteGardenerServiceAccountTargetForInstance(ctx con
 	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(instance).String()},
 		lc.KeyMethod, "ensureDeleteGardenerServiceAccountTargetForInstance")
 
-	logger.Info("Delete gardener service account target for instance", lc.KeyResource, instance.Status.GardenerServiceAccountRef.NamespacedName())
+	logger.Info("Delete gardener service account target for instance", lc.KeyResource, instance.Status.GardenerServiceAccountRef.NamespacedName().String())
 	target := &lsv1alpha1.Target{}
 
 	if err := c.Client().Get(ctx, instance.Status.GardenerServiceAccountRef.NamespacedName(), target); err != nil {
@@ -213,7 +213,7 @@ func (c *Controller) ensureDeleteContextForInstance(ctx context.Context, instanc
 	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(instance).String()},
 		lc.KeyMethod, "ensureDeleteContextForInstance")
 
-	logger.Info("Delete context for instance", lc.KeyResource, instance.Status.ContextRef.NamespacedName())
+	logger.Info("Delete context for instance", lc.KeyResource, instance.Status.ContextRef.NamespacedName().String())
 	landscaperContext := &lsv1alpha1.Context{}
 
 	if err := c.Client().Get(ctx, instance.Status.ContextRef.NamespacedName(), landscaperContext); err != nil {
