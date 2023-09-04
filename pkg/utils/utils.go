@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"strconv"
 
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
@@ -83,4 +85,22 @@ func RemoveOperationAnnotation(object client.Object) {
 	if annotations != nil {
 		delete(annotations, lssv1alpha1.LandscaperServiceOperationAnnotation)
 	}
+}
+
+// HasLabel checks if the objects has a label
+func HasLabel(obj metav1.Object, lab string) bool {
+	labels := obj.GetLabels()
+	if labels == nil {
+		return false
+	}
+	_, ok := labels[lab]
+	return ok
+}
+
+// HasDeleteWithoutUninstallAnnotation returns true only if the given object
+// has the 'landscaper.gardener.cloud/delete-without-uninstall' annotation
+// and its value is 'true'.
+func HasDeleteWithoutUninstallAnnotation(obj metav1.Object) bool {
+	v, ok := obj.GetAnnotations()[lsv1alpha1.DeleteWithoutUninstallAnnotation]
+	return ok && v == "true"
 }

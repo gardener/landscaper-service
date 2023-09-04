@@ -248,21 +248,8 @@ The following image gives a more detailed descriptions of the involved roles, cl
 #### Controlling Customer Namespaces on the Resource-Shoot-Cluster
 
 A user, with access to the Resource-Shoot-Cluster as described before, is only allowed to create Landscaper resources 
-like Installations, Targets etc. in so-called customer namespaces. A customer namespace is a normal namespace on the
-Resource-Shoot-Cluster with a name starting with the prefix *cu-*. 
-
-To create such a namespace the user must create a 
-*[namespaceRegistration](../../pkg/apis/core/v1alpha1/types_namespaceregistration.go)* object in the namespace ls-user
-with the same name as the namespace. The following manifest for example would create a customer namespace *cu-test*:
-
-```yaml
-apiVersion: landscaper-service.gardener.cloud/v1alpha1
-kind: NamespaceRegistration
-metadata:
-  name: cu-test
-  namespace: ls-user
-spec: {}
-```
+like Installations, Targets etc. in so-called customer namespaces. More about customer namespaces could be found
+[here](../usage/Namespaceregistration.md)
 
 The controllers of ls-service-target-shoot-sidecar-server automatically creates the required roles, role-bindings etc. 
 for all entries in the `SubjectList` *subjects* in every newly created customer namespace (see the details in the image 

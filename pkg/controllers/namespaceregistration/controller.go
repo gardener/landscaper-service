@@ -9,6 +9,12 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/gardener/landscaper/apis/core/v1alpha1/helper"
+
+	"github.com/gardener/landscaper-service/pkg/utils"
+
+	"github.com/gardener/landscaper/apis/core/v1alpha1"
+
 	kutils "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 	corev1 "k8s.io/api/core/v1"
@@ -114,19 +120,100 @@ func (c *Controller) handleDelete(ctx context.Context, namespaceRegistration *ls
 		return reconcile.Result{}, err
 	}
 
-	//delete role binding
+	return c.removeResourcesAndNamespace(ctx, namespaceRegistration, namespace)
+}
+
+func (c *Controller) removeResourcesAndNamespace(ctx context.Context, namespaceRegistration *lssv1alpha1.NamespaceRegistration,
+	namespace *corev1.Namespace) (reconcile.Result, error) {
+
+	logger, ctx := logging.FromContextOrNew(ctx, nil)
+
+	// check if installations, executions, deploy items or target sync objects are still there
+	installations := &v1alpha1.InstallationList{}
+	if err := c.Client().List(ctx, installations, client.InNamespace(namespaceRegistration.GetName())); err != nil {
+		return c.logAndUpdate(ctx, err, namespaceRegistration, "Failed Reading Installations")
+	}
+
+	if len(installations.Items) > 0 {
+		for i := range installations.Items {
+			nextInst := &installations.Items[i]
+
+			// delete root installations with delete without uninstall annotation
+			if !utils.HasLabel(&nextInst.ObjectMeta, v1alpha1.EncompassedByLabel) && utils.HasDeleteWithoutUninstallAnnotation(&nextInst.ObjectMeta) {
+				if nextInst.GetDeletionTimestamp().IsZero() {
+					if err := c.Client().Delete(ctx, nextInst); err != nil {
+						logger.Error(err, "failed deleting installations without uninstall: "+client.ObjectKeyFromObject(nextInst).String())
+					}
+				} else if nextInst.Status.JobID == nextInst.Status.JobIDFinished && !helper.HasOperation(nextInst.ObjectMeta, v1alpha1.ReconcileOperation) {
+					// retrigger
+					metav1.SetMetaDataAnnotation(&nextInst.ObjectMeta, v1alpha1.OperationAnnotation, string(v1alpha1.ReconcileOperation))
+					if err := c.Client().Update(ctx, nextInst); err != nil {
+						logger.Error(err, "failed annotating installations without uninstall: "+client.ObjectKeyFromObject(nextInst).String())
+					}
+				}
+			}
+		}
+
+		return c.logAndUpdate(ctx, nil, namespaceRegistration, "Namespace Contains Installations")
+	}
+
+	executions := &v1alpha1.ExecutionList{}
+	if err := c.Client().List(ctx, executions, client.InNamespace(namespaceRegistration.GetName())); err != nil {
+		return c.logAndUpdate(ctx, err, namespaceRegistration, "Failed Reading Executions")
+	}
+
+	if len(executions.Items) > 0 {
+		return c.logAndUpdate(ctx, nil, namespaceRegistration, "Namespace Contains Executions")
+	}
+
+	deployItems := &v1alpha1.DeployItemList{}
+	if err := c.Client().List(ctx, deployItems, client.InNamespace(namespaceRegistration.GetName())); err != nil {
+		return c.logAndUpdate(ctx, err, namespaceRegistration, "Failed Reading DeployItems")
+	}
+
+	if len(deployItems.Items) > 0 {
+		return c.logAndUpdate(ctx, nil, namespaceRegistration, "Namespace Contains DeployItems")
+	}
+
+	targetSyncs := &v1alpha1.TargetSyncList{}
+	if err := c.Client().List(ctx, targetSyncs, client.InNamespace(namespaceRegistration.GetName())); err != nil {
+		return c.logAndUpdate(ctx, err, namespaceRegistration, "Failed Reading TargetSyncs")
+	}
+
+	if len(targetSyncs.Items) > 0 {
+		for i := range targetSyncs.Items {
+			nextTargetSync := &targetSyncs.Items[i]
+			controllerutil.RemoveFinalizer(nextTargetSync, v1alpha1.LandscaperFinalizer)
+
+			if err := c.Client().Status().Update(ctx, nextTargetSync); err != nil {
+				return c.logAndUpdate(ctx, err, namespaceRegistration, "Failed Removing Finalizer Of TargetSync")
+			}
+
+			if err := c.Client().Delete(ctx, nextTargetSync); err != nil {
+				return c.logAndUpdate(ctx, err, namespaceRegistration, "Failed Removing TargetSync")
+			}
+		}
+	}
+
+	return c.removeAccessDataAndNamespace(ctx, namespaceRegistration, namespace)
+}
+
+func (c *Controller) removeAccessDataAndNamespace(ctx context.Context, namespaceRegistration *lssv1alpha1.NamespaceRegistration,
+	namespace *corev1.Namespace) (reconcile.Result, error) {
+
+	logger, ctx := logging.FromContextOrNew(ctx, nil)
+
+	// delete role binding
 	roleBinding := &rbacv1.RoleBinding{}
 	if err := c.Client().Get(ctx, types.NamespacedName{Name: subjectsync.USER_ROLE_BINDING_IN_NAMESPACE, Namespace: namespaceRegistration.GetName()}, roleBinding); err != nil {
 		if apierrors.IsNotFound(err) {
 			logger.Info("rolebinding in namespace not found")
 		} else {
-			logger.Error(err, "failed loading rolebinding in namespace")
-			return reconcile.Result{}, err
+			return c.logAndUpdate(ctx, err, namespaceRegistration, "Failed Loading Rolebinding")
 		}
 	} else {
 		if err := c.Client().Delete(ctx, roleBinding); err != nil {
-			logger.Error(err, "failed deleting rolebinding in namespace")
-			return reconcile.Result{}, err //TODO
+			return c.logAndUpdate(ctx, err, namespaceRegistration, "Failed Deleting Rolebinding")
 		}
 	}
 	//delete role
@@ -135,27 +222,24 @@ func (c *Controller) handleDelete(ctx context.Context, namespaceRegistration *ls
 		if apierrors.IsNotFound(err) {
 			logger.Info("role in namespace not found")
 		} else {
-			logger.Error(err, "failed loading role in namespace")
-			return reconcile.Result{}, err
+			return c.logAndUpdate(ctx, err, namespaceRegistration, "Failed Loading Role")
 		}
 	} else {
 		if err := c.Client().Delete(ctx, role); err != nil {
-			logger.Error(err, "failed deleting role in namespace")
-			return reconcile.Result{}, err //TODO
+			return c.logAndUpdate(ctx, err, namespaceRegistration, "Failed Deleting Role")
 		}
 	}
 
 	if err := c.Client().Delete(ctx, namespace); err != nil {
-		logger.Error(err, "failed loading namespace cr")
-		return reconcile.Result{}, err
+		return c.logAndUpdate(ctx, err, namespaceRegistration, "Failed Deleting Namespace")
 	}
+
 	controllerutil.RemoveFinalizer(namespaceRegistration, lssv1alpha1.LandscaperServiceFinalizer)
 	if err := c.Client().Update(ctx, namespaceRegistration); err != nil {
-		logger.Error(err, "failed removing finalizer")
-		return reconcile.Result{}, err
+		return c.logAndUpdate(ctx, err, namespaceRegistration, "Failed Deleting Finalizer")
 	}
-	return reconcile.Result{}, nil
 
+	return reconcile.Result{}, nil
 }
 
 func (c *Controller) reconcile(ctx context.Context, namespaceRegistration *lssv1alpha1.NamespaceRegistration) (reconcile.Result, error) {
@@ -180,16 +264,17 @@ func (c *Controller) reconcile(ctx context.Context, namespaceRegistration *lssv1
 	}
 
 	if err := c.createRoleIfNotExistOrUpdate(ctx, namespaceRegistration); err != nil {
-		namespaceRegistration.Status.Phase = "Failed Role Creation"
+		return c.logAndUpdate(ctx, err, namespaceRegistration, "Failed Role Creation")
 	}
+
 	if err := c.createRoleBindingIfNotExistOrUpdate(ctx, namespaceRegistration); err != nil {
-		namespaceRegistration.Status.Phase = "Failed Role Binding"
+		return c.logAndUpdate(ctx, err, namespaceRegistration, "Failed Role Binding")
 	}
 
 	namespaceRegistration.Status.Phase = "Completed"
 	if err := c.Client().Status().Update(ctx, namespaceRegistration); err != nil {
-		logger.Error(err, "failed updating status of namespaceregistration")
-		return reconcile.Result{}, err
+		logger.Error(err, "failed updating status of namespaceregistration after completion")
+		return reconcile.Result{Requeue: true}, nil
 	}
 	return reconcile.Result{}, nil
 }
@@ -265,4 +350,28 @@ func (c *Controller) createRoleBindingIfNotExistOrUpdate(ctx context.Context, na
 	}
 
 	return nil
+}
+
+func (c *Controller) logAndUpdate(ctx context.Context, err error,
+	namespaceRegistration *lssv1alpha1.NamespaceRegistration, msg string) (reconcile.Result, error) {
+
+	logger, ctx := logging.FromContextOrNew(ctx, nil)
+
+	if err != nil {
+		logger.Error(err, msg)
+
+		namespaceRegistration.Status.Phase = msg
+		if err := c.Client().Status().Update(ctx, namespaceRegistration); err != nil {
+			logger.Error(err, "failed updating status after: "+msg)
+		}
+	} else {
+		logger.Info(msg)
+
+		namespaceRegistration.Status.Phase = msg
+		if err := c.Client().Status().Update(ctx, namespaceRegistration); err != nil {
+			logger.Error(err, "failed updating status after: "+msg)
+		}
+	}
+
+	return reconcile.Result{Requeue: true}, nil
 }

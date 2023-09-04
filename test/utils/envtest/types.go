@@ -34,6 +34,12 @@ var (
 	ConfigMapGVK schema.GroupVersionKind
 	// InstallationGVK is the GVK for installations.
 	InstallationGVK schema.GroupVersionKind
+	// ExecutionGVK is the GVK for executions.
+	ExecutionGVK schema.GroupVersionKind
+	// DeployItemGVK is the GVK for deploy items.
+	DeployItemGVK schema.GroupVersionKind
+	// TargetSyncGVK is the GVK for target syncs.
+	TargetSyncGVK schema.GroupVersionKind
 	// TargetGVK is the GVK for targets.
 	TargetGVK schema.GroupVersionKind
 	// ContextGVK is the GVK for contexts.
@@ -66,6 +72,12 @@ func init() {
 	ConfigMapGVK, err = apiutil.GVKForObject(&corev1.ConfigMap{}, LandscaperServiceScheme)
 	utilruntime.Must(err)
 	InstallationGVK, err = apiutil.GVKForObject(&lsv1alpha1.Installation{}, LandscaperServiceScheme)
+	utilruntime.Must(err)
+	ExecutionGVK, err = apiutil.GVKForObject(&lsv1alpha1.Execution{}, LandscaperServiceScheme)
+	utilruntime.Must(err)
+	DeployItemGVK, err = apiutil.GVKForObject(&lsv1alpha1.DeployItem{}, LandscaperServiceScheme)
+	utilruntime.Must(err)
+	TargetSyncGVK, err = apiutil.GVKForObject(&lsv1alpha1.TargetSync{}, LandscaperServiceScheme)
 	utilruntime.Must(err)
 	TargetGVK, err = apiutil.GVKForObject(&lsv1alpha1.Target{}, LandscaperServiceScheme)
 	utilruntime.Must(err)
