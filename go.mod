@@ -4,8 +4,8 @@ go 1.20
 
 require (
 	github.com/gardener/component-spec/bindings-go v0.0.66
-	github.com/gardener/landscaper/apis v0.76.0
-	github.com/gardener/landscaper/controller-utils v0.76.0
+	github.com/gardener/landscaper/apis v0.77.0
+	github.com/gardener/landscaper/controller-utils v0.77.0
 	github.com/go-logr/logr v1.2.4
 	github.com/google/uuid v1.3.0
 	github.com/onsi/ginkgo v1.16.5
