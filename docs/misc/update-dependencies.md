@@ -29,7 +29,7 @@ gcloud auth print-access-token | helm registry login -u oauth2accesstoken --pass
 Check new version on [artifacthub.io / cert-manager](https://artifacthub.io/packages/helm/cert-manager/cert-manager)
 
 ```shell
-export CERT_MANAGER_VERSION=v1.12.3
+export CERT_MANAGER_VERSION=v1.12.4
 
 ./hack/dependency-update/cert-manager.sh ${CERT_MANAGER_VERSION}
 ```
@@ -50,7 +50,7 @@ export KUBE_RBAC_PROXY_VERSION=v0.14.2
 Check new version on [fluentbit.io](https://docs.fluentbit.io/manual/installation/docker#tags-and-versions)
 
 ```shell
-export FLUENTBIT_VERSION=2.1.8
+export FLUENTBIT_VERSION=2.1.9
 
 ./hack/dependency-update/fluentbit.sh ${FLUENTBIT_VERSION}
 ```
