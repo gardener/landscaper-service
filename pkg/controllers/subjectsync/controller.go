@@ -71,7 +71,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 		if err := c.Client().Update(ctx, subjectList); err != nil {
 			return reconcile.Result{}, err
 		}
-		return reconcile.Result{}, nil
+		return reconcile.Result{Requeue: true}, nil
 	}
 
 	if !subjectList.DeletionTimestamp.IsZero() {
