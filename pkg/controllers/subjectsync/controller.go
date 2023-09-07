@@ -54,6 +54,8 @@ func NewTestActuator(op operation.TargetShootSidecarOperation, logger logging.Lo
 func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reconcile.Result, error) {
 	logger, ctx := c.log.StartReconcileAndAddToContext(ctx, req)
 
+	logger.Info("start reconcile subjectList")
+
 	subjectList := &lssv1alpha1.SubjectList{}
 	if err := c.Client().Get(ctx, req.NamespacedName, subjectList); err != nil {
 		logger.Error(err, "failed loading subjectlist cr")

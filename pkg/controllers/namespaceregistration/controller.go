@@ -66,6 +66,8 @@ func NewTestActuator(op operation.TargetShootSidecarOperation, logger logging.Lo
 func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reconcile.Result, error) {
 	logger, ctx := c.log.StartReconcileAndAddToContext(ctx, req)
 
+	logger.Info("start reconcile namespaceRegistration")
+
 	namespaceRegistration := &lssv1alpha1.NamespaceRegistration{}
 	if err := c.Client().Get(ctx, req.NamespacedName, namespaceRegistration); err != nil {
 		logger.Error(err, "failed loading namespaceregistration cr")
