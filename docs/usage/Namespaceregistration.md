@@ -36,4 +36,13 @@ following strategy:
 - All root Installations with a "delete-without-uninstall" annotation 
   ([see](https://github.com/gardener/landscaper/blob/master/docs/usage/Annotations.md#delete-without-uninstall-annotation))
   are deleted.
-- As long as there are still Install...
+
+- As long as there are still Installations in the namespace, the namespace is not deleted and this is written
+  into the status of the `NamespaceRegistration`. This also means if there are still installations without
+  a "delete-without-uninstall" annotation these have to be deleted by the customer itself. 
+
+- Is there are no Installations in the namespace anymore, all other resources in that namespace are removed and 
+  subsequently the namespace is deleted. If the customer has created resources with a custom finalizer, these have to be
+  removed before deleting a `NamespaceRegistration`. Otherwise, the final deletion might fail and requires manual
+  intervention. It is anyhow no good idea and should be prevented to create resources with custom finalizers in
+  a customer namespace. 

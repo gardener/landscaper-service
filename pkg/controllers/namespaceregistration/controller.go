@@ -93,7 +93,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 		if err := c.Client().Update(ctx, namespaceRegistration); err != nil {
 			return reconcile.Result{}, err
 		}
-		return reconcile.Result{Requeue: true}, nil
+		// do not return here because the controller only watches for particular events and setting a finalizer is not part of this
 	}
 
 	// reconcile delete
