@@ -142,10 +142,18 @@ func (c *Controller) removeResourcesAndNamespace(ctx context.Context, namespaceR
 
 	logger, ctx := logging.FromContextOrNew(ctx, nil)
 
+	if namespaceRegistration.Status.Phase != PHASE_DELETING {
+		c.updateStatus(namespaceRegistration, PHASE_DELETING, nil)
+		if err := c.Client().Status().Update(ctx, namespaceRegistration); err != nil {
+			logger.Error(err, "failed to update namespaceregistration with invalid name - must start with "+subjectsync.CUSTOM_NS_PREFIX)
+			return reconcile.Result{Requeue: true}, nil
+		}
+	}
+
 	// check if installations, executions, deploy items or target sync objects are still there
 	installations := &v1alpha1.InstallationList{}
 	if err := c.Client().List(ctx, installations, client.InNamespace(namespaceRegistration.GetName())); err != nil {
-		return c.logUpdateAndRequeue(ctx, err, namespaceRegistration, "Failed Reading Installations")
+		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_DELETING, "failed reading installations", err)
 	}
 
 	if len(installations.Items) > 0 {
@@ -173,7 +181,7 @@ func (c *Controller) removeResourcesAndNamespace(ctx context.Context, namespaceR
 
 	executions := &v1alpha1.ExecutionList{}
 	if err := c.Client().List(ctx, executions, client.InNamespace(namespaceRegistration.GetName())); err != nil {
-		return c.logUpdateAndRequeue(ctx, err, namespaceRegistration, "Failed Reading Executions")
+		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_DELETING, "failed reading executions", err)
 	}
 
 	if len(executions.Items) > 0 {
@@ -182,7 +190,7 @@ func (c *Controller) removeResourcesAndNamespace(ctx context.Context, namespaceR
 
 	deployItems := &v1alpha1.DeployItemList{}
 	if err := c.Client().List(ctx, deployItems, client.InNamespace(namespaceRegistration.GetName())); err != nil {
-		return c.logUpdateAndRequeue(ctx, err, namespaceRegistration, "Failed Reading DeployItems")
+		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_DELETING, "failed reading deploy items", err)
 	}
 
 	if len(deployItems.Items) > 0 {
@@ -191,7 +199,7 @@ func (c *Controller) removeResourcesAndNamespace(ctx context.Context, namespaceR
 
 	targetSyncs := &v1alpha1.TargetSyncList{}
 	if err := c.Client().List(ctx, targetSyncs, client.InNamespace(namespaceRegistration.GetName())); err != nil {
-		return c.logUpdateAndRequeue(ctx, err, namespaceRegistration, "Failed Reading TargetSyncs")
+		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_DELETING, "failed reading targetsyncs", err)
 	}
 
 	if len(targetSyncs.Items) > 0 {
@@ -223,11 +231,11 @@ func (c *Controller) removeAccessDataAndNamespace(ctx context.Context, namespace
 		if apierrors.IsNotFound(err) {
 			logger.Info("rolebinding in namespace not found")
 		} else {
-			return c.logUpdateAndRequeue(ctx, err, namespaceRegistration, "Failed Loading Rolebinding")
+			return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_DELETING, "failed loading rolebinding", err)
 		}
 	} else {
 		if err := c.Client().Delete(ctx, roleBinding); err != nil {
-			return c.logUpdateAndRequeue(ctx, err, namespaceRegistration, "Failed Deleting Rolebinding")
+			return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_DELETING, "failed deleting rolebinding installations", err)
 		}
 	}
 	//delete role
@@ -236,21 +244,21 @@ func (c *Controller) removeAccessDataAndNamespace(ctx context.Context, namespace
 		if apierrors.IsNotFound(err) {
 			logger.Info("role in namespace not found")
 		} else {
-			return c.logUpdateAndRequeue(ctx, err, namespaceRegistration, "Failed Loading Role")
+			return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_DELETING, "failed loading role", err)
 		}
 	} else {
 		if err := c.Client().Delete(ctx, role); err != nil {
-			return c.logUpdateAndRequeue(ctx, err, namespaceRegistration, "Failed Deleting Role")
+			return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_DELETING, "failed deleting role", err)
 		}
 	}
 
 	if err := c.Client().Delete(ctx, namespace); err != nil {
-		return c.logUpdateAndRequeue(ctx, err, namespaceRegistration, "Failed Deleting Namespace")
+		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_DELETING, "failed deleting namespace", err)
 	}
 
 	controllerutil.RemoveFinalizer(namespaceRegistration, lssv1alpha1.LandscaperServiceFinalizer)
 	if err := c.Client().Update(ctx, namespaceRegistration); err != nil {
-		return c.logUpdateAndRequeue(ctx, err, namespaceRegistration, "Failed Deleting Finalizer")
+		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_DELETING, "failed deleting finalizer", err)
 	}
 
 	return reconcile.Result{}, nil
@@ -280,40 +288,16 @@ func (c *Controller) reconcile(ctx context.Context, namespaceRegistration *lssv1
 
 	if err := c.Client().Create(ctx, namespace); err != nil {
 		if !apierrors.IsAlreadyExists(err) {
-			logger.Error(err, "failed creating namespace")
-
-			lastError := c.createError(PHASE_CREATING, "failed creating namespace", err)
-			c.updateStatus(namespaceRegistration, PHASE_CREATING, lastError)
-			if err := c.Client().Status().Update(ctx, namespaceRegistration); err != nil {
-				logger.Error(err, "failed updating status of namespaceregistration when creating namespace")
-			}
-
-			return reconcile.Result{Requeue: true}, nil
+			return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_CREATING, "failed creating namespace", err)
 		}
 	}
 
 	if err := c.createRoleIfNotExistOrUpdate(ctx, namespaceRegistration); err != nil {
-		logger.Error(err, "failed role creation")
-
-		lastError := c.createError(PHASE_CREATING, "failed role creation", err)
-		c.updateStatus(namespaceRegistration, PHASE_CREATING, lastError)
-		if err := c.Client().Status().Update(ctx, namespaceRegistration); err != nil {
-			logger.Error(err, "failed updating status of namespaceregistration when creating role")
-		}
-
-		return reconcile.Result{Requeue: true}, nil
+		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_CREATING, "failed role creation", err)
 	}
 
 	if err := c.createRoleBindingIfNotExistOrUpdate(ctx, namespaceRegistration); err != nil {
-		logger.Error(err, "failed role binding")
-
-		lastError := c.createError(PHASE_CREATING, "failed role binding", err)
-		c.updateStatus(namespaceRegistration, PHASE_CREATING, lastError)
-		if err := c.Client().Status().Update(ctx, namespaceRegistration); err != nil {
-			logger.Error(err, "failed updating status of namespaceregistration when creating role binding")
-		}
-
-		return reconcile.Result{Requeue: true}, nil
+		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_CREATING, "failed role binding", err)
 	}
 
 	c.updateStatus(namespaceRegistration, PHASE_COMPLETED, namespaceRegistration.Status.LastError)
@@ -395,6 +379,21 @@ func (c *Controller) createRoleBindingIfNotExistOrUpdate(ctx context.Context, na
 	}
 
 	return nil
+}
+
+func (c *Controller) logErrorUpdateAndRetry(ctx context.Context, namespaceRegistration *lssv1alpha1.NamespaceRegistration,
+	phase, msg string, err error) (reconcile.Result, error) {
+	logger, ctx := logging.FromContextOrNew(ctx, nil)
+
+	logger.Error(err, msg)
+
+	lastError := c.createError(phase, msg, err)
+	c.updateStatus(namespaceRegistration, phase, lastError)
+	if err := c.Client().Status().Update(ctx, namespaceRegistration); err != nil {
+		logger.Error(err, "failed updating status of namespaceregistration"+msg)
+	}
+
+	return reconcile.Result{Requeue: true}, nil
 }
 
 func (c *Controller) logUpdateAndRequeue(ctx context.Context, err error,
