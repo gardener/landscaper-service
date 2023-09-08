@@ -46,14 +46,9 @@
       "type": "object",
       "required": [
         "phase",
-        "description",
         "lastUpdateTime"
       ],
       "properties": {
-        "description": {
-          "type": "string",
-          "default": ""
-        },
         "lastError": {
           "$ref": "#/definitions/core-v1alpha1-Error"
         },

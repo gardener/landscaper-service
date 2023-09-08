@@ -220,7 +220,6 @@ func (c *Controller) removeResourcesAndNamespace(ctx context.Context, namespaceR
 
 			if err := c.Client().Delete(ctx, nextTargetSync); err != nil {
 				return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_DELETING, "failed removing targetsync", err)
-				return c.logUpdateAndRequeue(ctx, err, namespaceRegistration, "Failed Removing TargetSync")
 			}
 		}
 	}
@@ -403,30 +402,6 @@ func (c *Controller) logErrorUpdateAndRetry(ctx context.Context, namespaceRegist
 	c.updateStatus(namespaceRegistration, phase, lastError)
 	if err := c.Client().Status().Update(ctx, namespaceRegistration); err != nil {
 		logger.Error(err, "failed updating status of namespaceregistration"+msg)
-	}
-
-	return reconcile.Result{Requeue: true}, nil
-}
-
-func (c *Controller) logUpdateAndRequeueOld(ctx context.Context, err error,
-	namespaceRegistration *lssv1alpha1.NamespaceRegistration, msg string) (reconcile.Result, error) {
-
-	logger, ctx := logging.FromContextOrNew(ctx, nil)
-
-	if err != nil {
-		logger.Error(err, msg)
-
-		namespaceRegistration.Status.Phase = msg
-		if err := c.Client().Status().Update(ctx, namespaceRegistration); err != nil {
-			logger.Error(err, "failed updating status after: "+msg)
-		}
-	} else {
-		logger.Info(msg)
-
-		namespaceRegistration.Status.Phase = msg
-		if err := c.Client().Status().Update(ctx, namespaceRegistration); err != nil {
-			logger.Error(err, "failed updating status after: "+msg)
-		}
 	}
 
 	return reconcile.Result{Requeue: true}, nil

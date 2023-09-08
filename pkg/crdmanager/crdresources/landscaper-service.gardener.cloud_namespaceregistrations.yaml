@@ -27,8 +27,6 @@ spec:
           status:
             description: Status contains the status for the NamespaceRegistration.
             properties:
-              description:
-                type: string
               lastError:
                 description: Error holds information about an error that occurred.
                 properties:
@@ -69,7 +67,6 @@ spec:
                 type: string
             required:
             - phase
-            - description
             - lastUpdateTime
             type: object
         required:
