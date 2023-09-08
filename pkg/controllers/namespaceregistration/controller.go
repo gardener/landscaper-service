@@ -36,6 +36,8 @@ const (
 	PhaseCompleted    = "Completed"
 	PhaseDeleting     = "Deleting"
 	PhaseDeleteFailed = "DeleteFailed"
+
+	ReasonInvalidName = "invalid name"
 )
 
 type Controller struct {
@@ -83,9 +85,9 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	}
 
 	if !strings.HasPrefix(namespaceRegistration.Name, subjectsync.CUSTOM_NS_PREFIX) {
-		msg := "InvalidName: name must start with " + subjectsync.CUSTOM_NS_PREFIX
-		if namespaceRegistration.Status.LastError != nil && msg != namespaceRegistration.Status.LastError.Message {
-			lastError := c.createError(PhaseFailed, msg, nil)
+		if namespaceRegistration.Status.LastError != nil && namespaceRegistration.Status.LastError.Reason != ReasonInvalidName {
+			err := fmt.Errorf("name must start with %s", subjectsync.CUSTOM_NS_PREFIX)
+			lastError := c.createError(namespaceRegistration.Status.Phase, ReasonInvalidName, err)
 			c.updateStatus(namespaceRegistration, PhaseFailed, lastError)
 			if err := c.Client().Status().Update(ctx, namespaceRegistration); err != nil {
 				logger.Error(err, "failed to update namespaceregistration with invalid name - must start with "+subjectsync.CUSTOM_NS_PREFIX)
@@ -235,7 +237,7 @@ func (c *Controller) removeAccessDataAndNamespace(ctx context.Context, namespace
 		}
 	} else {
 		if err := c.Client().Delete(ctx, roleBinding); err != nil {
-			return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseDeleting, "failed deleting rolebinding installations", err)
+			return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseDeleting, "failed deleting rolebinding", err)
 		}
 	}
 	//delete role
@@ -258,7 +260,7 @@ func (c *Controller) removeAccessDataAndNamespace(ctx context.Context, namespace
 
 	controllerutil.RemoveFinalizer(namespaceRegistration, lssv1alpha1.LandscaperServiceFinalizer)
 	if err := c.Client().Update(ctx, namespaceRegistration); err != nil {
-		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseDeleting, "failed deleting finalizer", err)
+		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseDeleting, "failed removing finalizer", err)
 	}
 
 	return reconcile.Result{}, nil
@@ -293,14 +295,14 @@ func (c *Controller) reconcile(ctx context.Context, namespaceRegistration *lssv1
 	}
 
 	if err := c.createRoleIfNotExistOrUpdate(ctx, namespaceRegistration); err != nil {
-		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseCreating, "failed role creation", err)
+		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseCreating, "failed creating role", err)
 	}
 
 	if err := c.createRoleBindingIfNotExistOrUpdate(ctx, namespaceRegistration); err != nil {
-		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseCreating, "failed role binding", err)
+		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseCreating, "failed creating rolebinding", err)
 	}
 
-	c.updateStatus(namespaceRegistration, PhaseCompleted, namespaceRegistration.Status.LastError)
+	c.updateStatus(namespaceRegistration, PhaseCompleted, nil)
 	if err := c.Client().Status().Update(ctx, namespaceRegistration); err != nil {
 		logger.Error(err, "failed updating status of namespaceregistration after completion")
 		return reconcile.Result{Requeue: true}, nil
@@ -391,10 +393,10 @@ func (c *Controller) logErrorUpdateAndRetry(ctx context.Context, namespaceRegist
 		logger.Info(msg)
 	}
 
-	lastError := c.createError(phase, msg, err)
+	lastError := c.createError(namespaceRegistration.Status.Phase, msg, err)
 	c.updateStatus(namespaceRegistration, phase, lastError)
 	if err := c.Client().Status().Update(ctx, namespaceRegistration); err != nil {
-		logger.Error(err, "failed updating status of namespaceregistration"+msg)
+		logger.Error(err, "failed updating status of namespaceregistration after error: "+msg)
 	}
 
 	return reconcile.Result{Requeue: true}, nil
