@@ -157,6 +157,7 @@ func (c *Controller) removeResourcesAndNamespace(ctx context.Context, namespaceR
 	}
 
 	if len(installations.Items) > 0 {
+		var tmpErr error
 		for i := range installations.Items {
 			nextInst := &installations.Items[i]
 
@@ -164,19 +165,25 @@ func (c *Controller) removeResourcesAndNamespace(ctx context.Context, namespaceR
 			if !utils.HasLabel(&nextInst.ObjectMeta, v1alpha1.EncompassedByLabel) && utils.HasDeleteWithoutUninstallAnnotation(&nextInst.ObjectMeta) {
 				if nextInst.GetDeletionTimestamp().IsZero() {
 					if err := c.Client().Delete(ctx, nextInst); err != nil {
+						tmpErr = err
 						logger.Error(err, "failed deleting installations without uninstall: "+client.ObjectKeyFromObject(nextInst).String())
 					}
 				} else if nextInst.Status.JobID == nextInst.Status.JobIDFinished && !helper.HasOperation(nextInst.ObjectMeta, v1alpha1.ReconcileOperation) {
 					// retrigger
 					metav1.SetMetaDataAnnotation(&nextInst.ObjectMeta, v1alpha1.OperationAnnotation, string(v1alpha1.ReconcileOperation))
 					if err := c.Client().Update(ctx, nextInst); err != nil {
+						tmpErr = err
 						logger.Error(err, "failed annotating installations without uninstall: "+client.ObjectKeyFromObject(nextInst).String())
 					}
 				}
 			}
 		}
 
-		return c.logUpdateAndRequeue(ctx, nil, namespaceRegistration, "Namespace Contains Installations")
+		if tmpErr != nil {
+			return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_DELETING, "failed deleting installations", tmpErr)
+		} else {
+			return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_DELETING, "namespace contains installations", nil)
+		}
 	}
 
 	executions := &v1alpha1.ExecutionList{}
@@ -185,7 +192,7 @@ func (c *Controller) removeResourcesAndNamespace(ctx context.Context, namespaceR
 	}
 
 	if len(executions.Items) > 0 {
-		return c.logUpdateAndRequeue(ctx, nil, namespaceRegistration, "Namespace Contains Executions")
+		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_DELETING, "namespace contains executions", nil)
 	}
 
 	deployItems := &v1alpha1.DeployItemList{}
@@ -194,7 +201,7 @@ func (c *Controller) removeResourcesAndNamespace(ctx context.Context, namespaceR
 	}
 
 	if len(deployItems.Items) > 0 {
-		return c.logUpdateAndRequeue(ctx, nil, namespaceRegistration, "Namespace Contains DeployItems")
+		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_DELETING, "namespace contains deploy items", nil)
 	}
 
 	targetSyncs := &v1alpha1.TargetSyncList{}
@@ -207,11 +214,12 @@ func (c *Controller) removeResourcesAndNamespace(ctx context.Context, namespaceR
 			nextTargetSync := &targetSyncs.Items[i]
 			controllerutil.RemoveFinalizer(nextTargetSync, v1alpha1.LandscaperFinalizer)
 
-			if err := c.Client().Status().Update(ctx, nextTargetSync); err != nil {
-				return c.logUpdateAndRequeue(ctx, err, namespaceRegistration, "Failed Removing Finalizer Of TargetSync")
+			if err := c.Client().Update(ctx, nextTargetSync); err != nil {
+				return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_DELETING, "failed removing finalizer of targetsync", err)
 			}
 
 			if err := c.Client().Delete(ctx, nextTargetSync); err != nil {
+				return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_DELETING, "failed removing targetsync", err)
 				return c.logUpdateAndRequeue(ctx, err, namespaceRegistration, "Failed Removing TargetSync")
 			}
 		}
@@ -385,7 +393,11 @@ func (c *Controller) logErrorUpdateAndRetry(ctx context.Context, namespaceRegist
 	phase, msg string, err error) (reconcile.Result, error) {
 	logger, ctx := logging.FromContextOrNew(ctx, nil)
 
-	logger.Error(err, msg)
+	if err != nil {
+		logger.Error(err, msg)
+	} else {
+		logger.Info(msg)
+	}
 
 	lastError := c.createError(phase, msg, err)
 	c.updateStatus(namespaceRegistration, phase, lastError)
@@ -396,7 +408,7 @@ func (c *Controller) logErrorUpdateAndRetry(ctx context.Context, namespaceRegist
 	return reconcile.Result{Requeue: true}, nil
 }
 
-func (c *Controller) logUpdateAndRequeue(ctx context.Context, err error,
+func (c *Controller) logUpdateAndRequeueOld(ctx context.Context, err error,
 	namespaceRegistration *lssv1alpha1.NamespaceRegistration, msg string) (reconcile.Result, error) {
 
 	logger, ctx := logging.FromContextOrNew(ctx, nil)
