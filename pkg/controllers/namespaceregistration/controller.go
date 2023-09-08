@@ -9,12 +9,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/gardener/landscaper/apis/core/v1alpha1/helper"
-
-	"github.com/gardener/landscaper-service/pkg/utils"
-
 	"github.com/gardener/landscaper/apis/core/v1alpha1"
-
+	"github.com/gardener/landscaper/apis/core/v1alpha1/helper"
 	kutils "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 	corev1 "k8s.io/api/core/v1"
@@ -31,14 +27,15 @@ import (
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	"github.com/gardener/landscaper-service/pkg/controllers/subjectsync"
 	"github.com/gardener/landscaper-service/pkg/operation"
+	"github.com/gardener/landscaper-service/pkg/utils"
 )
 
 const (
-	PHASE_CREATING        = "Creating"
-	PHASE_CREATION_FAILED = "CreationFailed"
-	PHASE_COMPLETED       = "Completed"
-	PHASE_DELETING        = "Deleting"
-	PHASE_FAILED          = "DeletingFailed"
+	PhaseCreating     = "Creating"
+	PhaseFailed       = "Failed"
+	PhaseCompleted    = "Completed"
+	PhaseDeleting     = "Deleting"
+	PhaseDeleteFailed = "DeleteFailed"
 )
 
 type Controller struct {
@@ -88,8 +85,8 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	if !strings.HasPrefix(namespaceRegistration.Name, subjectsync.CUSTOM_NS_PREFIX) {
 		msg := "InvalidName: name must start with " + subjectsync.CUSTOM_NS_PREFIX
 		if namespaceRegistration.Status.LastError != nil && msg != namespaceRegistration.Status.LastError.Message {
-			lastError := c.createError(PHASE_CREATION_FAILED, msg, nil)
-			c.updateStatus(namespaceRegistration, PHASE_CREATION_FAILED, lastError)
+			lastError := c.createError(PhaseFailed, msg, nil)
+			c.updateStatus(namespaceRegistration, PhaseFailed, lastError)
 			if err := c.Client().Status().Update(ctx, namespaceRegistration); err != nil {
 				logger.Error(err, "failed to update namespaceregistration with invalid name - must start with "+subjectsync.CUSTOM_NS_PREFIX)
 				return reconcile.Result{}, err
@@ -142,10 +139,10 @@ func (c *Controller) removeResourcesAndNamespace(ctx context.Context, namespaceR
 
 	logger, ctx := logging.FromContextOrNew(ctx, nil)
 
-	if namespaceRegistration.Status.Phase != PHASE_DELETING {
-		c.updateStatus(namespaceRegistration, PHASE_DELETING, nil)
+	if namespaceRegistration.Status.Phase != PhaseDeleting {
+		c.updateStatus(namespaceRegistration, PhaseDeleting, nil)
 		if err := c.Client().Status().Update(ctx, namespaceRegistration); err != nil {
-			logger.Error(err, "failed to update namespaceregistration with invalid name - must start with "+subjectsync.CUSTOM_NS_PREFIX)
+			logger.Error(err, "failed updating status of namespaceregistration when starting deletion")
 			return reconcile.Result{Requeue: true}, nil
 		}
 	}
@@ -153,7 +150,7 @@ func (c *Controller) removeResourcesAndNamespace(ctx context.Context, namespaceR
 	// check if installations, executions, deploy items or target sync objects are still there
 	installations := &v1alpha1.InstallationList{}
 	if err := c.Client().List(ctx, installations, client.InNamespace(namespaceRegistration.GetName())); err != nil {
-		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_DELETING, "failed reading installations", err)
+		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseDeleting, "failed reading installations", err)
 	}
 
 	if len(installations.Items) > 0 {
@@ -180,44 +177,44 @@ func (c *Controller) removeResourcesAndNamespace(ctx context.Context, namespaceR
 		}
 
 		if tmpErr != nil {
-			return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_DELETING, "failed deleting installations", tmpErr)
+			return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseDeleting, "failed deleting installations", tmpErr)
 		} else {
-			return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_DELETING, "namespace contains installations", nil)
+			return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseDeleting, "namespace contains installations", nil)
 		}
 	}
 
 	executions := &v1alpha1.ExecutionList{}
 	if err := c.Client().List(ctx, executions, client.InNamespace(namespaceRegistration.GetName())); err != nil {
-		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_DELETING, "failed reading executions", err)
+		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseDeleting, "failed reading executions", err)
 	}
 
 	if len(executions.Items) > 0 {
-		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_DELETING, "namespace contains executions", nil)
+		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseDeleting, "namespace contains executions", nil)
 	}
 
 	deployItems := &v1alpha1.DeployItemList{}
 	if err := c.Client().List(ctx, deployItems, client.InNamespace(namespaceRegistration.GetName())); err != nil {
-		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_DELETING, "failed reading deploy items", err)
+		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseDeleting, "failed reading deploy items", err)
 	}
 
 	if len(deployItems.Items) > 0 {
-		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_DELETING, "namespace contains deploy items", nil)
+		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseDeleting, "namespace contains deploy items", nil)
 	}
 
 	targetSyncs := &v1alpha1.TargetSyncList{}
 	if err := c.Client().List(ctx, targetSyncs, client.InNamespace(namespaceRegistration.GetName())); err != nil {
-		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_DELETING, "failed reading targetsyncs", err)
+		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseDeleting, "failed reading targetsyncs", err)
 	}
 
 	if len(targetSyncs.Items) > 0 {
 		for i := range targetSyncs.Items {
 			nextTargetSync := &targetSyncs.Items[i]
 			if err := c.Client().Delete(ctx, nextTargetSync); err != nil {
-				return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_DELETING, "failed removing targetsync", err)
+				return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseDeleting, "failed removing targetsync", err)
 			}
 		}
 
-		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_DELETING, "namespace contains targetsyncs", nil)
+		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseDeleting, "namespace contains targetsyncs", nil)
 	}
 
 	return c.removeAccessDataAndNamespace(ctx, namespaceRegistration, namespace)
@@ -234,11 +231,11 @@ func (c *Controller) removeAccessDataAndNamespace(ctx context.Context, namespace
 		if apierrors.IsNotFound(err) {
 			logger.Info("rolebinding in namespace not found")
 		} else {
-			return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_DELETING, "failed loading rolebinding", err)
+			return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseDeleting, "failed loading rolebinding", err)
 		}
 	} else {
 		if err := c.Client().Delete(ctx, roleBinding); err != nil {
-			return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_DELETING, "failed deleting rolebinding installations", err)
+			return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseDeleting, "failed deleting rolebinding installations", err)
 		}
 	}
 	//delete role
@@ -247,21 +244,21 @@ func (c *Controller) removeAccessDataAndNamespace(ctx context.Context, namespace
 		if apierrors.IsNotFound(err) {
 			logger.Info("role in namespace not found")
 		} else {
-			return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_DELETING, "failed loading role", err)
+			return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseDeleting, "failed loading role", err)
 		}
 	} else {
 		if err := c.Client().Delete(ctx, role); err != nil {
-			return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_DELETING, "failed deleting role", err)
+			return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseDeleting, "failed deleting role", err)
 		}
 	}
 
 	if err := c.Client().Delete(ctx, namespace); err != nil {
-		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_DELETING, "failed deleting namespace", err)
+		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseDeleting, "failed deleting namespace", err)
 	}
 
 	controllerutil.RemoveFinalizer(namespaceRegistration, lssv1alpha1.LandscaperServiceFinalizer)
 	if err := c.Client().Update(ctx, namespaceRegistration); err != nil {
-		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_DELETING, "failed deleting finalizer", err)
+		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseDeleting, "failed deleting finalizer", err)
 	}
 
 	return reconcile.Result{}, nil
@@ -270,13 +267,13 @@ func (c *Controller) removeAccessDataAndNamespace(ctx context.Context, namespace
 func (c *Controller) reconcile(ctx context.Context, namespaceRegistration *lssv1alpha1.NamespaceRegistration) (reconcile.Result, error) {
 	logger, ctx := logging.FromContextOrNew(ctx, nil)
 
-	if namespaceRegistration.Status.Phase == PHASE_COMPLETED {
+	if namespaceRegistration.Status.Phase == PhaseCompleted {
 		logger.Debug("Phase already in Completed")
 		return reconcile.Result{}, nil
 	}
 
 	if namespaceRegistration.Status.Phase == "" {
-		c.updateStatus(namespaceRegistration, PHASE_CREATING, namespaceRegistration.Status.LastError)
+		c.updateStatus(namespaceRegistration, PhaseCreating, namespaceRegistration.Status.LastError)
 		if err := c.Client().Status().Update(ctx, namespaceRegistration); err != nil {
 			logger.Error(err, "failed updating status of namespaceregistration when starting namespace creation")
 			return reconcile.Result{Requeue: true}, nil
@@ -291,19 +288,19 @@ func (c *Controller) reconcile(ctx context.Context, namespaceRegistration *lssv1
 
 	if err := c.Client().Create(ctx, namespace); err != nil {
 		if !apierrors.IsAlreadyExists(err) {
-			return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_CREATING, "failed creating namespace", err)
+			return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseCreating, "failed creating namespace", err)
 		}
 	}
 
 	if err := c.createRoleIfNotExistOrUpdate(ctx, namespaceRegistration); err != nil {
-		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_CREATING, "failed role creation", err)
+		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseCreating, "failed role creation", err)
 	}
 
 	if err := c.createRoleBindingIfNotExistOrUpdate(ctx, namespaceRegistration); err != nil {
-		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PHASE_CREATING, "failed role binding", err)
+		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseCreating, "failed role binding", err)
 	}
 
-	c.updateStatus(namespaceRegistration, PHASE_COMPLETED, namespaceRegistration.Status.LastError)
+	c.updateStatus(namespaceRegistration, PhaseCompleted, namespaceRegistration.Status.LastError)
 	if err := c.Client().Status().Update(ctx, namespaceRegistration); err != nil {
 		logger.Error(err, "failed updating status of namespaceregistration after completion")
 		return reconcile.Result{Requeue: true}, nil
