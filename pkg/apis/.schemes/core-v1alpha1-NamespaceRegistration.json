@@ -45,16 +45,11 @@
     "core-v1alpha1-NamespaceRegistrationStatus": {
       "type": "object",
       "required": [
-        "phase",
-        "lastUpdateTime"
+        "phase"
       ],
       "properties": {
         "lastError": {
           "$ref": "#/definitions/core-v1alpha1-Error"
-        },
-        "lastUpdateTime": {
-          "default": {},
-          "$ref": "#/definitions/meta-v1-Time"
         },
         "phase": {
           "type": "string",

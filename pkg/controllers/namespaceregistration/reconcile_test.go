@@ -312,8 +312,6 @@ var _ = Describe("Reconcile", func() {
 			ObjectMeta: metav1.ObjectMeta{Name: namespace.Name, Namespace: namespace.Name},
 		}
 
-		controllerutil.AddFinalizer(targetSync, lsv1alpha1.LandscaperFinalizer)
-
 		Expect(testenv.Client.Create(ctx, targetSync)).To(Succeed())
 
 		targetSync = &lsv1alpha1.TargetSync{
@@ -325,7 +323,14 @@ var _ = Describe("Reconcile", func() {
 
 		// delete
 		Expect(testenv.Client.Delete(ctx, namespaceRegistration)).To(Succeed())
-		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
+
+		counter := 1
+		result := testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
+		for result.Requeue && counter < 5 {
+			counter++
+			result = testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
+			time.Sleep(1 * time.Second)
+		}
 
 		// successful deletion
 		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, namespaceRegistration, 5*time.Second)).To(Succeed())

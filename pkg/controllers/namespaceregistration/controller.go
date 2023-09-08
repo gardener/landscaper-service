@@ -406,7 +406,6 @@ func (c *Controller) logErrorUpdateAndRetry(ctx context.Context, namespaceRegist
 func (c *Controller) updateStatus(namespaceRegistration *lssv1alpha1.NamespaceRegistration, phase string,
 	lastError *lssv1alpha1.Error) {
 	namespaceRegistration.Status.Phase = phase
-	namespaceRegistration.Status.LastUpdateTime = metav1.Now()
 	namespaceRegistration.Status.LastError = lastError
 }
 

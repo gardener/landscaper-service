@@ -1382,23 +1382,17 @@ func schema_pkg_apis_core_v1alpha1_NamespaceRegistrationStatus(ref common.Refere
 							Format:  "",
 						},
 					},
-					"lastUpdateTime": {
-						SchemaProps: spec.SchemaProps{
-							Default: map[string]interface{}{},
-							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
-						},
-					},
 					"lastError": {
 						SchemaProps: spec.SchemaProps{
 							Ref: ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Error"),
 						},
 					},
 				},
-				Required: []string{"phase", "lastUpdateTime"},
+				Required: []string{"phase"},
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Error", "k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Error"},
 	}
 }
 

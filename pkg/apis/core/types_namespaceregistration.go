@@ -33,8 +33,7 @@ type NamespaceRegistration struct {
 }
 
 type NamespaceRegistrationStatus struct {
-	Phase          string      `json:"phase"`
-	LastUpdateTime metav1.Time `json:"lastUpdateTime"`
+	Phase string `json:"phase"`
 	// +optional
 	LastError *Error `json:"lastError,omitempty"`
 }
