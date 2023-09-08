@@ -187,7 +187,7 @@ func (c *Controller) removeResourcesAndNamespace(ctx context.Context, namespaceR
 			nextTargetSync := &targetSyncs.Items[i]
 			controllerutil.RemoveFinalizer(nextTargetSync, v1alpha1.LandscaperFinalizer)
 
-			if err := c.Client().Status().Update(ctx, nextTargetSync); err != nil {
+			if err := c.Client().Update(ctx, nextTargetSync); err != nil {
 				return c.logAndUpdate(ctx, err, namespaceRegistration, "Failed Removing Finalizer Of TargetSync")
 			}
 
