@@ -185,16 +185,12 @@ func (c *Controller) removeResourcesAndNamespace(ctx context.Context, namespaceR
 	if len(targetSyncs.Items) > 0 {
 		for i := range targetSyncs.Items {
 			nextTargetSync := &targetSyncs.Items[i]
-			controllerutil.RemoveFinalizer(nextTargetSync, v1alpha1.LandscaperFinalizer)
-
-			if err := c.Client().Update(ctx, nextTargetSync); err != nil {
-				return c.logAndUpdate(ctx, err, namespaceRegistration, "Failed Removing Finalizer Of TargetSync")
-			}
-
 			if err := c.Client().Delete(ctx, nextTargetSync); err != nil {
 				return c.logAndUpdate(ctx, err, namespaceRegistration, "Failed Removing TargetSync")
 			}
 		}
+
+		return c.logAndUpdate(ctx, nil, namespaceRegistration, "Namespace Contains TargetSyncs")
 	}
 
 	return c.removeAccessDataAndNamespace(ctx, namespaceRegistration, namespace)
