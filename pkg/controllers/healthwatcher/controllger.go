@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
@@ -212,6 +213,21 @@ func (c *Controller) getLsHealthCheckFromSelfLandscaper(ctx context.Context, nam
 		}
 		c.log.Info(fmt.Sprintf("could not load lshealthcheck from cluster: %s", err.Error()))
 		setAvailabilityInstanceStatusToFailed(&availabilityInstance, "failed retrieving lshealthcheck cr")
+	}
+	if len(lsHealthchecks.Items) != 1 {
+		if len(lsHealthchecks.Items) > 0 {
+			lsHealthCheckNames := strings.Builder{}
+			for _, item := range lsHealthchecks.Items {
+				if lsHealthCheckNames.Len() > 0 {
+					lsHealthCheckNames.WriteString(",")
+				}
+				lsHealthCheckNames.WriteString(item.Name)
+
+			}
+			c.log.Info("number of lshealthcheck instances is not equal to 1", "lshHealthCheckInstanceCount", len(lsHealthchecks.Items), "lsHealthCheckNames", lsHealthCheckNames.String())
+		} else {
+			c.log.Info("number of lshealthcheck instances is not equal to 1", "lshHealthCheckInstanceCount", len(lsHealthchecks.Items))
+		}
 	}
 	transferLsHealthCheckStatusToAvailabilityInstance(&availabilityInstance, lsHealthchecks, c.Config().AvailabilityMonitoring.LSHealthCheckTimeout.Duration)
 	return availabilityInstance
