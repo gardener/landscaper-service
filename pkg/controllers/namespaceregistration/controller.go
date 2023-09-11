@@ -247,6 +247,7 @@ func (c *Controller) removeAccessDataAndNamespace(ctx context.Context, namespace
 			return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseDeleting, "failed deleting rolebinding", err)
 		}
 	}
+
 	//delete role
 	role := &rbacv1.Role{}
 	if err := c.Client().Get(ctx, types.NamespacedName{Name: subjectsync.USER_ROLE_IN_NAMESPACE, Namespace: namespaceRegistration.GetName()}, role); err != nil {
@@ -261,6 +262,7 @@ func (c *Controller) removeAccessDataAndNamespace(ctx context.Context, namespace
 		}
 	}
 
+	// delete namespace
 	if err := c.Client().Delete(ctx, namespace); err != nil {
 		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseDeleting, "failed deleting namespace", err)
 	}
