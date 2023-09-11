@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/gardener/landscaper/apis/core/v1alpha1"
 	"github.com/gardener/landscaper/apis/core/v1alpha1/helper"
@@ -38,6 +39,8 @@ const (
 	PhaseDeleteFailed = "DeleteFailed"
 
 	ReasonInvalidName = "invalid name"
+
+	requeueAfterDuration = 30 * time.Second
 )
 
 type Controller struct {
@@ -77,11 +80,11 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 	namespaceRegistration := &lssv1alpha1.NamespaceRegistration{}
 	if err := c.Client().Get(ctx, req.NamespacedName, namespaceRegistration); err != nil {
-		logger.Error(err, "failed loading namespaceregistration cr")
+		logger.Error(err, "failed loading namespaceregistration")
 		if apierrors.IsNotFound(err) {
 			return reconcile.Result{}, nil
 		}
-		return reconcile.Result{}, err
+		return reconcile.Result{RequeueAfter: requeueAfterDuration}, nil
 	}
 
 	if !strings.HasPrefix(namespaceRegistration.Name, subjectsync.CUSTOM_NS_PREFIX) {
@@ -90,8 +93,8 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 			lastError := c.createError(namespaceRegistration.Status.Phase, ReasonInvalidName, err)
 			c.updateStatus(namespaceRegistration, PhaseFailed, lastError)
 			if err := c.Client().Status().Update(ctx, namespaceRegistration); err != nil {
-				logger.Error(err, "failed to update namespaceregistration with invalid name - must start with "+subjectsync.CUSTOM_NS_PREFIX)
-				return reconcile.Result{}, err
+				logger.Error(err, "failed updating namespaceregistration with invalid name - must start with "+subjectsync.CUSTOM_NS_PREFIX)
+				return reconcile.Result{RequeueAfter: requeueAfterDuration}, nil
 			}
 		}
 
@@ -102,7 +105,8 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	if namespaceRegistration.DeletionTimestamp.IsZero() && !kutils.HasFinalizer(namespaceRegistration, lssv1alpha1.LandscaperServiceFinalizer) {
 		controllerutil.AddFinalizer(namespaceRegistration, lssv1alpha1.LandscaperServiceFinalizer)
 		if err := c.Client().Update(ctx, namespaceRegistration); err != nil {
-			return reconcile.Result{}, err
+			logger.Error(err, "failed adding finalizer to namespaceregistration")
+			return reconcile.Result{RequeueAfter: requeueAfterDuration}, nil
 		}
 		// do not return here because the controller only watches for particular events and setting a finalizer is not part of this
 	}
@@ -278,7 +282,7 @@ func (c *Controller) reconcile(ctx context.Context, namespaceRegistration *lssv1
 		c.updateStatus(namespaceRegistration, PhaseCreating, namespaceRegistration.Status.LastError)
 		if err := c.Client().Status().Update(ctx, namespaceRegistration); err != nil {
 			logger.Error(err, "failed updating status of namespaceregistration when starting namespace creation")
-			return reconcile.Result{Requeue: true}, nil
+			return reconcile.Result{RequeueAfter: requeueAfterDuration}, nil
 		}
 	}
 
@@ -305,7 +309,7 @@ func (c *Controller) reconcile(ctx context.Context, namespaceRegistration *lssv1
 	c.updateStatus(namespaceRegistration, PhaseCompleted, nil)
 	if err := c.Client().Status().Update(ctx, namespaceRegistration); err != nil {
 		logger.Error(err, "failed updating status of namespaceregistration after completion")
-		return reconcile.Result{Requeue: true}, nil
+		return reconcile.Result{RequeueAfter: requeueAfterDuration}, nil
 	}
 	return reconcile.Result{}, nil
 }
@@ -399,7 +403,7 @@ func (c *Controller) logErrorUpdateAndRetry(ctx context.Context, namespaceRegist
 		logger.Error(err, "failed updating status of namespaceregistration after error: "+msg)
 	}
 
-	return reconcile.Result{Requeue: true}, nil
+	return reconcile.Result{RequeueAfter: requeueAfterDuration}, nil
 }
 
 func (c *Controller) updateStatus(namespaceRegistration *lssv1alpha1.NamespaceRegistration, phase string,
