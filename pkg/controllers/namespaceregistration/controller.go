@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/gardener/landscaper/apis/core/v1alpha1"
-	"github.com/gardener/landscaper/apis/core/v1alpha1/helper"
 	kutils "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 	corev1 "k8s.io/api/core/v1"
@@ -163,33 +162,12 @@ func (c *Controller) removeResourcesAndNamespace(ctx context.Context, namespaceR
 	}
 
 	if len(installations.Items) > 0 {
-		var tmpErr error
-		for i := range installations.Items {
-			nextInst := &installations.Items[i]
-
-			// delete root installations with delete without uninstall annotation
-			if !utils.HasLabel(&nextInst.ObjectMeta, v1alpha1.EncompassedByLabel) && utils.HasDeleteWithoutUninstallAnnotation(&nextInst.ObjectMeta) {
-				if nextInst.GetDeletionTimestamp().IsZero() {
-					if err := c.Client().Delete(ctx, nextInst); err != nil {
-						tmpErr = err
-						logger.Error(err, "failed deleting installations without uninstall: "+client.ObjectKeyFromObject(nextInst).String())
-					}
-				} else if nextInst.Status.JobID == nextInst.Status.JobIDFinished && !helper.HasOperation(nextInst.ObjectMeta, v1alpha1.ReconcileOperation) {
-					// retrigger
-					metav1.SetMetaDataAnnotation(&nextInst.ObjectMeta, v1alpha1.OperationAnnotation, string(v1alpha1.ReconcileOperation))
-					if err := c.Client().Update(ctx, nextInst); err != nil {
-						tmpErr = err
-						logger.Error(err, "failed annotating installations without uninstall: "+client.ObjectKeyFromObject(nextInst).String())
-					}
-				}
-			}
+		err := c.triggerDeletionOfInstallations(ctx, namespaceRegistration, installations.Items)
+		if err != nil {
+			return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseDeleting, "failed deleting installations", err)
 		}
 
-		if tmpErr != nil {
-			return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseDeleting, "failed deleting installations", tmpErr)
-		} else {
-			return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseDeleting, "namespace contains installations", nil)
-		}
+		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseDeleting, "namespace contains installations", nil)
 	}
 
 	executions := &v1alpha1.ExecutionList{}
@@ -390,6 +368,24 @@ func (c *Controller) createRoleBindingIfNotExistOrUpdate(ctx context.Context, na
 	}
 
 	return nil
+}
+
+func (c *Controller) triggerDeletionOfInstallations(ctx context.Context, namespaceRegistration *lssv1alpha1.NamespaceRegistration, installations []v1alpha1.Installation) error {
+	triggerDeletion, err := getTriggerDeletionFunction(ctx, namespaceRegistration)
+	if err != nil {
+		return err
+	}
+
+	// trigger deletion of root installations according to deletion strategy
+	var triggerErr error
+	for i := range installations {
+		inst := &installations[i]
+		if !utils.HasLabel(&inst.ObjectMeta, v1alpha1.EncompassedByLabel) {
+			triggerErr = triggerDeletion(ctx, c.Client(), inst)
+		}
+	}
+
+	return triggerErr
 }
 
 func (c *Controller) logErrorUpdateAndRetry(ctx context.Context, namespaceRegistration *lssv1alpha1.NamespaceRegistration,
