@@ -88,8 +88,11 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	}
 
 	if !strings.HasPrefix(namespaceRegistration.Name, subjectsync.CUSTOM_NS_PREFIX) {
-		if namespaceRegistration.Status.LastError != nil && namespaceRegistration.Status.LastError.Reason != ReasonInvalidName {
-			err := fmt.Errorf("name must start with %s", subjectsync.CUSTOM_NS_PREFIX)
+		if namespaceRegistration.Status.Phase != PhaseFailed ||
+			namespaceRegistration.Status.LastError == nil ||
+			(namespaceRegistration.Status.LastError != nil && namespaceRegistration.Status.LastError.Reason != ReasonInvalidName) {
+
+			err := fmt.Errorf("name must start with %q", subjectsync.CUSTOM_NS_PREFIX)
 			lastError := c.createError(namespaceRegistration.Status.Phase, ReasonInvalidName, err)
 			c.updateStatus(namespaceRegistration, PhaseFailed, lastError)
 			if err := c.Client().Status().Update(ctx, namespaceRegistration); err != nil {
