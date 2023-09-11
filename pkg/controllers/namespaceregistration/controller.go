@@ -132,12 +132,12 @@ func (c *Controller) handleDelete(ctx context.Context, namespaceRegistration *ls
 			controllerutil.RemoveFinalizer(namespaceRegistration, lssv1alpha1.LandscaperServiceFinalizer)
 			if err := c.Client().Update(ctx, namespaceRegistration); err != nil {
 				logger.Error(err, "failed removing finalizer")
-				return reconcile.Result{}, err
+				return reconcile.Result{RequeueAfter: requeueAfterDuration}, nil
 			}
 			return reconcile.Result{}, nil
 		}
-		logger.Error(err, "failed loading namespace cr")
-		return reconcile.Result{}, err
+		logger.Error(err, "failed loading namespace")
+		return reconcile.Result{RequeueAfter: requeueAfterDuration}, nil
 	}
 
 	return c.removeResourcesAndNamespace(ctx, namespaceRegistration, namespace)
@@ -152,7 +152,7 @@ func (c *Controller) removeResourcesAndNamespace(ctx context.Context, namespaceR
 		c.updateStatus(namespaceRegistration, PhaseDeleting, nil)
 		if err := c.Client().Status().Update(ctx, namespaceRegistration); err != nil {
 			logger.Error(err, "failed updating status of namespaceregistration when starting deletion")
-			return reconcile.Result{Requeue: true}, nil
+			return reconcile.Result{RequeueAfter: requeueAfterDuration}, nil
 		}
 	}
 
