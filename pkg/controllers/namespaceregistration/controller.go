@@ -408,7 +408,7 @@ func (c *Controller) updateStatus(namespaceRegistration *lssv1alpha1.NamespaceRe
 	namespaceRegistration.Status.LastError = lastError
 }
 
-func (c *Controller) createError(phase, errorDescription string, err error) *lssv1alpha1.Error {
+func (c *Controller) createError(phase, reason string, err error) *lssv1alpha1.Error {
 	msg := ""
 	if err != nil {
 		msg = err.Error()
@@ -418,7 +418,7 @@ func (c *Controller) createError(phase, errorDescription string, err error) *lss
 		Operation:          phase,
 		LastTransitionTime: metav1.Now(),
 		LastUpdateTime:     metav1.Now(),
-		Reason:             errorDescription,
+		Reason:             reason,
 		Message:            msg,
 	}
 }
