@@ -1,14 +1,14 @@
-# Namespaceregistrtion
+# NamespaceRegistrations
 
 A user, with access to the Resource-Shoot-Cluster as described before, is only allowed to create Landscaper resources
 like Installations, Targets etc. in so-called customer namespaces. A customer namespace is a normal namespace on the
-Resource-Shoot-Cluster with a name starting with the prefix *cu-*.
+Resource-Shoot-Cluster with a name starting with the prefix `cu-`.
 
-## Create a Customer Namespace
+## Creating a Customer Namespace
 
 To create such a customer namespace the user must create a
-*[namespaceRegistration](../../pkg/apis/core/v1alpha1/types_namespaceregistration.go)* object in the namespace ls-user
-with the same name as the namespace. The following manifest for example would create a customer namespace *cu-test*:
+*[NamespaceRegistration](../../pkg/apis/core/v1alpha1/types_namespaceregistration.go)* object in the namespace `ls-user`
+with the same name as the namespace. The following manifest for example would create a customer namespace `cu-test`:
 
 ```yaml
 apiVersion: landscaper-service.gardener.cloud/v1alpha1
@@ -23,7 +23,7 @@ When the creation of a customer namespace starts, the status of the `NamespaceRe
 
 ```yaml
 status:
-  phase: PhaseCreating
+  phase: Creating
 ```
 
 If the creation of a customer namespace was successful, the status of the `NamespaceRegistration` looks as follows:
@@ -37,7 +37,7 @@ If the creation of a customer namespace fails, the status of the `NamespaceRegis
 
 ```yaml
 status:
-  phase: PhaseFailed
+  phase: Failed
 ```
 
 In case of an error, you find the last error also in the status section: 
@@ -49,10 +49,10 @@ status:
 
 If during the namespace creation a potentially sporadic error occurs, the creation operation is retried after 30 seconds. 
 
-## Deleting Namespaceregistrations
+## Deleting NamespaceRegistrations
 
 When deleting a `NamespaceRegistration` the corresponding namespace is deleted. There are three different deletion 
-strategies depending on the annotation "landscaper-service.gardener.cloud/on-delete-strategy" of the `NamespaceRegistration`:
+strategies depending on the annotation `landscaper-service.gardener.cloud/on-delete-strategy` of the `NamespaceRegistration`:
 
 - **No annotation (default strategy)**:
   - All root Installations with a "delete-without-uninstall" annotation 
@@ -70,11 +70,11 @@ strategies depending on the annotation "landscaper-service.gardener.cloud/on-del
   - When the namespace has been deleted, the finalizer of the `NamespaceRegistration` is removed.
 
 - **Annotation "landscaper-service.gardener.cloud/on-delete-strategy=delete-all-installations"**:
-  - Same as the default strategy but all root installations are deleted instead of only those with a  
+  - Same as the default strategy, but all root installations are deleted instead of only those with a  
     "delete-without-uninstall" annotation.
 
 - **Annotation "landscaper-service.gardener.cloud/on-delete-strategy=delete-all-installations-without-uninstall"**:
-  - Same as the default strategy but in a first step all root installations are annotated with the 
+  - Same as the default strategy, but in a first step all root installations are annotated with the 
     "delete-without-uninstall" annotation.
 
 When the deletion started, the status of the `NamespaceRegistration` looks as follows:
