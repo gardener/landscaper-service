@@ -31,7 +31,7 @@ func getTriggerDeletionFunction(ctx context.Context, namespaceRegistration *lssv
 	switch strategy {
 	case "":
 		return triggerDeletionByDefaultStrategy, nil
-	case lssv1alpha1.LandscaperServiceOnDeleteStrategyDeleteAllInstallationsWithUninstall:
+	case lssv1alpha1.LandscaperServiceOnDeleteStrategyDeleteAllInstallations:
 		return triggerDeletionWithUninstall, nil
 	case lssv1alpha1.LandscaperServiceOnDeleteStrategyDeleteAllInstallationsWithoutUninstall:
 		return triggerDeletionWithoutUninstall, nil
@@ -59,7 +59,7 @@ func triggerDeletionByDefaultStrategy(ctx context.Context, cl client.Client, ins
 func triggerDeletionWithUninstall(ctx context.Context, cl client.Client, inst *v1alpha1.Installation) error {
 	_, ctx = logging.FromContextOrNew(ctx, nil,
 		lc.KeyResource, client.ObjectKeyFromObject(inst).String(),
-		keyOnDeleteStrategy, lssv1alpha1.LandscaperServiceOnDeleteStrategyDeleteAllInstallationsWithUninstall)
+		keyOnDeleteStrategy, lssv1alpha1.LandscaperServiceOnDeleteStrategyDeleteAllInstallations)
 
 	return deleteOrRetriggerDelete(ctx, cl, inst)
 }
