@@ -31,11 +31,10 @@ import (
 )
 
 const (
-	PhaseCreating     = "Creating"
-	PhaseFailed       = "Failed"
-	PhaseCompleted    = "Completed"
-	PhaseDeleting     = "Deleting"
-	PhaseDeleteFailed = "DeleteFailed"
+	PhaseCreating  = "Creating"
+	PhaseFailed    = "Failed"
+	PhaseCompleted = "Completed"
+	PhaseDeleting  = "Deleting"
 
 	ReasonInvalidName = "invalid name"
 

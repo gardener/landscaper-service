@@ -21,6 +21,6 @@ const (
 	LandscaperServiceOperationIgnore = "ignore"
 
 	LandscaperServiceOnDeleteStrategyAnnotation                             = "landscaper-service.gardener.cloud/on-delete-strategy"
-	LandscaperServiceOnDeleteStrategyDeleteAllInstallationsWithUninstall    = "delete-all-installations-with-uninstall"
+	LandscaperServiceOnDeleteStrategyDeleteAllInstallationsWithUninstall    = "delete-all-installations"
 	LandscaperServiceOnDeleteStrategyDeleteAllInstallationsWithoutUninstall = "delete-all-installations-without-uninstall"
 )
