@@ -381,7 +381,9 @@ func (c *Controller) triggerDeletionOfInstallations(ctx context.Context, namespa
 	for i := range installations {
 		inst := &installations[i]
 		if !utils.HasLabel(&inst.ObjectMeta, v1alpha1.EncompassedByLabel) {
-			triggerErr = triggerDeletion(ctx, c.Client(), inst)
+			if tmpErr := triggerDeletion(ctx, c.Client(), inst); tmpErr != nil {
+				triggerErr = tmpErr
+			}
 		}
 	}
 
