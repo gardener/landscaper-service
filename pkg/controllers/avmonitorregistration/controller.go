@@ -86,6 +86,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 			continue
 		}
 
+		logger.Info("add instance to be monitored")
 		instanceRefsToMonitor = append(instanceRefsToMonitor, lssv1alpha1.ObjectReference{
 			Name:      instance.Name,
 			Namespace: instance.Namespace,
