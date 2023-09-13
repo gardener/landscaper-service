@@ -1,0 +1,7 @@
+apiVersion: landscaper-service.gardener.cloud/v1alpha1
+kind: NamespaceRegistration
+metadata:
+  name: cu-test-namespace-8
+  namespace: {{ .Namespace }}
+  annotations:
+    landscaper-service.gardener.cloud/on-delete-strategy: delete-all-installations

@@ -8,23 +8,20 @@ import (
 	"context"
 	"time"
 
-	"github.com/gardener/landscaper/apis/core/v1alpha1/helper"
-	rbacv1 "k8s.io/api/rbac/v1"
-	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
-
-	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
-
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
+	"github.com/gardener/landscaper/apis/core/v1alpha1/helper"
 	kutil "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	corev1 "k8s.io/api/core/v1"
+	rbacv1 "k8s.io/api/rbac/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
+	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	"github.com/gardener/landscaper-service/pkg/controllers/namespaceregistration"
 	"github.com/gardener/landscaper-service/pkg/controllers/subjectsync"
 	"github.com/gardener/landscaper-service/pkg/operation"
@@ -390,6 +387,126 @@ var _ = Describe("Reconcile", func() {
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(&namespace), &namespace)).To(Succeed())
 
 		// check for namespace being deleted
+		Expect(namespace.Status.Phase).To(Equal(corev1.NamespaceTerminating))
+	})
+
+	It("should delete a namespace registration with strategy delete-all-installations", func() {
+		var err error
+
+		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test8")
+		Expect(err).ToNot(HaveOccurred())
+
+		// reconcile namespace registration
+		namespaceRegistration := state.GetNamespaceRegistration(subjectsync.CUSTOM_NS_PREFIX + "test-namespace-8")
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(namespaceRegistration), namespaceRegistration)).To(Succeed())
+		Expect(namespaceRegistration.Status.Phase).To(Equal("Completed"))
+
+		// check for customer namespace being created
+		namespace := corev1.Namespace{}
+		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: namespaceRegistration.Name}, &namespace)).To(Succeed())
+
+		// create installation in customer namespace
+		inst := &lsv1alpha1.Installation{
+			TypeMeta: metav1.TypeMeta{},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:       "test-installation",
+				Namespace:  namespace.Name,
+				Finalizers: []string{lsv1alpha1.LandscaperFinalizer},
+			},
+		}
+		Expect(testenv.Client.Create(ctx, inst)).To(Succeed())
+
+		// delete namespace registration
+		Expect(testenv.Client.Delete(ctx, namespaceRegistration)).To(Succeed())
+
+		// reconcile namespace registration
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
+
+		// check namespace registration is in phase "Deleting"
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(namespaceRegistration), namespaceRegistration)).To(Succeed())
+		Expect(namespaceRegistration.Status.Phase).To(Equal("Deleting"))
+
+		// check installation has deletion timestamp
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(inst), inst)).To(Succeed())
+		Expect(inst.GetDeletionTimestamp().IsZero()).To(BeFalse())
+		Expect(helper.HasOperation(inst.ObjectMeta, lsv1alpha1.ReconcileOperation)).To(BeFalse())
+
+		// check installation does not have delete-without-uninstall annotation
+		// (difference to the next test)
+		Expect(helper.HasDeleteWithoutUninstallAnnotation(inst.ObjectMeta)).To(BeFalse())
+
+		// remove finalizer from installation, and wait until the installation is gone
+		controllerutil.RemoveFinalizer(inst, lsv1alpha1.LandscaperFinalizer)
+		Expect(testenv.Client.Update(ctx, inst)).To(Succeed())
+		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, inst, 5*time.Second)).To(Succeed())
+
+		// reconcile namespace registration
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
+
+		// check successful deletion
+		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, namespaceRegistration, 5*time.Second)).To(Succeed())
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(&namespace), &namespace)).To(Succeed())
+		Expect(namespace.Status.Phase).To(Equal(corev1.NamespaceTerminating))
+	})
+
+	It("should delete a namespace registration with strategy delete-all-installations-without-uninstall", func() {
+		var err error
+
+		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test9")
+		Expect(err).ToNot(HaveOccurred())
+
+		// reconcile namespace registration
+		namespaceRegistration := state.GetNamespaceRegistration(subjectsync.CUSTOM_NS_PREFIX + "test-namespace-9")
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(namespaceRegistration), namespaceRegistration)).To(Succeed())
+		Expect(namespaceRegistration.Status.Phase).To(Equal("Completed"))
+
+		// check for customer namespace being created
+		namespace := corev1.Namespace{}
+		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: namespaceRegistration.Name}, &namespace)).To(Succeed())
+
+		// create installation in customer namespace
+		inst := &lsv1alpha1.Installation{
+			TypeMeta: metav1.TypeMeta{},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:       "test-installation",
+				Namespace:  namespace.Name,
+				Finalizers: []string{lsv1alpha1.LandscaperFinalizer},
+			},
+		}
+		Expect(testenv.Client.Create(ctx, inst)).To(Succeed())
+
+		// delete namespace registration
+		Expect(testenv.Client.Delete(ctx, namespaceRegistration)).To(Succeed())
+
+		// reconcile namespace registration
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
+
+		// check namespace registration is in phase "Deleting"
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(namespaceRegistration), namespaceRegistration)).To(Succeed())
+		Expect(namespaceRegistration.Status.Phase).To(Equal("Deleting"))
+
+		// check installation has deletion timestamp
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(inst), inst)).To(Succeed())
+		Expect(inst.GetDeletionTimestamp().IsZero()).To(BeFalse())
+		Expect(helper.HasOperation(inst.ObjectMeta, lsv1alpha1.ReconcileOperation)).To(BeFalse())
+
+		// check installation has delete-without-uninstall annotation
+		// (difference to the previous test)
+		Expect(helper.HasDeleteWithoutUninstallAnnotation(inst.ObjectMeta)).To(BeTrue())
+
+		// remove finalizer from installation, and wait until the installation is gone
+		controllerutil.RemoveFinalizer(inst, lsv1alpha1.LandscaperFinalizer)
+		Expect(testenv.Client.Update(ctx, inst)).To(Succeed())
+		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, inst, 5*time.Second)).To(Succeed())
+
+		// reconcile namespace registration
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
+
+		// check successful deletion
+		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, namespaceRegistration, 5*time.Second)).To(Succeed())
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(&namespace), &namespace)).To(Succeed())
 		Expect(namespace.Status.Phase).To(Equal(corev1.NamespaceTerminating))
 	})
 })
