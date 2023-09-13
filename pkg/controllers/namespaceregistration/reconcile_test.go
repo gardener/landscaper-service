@@ -140,11 +140,18 @@ var _ = Describe("Reconcile", func() {
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
 
 		// failed deletion
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(installation), installation)).To(Succeed())
+		Expect(installation.DeletionTimestamp.IsZero()).To(BeTrue())
+		Expect(helper.HasDeleteWithoutUninstallAnnotation(installation.ObjectMeta)).To(BeFalse())
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(namespaceRegistration), namespaceRegistration)).To(Succeed())
+		Expect(namespaceRegistration.Status.Phase).To(Equal("Deleting"))
 		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: namespaceRegistration.Name}, &namespace)).To(Succeed())
 		Expect(namespace.DeletionTimestamp.IsZero()).To(BeTrue())
 
 		// successful deletion
 		Expect(testenv.Client.Delete(ctx, installation)).To(Succeed())
+		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, installation, 5*time.Second)).To(Succeed())
+
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
 		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, namespaceRegistration, 5*time.Second)).To(Succeed())
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(&namespace), &namespace)).To(Succeed())
@@ -187,6 +194,7 @@ var _ = Describe("Reconcile", func() {
 
 		// successful deletion
 		Expect(testenv.Client.Delete(ctx, execution)).To(Succeed())
+		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, execution, 5*time.Second)).To(Succeed())
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
 		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, namespaceRegistration, 5*time.Second)).To(Succeed())
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(&namespace), &namespace)).To(Succeed())
@@ -229,6 +237,7 @@ var _ = Describe("Reconcile", func() {
 
 		// successful deletion
 		Expect(testenv.Client.Delete(ctx, di)).To(Succeed())
+		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, di, 5*time.Second)).To(Succeed())
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
 		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, namespaceRegistration, 5*time.Second)).To(Succeed())
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(&namespace), &namespace)).To(Succeed())
@@ -328,6 +337,7 @@ var _ = Describe("Reconcile", func() {
 
 		controllerutil.RemoveFinalizer(inst, lsv1alpha1.LandscaperFinalizer)
 		Expect(testenv.Client.Update(ctx, inst)).To(Succeed())
+		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, inst, 5*time.Second)).To(Succeed())
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
 
 		// successful deletion
