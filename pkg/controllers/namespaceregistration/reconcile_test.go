@@ -50,40 +50,27 @@ var _ = Describe("Reconcile", func() {
 		}
 	})
 
-	It("should add finalizer on reconcile", func() {
+	It("should create/delete namespace with role and rolebinding on namespaceregistration create/delete", func() {
 		var err error
 
 		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test1")
 		Expect(err).ToNot(HaveOccurred())
 
+		// reconcile
 		namespaceRegistration := state.GetNamespaceRegistration(subjectsync.CUSTOM_NS_PREFIX + "test-namespace-1")
-		//reconcile for finalizer
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
+
+		// check finalizer and phase
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(namespaceRegistration), namespaceRegistration)).To(Succeed())
 		Expect(len(namespaceRegistration.Finalizers)).To(Equal(1))
 		Expect(namespaceRegistration.Finalizers[0]).To(Equal(lssv1alpha1.LandscaperServiceFinalizer))
-	})
-
-	It("should create namespace with role/rolebinding on namespaceregistration create", func() {
-		var err error
-
-		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test1")
-		Expect(err).ToNot(HaveOccurred())
-
-		namespaceRegistration := state.GetNamespaceRegistration(subjectsync.CUSTOM_NS_PREFIX + "test-namespace-1")
-		//reconcile for finalizer
-		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
-		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(namespaceRegistration), namespaceRegistration)).To(Succeed())
-		//reconcile for actual run
-		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
-		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(namespaceRegistration), namespaceRegistration)).To(Succeed())
 		Expect(namespaceRegistration.Status.Phase).To(Equal("Completed"))
 
 		// check for namespace being created
 		namespace := corev1.Namespace{}
 		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: namespaceRegistration.Name}, &namespace)).To(Succeed())
 
-		//check for role being created
+		// check for role being created
 		role := rbacv1.Role{}
 		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: subjectsync.USER_ROLE_IN_NAMESPACE, Namespace: namespace.Name}, &role)).To(Succeed())
 		Expect(role.Rules[0].APIGroups).To(ContainElement("landscaper.gardener.cloud"))
@@ -93,39 +80,7 @@ var _ = Describe("Reconcile", func() {
 		Expect(role.Rules[1].Resources).To(ContainElements("secrets", "configmaps"))
 		Expect(role.Rules[1].Verbs).To(ContainElement("*"))
 
-		//check for rolebinding being created
-		rolebinding := rbacv1.RoleBinding{}
-		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: subjectsync.USER_ROLE_BINDING_IN_NAMESPACE, Namespace: namespace.Name}, &rolebinding)).To(Succeed())
-		Expect(rolebinding.RoleRef.Name).To(Equal(subjectsync.USER_ROLE_IN_NAMESPACE))
-		Expect(len(rolebinding.Subjects)).To(Equal(1))
-		Expect(rolebinding.Subjects[0].Kind).To(Equal("User"))
-		Expect(rolebinding.Subjects[0].Name).To(Equal("testuser"))
-	})
-
-	It("should delete namespace with role/rolebinding on namespaceregistration deletion", func() {
-		var err error
-
-		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test2")
-		Expect(err).ToNot(HaveOccurred())
-
-		namespaceRegistration := state.GetNamespaceRegistration(subjectsync.CUSTOM_NS_PREFIX + "test-namespace-2")
-		//reconcile for finalizer
-		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
-		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(namespaceRegistration), namespaceRegistration)).To(Succeed())
-		//reconcile for actual run
-		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
-		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(namespaceRegistration), namespaceRegistration)).To(Succeed())
-		Expect(namespaceRegistration.Status.Phase).To(Equal("Completed"))
-
-		// check for namespace being created
-		namespace := corev1.Namespace{}
-		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: namespaceRegistration.Name}, &namespace)).To(Succeed())
-
-		//check for role being created
-		role := rbacv1.Role{}
-		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: subjectsync.USER_ROLE_IN_NAMESPACE, Namespace: namespace.Name}, &role)).To(Succeed())
-
-		//check for rolebinding being created
+		// check for rolebinding being created
 		rolebinding := rbacv1.RoleBinding{}
 		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: subjectsync.USER_ROLE_BINDING_IN_NAMESPACE, Namespace: namespace.Name}, &rolebinding)).To(Succeed())
 		Expect(rolebinding.RoleRef.Name).To(Equal(subjectsync.USER_ROLE_IN_NAMESPACE))
@@ -133,13 +88,15 @@ var _ = Describe("Reconcile", func() {
 		Expect(rolebinding.Subjects[0].Kind).To(Equal("User"))
 		Expect(rolebinding.Subjects[0].Name).To(Equal("testuser"))
 
-		// deletion
+		// delete and reconcile
 		Expect(testenv.Client.Delete(ctx, namespaceRegistration)).To(Succeed())
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
+
+		// check successful deletion
+		// (Since the namespace contains no installations etc., the deletion and reconciliation
+		// should have the effect that namespace and namespace registration disappear.)
 		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, namespaceRegistration, 5*time.Second)).To(Succeed())
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(&namespace), &namespace)).To(Succeed())
-
-		// check for namespace being deleted
 		Expect(namespace.Status.Phase).To(Equal(corev1.NamespaceTerminating))
 	})
 
@@ -150,9 +107,8 @@ var _ = Describe("Reconcile", func() {
 		Expect(err).ToNot(HaveOccurred())
 
 		namespaceRegistration := state.GetNamespaceRegistration(subjectsync.CUSTOM_NS_PREFIX + "test-namespace-3")
-		//reconcile for finalizer
-		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
-		//reconcile for actual run
+
+		// reconcile
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(namespaceRegistration), namespaceRegistration)).To(Succeed())
 		Expect(namespaceRegistration.Status.Phase).To(Equal("Completed"))
@@ -204,9 +160,7 @@ var _ = Describe("Reconcile", func() {
 		Expect(err).ToNot(HaveOccurred())
 
 		namespaceRegistration := state.GetNamespaceRegistration(subjectsync.CUSTOM_NS_PREFIX + "test-namespace-4")
-		//reconcile for finalizer
-		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
-		//reconcile for actual run
+		//reconcile
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(namespaceRegistration), namespaceRegistration)).To(Succeed())
 		Expect(namespaceRegistration.Status.Phase).To(Equal("Completed"))
@@ -248,9 +202,7 @@ var _ = Describe("Reconcile", func() {
 		Expect(err).ToNot(HaveOccurred())
 
 		namespaceRegistration := state.GetNamespaceRegistration(subjectsync.CUSTOM_NS_PREFIX + "test-namespace-5")
-		//reconcile for finalizer
-		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
-		//reconcile for actual run
+		//reconcile
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(namespaceRegistration), namespaceRegistration)).To(Succeed())
 		Expect(namespaceRegistration.Status.Phase).To(Equal("Completed"))
@@ -292,9 +244,7 @@ var _ = Describe("Reconcile", func() {
 		Expect(err).ToNot(HaveOccurred())
 
 		namespaceRegistration := state.GetNamespaceRegistration(subjectsync.CUSTOM_NS_PREFIX + "test-namespace-6")
-		//reconcile for finalizer
-		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
-		//reconcile for actual run
+		//reconcile
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(namespaceRegistration), namespaceRegistration)).To(Succeed())
 		Expect(namespaceRegistration.Status.Phase).To(Equal("Completed"))
@@ -344,9 +294,7 @@ var _ = Describe("Reconcile", func() {
 		Expect(err).ToNot(HaveOccurred())
 
 		namespaceRegistration := state.GetNamespaceRegistration(subjectsync.CUSTOM_NS_PREFIX + "test-namespace-7")
-		//reconcile for finalizer
-		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
-		//reconcile for actual run
+		//reconcile
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(namespaceRegistration), namespaceRegistration)).To(Succeed())
 		Expect(namespaceRegistration.Status.Phase).To(Equal("Completed"))
