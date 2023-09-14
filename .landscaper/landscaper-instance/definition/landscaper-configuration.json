@@ -6,10 +6,19 @@
   "type": "object",
   "properties": {
     "landscaper": {
-      "$ref": "#definitions/landscaperConfig"
+      "$ref": "#definitions/landscaper"
     },
     "webhooksServer": {
       "$ref": "#definitions/webhooksConfig"
+    },
+    "resources": {
+      "type": "object"
+    },
+    "resourcesMain": {
+      "type": "object"
+    },
+    "hpaMain": {
+      "type": "object"
     },
     "deployers": {
       "type": "array",
@@ -19,13 +28,10 @@
     },
     "deployersConfig": {
       "$ref": "#definitions/deployerConfig"
-    },
-    "k8sClientSettings": {
-      "type": "object"
     }
   },
   "definitions": {
-    "landscaperConfig" : {
+    "landscaper" : {
       "properties": {
         "verbosity": {
           "type": "string",
@@ -35,13 +41,16 @@
           "type:": "integer",
           "format": "int32"
         },
-        "resources": {
-          "$ref": "#definitions/landscaperResources"
+        "controllers": {
+          "type": "object"
+        },
+        "k8sClientSettings": {
+          "type": "object"
+        },
+        "deployItemTimeouts": {
+          "type": "object"
         }
       }
-    },
-    "landscaperResources": {
-      "properties": {}
     },
     "webhooksConfig": {
       "properties": {

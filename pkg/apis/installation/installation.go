@@ -112,7 +112,11 @@ type Landscaper struct {
 	// Verbosity defines the logging verbosity level.
 	Verbosity string `json:"verbosity,omitempty"`
 	// Replicas defines the number of replicas for the landscaper controller deployment.
-	Replicas int `json:"replicas,omitempty"`
+	Replicas           int                             `json:"replicas,omitempty"`
+	Controllers        *lssv1alpha1.Controllers        `json:"controllers,omitempty"`
+	DeployItemTimeouts *lssv1alpha1.DeployItemTimeouts `json:"deployItemTimeouts,omitempty"`
+	// K8SClientSettings defines k8s client settings like burst and qps.
+	K8SClientSettings *lssv1alpha1.K8SClientSettings `json:"k8sClientSettings,omitempty"`
 }
 
 // Webhooks specifies the landscaper webhooks server configuration.
@@ -128,11 +132,14 @@ type LandscaperConfig struct {
 	// Landscaper specifies the landscaper controller configuration.
 	Landscaper Landscaper `json:"landscaper"`
 	// Webhooks specifies the landscaper webhooks server configuration.
-	Webhooks Webhooks `json:"webhooksServer"`
+	Webhooks      Webhooks               `json:"webhooksServer"`
+	Resources     *lssv1alpha1.Resources `json:"resources,omitempty"`
+	ResourcesMain *lssv1alpha1.Resources `json:"resourcesMain,omitempty"`
+	HPAMain       *lssv1alpha1.HPA       `json:"hpaMain,omitempty"`
 	// Deployers specifies the list of landscaper standard deployers that are getting installed.
 	Deployers []string `json:"deployers"`
 	// DeployersConfig specifies the configuration for the landscaper standard deployers.
-	DeployersConfig lsv1alpha1.AnyJSON `json:"deployersConfig,omitempty"`
+	DeployersConfig map[string]*lssv1alpha1.DeployerConfig `json:"deployersConfig,omitempty"`
 }
 
 // NewLandscaperConfig creates a new landscaper configuration initialized with default values.
@@ -146,8 +153,7 @@ func NewLandscaperConfig() *LandscaperConfig {
 			ServicePort: WebhooksServicePortDefault,
 			Replicas:    2,
 		},
-		Deployers:       make([]string, 0),
-		DeployersConfig: lsv1alpha1.NewAnyJSON([]byte("{}")),
+		Deployers: make([]string, 0),
 	}
 	return c
 }
