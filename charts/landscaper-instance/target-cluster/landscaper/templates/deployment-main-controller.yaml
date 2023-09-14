@@ -1,0 +1,100 @@
+{{/* SPDX-FileCopyrightText: 2023 SAP SE or an SAP affiliate company and Gardener contributors
+
+ SPDX-License-Identifier: Apache-2.0
+*/}}
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "landscaper.main.name" . }}
+  labels:
+    {{- include "landscaper.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.controller.replicaCount }}
+  {{- if .Values.controller.main.hpa.maxReplicas | int | eq 1 }}
+  strategy:
+    type: Recreate
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "landscaper.main.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include "landscaper-config" . |  sha256sum }}
+        checksum/registrysecrets: {{ toJson .Values.landscaper.registryConfig |  sha256sum }}
+      labels:
+        {{- include "landscaper.main.selectorLabels" . | nindent 8 }}
+        landscaper.gardener.cloud/topology: main-controller
+        landscaper.gardener.cloud/topology-ns: {{ .Release.Namespace }}
+    spec:
+      serviceAccountName: {{ .Values.controller.serviceAccountName }}
+      containers:
+        - name: {{ .Values.controller.main.containerName }}
+          image: "{{ include "landscaper-image" . }}"
+          imagePullPolicy: {{ .Values.controller.image.pullPolicy }}
+          args:
+          - "--landscaper-kubeconfig=/app/ls/landscaper-cluster-kubeconfig/kubeconfig"
+          - "--config=/app/ls/config/config.yaml"
+          - "-v={{ .Values.landscaper.verbosity }}"
+          volumeMounts:
+          - name: oci-cache
+            mountPath: /app/ls/oci-cache
+          - name: config
+            mountPath: /app/ls/config
+          {{- if .Values.landscaper.registryConfig.secrets }}
+          - name: registrypullsecrets
+            mountPath: /app/ls/registry/secrets
+          {{- end }}
+          - name: landscaper-cluster-kubeconfig
+            mountPath: /app/ls/landscaper-cluster-kubeconfig
+          resources:
+            {{- toYaml .Values.controller.main.resources | nindent 12 }}
+          env:
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: MY_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            {{- if .Values.landscaper.k8sClientSettings }}
+            - name: LS_HOST_CLIENT_BURST
+              value: {{ .Values.landscaper.k8sClientSettings.hostClient.burst | quote }}
+            - name: LS_HOST_CLIENT_QPS
+              value: {{ .Values.landscaper.k8sClientSettings.hostClient.qps | quote }}
+            - name: LS_RESOURCE_CLIENT_BURST
+              value: {{ .Values.landscaper.k8sClientSettings.resourceClient.burst | quote }}
+            - name: LS_RESOURCE_CLIENT_QPS
+              value: {{ .Values.landscaper.k8sClientSettings.resourceClient.qps | quote }}
+            {{- end }}
+      volumes:
+      - name: oci-cache
+        emptyDir: {}
+      - name: config
+        secret:
+          secretName: {{ .Values.landscaper.name }}-config
+      {{- if .Values.landscaper.registryConfig.secrets }}
+      - name: registrypullsecrets
+        secret:
+          secretName: {{ .Values.landscaper.name }}-registry
+      {{- end }}
+      - name: landscaper-cluster-kubeconfig
+        secret:
+          secretName: {{ .Values.landscaper.name }}-controller-cluster-kubeconfig
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              landscaper.gardener.cloud/topology: main-controller
+              landscaper.gardener.cloud/topology-ns: {{ .Release.Namespace }}
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              landscaper.gardener.cloud/topology: main-controller
+              landscaper.gardener.cloud/topology-ns: {{ .Release.Namespace }}

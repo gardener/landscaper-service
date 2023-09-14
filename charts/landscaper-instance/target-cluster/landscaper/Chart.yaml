@@ -1,0 +1,10 @@
+# SPDX-FileCopyrightText: 2023 SAP SE or an SAP affiliate company and Gardener contributors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+apiVersion: v2
+name: landscaper-target-cluster
+description: Landscaper Target Cluster objects
+type: application
+version: v0.1.0
+appVersion: v0.73.0
