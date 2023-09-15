@@ -4,15 +4,15 @@
 */}}
 
 apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
+kind: ClusterRoleBinding
 metadata:
-  name: {{ .Values.controller.roleName }}
+  name: {{ include "landscaper.clusterrole.name" . }}
   labels:
       {{- include "landscaper.labels" . | nindent 4 }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: {{ .Values.controller.roleName }}
+  kind: ClusterRole
+  name: {{ include "landscaper.clusterrole.name" . }}
 subjects:
   - kind: ServiceAccount
     name: {{ .Values.controller.serviceAccountName }}

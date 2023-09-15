@@ -3,7 +3,7 @@
  SPDX-License-Identifier: Apache-2.0
 */}}
 
---
+---
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
@@ -35,14 +35,14 @@ spec:
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "landscaper.main.name" }}
+  name: {{ include "landscaper.main.name" . }}
   labels:
     {{- include "landscaper.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "landscaper.main.name" }}
+    name: {{ include "landscaper.main.name" . }}
   minReplicas: {{ .Values.controller.main.hpa.minReplicas }}
   maxReplicas: {{ .Values.controller.main.hpa.maxReplicas }}
   metrics:

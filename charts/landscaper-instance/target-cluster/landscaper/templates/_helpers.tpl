@@ -13,6 +13,10 @@ Create chart name and version as used by the chart label.
 {{- .Values.landscaper.name }}-main
 {{- end }}
 
+{{- define "landscaper.clusterrole.name" -}}
+landscaper.gardener.cloud:{{- .Values.landscaper.name }}
+{{- end }}
+
 {{/*
 Common labels
 */}}

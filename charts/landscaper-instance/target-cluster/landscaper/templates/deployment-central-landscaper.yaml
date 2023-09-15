@@ -20,8 +20,10 @@ spec:
     metadata:
       annotations:
         checksum/config: {{ include "landscaper-config" . |  sha256sum }}
+        {{- if .Values.landscaper.registryConfig.secrets }}
         checksum/registrysecrets: {{ toJson .Values.landscaper.registryConfig |  sha256sum }}
-
+        {{- end }}
+        checksum/kubeconfigsecret: {{ toJson .Values.controller.resourceCluster.kubeconfig | sha256sum }}
       labels:
         {{- include "landscaper.selectorLabels" . | nindent 8 }}
     spec:
@@ -31,7 +33,7 @@ spec:
           image: "{{ include "landscaper-image" . }}"
           imagePullPolicy: {{ .Values.controller.image.pullPolicy }}
           args:
-          - "--landscaper-kubeconfig=/app/ls/landscaper-cluster-kubeconfig/kubeconfig"
+          - "--landscaper-kubeconfig=/app/ls/resource-cluster-kubeconfig/kubeconfig"
           - "--config=/app/ls/config/config.yaml"
           - "-v={{ .Values.landscaper.verbosity }}"
           volumeMounts:
@@ -43,8 +45,8 @@ spec:
           - name: registrypullsecrets
             mountPath: /app/ls/registry/secrets
           {{- end }}
-          - name: landscaper-cluster-kubeconfig
-            mountPath: /app/ls/landscaper-cluster-kubeconfig
+          - name: resource-cluster-kubeconfig
+            mountPath: /app/ls/resource-cluster-kubeconfig
           resources:
             {{- toYaml .Values.controller.resources | nindent 12 }}
           env:
@@ -79,6 +81,6 @@ spec:
         secret:
           secretName: {{ .Values.landscaper.name }}-registry
       {{- end }}
-      - name: landscaper-cluster-kubeconfig
+      - name: resource-cluster-kubeconfig
         secret:
           secretName: {{ .Values.landscaper.name }}-controller-cluster-kubeconfig

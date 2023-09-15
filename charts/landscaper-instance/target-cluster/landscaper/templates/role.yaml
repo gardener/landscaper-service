@@ -6,7 +6,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: {{ .Values.controller.clusterRoleName }}
+  name: {{ .Values.controller.roleName }}
   labels:
     {{- include "landscaper.labels" . | nindent 4 }}
 rules:
