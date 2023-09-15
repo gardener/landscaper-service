@@ -36,9 +36,10 @@ func RequestFromObject(obj client.Object) reconcile.Request {
 
 // ShouldReconcile reconciles the given reconciler with the given request
 // and expects that no error occurred
-func ShouldReconcile(ctx context.Context, reconciler reconcile.Reconciler, req reconcile.Request, optionalDescription ...interface{}) {
-	_, err := reconciler.Reconcile(ctx, req)
+func ShouldReconcile(ctx context.Context, reconciler reconcile.Reconciler, req reconcile.Request, optionalDescription ...interface{}) reconcile.Result {
+	res, err := reconciler.Reconcile(ctx, req)
 	gomega.ExpectWithOffset(1, err).ToNot(gomega.HaveOccurred(), optionalDescription...)
+	return res
 }
 
 // ShouldNotReconcile reconciles the given reconciler with the given request

@@ -1,0 +1,5 @@
+apiVersion: landscaper-service.gardener.cloud/v1alpha1
+kind: NamespaceRegistration
+metadata:
+  name: cu-test-namespace-3
+  namespace: {{ .Namespace }}

@@ -1,6 +1,44 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
   "definitions": {
+    "core-v1alpha1-Error": {
+      "description": "Error holds information about an error that occurred.",
+      "type": "object",
+      "required": [
+        "operation",
+        "lastTransitionTime",
+        "lastUpdateTime",
+        "reason",
+        "message"
+      ],
+      "properties": {
+        "lastTransitionTime": {
+          "description": "Last time the condition transitioned from one status to another.",
+          "default": {},
+          "$ref": "#/definitions/meta-v1-Time"
+        },
+        "lastUpdateTime": {
+          "description": "Last time the condition was updated.",
+          "default": {},
+          "$ref": "#/definitions/meta-v1-Time"
+        },
+        "message": {
+          "description": "A human-readable message indicating details about the transition.",
+          "type": "string",
+          "default": ""
+        },
+        "operation": {
+          "description": "Operation describes the operator where the error occurred.",
+          "type": "string",
+          "default": ""
+        },
+        "reason": {
+          "description": "The reason for the condition's last transition.",
+          "type": "string",
+          "default": ""
+        }
+      }
+    },
     "core-v1alpha1-NamespaceRegistrationSpec": {
       "type": "object"
     },
@@ -10,6 +48,9 @@
         "phase"
       ],
       "properties": {
+        "lastError": {
+          "$ref": "#/definitions/core-v1alpha1-Error"
+        },
         "phase": {
           "type": "string",
           "default": ""

@@ -34,6 +34,8 @@ type NamespaceRegistration struct {
 
 type NamespaceRegistrationStatus struct {
 	Phase string `json:"phase"`
+	// +optional
+	LastError *Error `json:"lastError,omitempty"`
 }
 
 type NamespaceRegistrationSpec struct {

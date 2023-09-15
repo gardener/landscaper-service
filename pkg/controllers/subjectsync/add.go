@@ -16,7 +16,7 @@ import (
 	"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 )
 
-// AddControllerToManager adds the Namespaceregistration Controller to the manager
+// AddControllerToManager adds the SubjectList Controller to the manager
 func AddControllerToManager(logger logging.Logger, mgr manager.Manager, config *coreconfig.TargetShootSidecarConfiguration) error {
 	log := logger.Reconciles("SubjectSyncController", "SubjectList")
 	ctrl, err := NewController(log, mgr.GetClient(), mgr.GetScheme(), config)

@@ -19,4 +19,8 @@ const (
 	// When set at landscaper deployments, the annotation will be inherited to the corresponding instance
 	// and prevents its reconciliation until removed.
 	LandscaperServiceOperationIgnore = "ignore"
+
+	LandscaperServiceOnDeleteStrategyAnnotation                             = "landscaper-service.gardener.cloud/on-delete-strategy"
+	LandscaperServiceOnDeleteStrategyDeleteAllInstallations                 = "delete-all-installations"
+	LandscaperServiceOnDeleteStrategyDeleteAllInstallationsWithoutUninstall = "delete-all-installations-without-uninstall"
 )

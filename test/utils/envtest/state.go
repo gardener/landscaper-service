@@ -32,6 +32,12 @@ type State struct {
 	ConfigMaps map[string]*corev1.ConfigMap
 	// Installations contains all installations in this test environment.
 	Installations map[string]*lsv1alpha1.Installation
+	// Executions contains all executions in this test environment.
+	Executions map[string]*lsv1alpha1.Execution
+	// DeployItems contains all DeployItems in this test environment.
+	DeployItems map[string]*lsv1alpha1.DeployItem
+	// TargetSync contains all targetsyncs in this test environment.
+	TargetSync map[string]*lsv1alpha1.TargetSync
 	// Targets contains all targets in this test environment.
 	Targets map[string]*lsv1alpha1.Target
 	// Contexts contains all contexts in this test environment
@@ -56,6 +62,9 @@ func NewState(namespace string) *State {
 		Secrets:                 make(map[string]*corev1.Secret),
 		ConfigMaps:              make(map[string]*corev1.ConfigMap),
 		Installations:           make(map[string]*lsv1alpha1.Installation),
+		Executions:              make(map[string]*lsv1alpha1.Execution),
+		DeployItems:             make(map[string]*lsv1alpha1.DeployItem),
+		TargetSync:              make(map[string]*lsv1alpha1.TargetSync),
 		Targets:                 make(map[string]*lsv1alpha1.Target),
 		Contexts:                make(map[string]*lsv1alpha1.Context),
 		AvailabilityCollections: make(map[string]*lssv1alpha1.AvailabilityCollection),
@@ -93,6 +102,18 @@ func (s *State) GetConfigMap(name string) *corev1.ConfigMap {
 // GetInstallation retrieves an installation by the given name.
 func (s *State) GetInstallation(name string) *lsv1alpha1.Installation {
 	return s.Installations[s.Namespace+"/"+name]
+}
+
+func (s *State) GetExecution(name string) *lsv1alpha1.Execution {
+	return s.Executions[s.Namespace+"/"+name]
+}
+
+func (s *State) GetDeployItem(name string) *lsv1alpha1.DeployItem {
+	return s.DeployItems[s.Namespace+"/"+name]
+}
+
+func (s *State) GetTargetSync(name string) *lsv1alpha1.TargetSync {
+	return s.TargetSync[s.Namespace+"/"+name]
 }
 
 // GetTarget retrieves a target by the given name.
@@ -151,6 +172,12 @@ func (s *State) AddObject(object client.Object) {
 		s.ConfigMaps[types.NamespacedName{Name: o.Name, Namespace: o.Namespace}.String()] = o.DeepCopy()
 	case *lsv1alpha1.Installation:
 		s.Installations[types.NamespacedName{Name: o.Name, Namespace: o.Namespace}.String()] = o.DeepCopy()
+	case *lsv1alpha1.Execution:
+		s.Executions[types.NamespacedName{Name: o.Name, Namespace: o.Namespace}.String()] = o.DeepCopy()
+	case *lsv1alpha1.DeployItem:
+		s.DeployItems[types.NamespacedName{Name: o.Name, Namespace: o.Namespace}.String()] = o.DeepCopy()
+	case *lsv1alpha1.TargetSync:
+		s.TargetSync[types.NamespacedName{Name: o.Name, Namespace: o.Namespace}.String()] = o.DeepCopy()
 	case *lsv1alpha1.Target:
 		s.Targets[types.NamespacedName{Name: o.Name, Namespace: o.Namespace}.String()] = o.DeepCopy()
 	case *lsv1alpha1.Context:

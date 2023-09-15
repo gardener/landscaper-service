@@ -1382,10 +1382,17 @@ func schema_pkg_apis_core_v1alpha1_NamespaceRegistrationStatus(ref common.Refere
 							Format:  "",
 						},
 					},
+					"lastError": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Error"),
+						},
+					},
 				},
 				Required: []string{"phase"},
 			},
 		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Error"},
 	}
 }
 

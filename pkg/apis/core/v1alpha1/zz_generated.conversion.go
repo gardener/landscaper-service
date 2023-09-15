@@ -933,6 +933,7 @@ func Convert_core_NamespaceRegistrationSpec_To_v1alpha1_NamespaceRegistrationSpe
 
 func autoConvert_v1alpha1_NamespaceRegistrationStatus_To_core_NamespaceRegistrationStatus(in *NamespaceRegistrationStatus, out *core.NamespaceRegistrationStatus, s conversion.Scope) error {
 	out.Phase = in.Phase
+	out.LastError = (*core.Error)(unsafe.Pointer(in.LastError))
 	return nil
 }
 
@@ -943,6 +944,7 @@ func Convert_v1alpha1_NamespaceRegistrationStatus_To_core_NamespaceRegistrationS
 
 func autoConvert_core_NamespaceRegistrationStatus_To_v1alpha1_NamespaceRegistrationStatus(in *core.NamespaceRegistrationStatus, out *NamespaceRegistrationStatus, s conversion.Scope) error {
 	out.Phase = in.Phase
+	out.LastError = (*Error)(unsafe.Pointer(in.LastError))
 	return nil
 }
 

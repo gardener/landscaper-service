@@ -27,6 +27,36 @@ spec:
           status:
             description: Status contains the status for the NamespaceRegistration.
             properties:
+              lastError:
+                description: Error holds information about an error that occurred.
+                properties:
+                  lastTransitionTime:
+                    description: Last time the condition transitioned from one status
+                      to another.
+                    format: date-time
+                    type: string
+                  lastUpdateTime:
+                    description: Last time the condition was updated.
+                    format: date-time
+                    type: string
+                  message:
+                    description: A human-readable message indicating details about
+                      the transition.
+                    type: string
+                  operation:
+                    description: Operation describes the operator where the error
+                      occurred.
+                    type: string
+                  reason:
+                    description: The reason for the condition's last transition.
+                    type: string
+                required:
+                - operation
+                - lastTransitionTime
+                - lastUpdateTime
+                - reason
+                - message
+                type: object
               phase:
                 type: string
             required:

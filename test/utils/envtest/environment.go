@@ -393,19 +393,37 @@ func (e *Environment) decodeAndAppendLSSObject(data []byte, objects []client.Obj
 	case ConfigMapGVK.Kind:
 		configMap := &corev1.ConfigMap{}
 		if _, _, err := decoder.Decode(data, nil, configMap); err != nil {
-			return nil, fmt.Errorf("unable to decode file as secret: %w", err)
+			return nil, fmt.Errorf("unable to decode file as config map: %w", err)
 		}
 		return append(objects, configMap), nil
 	case InstallationGVK.Kind:
 		installation := &lsv1alpha1.Installation{}
 		if _, _, err := decoder.Decode(data, nil, installation); err != nil {
-			return nil, fmt.Errorf("unable to decode file as secret: %w", err)
+			return nil, fmt.Errorf("unable to decode file as installation: %w", err)
 		}
 		return append(objects, installation), nil
+	case ExecutionGVK.Kind:
+		execution := &lsv1alpha1.Execution{}
+		if _, _, err := decoder.Decode(data, nil, execution); err != nil {
+			return nil, fmt.Errorf("unable to decode file as execution: %w", err)
+		}
+		return append(objects, execution), nil
+	case DeployItemGVK.Kind:
+		di := &lsv1alpha1.DeployItem{}
+		if _, _, err := decoder.Decode(data, nil, di); err != nil {
+			return nil, fmt.Errorf("unable to decode file as deploy item: %w", err)
+		}
+		return append(objects, di), nil
+	case TargetSyncGVK.Kind:
+		di := &lsv1alpha1.TargetSync{}
+		if _, _, err := decoder.Decode(data, nil, di); err != nil {
+			return nil, fmt.Errorf("unable to decode file as targetsync: %w", err)
+		}
+		return append(objects, di), nil
 	case TargetGVK.Kind:
 		target := &lsv1alpha1.Target{}
 		if _, _, err := decoder.Decode(data, nil, target); err != nil {
-			return nil, fmt.Errorf("unable to decode file as secret: %w", err)
+			return nil, fmt.Errorf("unable to decode file as target: %w", err)
 		}
 		return append(objects, target), nil
 	case ContextGVK.Kind:
