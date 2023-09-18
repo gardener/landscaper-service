@@ -16,3 +16,11 @@ ${SOURCE_PATH}/hack/update-helm-chart-version.sh
 $SOURCE_PATH/hack/create-helm-chart.sh ${CHART_REPO} charts/landscaper-service
 $SOURCE_PATH/hack/create-helm-chart.sh ${CHART_REPO} charts/landscaper-service-target-shoot-sidecar-server
 $SOURCE_PATH/hack/create-helm-chart.sh ${CHART_REPO} charts/sidecar-rbac
+
+$SOURCE_PATH/hack/create-helm-chart.sh ${CHART_REPO} charts/landscaper-instance/resource-cluster/landscaper
+$SOURCE_PATH/hack/create-helm-chart.sh ${CHART_REPO} charts/landscaper-instance/resource-cluster/deployer
+
+$SOURCE_PATH/hack/create-helm-chart.sh ${CHART_REPO} charts/landscaper-instance/target-cluster/landscaper
+$SOURCE_PATH/hack/create-helm-chart.sh ${CHART_REPO} charts/landscaper-instance/target-cluster/helm-deployer
+$SOURCE_PATH/hack/create-helm-chart.sh ${CHART_REPO} charts/landscaper-instance/target-cluster/manifest-deployer
+$SOURCE_PATH/hack/create-helm-chart.sh ${CHART_REPO} charts/landscaper-instance/target-cluster/container-deployer
