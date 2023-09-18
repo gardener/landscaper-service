@@ -38,7 +38,7 @@ spec:
           imagePullPolicy: {{ .Values.deployer.image.pullPolicy }}
           args:
             - "--config=/app/ls/config/config.yaml"
-            - "--landscaper-kubeconfig=/app/ls/resource-cluster-kubeconfig/kubeconfig"
+            - "--kubeconfig=/app/ls/resource-cluster-kubeconfig/kubeconfig"
             - "-v={{ .Values.deployer.verbosity }}"
           volumeMounts:
             - name: config

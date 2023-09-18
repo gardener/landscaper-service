@@ -1,0 +1,53 @@
+{{/* SPDX-FileCopyrightText: 2023 SAP SE or an SAP affiliate company and Gardener contributors
+
+ SPDX-License-Identifier: Apache-2.0
+*/}}
+
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ .Values.deployer.name }}
+  labels:
+    {{- include "deployer.labels" . | nindent 4 }}
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - "events"
+    verbs:
+      - create
+      - get
+      - watch
+      - patch
+      - update
+
+  - apiGroups:
+      - ""
+    resources:
+      - "secrets"
+    verbs:
+      - "*"
+
+  - apiGroups:
+      - ""
+    resources:
+      - "pods"
+      - "pods/status"
+    verbs:
+      - "*"
+
+  - apiGroups:
+      - ""
+    resources:
+      - "serviceaccounts"
+    verbs:
+      - "*"
+
+  - apiGroups:
+      - "rbac.authorization.k8s.io"
+    resources:
+      - "roles"
+      - "rolebindings"
+    verbs:
+      - "*"

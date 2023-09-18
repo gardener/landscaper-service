@@ -28,17 +28,17 @@ spec:
         checksum/kubeconfigsecret: {{ toJson .Values.deployer.resourceCluster.kubeconfig | sha256sum }}
       labels:
         {{- include "deployer.selectorLabels" . | nindent 8 }}
-        landscaper.gardener.cloud/topology: manifest-deployer
+        landscaper.gardener.cloud/topology: container-deployer
         landscaper.gardener.cloud/topology-ns: {{ .Release.Namespace }}
     spec:
-      automountServiceAccountToken: false
+      serviceAccountName: {{.Values.deployer.serviceAccountName }}
       containers:
         - name: {{ .Values.deployer.containerName }}
           image: "{{ include "deployer-image" . }}"
           imagePullPolicy: {{ .Values.deployer.image.pullPolicy }}
           args:
             - "--config=/app/ls/config/config.yaml"
-            - "--kubeconfig=/app/ls/resource-cluster-kubeconfig/kubeconfig"
+            - "--landscaper-kubeconfig=/app/ls/resource-cluster-kubeconfig/kubeconfig"
             - "-v={{ .Values.deployer.verbosity }}"
           volumeMounts:
             - name: config
@@ -89,12 +89,12 @@ spec:
           whenUnsatisfiable: ScheduleAnyway
           labelSelector:
             matchLabels:
-              landscaper.gardener.cloud/topology: manifest-deployer
+              landscaper.gardener.cloud/topology: container-deployer
               landscaper.gardener.cloud/topology-ns: {{ .Release.Namespace }}
         - maxSkew: 1
           topologyKey: kubernetes.io/hostname
           whenUnsatisfiable: ScheduleAnyway
           labelSelector:
             matchLabels:
-              landscaper.gardener.cloud/topology: manifest-deployer
+              landscaper.gardener.cloud/topology: container-deployer
               landscaper.gardener.cloud/topology-ns: {{ .Release.Namespace }}
