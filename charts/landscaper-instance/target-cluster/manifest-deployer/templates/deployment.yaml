@@ -1,0 +1,100 @@
+{{/* SPDX-FileCopyrightText: 2023 SAP SE or an SAP affiliate company and Gardener contributors
+
+ SPDX-License-Identifier: Apache-2.0
+*/}}
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.deployer.name }}
+  labels:
+    {{- include "deployer.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.deployer.replicaCount }}
+  {{- if .Values.deployer.hpa.maxReplicas | int | eq 1 }}
+  strategy:
+    type: Recreate
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "deployer.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include "deployer-config" . |  sha256sum }}
+        {{- if .Values.deployer.registryConfig.secrets }}
+        checksum/registrysecrets: {{ toJson .Values.deployer.registryConfig.secrets |  sha256sum }}
+        {{- end }}
+        checksum/kubeconfigsecret: {{ toJson .Values.deployer.resourceCluster.kubeconfig | sha256sum }}
+      labels:
+        {{- include "deployer.selectorLabels" . | nindent 8 }}
+        landscaper.gardener.cloud/topology: manifest-deployer
+        landscaper.gardener.cloud/topology-ns: {{ .Release.Namespace }}
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: {{ .Values.deployer.containerName }}
+          image: "{{ include "deployer-image" . }}"
+          imagePullPolicy: {{ .Values.deployer.image.pullPolicy }}
+          args:
+            - "--config=/app/ls/config/config.yaml"
+            - "--landscaper-kubeconfig=/app/ls/resource-cluster-kubeconfig/kubeconfig"
+            - "-v={{ .Values.deployer.verbosity }}"
+          volumeMounts:
+            - name: config
+              mountPath: /app/ls/config/
+          {{- if .Values.deployer.registryConfig }}
+            - name: ociregistry
+              mountPath: /app/ls/registry/secrets
+          {{- end }}
+            - name: resource-cluster-kubeconfig
+              mountPath: /app/ls/resource-cluster-kubeconfig
+          resources:
+            {{- toYaml .Values.deployer.resources | nindent 12 }}
+          env:
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: MY_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          {{- if .Values.deployer.k8sClientSettings }}
+            - name: LS_HOST_CLIENT_BURST
+              value: {{ .Values.deployer.k8sClientSettings.hostClient.burst | quote }}
+            - name: LS_HOST_CLIENT_QPS
+              value: {{ .Values.deployer.k8sClientSettings.hostClient.qps | quote }}
+            - name: LS_RESOURCE_CLIENT_BURST
+              value: {{ .Values.deployer.k8sClientSettings.resourceClient.burst | quote }}
+            - name: LS_RESOURCE_CLIENT_QPS
+              value: {{ .Values.deployer.k8sClientSettings.resourceClient.qps | quote }}
+          {{- end }}
+
+      volumes:
+        - name: config
+          secret:
+            secretName: {{ .Values.deployer.name }}-config
+      {{- if .Values.deployer.registryConfig.secrets }}
+        - name: ociregistry
+          secret:
+            secretName: {{ .Values.deployer.name }}-registries
+      {{- end }}
+        - name: resource-cluster-kubeconfig
+          secret:
+            secretName:  {{ .Values.deployer.name }}-cluster-kubeconfig
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              landscaper.gardener.cloud/topology: manifest-deployer
+              landscaper.gardener.cloud/topology-ns: {{ .Release.Namespace }}
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              landscaper.gardener.cloud/topology: manifest-deployer
+              landscaper.gardener.cloud/topology-ns: {{ .Release.Namespace }}
