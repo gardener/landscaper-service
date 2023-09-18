@@ -21,7 +21,7 @@ spec:
       annotations:
         checksum/config: {{ include "landscaper-config" . |  sha256sum }}
         {{- if .Values.landscaper.registryConfig.secrets }}
-        checksum/registrysecrets: {{ toJson .Values.landscaper.registryConfig |  sha256sum }}
+        checksum/registrysecrets: {{ toJson .Values.landscaper.registryConfig.secrets |  sha256sum }}
         {{- end }}
         checksum/kubeconfigsecret: {{ toJson .Values.controller.resourceCluster.kubeconfig | sha256sum }}
       labels:

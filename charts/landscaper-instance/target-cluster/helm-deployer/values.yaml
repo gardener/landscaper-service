@@ -1,0 +1,53 @@
+deployer:
+  name: helm-deployer
+  identity: helm-deployer-default
+  containerName: helm-deployer
+  verbosity: info
+
+  registryConfig:
+    allowPlainHttp: false
+    insecureSkipVerify: false
+    secrets: {}
+
+  resourceCluster:
+    kubeconfig: |
+      apiVersion: v1
+      kind: Config
+      clusters: []
+      users: []
+      contexts: []
+
+  replicaCount: 1
+
+  hpa:
+    minReplicas: 1
+    maxReplicas: 1
+
+  controller:
+    workers: 30
+
+  # burst and max queries per second settings for k8s client used in reconciliation
+  k8sClientSettings:
+    # settings of client for host cluster; are overwritten by settings for resourceClient if host and resource cluster are identical
+    hostClient:
+      burst: 30
+      qps: 20
+
+    # settings of client for resource cluster
+    resourceClient:
+      burst: 60
+      qps: 40
+
+  resources:
+    requests:
+      cpu: 300m
+      memory: 300Mi
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  image:
+    repository: eu.gcr.io/gardener-project/landscaper/helm-deployer-controller
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    # tag: ""
