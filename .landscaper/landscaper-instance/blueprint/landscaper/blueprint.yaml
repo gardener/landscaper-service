@@ -30,6 +30,12 @@ imports:
     schema:
       type: string
 
+  - name: landscaperDeployerKubeconfigYaml
+    required: true
+    type: data
+    schema:
+      type: string
+
   - name: registryConfig
     type: data
     schema:

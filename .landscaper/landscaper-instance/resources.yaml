@@ -75,6 +75,54 @@ access:
   imageReference: eu.gcr.io/gardener-project/landscaper-service/charts/sidecar-rbac:${VERSION}
 ...
 ---
+type: helm.io/chart
+name: landscaper-instance-resource-cluster-landscaper
+relation: local
+access:
+  type: ociRegistry
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/charts/landscaper-instance/resource-cluster/landscaper:${VERSION}
+...
+---
+type: helm.io/chart
+name: landscaper-instance-resource-cluster-deployer
+relation: local
+access:
+  type: ociRegistry
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/charts/landscaper-instance/resource-cluster/deployer:${VERSION}
+...
+---
+type: helm.io/chart
+name: landscaper-instance-target-cluster-landscaper
+relation: local
+access:
+  type: ociRegistry
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/charts/landscaper-instance/target-cluster/landscaper:${VERSION}
+...
+---
+type: helm.io/chart
+name: landscaper-instance-target-cluster-helm-deployer
+relation: local
+access:
+  type: ociRegistry
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/charts/landscaper-instance/target-cluster/helm-deployer:${VERSION}
+...
+---
+type: helm.io/chart
+name: landscaper-instance-target-cluster-manifest-deployer
+relation: local
+access:
+  type: ociRegistry
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/charts/landscaper-instance/target-cluster/manifest-deployer:${VERSION}
+...
+---
+type: helm.io/chart
+name: landscaper-instance-target-cluster-container-deployer
+relation: local
+access:
+  type: ociRegistry
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/charts/landscaper-instance/target-cluster/container-deployer:${VERSION}
+...
+---
 type: ociImage
 name: ls-service-target-shoot-sidecar-image
 relation: local

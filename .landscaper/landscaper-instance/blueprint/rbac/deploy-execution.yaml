@@ -12,24 +12,38 @@ deployItems:
       createNamespace: true
 
       chart:
-        {{ $landscaperComponent := getComponent .cd "name" "landscaper" }}
-        {{ $resource := getResource $landscaperComponent "name" "landscaper-controller-rbac-chart" }}
+        {{ $resource := getResource .cd "name" "landscaper-instance-resource-cluster-landscaper" }}
         ref: {{ $resource.access.imageReference }}
 
       values:
-        global:
-          serviceAccount:
-            controller:
-              create: true
-              annotations: {}
-              name: landscaper-controller
+        controller:
+          serviceAccountName: "landscaper-controller"
+          clusterRoleName: "landscaper.gardener.cloud:controller"
 
-            webhooksServer:
-              create: true
-              annotations: {}
-              name: landscaper-webhooks
+        webhooksServer:
+          serviceAccountName: "landscaper-webhooks"
+          clusterRoleName: "landscaper.gardener.cloud:webhooks-server"
 
-            user:
-              create: true
-              annotations: {}
-              name: landscaper-user
+        user:
+          serviceAccountName: "landscaper-user"
+          clusterRoleName: "landscaper.gardener.cloud:user"
+
+  - name: deployer-rbac
+    type: landscaper.gardener.cloud/helm
+    target:
+      import: shootCluster
+    config:
+      apiVersion: helm.deployer.landscaper.gardener.cloud/v1alpha1
+      kind: ProviderConfiguration
+      updateStrategy: patch
+      name: deployer-rbac
+      namespace: {{ .imports.targetClusterNamespace }}
+      createNamespace: true
+
+      chart:
+        {{ $resource := getResource .cd "name" "landscaper-instance-resource-cluster-deployer" }}
+        ref: {{ $resource.access.imageReference } }
+
+      values:
+        serviceAccountName: "landscaper-deployer"
+        clusterRoleName: "landscaper.gardener.cloud:deployer"

@@ -30,15 +30,16 @@ deployItems:
                 operator: exists
 
       chart:
-        {{ $resource := getResource $landscaperComponent "name" "landscaper-controller-deployment-chart" }}
+        {{ $resource := getResource .cd "name" "landscaper-instance-target-cluster-landscaper" }}
         ref: {{ $resource.access.imageReference }}
 
       values:
-        nameOverride: landscaper-{{ .imports.hostingClusterNamespace }}
-        fullnameOverride: landscaper-{{ .imports.hostingClusterNamespace }}
-
         landscaper:
-          verbosity: {{ .imports.landscaperConfig.landscaper.verbosity | default "info" }}
+          name: landscaper-{{ .imports.hostingClusterNamespace }}
+
+          {{- if (dig "landscaperConfig" "landscaper" "verbosity" false .imports) }}
+          verbosity: {{ .imports.landscaperConfig.landscaper.verbosity }}
+          {{- end  }}
 
           {{- if (dig "landscaperConfig" "landscaper" "controllers" false .imports) }}
           controllers:
@@ -49,21 +50,12 @@ deployItems:
             deployCrd: true
             forceUpdate: true
           registryConfig:
-{{ toYaml .imports.registryConfig | indent 12 }}
+          {{- toYaml .imports.registryConfig | nindent 12 }}
 
           {{- if (dig "landscaperConfig" "landscaper" "k8sClientSettings" false .imports) }}
           k8sClientSettings:
           {{- toYaml .imports.landscaperConfig.landscaper.k8sClientSettings | nindent 12 }}
           {{- end }}
-
-          deployers: []
-
-          deployerManagement:
-            disable: true
-            agent:
-              disable: true
-
-          deployersConfig: {}
 
           {{- if (dig "landscaperConfig" "landscaper" "deployItemTimeouts" false .imports) }}
           deployItemTimeouts:
@@ -75,26 +67,41 @@ deployItems:
             additionalDeployments:
               deployments:
                 - laas-{{ .imports.hostingClusterNamespace }}-shoot-sidecar
-{{ if has "helm" .imports.landscaperConfig.deployers }}
+                {{- if has "helm" .imports.landscaperConfig.deployers }}
                 - helm-{{ .imports.hostingClusterNamespace }}-helm-deployer
-{{ end }}
-{{ if has "manifest" .imports.landscaperConfig.deployers }}
+                {{- end }}
+                {{- if has "manifest" .imports.landscaperConfig.deployers }}
                 - manifest-{{ .imports.hostingClusterNamespace }}-manifest-deployer
-{{ end }}
-{{ if has "container" .imports.landscaperConfig.deployers }}
+                {{- end }}
+                {{- if has "container" .imports.landscaperConfig.deployers }}
                 - container-{{ .imports.hostingClusterNamespace }}-container-deployer
-{{ end }}
-
-        image: {}
+                {{- end }}
 
         controller:
-          name: landscaper-controller
+          containerName: landscaper-controller
+          serviceAccountName: landscaper-controller
+          roleName: landscaper-controller
 
-          landscaperKubeconfig:
+          resourceCluster:
             kubeconfig: |
-{{ .imports.landscaperControllerKubeconfigYaml | indent 14 }}
+            {{- .imports.landscaperControllerKubeconfigYaml | nindent 14 }}
 
-          replicaCount: {{ .imports.landscaperConfig.landscaper.replicas | default 1 }}
+          replicaCount: 1
+
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+
+          hpa:
+            minReplicas: 1
+            maxReplicas: 1
+            averageCpuUtilization: 80
+            averageMemoryUtilization: 80
+
+          service:
+            type: ClusterIP
+            port: 80
 
           {{ $landscaperImgresource := getResource $landscaperComponent "name" "landscaper-controller" }}
           {{ $landscaperImgrepo := ociRefRepo $landscaperImgresource.access.imageReference }}
@@ -104,14 +111,38 @@ deployItems:
             tag: {{ $landscaperImgtag }}
             pullPolicy: IfNotPresent
 
+          main:
+            containerName: landscaper-main
+
+            {{- if (dig "landscaperConfig" "landscaper" "replicas" false .imports) }}
+            replicaCount: {{ .imports.landscaperConfig.landscaper.replicas }}
+            {{- end }}
+
+            {{- if (dig "landscaperConfig" "resourcesMain" false .imports) }}
+            resources:
+            {{- toYaml imports.landscaperConfig.landscaper.resourcesMain | nindent 14 }}
+            {{- end }}
+
+            {{- if (dig "landscaperConfig" "hpaMain" false .imports) }}
+            hpa:
+              {{- if (dig "landscaperConfig" "hpaMain" "maxReplicas" false .imports) }}
+              maxReplicas: {{ .imports.landscaperConfig.hpaMain.maxReplicas }}
+              {{- end }}
+              {{- if (dig "landscaperConfig" "hpaMain" "averageCpuUtilization" false .imports) }}
+              averageCpuUtilization: {{ .imports.landscaperConfig.hpaMain.averageCpuUtilization }}
+              {{- end }}
+              {{- if (dig "landscaperConfig" "hpaMain" "averageMemoryUtilization" false .imports) }}
+              averageMemoryUtilization: {{ .imports.landscaperConfig.hpaMain.averageMemoryUtilization }}
+              {{- end }}
+            {{- end }}
+
         webhooksServer:
-          name: landscaper-webhooks
+          containerName: landscaper-webhooks
+          certificatesNamespace: {{ .imports.targetClusterNamespace }}
 
-          landscaperKubeconfig:
+          resourceCluster:
             kubeconfig: |
-{{ .imports.landscaperWebhooksKubeconfigYaml | indent 14}}
-
-          replicaCount: {{ .imports.landscaperConfig.webhooksServer.replicas | default 1 }}
+            {{- .imports.landscaperWebhooksKubeconfigYaml | nindent 14}}
 
           {{ $webhooksImgresource := getResource $landscaperComponent "name" "landscaper-webhooks-server" }}
           {{ $webhooksImgrepo := ociRefRepo $webhooksImgresource.access.imageReference }}
@@ -121,69 +152,39 @@ deployItems:
             tag: {{ $webhooksImgtag }}
             pullPolicy: IfNotPresent
 
-          servicePort: {{ .imports.landscaperConfig.webhooksServer.servicePort | default 9443 }}
-          disableWebhooks: []
-          certificatesNamespace: {{ .imports.targetClusterNamespace }}
-
-          ingress:
-            host: {{ .imports.webhooksHostName }}
-            className: nginx
-            dns:
-              class: garden
+          {{- if (dig "landscaperConfig" "webhooksServer" "replicas" false .imports) }}
+          replicaCount: {{ .imports.landscaperConfig.webhooksServer.replicas }}
+          {{- end }}
 
           {{- if (dig "landscaperConfig" "webhooksServer" "resources" false .imports) }}
           resources:
           {{- toYaml .imports.landscaperConfig.webhooksServer.resources | nindent 12 }}
           {{- end }}
 
-          {{- if (dig "landscaperConfig" "webhooksServer" "hpa" false .imports) }}
+          {{ - if (dig "landscaperConfig" "webhooksServer" "hpa" false .imports) }}
           hpa:
             {{- if (dig "landscaperConfig" "webhooksServer" "hpa" "maxReplicas" false .imports) }}
             maxReplicas: {{ .imports.landscaperConfig.webhooksServer.hpa.maxReplicas }}
             {{- end }}
             {{- if (dig "landscaperConfig" "webhooksServer" "hpa" "averageCpuUtilization" false .imports) }}
-            averageCpuUtilization: {{ .imports.landscaperConfig.webhooksServer.hpa.averageCpuUtilization }}
+            averageCpuUtilization: { { .imports.landscaperConfig.webhooksServer.hpa.averageCpuUtilization }}
             {{- end }}
             {{- if (dig "landscaperConfig" "webhooksServer" "hpa" "averageMemoryUtilization" false .imports) }}
-            averageMemoryUtilization: {{ .imports.landscaperConfig.webhooksServer.hpa.averageMemoryUtilization }}
+            averageMemoryUtilization: { { .imports.landscaperConfig.webhooksServer.hpa.averageMemoryUtilization }}
             {{- end }}
           {{- end }}
 
-        service:
-          type: ClusterIP
-          port: 80
+          service:
+            type: ClusterIP
+            {{- if (dig "landscaperConfig" "webhooksServer" "servicePort" false .imports) }}
+            port: {{ .imports.landscaperConfig.webhooksServer.servicePort }}
+            {{- end }}
 
-        global:
-          serviceAccount:
-            controller:
-              create: true
-              annotations: {}
-              name: landscaper-{{ .imports.hostingClusterNamespace }}
-            webhooksServer:
-              name: landscaper-webhooks
-
-        {{- if (dig "landscaperConfig" "resources" false .imports) }}
-        resources:
-        {{- toYaml .imports.landscaperConfig.resources | nindent 10 }}
-        {{- end }}
-
-        {{- if (dig "landscaperConfig" "resourcesMain" false .imports) }}
-        resourcesMain:
-        {{- toYaml .imports.landscaperConfig.resourcesMain | nindent 10 }}
-        {{- end }}
-
-        {{- if (dig "landscaperConfig" "hpaMain" false .imports) }}
-        hpaMain:
-          {{- if (dig "landscaperConfig" "hpaMain" "maxReplicas" false .imports) }}
-          maxReplicas: {{ .imports.landscaperConfig.hpaMain.maxReplicas }}
-          {{- end }}
-          {{- if (dig "landscaperConfig" "hpaMain" "averageCpuUtilization" false .imports) }}
-          averageCpuUtilization: {{ .imports.landscaperConfig.hpaMain.averageCpuUtilization }}
-          {{- end }}
-          {{- if (dig "landscaperConfig" "hpaMain" "averageMemoryUtilization" false .imports) }}
-          averageMemoryUtilization: {{ .imports.landscaperConfig.hpaMain.averageMemoryUtilization }}
-          {{- end }}
-        {{- end }}
+          ingress:
+            host: {{ .imports.webhooksHostName }}
+            className: nginx
+            dns:
+              class: garden
 
 {{ if has "helm" .imports.landscaperConfig.deployers }}
   - name: helm-deployer
@@ -206,56 +207,61 @@ deployItems:
         disableDefault: false
 
       chart:
-        {{ $helmDeployerComponent := getComponent $landscaperComponent "name" "helm-deployer" }}
-        {{ $helmDeployerChart := getResource $helmDeployerComponent "name" "helm-deployer-chart" }}
+        {{ $helmDeployerChart := getResource .cd "name" "landscaper-instance-target-cluster-helm-deployer" }}
         ref: {{ $helmDeployerChart.access.imageReference }}
 
       values:
-        nameOverride: helm-deployer
-        fullnameOverride: helm-{{ .imports.hostingClusterNamespace }}-helm-deployer
-
-        identity: helm-{{ .imports.hostingClusterNamespace }}
-
         deployer:
-          verbosityLevel: {{ .imports.landscaperConfig.landscaper.verbosity | default "info" }}
+          name: helm-{{ .imports.hostingClusterNamespace }}-helm-deployer
+          identity: helm-{{ .imports.hostingClusterNamespace }}
+          containerName: helm-deployer
+
+          {{- if (dig "landscaperConfig" "landscaper" "verbosity" false .imports) }}
+          verbosity: {{ .imports.landscaperConfig.landscaper.verbosity }}
+          {{- end }}
+
+          resourceCluster:
+            kubeconfig: |
+            {{- .imports.landscaperControllerKubeconfigYaml | nindent 14 }}
+
+          replicaCount: 1
+
           {{- if (dig "landscaperConfig" "deployersConfig" "helm" "deployer" "controller" false .imports) }}
           controller:
           {{- toYaml .imports.landscaperConfig.deployersConfig.helm.deployer.controller | nindent 12 }}
           {{- end }}
-          landscaperClusterKubeconfig:
-            kubeconfig: |
-{{ .imports.landscaperControllerKubeconfigYaml | indent 14 }}
 
           {{- if (dig "landscaperConfig" "deployersConfig" "helm" "deployer" "k8sClientSettings" false .imports) }}
           k8sClientSettings:
           {{- toYaml .imports.landscaperConfig.deployersConfig.helm.deployer.k8sClientSettings | nindent 12 }}
+          {{- end } }
+
+          {{- if (dig "landscaperConfig" "deployersConfig" "helm" "hpa" false .imports) }}
+          hpa:
+            {{- if (dig "landscaperConfig" "deployersConfig" "helm" "hpa" "maxReplicas" false .imports) }}
+            maxReplicas: {{ .imports.landscaperConfig.deployersConfig.helm.hpa.maxReplicas }}
+            {{- end }}
+            {{- if (dig "landscaperConfig" "deployersConfig" "helm" "hpa" "averageCpuUtilization" false .imports) }}
+            averageCpuUtilization: {{ .imports.landscaperConfig.deployersConfig.helm.hpa.averageCpuUtilization }}
+            {{- end }}
+            {{- if (dig "landscaperConfig" "deployersConfig" "helm" "hpa" "averageMemoryUtilization" false .imports) }}
+            averageMemoryUtilization: {{ .imports.landscaperConfig.deployersConfig.helm.hpa.averageMemoryUtilization }}
+            {{- end }}
           {{- end }}
 
-        image:
-          {{ $image := getResource $helmDeployerComponent "name" "helm-deployer-image" }}
-          {{ $imageRepo := ociRefRepo $image.access.imageReference }}
-          {{ $imageTag := ociRefVersion $image.access.imageReference }}
-          repository: {{ $imageRepo }}
-          tag: {{ $imageTag }}
-          pullPolicy: IfNotPresent
+          {{- if (dig "landscaperConfig" "deployersConfig" "helm" "resources" false .imports) }}
+          resources:
+          {{- toYaml .imports.landscaperConfig.deployersConfig.helm.resources | nindent 10 }}
+          {{ - end } }
 
-        {{- if (dig "landscaperConfig" "deployersConfig" "helm" "resources" false .imports) }}
-        resources:
-        {{- toYaml .imports.landscaperConfig.deployersConfig.helm.resources | nindent 10 }}
-        {{- end }}
-
-        {{- if (dig "landscaperConfig" "deployersConfig" "helm" "hpa" false .imports) }}
-        hpa:
-          {{- if (dig "landscaperConfig" "deployersConfig" "helm" "hpa" "maxReplicas" false .imports) }}
-          maxReplicas: {{ .imports.landscaperConfig.deployersConfig.helm.hpa.maxReplicas }}
-          {{- end }}
-          {{- if (dig "landscaperConfig" "deployersConfig" "helm" "hpa" "averageCpuUtilization" false .imports) }}
-          averageCpuUtilization: {{ .imports.landscaperConfig.deployersConfig.helm.hpa.averageCpuUtilization }}
-          {{- end }}
-          {{- if (dig "landscaperConfig" "deployersConfig" "helm" "hpa" "averageMemoryUtilization" false .imports) }}
-          averageMemoryUtilization: {{ .imports.landscaperConfig.deployersConfig.helm.hpa.averageMemoryUtilization }}
-          {{- end }}
-        {{- end }}
+          image:
+            {{ $helmDeployerComponent := getComponent $landscaperComponent "name" "helm-deployer" }}
+            {{ $image := getResource $helmDeployerComponent "name" "helm-deployer-image" }}
+            {{ $imageRepo := ociRefRepo $image.access.imageReference }}
+            {{ $imageTag := ociRefVersion $image.access.imageReference }}
+            repository: {{ $imageRepo }}
+            tag: {{ $imageTag }}
+            pullPolicy: IfNotPresent
 {{ end }}
 
 {{ if has "manifest" .imports.landscaperConfig.deployers }}
@@ -279,56 +285,61 @@ deployItems:
         disableDefault: false
 
       chart:
-        {{ $manifestDeployerComponent := getComponent $landscaperComponent "name" "manifest-deployer" }}
-        {{ $manifestDeployerChart := getResource $manifestDeployerComponent "name" "manifest-deployer-chart" }}
+        {{ $manifestDeployerChart := getResource .cd "name" "landscaper-instance-target-cluster-manifest-deployer" }}
         ref: {{ $manifestDeployerChart.access.imageReference }}
 
       values:
-        nameOverride: manifest-deployer
-        fullnameOverride: manifest-{{ .imports.hostingClusterNamespace }}-manifest-deployer
-
-        identity: manifest-{{ .imports.hostingClusterNamespace }}
-
         deployer:
-          verbosityLevel: {{ .imports.landscaperConfig.landscaper.verbosity | default "info" }}
+          name: manifest-{{ .imports.hostingClusterNamespace }}-manifest-deployer
+          identity: manifest-{{ .imports.hostingClusterNamespace }}
+          containerName: manifest-deployer
+
+          {{- if (dig "landscaperConfig" "landscaper" "verbosity" false .imports) }}
+          verbosity: {{ .imports.landscaperConfig.landscaper.verbosity }}
+          {{- end }}
+
+          resourceCluster:
+            kubeconfig: |
+            {{- .imports.landscaperControllerKubeconfigYaml | nindent 14 }}
+
+          replicaCount: 1
+
           {{- if (dig "landscaperConfig" "deployersConfig" "manifest" "deployer" "controller" false .imports) }}
           controller:
           {{- toYaml .imports.landscaperConfig.deployersConfig.manifest.deployer.controller | nindent 12 }}
           {{- end }}
-          landscaperClusterKubeconfig:
-            kubeconfig: |
-{{ .imports.landscaperControllerKubeconfigYaml | indent 14 }}
 
           {{- if (dig "landscaperConfig" "deployersConfig" "manifest" "deployer" "k8sClientSettings" false .imports) }}
           k8sClientSettings:
           {{- toYaml .imports.landscaperConfig.deployersConfig.manifest.deployer.k8sClientSettings | nindent 12 }}
+          {{- end } }
+
+          {{- if (dig "landscaperConfig" "deployersConfig" "manifest" "hpa" false .imports) }}
+          hpa:
+            {{- if (dig "landscaperConfig" "deployersConfig" "manifest" "hpa" "maxReplicas" false .imports) }}
+            maxReplicas: {{ .imports.landscaperConfig.deployersConfig.manifest.hpa.maxReplicas }}
+            {{- end }}
+            {{- if (dig "landscaperConfig" "deployersConfig" "manifest" "hpa" "averageCpuUtilization" false .imports) }}
+            averageCpuUtilization: {{ .imports.landscaperConfig.deployersConfig.manifest.hpa.averageCpuUtilization }}
+            {{- end }}
+            {{- if (dig "landscaperConfig" "deployersConfig" "manifest" "hpa" "averageMemoryUtilization" false .imports) }}
+            averageMemoryUtilization: {{ .imports.landscaperConfig.deployersConfig.manifest.hpa.averageMemoryUtilization }}
+            {{- end }}
           {{- end }}
 
-        image:
-          {{ $image := getResource $manifestDeployerComponent "name" "manifest-deployer-image" }}
-          {{ $imageRepo := ociRefRepo $image.access.imageReference }}
-          {{ $imageTag := ociRefVersion $image.access.imageReference }}
-          repository: {{ $imageRepo }}
-          tag: {{ $imageTag }}
-          pullPolicy: IfNotPresent
+          {{- if (dig "landscaperConfig" "deployersConfig" "manifest" "resources" false .imports) }}
+          resources:
+          {{- toYaml .imports.landscaperConfig.deployersConfig.manifest.resources | nindent 10 }}
+          {{- end } }
 
-        {{- if (dig "landscaperConfig" "deployersConfig" "manifest" "resources" false .imports) }}
-        resources:
-        {{- toYaml .imports.landscaperConfig.deployersConfig.manifest.resources | nindent 10 }}
-        {{- end }}
-
-        {{- if (dig "landscaperConfig" "deployersConfig" "manifest" "hpa" false .imports) }}
-        hpa:
-          {{- if (dig "landscaperConfig" "deployersConfig" "manifest" "hpa" "maxReplicas" false .imports) }}
-          maxReplicas: {{ .imports.landscaperConfig.deployersConfig.manifest.hpa.maxReplicas }}
-          {{- end }}
-          {{- if (dig "landscaperConfig" "deployersConfig" "manifest" "hpa" "averageCpuUtilization" false .imports) }}
-          averageCpuUtilization: {{ .imports.landscaperConfig.deployersConfig.manifest.hpa.averageCpuUtilization }}
-          {{- end }}
-          {{- if (dig "landscaperConfig" "deployersConfig" "manifest" "hpa" "averageMemoryUtilization" false .imports) }}
-          averageMemoryUtilization: {{ .imports.landscaperConfig.deployersConfig.manifest.hpa.averageMemoryUtilization }}
-          {{- end }}
-        {{- end }}
+          image:
+            {{ $manifestDeployerComponent := getComponent $landscaperComponent "name" "manifest-deployer" }}
+            {{ $image := getResource $manifestDeployerComponent "name" "manifest-deployer-image" }}
+            {{ $imageRepo := ociRefRepo $image.access.imageReference }}
+            {{ $imageTag := ociRefVersion $image.access.imageReference }}
+            repository: {{ $imageRepo }}
+            tag: {{ $imageTag }}
+            pullPolicy: IfNotPresent
 {{ end }}
 
 {{ if has "container" .imports.landscaperConfig.deployers }}
@@ -352,54 +363,59 @@ deployItems:
         disableDefault: false
 
       chart:
-        {{ $containerDeployerComponent := getComponent $landscaperComponent "name" "container-deployer" }}
-        {{ $containerDeployerChart := getResource $containerDeployerComponent "name" "container-deployer-chart" }}
+        {{ $containerDeployerChart := getResource .cd "name" "landscaper-instance-target-cluster-container-deployer" }}
         ref: {{ $containerDeployerChart.access.imageReference }}
 
       values:
-        nameOverride: container-deployer
-        fullnameOverride: container-{{ .imports.hostingClusterNamespace }}-container-deployer
-
-        identity: container-{{ .imports.hostingClusterNamespace }}
-
         deployer:
-          verbosityLevel: {{ .imports.landscaperConfig.landscaper.verbosity | default "info" }}
+          name: container-{{ .imports.hostingClusterNamespace }}-container-deployer
+          identity: container-{{ .imports.hostingClusterNamespace }}
+          containerName: container-deployer
+
+          {{- if (dig "landscaperConfig" "landscaper" "verbosity" false .imports) }}
+          verbosity: {{ .imports.landscaperConfig.landscaper.verbosity }}
+          {{- end }}
+
+          resourceCluster:
+            kubeconfig: |
+            {{- .imports.landscaperControllerKubeconfigYaml | nindent 14 }}
+
+          replicaCount: 1
+
           {{- if (dig "landscaperConfig" "deployersConfig" "container" "deployer" "controller" false .imports) }}
           controller:
           {{- toYaml .imports.landscaperConfig.deployersConfig.container.deployer.controller | nindent 12 }}
           {{- end }}
-          landscaperClusterKubeconfig:
-            kubeconfig: |
-{{ .imports.landscaperControllerKubeconfigYaml | indent 14 }}
 
           {{- if (dig "landscaperConfig" "deployersConfig" "container" "deployer" "k8sClientSettings" false .imports) }}
           k8sClientSettings:
           {{- toYaml .imports.landscaperConfig.deployersConfig.container.deployer.k8sClientSettings | nindent 12 }}
+          {{- end } }
+
+          {{- if (dig "landscaperConfig" "deployersConfig" "container" "hpa" false .imports) }}
+          hpa:
+            {{- if (dig "landscaperConfig" "deployersConfig" "container" "hpa" "maxReplicas" false .imports) }}
+            maxReplicas: {{ .imports.landscaperConfig.deployersConfig.container.hpa.maxReplicas }}
+            {{- end }}
+            {{- if (dig "landscaperConfig" "deployersConfig" "container" "hpa" "averageCpuUtilization" false .imports) }}
+            averageCpuUtilization: {{ .imports.landscaperConfig.deployersConfig.manifest.hpa.averageCpuUtilization }}
+            {{- end }}
+            {{- if (dig "landscaperConfig" "deployersConfig" "container" "hpa" "averageMemoryUtilization" false .imports) }}
+            averageMemoryUtilization: {{ .imports.landscaperConfig.deployersConfig.manifest.hpa.averageMemoryUtilization }}
+            {{- end }}
           {{- end }}
 
-        image:
-          {{ $image := getResource $containerDeployerComponent "name" "container-deployer-image" }}
-          {{ $imageRepo := ociRefRepo $image.access.imageReference }}
-          {{ $imageTag := ociRefVersion $image.access.imageReference }}
-          repository: {{ $imageRepo }}
-          tag: {{ $imageTag }}
-          pullPolicy: IfNotPresent
+          {{- if (dig "landscaperConfig" "deployersConfig" "container" "resources" false .imports) }}
+          resources:
+          {{- toYaml .imports.landscaperConfig.deployersConfig.container.resources | nindent 10 }}
+          {{- end } }
 
-        {{- if (dig "landscaperConfig" "deployersConfig" "container" "resources" false .imports) }}
-        resources:
-        {{- toYaml .imports.landscaperConfig.deployersConfig.container.resources | nindent 10 }}
-        {{- end }}
-
-        {{- if (dig "landscaperConfig" "deployersConfig" "container" "hpa" false .imports) }}
-        hpa:
-          {{- if (dig "landscaperConfig" "deployersConfig" "container" "hpa" "maxReplicas" false .imports) }}
-          maxReplicas: {{ .imports.landscaperConfig.deployersConfig.container.hpa.maxReplicas }}
-          {{- end }}
-          {{- if (dig "landscaperConfig" "deployersConfig" "container" "hpa" "averageCpuUtilization" false .imports) }}
-          averageCpuUtilization: {{ .imports.landscaperConfig.deployersConfig.container.hpa.averageCpuUtilization }}
-          {{- end }}
-          {{- if (dig "landscaperConfig" "deployersConfig" "container" "hpa" "averageMemoryUtilization" false .imports) }}
-          averageMemoryUtilization: {{ .imports.landscaperConfig.deployersConfig.container.hpa.averageMemoryUtilization }}
-          {{- end }}
-        {{- end }}
+          image:
+            {{ $containerDeployerComponent := getComponent $landscaperComponent "name" "container-deployer" }}
+            {{ $image := getResource $containerDeployerComponent "name" "container-deployer-image" }}
+            {{ $imageRepo := ociRefRepo $image.access.imageReference }}
+            {{ $imageTag := ociRefVersion $image.access.imageReference }}
+            repository: {{ $imageRepo }}
+            tag: {{ $imageTag }}
+            pullPolicy: IfNotPresent
 {{ end }}
