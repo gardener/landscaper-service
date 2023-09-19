@@ -19,6 +19,8 @@ imports:
       dataRef: landscaperControllerKubeconfigYaml
     - name: landscaperWebhooksKubeconfigYaml
       dataRef: landscaperWebhooksKubeconfigYaml
+    - name: landscaperDeployerKubeconfigYaml
+      dataRef: landscaperDeployerKubeconfigYaml
     - name: registryConfig
       dataRef: registryConfig
     - name: landscaperConfig
