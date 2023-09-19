@@ -42,7 +42,7 @@ deployItems:
 
       chart:
         {{ $resource := getResource .cd "name" "landscaper-instance-resource-cluster-deployer" }}
-        ref: {{ $resource.access.imageReference } }
+        ref: {{ $resource.access.imageReference }}
 
       values:
         serviceAccountName: "landscaper-deployer"
