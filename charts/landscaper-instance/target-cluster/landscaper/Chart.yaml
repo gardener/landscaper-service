@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 apiVersion: v2
-name: landscaper-target-cluster
+name: landscaper
 description: Landscaper Target Cluster objects
 type: application
 version: v0.1.0
