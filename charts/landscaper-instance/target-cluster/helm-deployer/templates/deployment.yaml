@@ -43,7 +43,7 @@ spec:
           volumeMounts:
             - name: config
               mountPath: /app/ls/config/
-          {{- if .Values.deployer.registryConfig }}
+          {{- if .Values.deployer.registryConfig.secrets }}
             - name: ociregistry
               mountPath: /app/ls/registry/secrets
           {{- end }}
