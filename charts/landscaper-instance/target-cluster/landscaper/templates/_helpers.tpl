@@ -100,6 +100,11 @@ crdManagement:
   forceUpdate: {{ .Values.landscaper.crdManagement.forceUpdate }}
   {{- end }}
 
+deployerManagement:
+  disable: true
+  agent:
+    disable: true
+
 lsDeployments:
   lsController: "{{- .Values.landscaper.name }}"
   webHook: "{{- include "landscaper.webhooks.name" . }}"
