@@ -38,10 +38,16 @@ rules:
   - apiGroups:
       - ""
     resources:
-      - secrets
-      - configmaps
       - namespaces
     verbs:
       - get
       - list
       - watch
+
+  - apiGroups:
+      - ""
+    resources:
+      - secrets
+      - configmaps
+    verbs:
+      - "*"
