@@ -26,14 +26,7 @@ rules:
     resources:
       - secrets
       - configmaps
-    verbs:
-      - get
-      - list
-      - watch
-
-  - apiGroups:
-      - ""
-    resources:
+      - deployments
       - pods
     verbs:
       - get
@@ -41,7 +34,7 @@ rules:
       - watch
 
   - apiGroups:
-      - autoscaling/v2
+      - autoscaling
     resources:
       - horizontalpodautoscalers
     verbs:
