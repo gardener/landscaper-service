@@ -16,3 +16,10 @@ rules:
       - customresourcedefinitions
     verbs:
       - "*"
+
+  - apiGroups:
+      - landscaper.gardener.cloud
+    resources:
+      - lshealthchecks
+    verbs:
+      - "*"

@@ -11,13 +11,6 @@ metadata:
     {{- include "landscaper.labels" . | nindent 4 }}
 rules:
   - apiGroups:
-      - landscaper.gardener.cloud
-    resources:
-      - lshealthchecks
-    verbs:
-      - "*"
-
-  - apiGroups:
       - ""
     resources:
       - events
@@ -42,6 +35,15 @@ rules:
       - ""
     resources:
       - pods
+    verbs:
+      - get
+      - list
+      - watch
+
+  - apiGroups:
+      - autoscaling/v2
+    resources:
+      - horizontalpodautoscalers
     verbs:
       - get
       - list
