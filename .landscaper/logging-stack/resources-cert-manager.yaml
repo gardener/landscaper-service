@@ -12,53 +12,53 @@ input:
 type: helm.io/chart
 name: cert-manager-chart
 relation: external
-version: v1.12.3
+version: v1.13.0
 access:
   type: ociRegistry
-  imageReference: eu.gcr.io/gardener-project/landscaper-service/charts/cert-manager@sha256:cdcad6c79bbd90461185bea1e5757620fbb5f123b31f05dda559a1585e6f0c36
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/charts/cert-manager@sha256:ead441a652e94abedf699becf71ab24616f5464efde212c388b05d20ea738b3a
 ...
 ---
 type: ociImage
 name: cert-manager-cainjector
-version: v1.12.3
+version: v1.13.0
 relation: external
 access:
   type: ociRegistry
-  imageReference: eu.gcr.io/gardener-project/landscaper-service/cert-manager-cainjector@sha256:3f8259265977821dcfbd8170566bb977f3040ae9ae39042cc636994019518e6a
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/cert-manager-cainjector@sha256:de6bc35757a88fce3d558beec204612940bf27006fc9f75d35ab686934098346
 ...
 ---
 type: ociImage
 name: cert-manager-controller
-version: v1.12.3
+version: v1.13.0
 relation: external
 access:
   type: ociRegistry
-  imageReference: eu.gcr.io/gardener-project/landscaper-service/cert-manager-controller@sha256:fe99a3f2ef4bed0782c9ae677e4ef96c2b113bd0cb719dc2b8d3d3c86013be68
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/cert-manager-controller@sha256:b85d6ffdd32c13ef34de9c860e67b43cf81b10616325ead1e0c302ebf46913c3
 ...
 ---
 type: ociImage
 name: cert-manager-ctl
-version: v1.12.3
+version: v1.13.0
 relation: external
 access:
   type: ociRegistry
-  imageReference: eu.gcr.io/gardener-project/landscaper-service/cert-manager-ctl@sha256:757ec1a9484a6259346efef955ee8e40dee4080019c985a46f84c24e3b3f302a
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/cert-manager-ctl@sha256:047071cdbcbba67286227be928b526c846d05db657bb46ca510a3952e0364b66
 ...
 ---
 type: ociImage
 name: cert-manager-webhook
-version: v1.12.3
+version: v1.13.0
 relation: external
 access:
   type: ociRegistry
-  imageReference: eu.gcr.io/gardener-project/landscaper-service/cert-manager-webhook@sha256:b87f57412ea4f66e2c472c1ab136f0d339729447ea26e5d5f335ec77de77b603
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/cert-manager-webhook@sha256:0c6c56525d7723e4ed836c22d75e8028a14d9ed566220282dc11b4769002964c
 ...
 ---
 type: ociImage
 name: cert-manager-acmesolver
-version: v1.12.3
+version: v1.13.0
 relation: external
 access:
   type: ociRegistry
-  imageReference: eu.gcr.io/gardener-project/landscaper-service/cert-manager-acmesolver@sha256:ba21913b7ba5bd20f290297e37bad3f159bbe7dab3f504dee4ab4cf6aaca5a00
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/cert-manager-acmesolver@sha256:e767330069e6410d200a32a11a1f10db799135941911b0d164bf05d8f8587be8
 ...
