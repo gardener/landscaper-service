@@ -412,10 +412,25 @@ deployItems:
 
           image:
             {{ $containerDeployerComponent := getComponent $landscaperComponent "name" "container-deployer" }}
-            {{ $image := getResource $containerDeployerComponent "name" "container-deployer-image" }}
-            {{ $imageRepo := ociRefRepo $image.access.imageReference }}
-            {{ $imageTag := ociRefVersion $image.access.imageReference }}
-            repository: {{ $imageRepo }}
-            tag: {{ $imageTag }}
-            pullPolicy: IfNotPresent
+            controller:
+              {{ $image := getResource $containerDeployerComponent "name" "container-deployer-image" }}
+              {{ $imageRepo := ociRefRepo $image.access.imageReference }}
+              {{ $imageTag := ociRefVersion $image.access.imageReference }}
+              repository: {{ $imageRepo }}
+              tag: {{ $imageTag }}
+              pullPolicy: IfNotPresent
+
+            initContainer:
+              {{ $image := getResource $containerDeployerComponent "name" "container-init-image" }}
+              {{ $imageRepo := ociRefRepo $image.access.imageReference }}
+              {{ $imageTag := ociRefVersion $image.access.imageReference }}
+              repository: {{ $imageRepo }}
+              tag: {{ $imageTag }}
+
+            waitContainer:
+              {{ $image := getResource $containerDeployerComponent "name" "container-wait-image" }}
+              {{ $imageRepo := ociRefRepo $image.access.imageReference }}
+              {{ $imageTag := ociRefVersion $image.access.imageReference }}
+              repository: {{ $imageRepo }}
+              tag: {{ $imageTag }}
 {{ end }}
