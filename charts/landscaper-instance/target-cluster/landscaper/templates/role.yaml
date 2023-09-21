@@ -17,6 +17,7 @@ rules:
     verbs:
       - create
       - get
+      - list
       - watch
       - patch
       - update
@@ -26,8 +27,16 @@ rules:
     resources:
       - secrets
       - configmaps
-      - deployments
       - pods
+    verbs:
+      - get
+      - list
+      - watch
+
+  - apiGroups:
+      - apps
+    resources:
+      - deployments
     verbs:
       - get
       - list
