@@ -1,6 +1,66 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
   "definitions": {
+    "core-v1alpha1-Controller": {
+      "description": "Controller specifies the config for a landscaper controller.",
+      "type": "object",
+      "properties": {
+        "workers": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "core-v1alpha1-Controllers": {
+      "description": "Controllers specifies the config for the \"main\" landscaper controllers, i.e. the installation and execution controller.",
+      "type": "object",
+      "properties": {
+        "executions": {
+          "$ref": "#/definitions/core-v1alpha1-Controller"
+        },
+        "installations": {
+          "$ref": "#/definitions/core-v1alpha1-Controller"
+        }
+      }
+    },
+    "core-v1alpha1-DeployItemTimeouts": {
+      "description": "DeployItemTimeouts configures the timeout controller.",
+      "type": "object",
+      "properties": {
+        "pickup": {
+          "type": "string"
+        },
+        "progressingDefault": {
+          "type": "string"
+        }
+      }
+    },
+    "core-v1alpha1-Deployer": {
+      "type": "object",
+      "properties": {
+        "controller": {
+          "$ref": "#/definitions/core-v1alpha1-Controller"
+        },
+        "k8sClientSettings": {
+          "$ref": "#/definitions/core-v1alpha1-K8SClientSettings"
+        }
+      }
+    },
+    "core-v1alpha1-DeployerConfig": {
+      "description": "DeployerConfig configures a deployer.",
+      "type": "object",
+      "properties": {
+        "deployer": {
+          "$ref": "#/definitions/core-v1alpha1-Deployer"
+        },
+        "hpa": {
+          "$ref": "#/definitions/core-v1alpha1-HPA"
+        },
+        "resources": {
+          "$ref": "#/definitions/core-v1alpha1-Resources"
+        }
+      }
+    },
     "core-v1alpha1-Error": {
       "description": "Error holds information about an error that occurred.",
       "type": "object",
@@ -39,6 +99,24 @@
         }
       }
     },
+    "core-v1alpha1-HPA": {
+      "description": "HPA configures the horizontal pod autoscaling of pods.",
+      "type": "object",
+      "properties": {
+        "averageCpuUtilization": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "averageMemoryUtilization": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxReplicas": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "core-v1alpha1-HighAvailabilityConfig": {
       "description": "HighAvailabilityConfig specifies the HA configuration for the resource cluster (shoot cluster)",
       "type": "object",
@@ -50,6 +128,46 @@
           "description": "ControlPlaneFailureTolerance specifies the Kubernetes control plane failure tolerance mode. Allowed values are: node, zone",
           "type": "string",
           "default": ""
+        }
+      }
+    },
+    "core-v1alpha1-K8SClientLimits": {
+      "description": "K8SClientLimits specifies the settings for a k8s client.",
+      "type": "object",
+      "properties": {
+        "burst": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "qps": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "core-v1alpha1-K8SClientSettings": {
+      "description": "K8SClientSettings specifies the settings for the k8s clients which landscaper uses to access host and resource cluster.",
+      "type": "object",
+      "properties": {
+        "hostClient": {
+          "$ref": "#/definitions/core-v1alpha1-K8SClientLimits"
+        },
+        "resourceClient": {
+          "$ref": "#/definitions/core-v1alpha1-K8SClientLimits"
+        }
+      }
+    },
+    "core-v1alpha1-Landscaper": {
+      "type": "object",
+      "properties": {
+        "controllers": {
+          "$ref": "#/definitions/core-v1alpha1-Controllers"
+        },
+        "deployItemTimeouts": {
+          "$ref": "#/definitions/core-v1alpha1-DeployItemTimeouts"
+        },
+        "k8sClientSettings": {
+          "$ref": "#/definitions/core-v1alpha1-K8SClientSettings"
         }
       }
     },
@@ -67,6 +185,28 @@
             "type": "string",
             "default": ""
           }
+        },
+        "deployersConfig": {
+          "description": "DeployersConfig specifies the configuration for the landscaper standard deployers.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/core-v1alpha1-DeployerConfig"
+          }
+        },
+        "hpaMain": {
+          "description": "HPAMain configures the horizontal pod autoscaling of the \"main\" landscaper pods, i.e. the pods of installation and execution controller.",
+          "$ref": "#/definitions/core-v1alpha1-HPA"
+        },
+        "landscaper": {
+          "$ref": "#/definitions/core-v1alpha1-Landscaper"
+        },
+        "resources": {
+          "description": "Resources configures the resources of the \"central\" landscaper pod, i.e. the pod responsible for crds creation, deployer management, context controller.",
+          "$ref": "#/definitions/core-v1alpha1-Resources"
+        },
+        "resourcesMain": {
+          "description": "ResourcesMain configures the resources of the \"main\" landscaper pods, i.e. the pods of installation and execution controller.",
+          "$ref": "#/definitions/core-v1alpha1-Resources"
         }
       }
     },
@@ -158,6 +298,27 @@
           "description": "Namespace is the namespace of kubernetes object.",
           "type": "string",
           "default": ""
+        }
+      }
+    },
+    "core-v1alpha1-ResourceRequests": {
+      "type": "object",
+      "properties": {
+        "cpu": {
+          "type": "string"
+        },
+        "memory": {
+          "type": "string"
+        }
+      }
+    },
+    "core-v1alpha1-Resources": {
+      "description": "Resources configures the resources of pods (requested cpu and memory)",
+      "type": "object",
+      "properties": {
+        "requests": {
+          "default": {},
+          "$ref": "#/definitions/core-v1alpha1-ResourceRequests"
         }
       }
     },

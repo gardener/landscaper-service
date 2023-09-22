@@ -69,6 +69,181 @@ spec:
                     items:
                       type: string
                     type: array
+                  deployersConfig:
+                    additionalProperties:
+                      description: DeployerConfig configures a deployer.
+                      properties:
+                        deployer:
+                          properties:
+                            controller:
+                              description: Controller specifies the config for a landscaper
+                                controller.
+                              properties:
+                                workers:
+                                  format: int32
+                                  type: integer
+                              type: object
+                            k8sClientSettings:
+                              description: K8SClientSettings specifies the settings
+                                for the k8s clients which landscaper uses to access
+                                host and resource cluster.
+                              properties:
+                                hostClient:
+                                  description: K8SClientLimits specifies the settings
+                                    for a k8s client.
+                                  properties:
+                                    burst:
+                                      format: int32
+                                      type: integer
+                                    qps:
+                                      format: int32
+                                      type: integer
+                                  type: object
+                                resourceClient:
+                                  description: K8SClientLimits specifies the settings
+                                    for a k8s client.
+                                  properties:
+                                    burst:
+                                      format: int32
+                                      type: integer
+                                    qps:
+                                      format: int32
+                                      type: integer
+                                  type: object
+                              type: object
+                          type: object
+                        hpa:
+                          description: HPA configures the horizontal pod autoscaling
+                            of pods.
+                          properties:
+                            averageCpuUtilization:
+                              format: int32
+                              type: integer
+                            averageMemoryUtilization:
+                              format: int32
+                              type: integer
+                            maxReplicas:
+                              format: int32
+                              type: integer
+                          type: object
+                        resources:
+                          description: Resources configures the resources of pods
+                            (requested cpu and memory)
+                          properties:
+                            requests:
+                              properties:
+                                cpu:
+                                  type: string
+                                memory:
+                                  type: string
+                              type: object
+                          type: object
+                      type: object
+                    description: DeployersConfig specifies the configuration for the
+                      landscaper standard deployers.
+                    type: object
+                  hpaMain:
+                    description: HPAMain configures the horizontal pod autoscaling
+                      of the "main" landscaper pods, i.e. the pods of installation
+                      and execution controller.
+                    properties:
+                      averageCpuUtilization:
+                        format: int32
+                        type: integer
+                      averageMemoryUtilization:
+                        format: int32
+                        type: integer
+                      maxReplicas:
+                        format: int32
+                        type: integer
+                    type: object
+                  landscaper:
+                    properties:
+                      controllers:
+                        description: Controllers specifies the config for the "main"
+                          landscaper controllers, i.e. the installation and execution
+                          controller.
+                        properties:
+                          executions:
+                            description: Controller specifies the config for a landscaper
+                              controller.
+                            properties:
+                              workers:
+                                format: int32
+                                type: integer
+                            type: object
+                          installations:
+                            description: Controller specifies the config for a landscaper
+                              controller.
+                            properties:
+                              workers:
+                                format: int32
+                                type: integer
+                            type: object
+                        type: object
+                      deployItemTimeouts:
+                        description: DeployItemTimeouts configures the timeout controller.
+                        properties:
+                          pickup:
+                            type: string
+                          progressingDefault:
+                            type: string
+                        type: object
+                      k8sClientSettings:
+                        description: K8SClientSettings specifies the settings for
+                          the k8s clients which landscaper uses to access host and
+                          resource cluster.
+                        properties:
+                          hostClient:
+                            description: K8SClientLimits specifies the settings for
+                              a k8s client.
+                            properties:
+                              burst:
+                                format: int32
+                                type: integer
+                              qps:
+                                format: int32
+                                type: integer
+                            type: object
+                          resourceClient:
+                            description: K8SClientLimits specifies the settings for
+                              a k8s client.
+                            properties:
+                              burst:
+                                format: int32
+                                type: integer
+                              qps:
+                                format: int32
+                                type: integer
+                            type: object
+                        type: object
+                    type: object
+                  resources:
+                    description: Resources configures the resources of the "central"
+                      landscaper pod, i.e. the pod responsible for crds creation,
+                      deployer management, context controller.
+                    properties:
+                      requests:
+                        properties:
+                          cpu:
+                            type: string
+                          memory:
+                            type: string
+                        type: object
+                    type: object
+                  resourcesMain:
+                    description: ResourcesMain configures the resources of the "main"
+                      landscaper pods, i.e. the pods of installation and execution
+                      controller.
+                    properties:
+                      requests:
+                        properties:
+                          cpu:
+                            type: string
+                          memory:
+                            type: string
+                        type: object
+                    type: object
                 required:
                 - deployers
                 type: object

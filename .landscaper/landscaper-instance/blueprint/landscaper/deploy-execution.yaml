@@ -39,16 +39,22 @@ deployItems:
 
         landscaper:
           verbosity: {{ .imports.landscaperConfig.landscaper.verbosity | default "info" }}
+
+          {{- if (dig "landscaperConfig" "landscaper" "controllers" false .imports) }}
+          controllers:
+          {{- toYaml .imports.landscaperConfig.landscaper.controllers | nindent 12 }}
+          {{- end }}
+
           crdManagement:
             deployCrd: true
             forceUpdate: true
           registryConfig:
 {{ toYaml .imports.registryConfig | indent 12 }}
 
-          {{ if .imports.landscaperConfig.k8sClientSettings }}
+          {{- if (dig "landscaperConfig" "landscaper" "k8sClientSettings" false .imports) }}
           k8sClientSettings:
-{{ toYaml .imports.landscaperConfig.k8sClientSettings | indent 12 }}
-          {{ end }}
+          {{- toYaml .imports.landscaperConfig.landscaper.k8sClientSettings | nindent 12 }}
+          {{- end }}
 
           deployers: []
 
@@ -58,6 +64,11 @@ deployItems:
               disable: true
 
           deployersConfig: {}
+
+          {{- if (dig "landscaperConfig" "landscaper" "deployItemTimeouts" false .imports) }}
+          deployItemTimeouts:
+          {{- toYaml .imports.landscaperConfig.landscaper.deployItemTimeouts | nindent 12 }}
+          {{- end }}
 
           healthCheck:
             name: landscaper-{{ .imports.hostingClusterNamespace }}
@@ -120,6 +131,24 @@ deployItems:
             dns:
               class: garden
 
+          {{- if (dig "landscaperConfig" "webhooksServer" "resources" false .imports) }}
+          resources:
+          {{- toYaml .imports.landscaperConfig.webhooksServer.resources | nindent 12 }}
+          {{- end }}
+
+          {{- if (dig "landscaperConfig" "webhooksServer" "hpa" false .imports) }}
+          hpa:
+            {{- if (dig "landscaperConfig" "webhooksServer" "hpa" "maxReplicas" false .imports) }}
+            maxReplicas: {{ .imports.landscaperConfig.webhooksServer.hpa.maxReplicas }}
+            {{- end }}
+            {{- if (dig "landscaperConfig" "webhooksServer" "hpa" "averageCpuUtilization" false .imports) }}
+            averageCpuUtilization: {{ .imports.landscaperConfig.webhooksServer.hpa.averageCpuUtilization }}
+            {{- end }}
+            {{- if (dig "landscaperConfig" "webhooksServer" "hpa" "averageMemoryUtilization" false .imports) }}
+            averageMemoryUtilization: {{ .imports.landscaperConfig.webhooksServer.hpa.averageMemoryUtilization }}
+            {{- end }}
+          {{- end }}
+
         service:
           type: ClusterIP
           port: 80
@@ -133,10 +162,28 @@ deployItems:
             webhooksServer:
               name: landscaper-webhooks
 
+        {{- if (dig "landscaperConfig" "resources" false .imports) }}
         resources:
-          requests:
-            cpu: 100m
-            memory: 100Mi
+        {{- toYaml .imports.landscaperConfig.resources | nindent 10 }}
+        {{- end }}
+
+        {{- if (dig "landscaperConfig" "resourcesMain" false .imports) }}
+        resourcesMain:
+        {{- toYaml .imports.landscaperConfig.resourcesMain | nindent 10 }}
+        {{- end }}
+
+        {{- if (dig "landscaperConfig" "hpaMain" false .imports) }}
+        hpaMain:
+          {{- if (dig "landscaperConfig" "hpaMain" "maxReplicas" false .imports) }}
+          maxReplicas: {{ .imports.landscaperConfig.hpaMain.maxReplicas }}
+          {{- end }}
+          {{- if (dig "landscaperConfig" "hpaMain" "averageCpuUtilization" false .imports) }}
+          averageCpuUtilization: {{ .imports.landscaperConfig.hpaMain.averageCpuUtilization }}
+          {{- end }}
+          {{- if (dig "landscaperConfig" "hpaMain" "averageMemoryUtilization" false .imports) }}
+          averageMemoryUtilization: {{ .imports.landscaperConfig.hpaMain.averageMemoryUtilization }}
+          {{- end }}
+        {{- end }}
 
 {{ if has "helm" .imports.landscaperConfig.deployers }}
   - name: helm-deployer
@@ -171,14 +218,17 @@ deployItems:
 
         deployer:
           verbosityLevel: {{ .imports.landscaperConfig.landscaper.verbosity | default "info" }}
+          {{- if (dig "landscaperConfig" "deployersConfig" "helm" "deployer" "controller" false .imports) }}
           controller:
-            workers: 30
+          {{- toYaml .imports.landscaperConfig.deployersConfig.helm.deployer.controller | nindent 12 }}
+          {{- end }}
           landscaperClusterKubeconfig:
             kubeconfig: |
 {{ .imports.landscaperControllerKubeconfigYaml | indent 14 }}
+
           {{- if (dig "landscaperConfig" "deployersConfig" "helm" "deployer" "k8sClientSettings" false .imports) }}
           k8sClientSettings:
-{{ toYaml .imports.landscaperConfig.deployersConfig.helm.deployer.k8sClientSettings | indent 14 }}
+          {{- toYaml .imports.landscaperConfig.deployersConfig.helm.deployer.k8sClientSettings | nindent 12 }}
           {{- end }}
 
         image:
@@ -189,12 +239,23 @@ deployItems:
           tag: {{ $imageTag }}
           pullPolicy: IfNotPresent
 
-        replicaCount: 1
-
+        {{- if (dig "landscaperConfig" "deployersConfig" "helm" "resources" false .imports) }}
         resources:
-          requests:
-            cpu: 300m
-            memory: 300Mi
+        {{- toYaml .imports.landscaperConfig.deployersConfig.helm.resources | nindent 10 }}
+        {{- end }}
+
+        {{- if (dig "landscaperConfig" "deployersConfig" "helm" "hpa" false .imports) }}
+        hpa:
+          {{- if (dig "landscaperConfig" "deployersConfig" "helm" "hpa" "maxReplicas" false .imports) }}
+          maxReplicas: {{ .imports.landscaperConfig.deployersConfig.helm.hpa.maxReplicas }}
+          {{- end }}
+          {{- if (dig "landscaperConfig" "deployersConfig" "helm" "hpa" "averageCpuUtilization" false .imports) }}
+          averageCpuUtilization: {{ .imports.landscaperConfig.deployersConfig.helm.hpa.averageCpuUtilization }}
+          {{- end }}
+          {{- if (dig "landscaperConfig" "deployersConfig" "helm" "hpa" "averageMemoryUtilization" false .imports) }}
+          averageMemoryUtilization: {{ .imports.landscaperConfig.deployersConfig.helm.hpa.averageMemoryUtilization }}
+          {{- end }}
+        {{- end }}
 {{ end }}
 
 {{ if has "manifest" .imports.landscaperConfig.deployers }}
@@ -230,14 +291,17 @@ deployItems:
 
         deployer:
           verbosityLevel: {{ .imports.landscaperConfig.landscaper.verbosity | default "info" }}
+          {{- if (dig "landscaperConfig" "deployersConfig" "manifest" "deployer" "controller" false .imports) }}
           controller:
-            workers: 30
+          {{- toYaml .imports.landscaperConfig.deployersConfig.manifest.deployer.controller | nindent 12 }}
+          {{- end }}
           landscaperClusterKubeconfig:
             kubeconfig: |
 {{ .imports.landscaperControllerKubeconfigYaml | indent 14 }}
+
           {{- if (dig "landscaperConfig" "deployersConfig" "manifest" "deployer" "k8sClientSettings" false .imports) }}
           k8sClientSettings:
-{{ toYaml .imports.landscaperConfig.deployersConfig.manifest.deployer.k8sClientSettings | indent 14 }}
+          {{- toYaml .imports.landscaperConfig.deployersConfig.manifest.deployer.k8sClientSettings | nindent 12 }}
           {{- end }}
 
         image:
@@ -248,12 +312,23 @@ deployItems:
           tag: {{ $imageTag }}
           pullPolicy: IfNotPresent
 
-        replicaCount: 1
-
+        {{- if (dig "landscaperConfig" "deployersConfig" "manifest" "resources" false .imports) }}
         resources:
-          requests:
-            cpu: 10m
-            memory: 100Mi
+        {{- toYaml .imports.landscaperConfig.deployersConfig.manifest.resources | nindent 10 }}
+        {{- end }}
+
+        {{- if (dig "landscaperConfig" "deployersConfig" "manifest" "hpa" false .imports) }}
+        hpa:
+          {{- if (dig "landscaperConfig" "deployersConfig" "manifest" "hpa" "maxReplicas" false .imports) }}
+          maxReplicas: {{ .imports.landscaperConfig.deployersConfig.manifest.hpa.maxReplicas }}
+          {{- end }}
+          {{- if (dig "landscaperConfig" "deployersConfig" "manifest" "hpa" "averageCpuUtilization" false .imports) }}
+          averageCpuUtilization: {{ .imports.landscaperConfig.deployersConfig.manifest.hpa.averageCpuUtilization }}
+          {{- end }}
+          {{- if (dig "landscaperConfig" "deployersConfig" "manifest" "hpa" "averageMemoryUtilization" false .imports) }}
+          averageMemoryUtilization: {{ .imports.landscaperConfig.deployersConfig.manifest.hpa.averageMemoryUtilization }}
+          {{- end }}
+        {{- end }}
 {{ end }}
 
 {{ if has "container" .imports.landscaperConfig.deployers }}
@@ -289,14 +364,17 @@ deployItems:
 
         deployer:
           verbosityLevel: {{ .imports.landscaperConfig.landscaper.verbosity | default "info" }}
+          {{- if (dig "landscaperConfig" "deployersConfig" "container" "deployer" "controller" false .imports) }}
           controller:
-            workers: 30
+          {{- toYaml .imports.landscaperConfig.deployersConfig.container.deployer.controller | nindent 12 }}
+          {{- end }}
           landscaperClusterKubeconfig:
             kubeconfig: |
 {{ .imports.landscaperControllerKubeconfigYaml | indent 14 }}
+
           {{- if (dig "landscaperConfig" "deployersConfig" "container" "deployer" "k8sClientSettings" false .imports) }}
           k8sClientSettings:
-{{ toYaml .imports.landscaperConfig.deployersConfig.container.deployer.k8sClientSettings | indent 14 }}
+          {{- toYaml .imports.landscaperConfig.deployersConfig.container.deployer.k8sClientSettings | nindent 12 }}
           {{- end }}
 
         image:
@@ -307,10 +385,21 @@ deployItems:
           tag: {{ $imageTag }}
           pullPolicy: IfNotPresent
 
-        replicaCount: 1
-
+        {{- if (dig "landscaperConfig" "deployersConfig" "container" "resources" false .imports) }}
         resources:
-          requests:
-            cpu: 10m
-            memory: 100Mi
+        {{- toYaml .imports.landscaperConfig.deployersConfig.container.resources | nindent 10 }}
+        {{- end }}
+
+        {{- if (dig "landscaperConfig" "deployersConfig" "container" "hpa" false .imports) }}
+        hpa:
+          {{- if (dig "landscaperConfig" "deployersConfig" "container" "hpa" "maxReplicas" false .imports) }}
+          maxReplicas: {{ .imports.landscaperConfig.deployersConfig.container.hpa.maxReplicas }}
+          {{- end }}
+          {{- if (dig "landscaperConfig" "deployersConfig" "container" "hpa" "averageCpuUtilization" false .imports) }}
+          averageCpuUtilization: {{ .imports.landscaperConfig.deployersConfig.container.hpa.averageCpuUtilization }}
+          {{- end }}
+          {{- if (dig "landscaperConfig" "deployersConfig" "container" "hpa" "averageMemoryUtilization" false .imports) }}
+          averageMemoryUtilization: {{ .imports.landscaperConfig.deployersConfig.container.hpa.averageMemoryUtilization }}
+          {{- end }}
+        {{- end }}
 {{ end }}

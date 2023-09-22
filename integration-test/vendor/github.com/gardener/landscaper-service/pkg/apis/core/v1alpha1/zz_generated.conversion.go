@@ -86,6 +86,56 @@ func RegisterConversions(s *runtime.Scheme) error {
 	}); err != nil {
 		return err
 	}
+	if err := s.AddGeneratedConversionFunc((*Controller)(nil), (*core.Controller)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_Controller_To_core_Controller(a.(*Controller), b.(*core.Controller), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.Controller)(nil), (*Controller)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_Controller_To_v1alpha1_Controller(a.(*core.Controller), b.(*Controller), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*Controllers)(nil), (*core.Controllers)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_Controllers_To_core_Controllers(a.(*Controllers), b.(*core.Controllers), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.Controllers)(nil), (*Controllers)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_Controllers_To_v1alpha1_Controllers(a.(*core.Controllers), b.(*Controllers), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*DeployItemTimeouts)(nil), (*core.DeployItemTimeouts)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_DeployItemTimeouts_To_core_DeployItemTimeouts(a.(*DeployItemTimeouts), b.(*core.DeployItemTimeouts), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.DeployItemTimeouts)(nil), (*DeployItemTimeouts)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_DeployItemTimeouts_To_v1alpha1_DeployItemTimeouts(a.(*core.DeployItemTimeouts), b.(*DeployItemTimeouts), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*Deployer)(nil), (*core.Deployer)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_Deployer_To_core_Deployer(a.(*Deployer), b.(*core.Deployer), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.Deployer)(nil), (*Deployer)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_Deployer_To_v1alpha1_Deployer(a.(*core.Deployer), b.(*Deployer), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*DeployerConfig)(nil), (*core.DeployerConfig)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_DeployerConfig_To_core_DeployerConfig(a.(*DeployerConfig), b.(*core.DeployerConfig), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.DeployerConfig)(nil), (*DeployerConfig)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_DeployerConfig_To_v1alpha1_DeployerConfig(a.(*core.DeployerConfig), b.(*DeployerConfig), scope)
+	}); err != nil {
+		return err
+	}
 	if err := s.AddGeneratedConversionFunc((*Error)(nil), (*core.Error)(nil), func(a, b interface{}, scope conversion.Scope) error {
 		return Convert_v1alpha1_Error_To_core_Error(a.(*Error), b.(*core.Error), scope)
 	}); err != nil {
@@ -93,6 +143,16 @@ func RegisterConversions(s *runtime.Scheme) error {
 	}
 	if err := s.AddGeneratedConversionFunc((*core.Error)(nil), (*Error)(nil), func(a, b interface{}, scope conversion.Scope) error {
 		return Convert_core_Error_To_v1alpha1_Error(a.(*core.Error), b.(*Error), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*HPA)(nil), (*core.HPA)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_HPA_To_core_HPA(a.(*HPA), b.(*core.HPA), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.HPA)(nil), (*HPA)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_HPA_To_v1alpha1_HPA(a.(*core.HPA), b.(*HPA), scope)
 	}); err != nil {
 		return err
 	}
@@ -143,6 +203,36 @@ func RegisterConversions(s *runtime.Scheme) error {
 	}
 	if err := s.AddGeneratedConversionFunc((*core.InstanceStatus)(nil), (*InstanceStatus)(nil), func(a, b interface{}, scope conversion.Scope) error {
 		return Convert_core_InstanceStatus_To_v1alpha1_InstanceStatus(a.(*core.InstanceStatus), b.(*InstanceStatus), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*K8SClientLimits)(nil), (*core.K8SClientLimits)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_K8SClientLimits_To_core_K8SClientLimits(a.(*K8SClientLimits), b.(*core.K8SClientLimits), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.K8SClientLimits)(nil), (*K8SClientLimits)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_K8SClientLimits_To_v1alpha1_K8SClientLimits(a.(*core.K8SClientLimits), b.(*K8SClientLimits), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*K8SClientSettings)(nil), (*core.K8SClientSettings)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_K8SClientSettings_To_core_K8SClientSettings(a.(*K8SClientSettings), b.(*core.K8SClientSettings), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.K8SClientSettings)(nil), (*K8SClientSettings)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_K8SClientSettings_To_v1alpha1_K8SClientSettings(a.(*core.K8SClientSettings), b.(*K8SClientSettings), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*Landscaper)(nil), (*core.Landscaper)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_Landscaper_To_core_Landscaper(a.(*Landscaper), b.(*core.Landscaper), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.Landscaper)(nil), (*Landscaper)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_Landscaper_To_v1alpha1_Landscaper(a.(*core.Landscaper), b.(*Landscaper), scope)
 	}); err != nil {
 		return err
 	}
@@ -263,6 +353,26 @@ func RegisterConversions(s *runtime.Scheme) error {
 	}
 	if err := s.AddGeneratedConversionFunc((*core.ObjectReference)(nil), (*ObjectReference)(nil), func(a, b interface{}, scope conversion.Scope) error {
 		return Convert_core_ObjectReference_To_v1alpha1_ObjectReference(a.(*core.ObjectReference), b.(*ObjectReference), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*ResourceRequests)(nil), (*core.ResourceRequests)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_ResourceRequests_To_core_ResourceRequests(a.(*ResourceRequests), b.(*core.ResourceRequests), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.ResourceRequests)(nil), (*ResourceRequests)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_ResourceRequests_To_v1alpha1_ResourceRequests(a.(*core.ResourceRequests), b.(*ResourceRequests), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*Resources)(nil), (*core.Resources)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1alpha1_Resources_To_core_Resources(a.(*Resources), b.(*core.Resources), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*core.Resources)(nil), (*Resources)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_core_Resources_To_v1alpha1_Resources(a.(*core.Resources), b.(*Resources), scope)
 	}); err != nil {
 		return err
 	}
@@ -523,6 +633,116 @@ func Convert_core_AvailabilityInstance_To_v1alpha1_AvailabilityInstance(in *core
 	return autoConvert_core_AvailabilityInstance_To_v1alpha1_AvailabilityInstance(in, out, s)
 }
 
+func autoConvert_v1alpha1_Controller_To_core_Controller(in *Controller, out *core.Controller, s conversion.Scope) error {
+	out.Workers = in.Workers
+	return nil
+}
+
+// Convert_v1alpha1_Controller_To_core_Controller is an autogenerated conversion function.
+func Convert_v1alpha1_Controller_To_core_Controller(in *Controller, out *core.Controller, s conversion.Scope) error {
+	return autoConvert_v1alpha1_Controller_To_core_Controller(in, out, s)
+}
+
+func autoConvert_core_Controller_To_v1alpha1_Controller(in *core.Controller, out *Controller, s conversion.Scope) error {
+	out.Workers = in.Workers
+	return nil
+}
+
+// Convert_core_Controller_To_v1alpha1_Controller is an autogenerated conversion function.
+func Convert_core_Controller_To_v1alpha1_Controller(in *core.Controller, out *Controller, s conversion.Scope) error {
+	return autoConvert_core_Controller_To_v1alpha1_Controller(in, out, s)
+}
+
+func autoConvert_v1alpha1_Controllers_To_core_Controllers(in *Controllers, out *core.Controllers, s conversion.Scope) error {
+	out.Installations = (*core.Controller)(unsafe.Pointer(in.Installations))
+	out.Executions = (*core.Controller)(unsafe.Pointer(in.Executions))
+	return nil
+}
+
+// Convert_v1alpha1_Controllers_To_core_Controllers is an autogenerated conversion function.
+func Convert_v1alpha1_Controllers_To_core_Controllers(in *Controllers, out *core.Controllers, s conversion.Scope) error {
+	return autoConvert_v1alpha1_Controllers_To_core_Controllers(in, out, s)
+}
+
+func autoConvert_core_Controllers_To_v1alpha1_Controllers(in *core.Controllers, out *Controllers, s conversion.Scope) error {
+	out.Installations = (*Controller)(unsafe.Pointer(in.Installations))
+	out.Executions = (*Controller)(unsafe.Pointer(in.Executions))
+	return nil
+}
+
+// Convert_core_Controllers_To_v1alpha1_Controllers is an autogenerated conversion function.
+func Convert_core_Controllers_To_v1alpha1_Controllers(in *core.Controllers, out *Controllers, s conversion.Scope) error {
+	return autoConvert_core_Controllers_To_v1alpha1_Controllers(in, out, s)
+}
+
+func autoConvert_v1alpha1_DeployItemTimeouts_To_core_DeployItemTimeouts(in *DeployItemTimeouts, out *core.DeployItemTimeouts, s conversion.Scope) error {
+	out.Pickup = in.Pickup
+	out.ProgressingDefault = in.ProgressingDefault
+	return nil
+}
+
+// Convert_v1alpha1_DeployItemTimeouts_To_core_DeployItemTimeouts is an autogenerated conversion function.
+func Convert_v1alpha1_DeployItemTimeouts_To_core_DeployItemTimeouts(in *DeployItemTimeouts, out *core.DeployItemTimeouts, s conversion.Scope) error {
+	return autoConvert_v1alpha1_DeployItemTimeouts_To_core_DeployItemTimeouts(in, out, s)
+}
+
+func autoConvert_core_DeployItemTimeouts_To_v1alpha1_DeployItemTimeouts(in *core.DeployItemTimeouts, out *DeployItemTimeouts, s conversion.Scope) error {
+	out.Pickup = in.Pickup
+	out.ProgressingDefault = in.ProgressingDefault
+	return nil
+}
+
+// Convert_core_DeployItemTimeouts_To_v1alpha1_DeployItemTimeouts is an autogenerated conversion function.
+func Convert_core_DeployItemTimeouts_To_v1alpha1_DeployItemTimeouts(in *core.DeployItemTimeouts, out *DeployItemTimeouts, s conversion.Scope) error {
+	return autoConvert_core_DeployItemTimeouts_To_v1alpha1_DeployItemTimeouts(in, out, s)
+}
+
+func autoConvert_v1alpha1_Deployer_To_core_Deployer(in *Deployer, out *core.Deployer, s conversion.Scope) error {
+	out.Controller = (*core.Controller)(unsafe.Pointer(in.Controller))
+	out.K8SClientSettings = (*core.K8SClientSettings)(unsafe.Pointer(in.K8SClientSettings))
+	return nil
+}
+
+// Convert_v1alpha1_Deployer_To_core_Deployer is an autogenerated conversion function.
+func Convert_v1alpha1_Deployer_To_core_Deployer(in *Deployer, out *core.Deployer, s conversion.Scope) error {
+	return autoConvert_v1alpha1_Deployer_To_core_Deployer(in, out, s)
+}
+
+func autoConvert_core_Deployer_To_v1alpha1_Deployer(in *core.Deployer, out *Deployer, s conversion.Scope) error {
+	out.Controller = (*Controller)(unsafe.Pointer(in.Controller))
+	out.K8SClientSettings = (*K8SClientSettings)(unsafe.Pointer(in.K8SClientSettings))
+	return nil
+}
+
+// Convert_core_Deployer_To_v1alpha1_Deployer is an autogenerated conversion function.
+func Convert_core_Deployer_To_v1alpha1_Deployer(in *core.Deployer, out *Deployer, s conversion.Scope) error {
+	return autoConvert_core_Deployer_To_v1alpha1_Deployer(in, out, s)
+}
+
+func autoConvert_v1alpha1_DeployerConfig_To_core_DeployerConfig(in *DeployerConfig, out *core.DeployerConfig, s conversion.Scope) error {
+	out.Deployer = (*core.Deployer)(unsafe.Pointer(in.Deployer))
+	out.Resources = (*core.Resources)(unsafe.Pointer(in.Resources))
+	out.HPA = (*core.HPA)(unsafe.Pointer(in.HPA))
+	return nil
+}
+
+// Convert_v1alpha1_DeployerConfig_To_core_DeployerConfig is an autogenerated conversion function.
+func Convert_v1alpha1_DeployerConfig_To_core_DeployerConfig(in *DeployerConfig, out *core.DeployerConfig, s conversion.Scope) error {
+	return autoConvert_v1alpha1_DeployerConfig_To_core_DeployerConfig(in, out, s)
+}
+
+func autoConvert_core_DeployerConfig_To_v1alpha1_DeployerConfig(in *core.DeployerConfig, out *DeployerConfig, s conversion.Scope) error {
+	out.Deployer = (*Deployer)(unsafe.Pointer(in.Deployer))
+	out.Resources = (*Resources)(unsafe.Pointer(in.Resources))
+	out.HPA = (*HPA)(unsafe.Pointer(in.HPA))
+	return nil
+}
+
+// Convert_core_DeployerConfig_To_v1alpha1_DeployerConfig is an autogenerated conversion function.
+func Convert_core_DeployerConfig_To_v1alpha1_DeployerConfig(in *core.DeployerConfig, out *DeployerConfig, s conversion.Scope) error {
+	return autoConvert_core_DeployerConfig_To_v1alpha1_DeployerConfig(in, out, s)
+}
+
 func autoConvert_v1alpha1_Error_To_core_Error(in *Error, out *core.Error, s conversion.Scope) error {
 	out.Operation = in.Operation
 	out.LastTransitionTime = in.LastTransitionTime
@@ -549,6 +769,30 @@ func autoConvert_core_Error_To_v1alpha1_Error(in *core.Error, out *Error, s conv
 // Convert_core_Error_To_v1alpha1_Error is an autogenerated conversion function.
 func Convert_core_Error_To_v1alpha1_Error(in *core.Error, out *Error, s conversion.Scope) error {
 	return autoConvert_core_Error_To_v1alpha1_Error(in, out, s)
+}
+
+func autoConvert_v1alpha1_HPA_To_core_HPA(in *HPA, out *core.HPA, s conversion.Scope) error {
+	out.MaxReplicas = in.MaxReplicas
+	out.AverageMemoryUtilization = in.AverageMemoryUtilization
+	out.AverageCpuUtilization = in.AverageCpuUtilization
+	return nil
+}
+
+// Convert_v1alpha1_HPA_To_core_HPA is an autogenerated conversion function.
+func Convert_v1alpha1_HPA_To_core_HPA(in *HPA, out *core.HPA, s conversion.Scope) error {
+	return autoConvert_v1alpha1_HPA_To_core_HPA(in, out, s)
+}
+
+func autoConvert_core_HPA_To_v1alpha1_HPA(in *core.HPA, out *HPA, s conversion.Scope) error {
+	out.MaxReplicas = in.MaxReplicas
+	out.AverageMemoryUtilization = in.AverageMemoryUtilization
+	out.AverageCpuUtilization = in.AverageCpuUtilization
+	return nil
+}
+
+// Convert_core_HPA_To_v1alpha1_HPA is an autogenerated conversion function.
+func Convert_core_HPA_To_v1alpha1_HPA(in *core.HPA, out *HPA, s conversion.Scope) error {
+	return autoConvert_core_HPA_To_v1alpha1_HPA(in, out, s)
 }
 
 func autoConvert_v1alpha1_HighAvailabilityConfig_To_core_HighAvailabilityConfig(in *HighAvailabilityConfig, out *core.HighAvailabilityConfig, s conversion.Scope) error {
@@ -707,8 +951,81 @@ func Convert_core_InstanceStatus_To_v1alpha1_InstanceStatus(in *core.InstanceSta
 	return autoConvert_core_InstanceStatus_To_v1alpha1_InstanceStatus(in, out, s)
 }
 
+func autoConvert_v1alpha1_K8SClientLimits_To_core_K8SClientLimits(in *K8SClientLimits, out *core.K8SClientLimits, s conversion.Scope) error {
+	out.Burst = in.Burst
+	out.QPS = in.QPS
+	return nil
+}
+
+// Convert_v1alpha1_K8SClientLimits_To_core_K8SClientLimits is an autogenerated conversion function.
+func Convert_v1alpha1_K8SClientLimits_To_core_K8SClientLimits(in *K8SClientLimits, out *core.K8SClientLimits, s conversion.Scope) error {
+	return autoConvert_v1alpha1_K8SClientLimits_To_core_K8SClientLimits(in, out, s)
+}
+
+func autoConvert_core_K8SClientLimits_To_v1alpha1_K8SClientLimits(in *core.K8SClientLimits, out *K8SClientLimits, s conversion.Scope) error {
+	out.Burst = in.Burst
+	out.QPS = in.QPS
+	return nil
+}
+
+// Convert_core_K8SClientLimits_To_v1alpha1_K8SClientLimits is an autogenerated conversion function.
+func Convert_core_K8SClientLimits_To_v1alpha1_K8SClientLimits(in *core.K8SClientLimits, out *K8SClientLimits, s conversion.Scope) error {
+	return autoConvert_core_K8SClientLimits_To_v1alpha1_K8SClientLimits(in, out, s)
+}
+
+func autoConvert_v1alpha1_K8SClientSettings_To_core_K8SClientSettings(in *K8SClientSettings, out *core.K8SClientSettings, s conversion.Scope) error {
+	out.HostClient = (*core.K8SClientLimits)(unsafe.Pointer(in.HostClient))
+	out.ResourceClient = (*core.K8SClientLimits)(unsafe.Pointer(in.ResourceClient))
+	return nil
+}
+
+// Convert_v1alpha1_K8SClientSettings_To_core_K8SClientSettings is an autogenerated conversion function.
+func Convert_v1alpha1_K8SClientSettings_To_core_K8SClientSettings(in *K8SClientSettings, out *core.K8SClientSettings, s conversion.Scope) error {
+	return autoConvert_v1alpha1_K8SClientSettings_To_core_K8SClientSettings(in, out, s)
+}
+
+func autoConvert_core_K8SClientSettings_To_v1alpha1_K8SClientSettings(in *core.K8SClientSettings, out *K8SClientSettings, s conversion.Scope) error {
+	out.HostClient = (*K8SClientLimits)(unsafe.Pointer(in.HostClient))
+	out.ResourceClient = (*K8SClientLimits)(unsafe.Pointer(in.ResourceClient))
+	return nil
+}
+
+// Convert_core_K8SClientSettings_To_v1alpha1_K8SClientSettings is an autogenerated conversion function.
+func Convert_core_K8SClientSettings_To_v1alpha1_K8SClientSettings(in *core.K8SClientSettings, out *K8SClientSettings, s conversion.Scope) error {
+	return autoConvert_core_K8SClientSettings_To_v1alpha1_K8SClientSettings(in, out, s)
+}
+
+func autoConvert_v1alpha1_Landscaper_To_core_Landscaper(in *Landscaper, out *core.Landscaper, s conversion.Scope) error {
+	out.Controllers = (*core.Controllers)(unsafe.Pointer(in.Controllers))
+	out.K8SClientSettings = (*core.K8SClientSettings)(unsafe.Pointer(in.K8SClientSettings))
+	out.DeployItemTimeouts = (*core.DeployItemTimeouts)(unsafe.Pointer(in.DeployItemTimeouts))
+	return nil
+}
+
+// Convert_v1alpha1_Landscaper_To_core_Landscaper is an autogenerated conversion function.
+func Convert_v1alpha1_Landscaper_To_core_Landscaper(in *Landscaper, out *core.Landscaper, s conversion.Scope) error {
+	return autoConvert_v1alpha1_Landscaper_To_core_Landscaper(in, out, s)
+}
+
+func autoConvert_core_Landscaper_To_v1alpha1_Landscaper(in *core.Landscaper, out *Landscaper, s conversion.Scope) error {
+	out.Controllers = (*Controllers)(unsafe.Pointer(in.Controllers))
+	out.K8SClientSettings = (*K8SClientSettings)(unsafe.Pointer(in.K8SClientSettings))
+	out.DeployItemTimeouts = (*DeployItemTimeouts)(unsafe.Pointer(in.DeployItemTimeouts))
+	return nil
+}
+
+// Convert_core_Landscaper_To_v1alpha1_Landscaper is an autogenerated conversion function.
+func Convert_core_Landscaper_To_v1alpha1_Landscaper(in *core.Landscaper, out *Landscaper, s conversion.Scope) error {
+	return autoConvert_core_Landscaper_To_v1alpha1_Landscaper(in, out, s)
+}
+
 func autoConvert_v1alpha1_LandscaperConfiguration_To_core_LandscaperConfiguration(in *LandscaperConfiguration, out *core.LandscaperConfiguration, s conversion.Scope) error {
+	out.Landscaper = (*core.Landscaper)(unsafe.Pointer(in.Landscaper))
+	out.Resources = (*core.Resources)(unsafe.Pointer(in.Resources))
+	out.ResourcesMain = (*core.Resources)(unsafe.Pointer(in.ResourcesMain))
+	out.HPAMain = (*core.HPA)(unsafe.Pointer(in.HPAMain))
 	out.Deployers = *(*[]string)(unsafe.Pointer(&in.Deployers))
+	out.DeployersConfig = *(*map[string]*core.DeployerConfig)(unsafe.Pointer(&in.DeployersConfig))
 	return nil
 }
 
@@ -718,7 +1035,12 @@ func Convert_v1alpha1_LandscaperConfiguration_To_core_LandscaperConfiguration(in
 }
 
 func autoConvert_core_LandscaperConfiguration_To_v1alpha1_LandscaperConfiguration(in *core.LandscaperConfiguration, out *LandscaperConfiguration, s conversion.Scope) error {
+	out.Landscaper = (*Landscaper)(unsafe.Pointer(in.Landscaper))
+	out.Resources = (*Resources)(unsafe.Pointer(in.Resources))
+	out.ResourcesMain = (*Resources)(unsafe.Pointer(in.ResourcesMain))
+	out.HPAMain = (*HPA)(unsafe.Pointer(in.HPAMain))
 	out.Deployers = *(*[]string)(unsafe.Pointer(&in.Deployers))
+	out.DeployersConfig = *(*map[string]*DeployerConfig)(unsafe.Pointer(&in.DeployersConfig))
 	return nil
 }
 
@@ -999,6 +1321,52 @@ func autoConvert_core_ObjectReference_To_v1alpha1_ObjectReference(in *core.Objec
 // Convert_core_ObjectReference_To_v1alpha1_ObjectReference is an autogenerated conversion function.
 func Convert_core_ObjectReference_To_v1alpha1_ObjectReference(in *core.ObjectReference, out *ObjectReference, s conversion.Scope) error {
 	return autoConvert_core_ObjectReference_To_v1alpha1_ObjectReference(in, out, s)
+}
+
+func autoConvert_v1alpha1_ResourceRequests_To_core_ResourceRequests(in *ResourceRequests, out *core.ResourceRequests, s conversion.Scope) error {
+	out.CPU = in.CPU
+	out.Memory = in.Memory
+	return nil
+}
+
+// Convert_v1alpha1_ResourceRequests_To_core_ResourceRequests is an autogenerated conversion function.
+func Convert_v1alpha1_ResourceRequests_To_core_ResourceRequests(in *ResourceRequests, out *core.ResourceRequests, s conversion.Scope) error {
+	return autoConvert_v1alpha1_ResourceRequests_To_core_ResourceRequests(in, out, s)
+}
+
+func autoConvert_core_ResourceRequests_To_v1alpha1_ResourceRequests(in *core.ResourceRequests, out *ResourceRequests, s conversion.Scope) error {
+	out.CPU = in.CPU
+	out.Memory = in.Memory
+	return nil
+}
+
+// Convert_core_ResourceRequests_To_v1alpha1_ResourceRequests is an autogenerated conversion function.
+func Convert_core_ResourceRequests_To_v1alpha1_ResourceRequests(in *core.ResourceRequests, out *ResourceRequests, s conversion.Scope) error {
+	return autoConvert_core_ResourceRequests_To_v1alpha1_ResourceRequests(in, out, s)
+}
+
+func autoConvert_v1alpha1_Resources_To_core_Resources(in *Resources, out *core.Resources, s conversion.Scope) error {
+	if err := Convert_v1alpha1_ResourceRequests_To_core_ResourceRequests(&in.Requests, &out.Requests, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_v1alpha1_Resources_To_core_Resources is an autogenerated conversion function.
+func Convert_v1alpha1_Resources_To_core_Resources(in *Resources, out *core.Resources, s conversion.Scope) error {
+	return autoConvert_v1alpha1_Resources_To_core_Resources(in, out, s)
+}
+
+func autoConvert_core_Resources_To_v1alpha1_Resources(in *core.Resources, out *Resources, s conversion.Scope) error {
+	if err := Convert_core_ResourceRequests_To_v1alpha1_ResourceRequests(&in.Requests, &out.Requests, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_core_Resources_To_v1alpha1_Resources is an autogenerated conversion function.
+func Convert_core_Resources_To_v1alpha1_Resources(in *core.Resources, out *Resources, s conversion.Scope) error {
+	return autoConvert_core_Resources_To_v1alpha1_Resources(in, out, s)
 }
 
 func autoConvert_v1alpha1_SecretReference_To_core_SecretReference(in *SecretReference, out *core.SecretReference, s conversion.Scope) error {

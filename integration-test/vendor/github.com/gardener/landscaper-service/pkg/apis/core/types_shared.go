@@ -71,8 +71,87 @@ type Error struct {
 
 // LandscaperConfiguration contains the configuration for a landscaper service deployment.
 type LandscaperConfiguration struct {
+	// +optional
+	Landscaper *Landscaper `json:"landscaper,omitempty"`
+	// Resources configures the resources of the "central" landscaper pod, i.e. the pod responsible for crds creation,
+	// deployer management, context controller.
+	// +optional
+	Resources *Resources `json:"resources,omitempty"`
+	// ResourcesMain configures the resources of the "main" landscaper pods, i.e. the pods of installation and execution controller.
+	// +optional
+	ResourcesMain *Resources `json:"resourcesMain,omitempty"`
+	// HPAMain configures the horizontal pod autoscaling of the "main" landscaper pods, i.e. the pods of installation and execution controller.
+	// +optional
+	HPAMain *HPA `json:"hpaMain,omitempty"`
 	// Deployers is the list of deployers that are getting installed alongside with this Instance.
 	Deployers []string `json:"deployers"`
+	// DeployersConfig specifies the configuration for the landscaper standard deployers.
+	// +optional
+	DeployersConfig map[string]*DeployerConfig `json:"deployersConfig,omitempty"`
+}
+
+type Landscaper struct {
+	Controllers        *Controllers        `json:"controllers,omitempty"`
+	K8SClientSettings  *K8SClientSettings  `json:"k8sClientSettings,omitempty"`
+	DeployItemTimeouts *DeployItemTimeouts `json:"deployItemTimeouts,omitempty"`
+}
+
+// Controllers specifies the config for the "main" landscaper controllers, i.e. the installation and execution controller.
+type Controllers struct {
+	Installations *Controller `json:"installations,omitempty"`
+	Executions    *Controller `json:"executions,omitempty"`
+}
+
+// Controller specifies the config for a landscaper controller.
+type Controller struct {
+	Workers int32 `json:"workers,omitempty"`
+}
+
+// K8SClientSettings specifies the settings for the k8s clients which landscaper uses to access host and resource cluster.
+type K8SClientSettings struct {
+	HostClient     *K8SClientLimits `json:"hostClient,omitempty"`
+	ResourceClient *K8SClientLimits `json:"resourceClient,omitempty"`
+}
+
+// K8SClientLimits specifies the settings for a k8s client.
+type K8SClientLimits struct {
+	Burst int32 `json:"burst,omitempty"`
+	QPS   int32 `json:"qps,omitempty"`
+}
+
+// DeployItemTimeouts configures the timeout controller.
+type DeployItemTimeouts struct {
+	Pickup             string `json:"pickup,omitempty"`
+	ProgressingDefault string `json:"progressingDefault,omitempty"`
+}
+
+// DeployerConfig configures a deployer.
+type DeployerConfig struct {
+	Deployer  *Deployer  `json:"deployer,omitempty"`
+	Resources *Resources `json:"resources,omitempty"`
+	HPA       *HPA       `json:"hpa,omitempty"`
+}
+
+type Deployer struct {
+	Controller        *Controller        `json:"controller,omitempty"`
+	K8SClientSettings *K8SClientSettings `json:"k8sClientSettings,omitempty"`
+}
+
+// Resources configures the resources of pods (requested cpu and memory)
+type Resources struct {
+	Requests ResourceRequests `json:"requests,omitempty"`
+}
+
+type ResourceRequests struct {
+	CPU    string `json:"cpu,omitempty"`
+	Memory string `json:"memory,omitempty"`
+}
+
+// HPA configures the horizontal pod autoscaling of pods.
+type HPA struct {
+	MaxReplicas              int32 `json:"maxReplicas,omitempty"`
+	AverageMemoryUtilization int32 `json:"averageMemoryUtilization,omitempty"`
+	AverageCpuUtilization    int32 `json:"averageCpuUtilization,omitempty"`
 }
 
 // LandscaperServiceComponent defines the landscaper service component that is being used.
