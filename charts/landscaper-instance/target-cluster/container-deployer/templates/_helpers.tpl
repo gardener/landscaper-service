@@ -36,11 +36,16 @@ Create the Helm deployer config file which will be encapsulated in a secret.
 {{- define "deployer-config" -}}
 apiVersion: container.deployer.landscaper.gardener.cloud/v1alpha1
 kind: Configuration
+
 identity: {{ .Values.deployer.identity }}
+
+namespace: {{ .Release.Namespace }}
+
 initContainer:
   image: "{{ include "init-image" . }}"
 waitContainer:
   image: "{{ include "wait-image" . }}"
+
 {{- if .Values.deployer.registryConfig }}
 oci:
   allowPlainHttp: {{ .Values.deployer.registryConfig.allowPlainHttp }}
