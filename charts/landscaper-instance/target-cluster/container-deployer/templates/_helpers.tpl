@@ -26,6 +26,10 @@ app.kubernetes.io/name: {{ .Values.deployer.name}}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
+{{- define "deployer.clusterrole.name" -}}
+landscaper.gardener.cloud:{{- .Values.deployer.name }}
+{{- end }}
+
 {{/*
 Create the Helm deployer config file which will be encapsulated in a secret.
 */}}
