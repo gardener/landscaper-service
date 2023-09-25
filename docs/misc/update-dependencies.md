@@ -60,8 +60,8 @@ export FLUENTBIT_VERSION=2.1.9
 Check new version for [helm chart & image](https://github.com/kubernetes/ingress-nginx/releases)
 
 ```shell
-export INGRESS_NGINX_CHART_VERSION=4.7.2
-export INGRESS_NGINX_IMAGE_VERSION=v1.8.2
+export INGRESS_NGINX_CHART_VERSION=4.8.0
+export INGRESS_NGINX_IMAGE_VERSION=v1.9.0
 
 ./hack/dependency-update/ingress-controller.sh ${INGRESS_NGINX_CHART_VERSION} ${INGRESS_NGINX_IMAGE_VERSION}
 ```
