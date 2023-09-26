@@ -2,6 +2,7 @@ deployer:
   name: helm-deployer
   identity: helm-deployer-default
   containerName: helm-deployer
+  serviceAccountName: helm-deployer
   verbosity: info
 
   registryConfig:
@@ -22,6 +23,8 @@ deployer:
   hpa:
     minReplicas: 1
     maxReplicas: 1
+    averageCpuUtilization: 80
+    averageMemoryUtilization: 80
 
   controller:
     workers: 30

@@ -23,13 +23,13 @@ spec:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 80
+          averageUtilization: {{ .Values.controller.hpa.averageCpuUtilization }}
     - type: Resource
       resource:
         name: memory
         target:
           type: Utilization
-          averageUtilization: 80
+          averageUtilization: {{ .Values.controller.hpa.averageMemoryUtilization }}
 ...
 ---
 apiVersion: autoscaling/v2
@@ -51,13 +51,13 @@ spec:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 80
+          averageUtilization: {{ .Values.controller.main.hpa.averageCpuUtilization }}
     - type: Resource
       resource:
         name: memory
         target:
           type: Utilization
-          averageUtilization: 80
+          averageUtilization: {{ .Values.controller.main.hpa.averageMemoryUtilization }}
 ...
 ---
 apiVersion: autoscaling/v2
@@ -79,11 +79,11 @@ spec:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 80
+          averageUtilization: {{ .Values.webhooksServer.hpa.averageCpuUtilization }}
     - type: Resource
       resource:
         name: memory
         target:
           type: Utilization
-          averageUtilization: 80
+          averageUtilization: {{ .Values.webhooksServer.hpa.averageMemoryUtilization }}
 ...

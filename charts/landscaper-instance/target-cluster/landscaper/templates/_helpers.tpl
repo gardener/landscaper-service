@@ -79,6 +79,11 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 apiVersion: config.landscaper.gardener.cloud/v1alpha1
 kind: LandscaperConfiguration
 
+{{- if .Values.landscaper.controllers }}
+controllers:
+{{ .Values.landscaper.controllers | toYaml | indent 2 }}
+{{- end }}
+
 registry:
   oci:
     allowPlainHttp: {{ .Values.landscaper.registryConfig.allowPlainHttpRegistries }}
@@ -104,6 +109,13 @@ deployerManagement:
   disable: true
   agent:
     disable: true
+
+{{- if .Values.landscaper.deployItemTimeouts }}
+deployItemTimeouts:
+  {{- range $key, $value := .Values.landscaper.deployItemTimeouts }}
+  {{ $key }}: {{ $value }}
+  {{- end }}
+{{- end }}
 
 lsDeployments:
   lsController: "{{- .Values.landscaper.name }}"

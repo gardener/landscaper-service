@@ -3,6 +3,36 @@ landscaper:
 
   verbosity: "info"
 
+  controllers:
+    # syncPeriod: 10h
+    installations:
+      workers: 30
+      # cacheSyncTimeout: 2m
+    executions:
+      workers: 30
+      # cacheSyncTimeout: 2m
+    deployItems:
+      workers: 5
+      # cacheSyncTimeout: 2m
+    componentOverwrites:
+      workers: 5
+      # cacheSyncTimeout: 2m
+    context:
+      workers: 5
+      # cacheSyncTimeout: 2m
+
+      config:
+        default:
+          disable: false
+          excludeNamespaces:
+            - kube-system
+
+  deployItemTimeouts:
+    # how long deployers may take to react on changes to deploy items
+    pickup: 60m
+    # default for how long deployers may take to process a deploy item before failing, can be overwritten via the deploy item's 'spec.timeout' field
+    progressingDefault: 10m
+
   registryConfig:
     allowPlainHttpRegistries: false
     insecureSkipVerify: false
@@ -63,6 +93,8 @@ controller:
   hpa:
     minReplicas: 1
     maxReplicas: 1
+    averageCpuUtilization: 80
+    averageMemoryUtilization: 80
 
   service:
     type: ClusterIP
@@ -81,6 +113,8 @@ controller:
     hpa:
       minReplicas: 1
       maxReplicas: 1
+      averageCpuUtilization: 80
+      averageMemoryUtilization: 80
 
 webhooksServer:
   containerName: landscaper-webhooks
@@ -113,6 +147,8 @@ webhooksServer:
   hpa:
     minReplicas: 2
     maxReplicas: 10
+    averageCpuUtilization: 80
+    averageMemoryUtilization: 80
 
   service:
     type: ClusterIP

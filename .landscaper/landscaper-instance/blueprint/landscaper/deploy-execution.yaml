@@ -215,6 +215,7 @@ deployItems:
           name: helm-{{ .imports.hostingClusterNamespace }}-helm-deployer
           identity: helm-{{ .imports.hostingClusterNamespace }}
           containerName: helm-deployer
+          serviceAccountName: helm-deployer
 
           {{- if (dig "landscaperConfig" "landscaper" "verbosity" false .imports) }}
           verbosity: {{ .imports.landscaperConfig.landscaper.verbosity }}
@@ -292,7 +293,8 @@ deployItems:
         deployer:
           name: manifest-{{ .imports.hostingClusterNamespace }}-manifest-deployer
           identity: manifest-{{ .imports.hostingClusterNamespace }}
-          containerName: manifest-deployer
+          container-name: manifest-deployer
+          serviceAccountName: manifest-deployer
 
           {{- if (dig "landscaperConfig" "landscaper" "verbosity" false .imports) }}
           verbosity: {{ .imports.landscaperConfig.landscaper.verbosity }}
@@ -371,6 +373,7 @@ deployItems:
           name: container-{{ .imports.hostingClusterNamespace }}-container-deployer
           identity: container-{{ .imports.hostingClusterNamespace }}
           containerName: container-deployer
+          serviceAccountName: container-deployer
 
           {{- if (dig "landscaperConfig" "landscaper" "verbosity" false .imports) }}
           verbosity: {{ .imports.landscaperConfig.landscaper.verbosity }}

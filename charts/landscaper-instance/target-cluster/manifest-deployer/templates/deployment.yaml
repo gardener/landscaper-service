@@ -31,14 +31,14 @@ spec:
         landscaper.gardener.cloud/topology: manifest-deployer
         landscaper.gardener.cloud/topology-ns: {{ .Release.Namespace }}
     spec:
-      automountServiceAccountToken: false
+      serviceAccountName: {{ .Values.deployer.serviceAccountName }}
       containers:
         - name: {{ .Values.deployer.containerName }}
           image: "{{ include "deployer-image" . }}"
           imagePullPolicy: {{ .Values.deployer.image.pullPolicy }}
           args:
             - "--config=/app/ls/config/config.yaml"
-            - "--kubeconfig=/app/ls/resource-cluster-kubeconfig/kubeconfig"
+            - "--landscaper-kubeconfig=/app/ls/resource-cluster-kubeconfig/kubeconfig"
             - "-v={{ .Values.deployer.verbosity }}"
           volumeMounts:
             - name: config
