@@ -144,14 +144,6 @@ deployItems:
             kubeconfig: |
             {{- .imports.landscaperWebhooksKubeconfigYaml | nindent 14}}
 
-          {{ $webhooksImgresource := getResource $landscaperComponent "name" "landscaper-webhooks-server" }}
-          {{ $webhooksImgrepo := ociRefRepo $webhooksImgresource.access.imageReference }}
-          {{ $webhooksImgtag := ociRefVersion $webhooksImgresource.access.imageReference }}
-          image:
-            repository: {{ $webhooksImgrepo }}
-            tag: {{ $webhooksImgtag }}
-            pullPolicy: IfNotPresent
-
           {{- if (dig "landscaperConfig" "webhooksServer" "replicas" false .imports) }}
           replicaCount: {{ .imports.landscaperConfig.webhooksServer.replicas }}
           {{- end }}
@@ -185,6 +177,14 @@ deployItems:
             className: nginx
             dns:
               class: garden
+
+          {{ $webhooksImgresource := getResource $landscaperComponent "name" "landscaper-webhooks-server" }}
+          {{ $webhooksImgrepo := ociRefRepo $webhooksImgresource.access.imageReference }}
+          {{ $webhooksImgtag := ociRefVersion $webhooksImgresource.access.imageReference }}
+          image:
+            repository: {{ $webhooksImgrepo }}
+            tag: {{ $webhooksImgtag }}
+            pullPolicy: IfNotPresent
 
 {{ if has "helm" .imports.landscaperConfig.deployers }}
   - name: helm-deployer
