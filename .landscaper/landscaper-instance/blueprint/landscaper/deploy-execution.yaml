@@ -216,7 +216,6 @@ deployItems:
           identity: helm-{{ .imports.hostingClusterNamespace }}
           containerName: helm-deployer
           serviceAccountName: helm-deployer
-
           {{- if (dig "landscaperConfig" "landscaper" "verbosity" false .imports) }}
           verbosity: {{ .imports.landscaperConfig.landscaper.verbosity }}
           {{- end }}
@@ -305,7 +304,6 @@ deployItems:
             {{- .imports.landscaperControllerKubeconfigYaml | nindent 14 }}
 
           replicaCount: 1
-
           {{- if (dig "landscaperConfig" "deployersConfig" "manifest" "deployer" "controller" false .imports) }}
           controller:
           {{- toYaml .imports.landscaperConfig.deployersConfig.manifest.deployer.controller | nindent 12 }}
