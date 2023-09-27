@@ -29,7 +29,7 @@ gcloud auth print-access-token | helm registry login -u oauth2accesstoken --pass
 Check new version on [artifacthub.io / cert-manager](https://artifacthub.io/packages/helm/cert-manager/cert-manager)
 
 ```shell
-export CERT_MANAGER_VERSION=v1.13.0
+export CERT_MANAGER_VERSION=v1.13.1
 
 ./hack/dependency-update/cert-manager.sh ${CERT_MANAGER_VERSION}
 ```
