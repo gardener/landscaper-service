@@ -120,7 +120,7 @@ deployItems:
 
             {{- if (dig "landscaperConfig" "resourcesMain" false .imports) }}
             resources:
-            {{- toYaml imports.landscaperConfig.landscaper.resourcesMain | nindent 14 }}
+            {{- toYaml .imports.landscaperConfig.landscaper.resourcesMain | nindent 14 }}
             {{- end }}
 
             {{- if (dig "landscaperConfig" "hpaMain" false .imports) }}
@@ -153,7 +153,7 @@ deployItems:
           {{- toYaml .imports.landscaperConfig.webhooksServer.resources | nindent 12 }}
           {{- end }}
 
-          {{ - if (dig "landscaperConfig" "webhooksServer" "hpa" false .imports) }}
+          {{- if (dig "landscaperConfig" "webhooksServer" "hpa" false .imports) }}
           hpa:
             {{- if (dig "landscaperConfig" "webhooksServer" "hpa" "maxReplicas" false .imports) }}
             maxReplicas: {{ .imports.landscaperConfig.webhooksServer.hpa.maxReplicas }}
@@ -234,7 +234,7 @@ deployItems:
           {{- if (dig "landscaperConfig" "deployersConfig" "helm" "deployer" "k8sClientSettings" false .imports) }}
           k8sClientSettings:
           {{- toYaml .imports.landscaperConfig.deployersConfig.helm.deployer.k8sClientSettings | nindent 12 }}
-          {{- end } }
+          {{- end }}
 
           {{- if (dig "landscaperConfig" "deployersConfig" "helm" "hpa" false .imports) }}
           hpa:
@@ -252,7 +252,7 @@ deployItems:
           {{- if (dig "landscaperConfig" "deployersConfig" "helm" "resources" false .imports) }}
           resources:
           {{- toYaml .imports.landscaperConfig.deployersConfig.helm.resources | nindent 10 }}
-          {{ - end } }
+          {{- end }}
 
           image:
             {{ $helmDeployerComponent := getComponent $landscaperComponent "name" "helm-deployer" }}
@@ -312,7 +312,7 @@ deployItems:
           {{- if (dig "landscaperConfig" "deployersConfig" "manifest" "deployer" "k8sClientSettings" false .imports) }}
           k8sClientSettings:
           {{- toYaml .imports.landscaperConfig.deployersConfig.manifest.deployer.k8sClientSettings | nindent 12 }}
-          {{- end } }
+          {{- end }}
 
           {{- if (dig "landscaperConfig" "deployersConfig" "manifest" "hpa" false .imports) }}
           hpa:
@@ -330,7 +330,7 @@ deployItems:
           {{- if (dig "landscaperConfig" "deployersConfig" "manifest" "resources" false .imports) }}
           resources:
           {{- toYaml .imports.landscaperConfig.deployersConfig.manifest.resources | nindent 10 }}
-          {{- end } }
+          {{- end }}
 
           image:
             {{ $manifestDeployerComponent := getComponent $landscaperComponent "name" "manifest-deployer" }}
@@ -391,7 +391,7 @@ deployItems:
           {{- if (dig "landscaperConfig" "deployersConfig" "container" "deployer" "k8sClientSettings" false .imports) }}
           k8sClientSettings:
           {{- toYaml .imports.landscaperConfig.deployersConfig.container.deployer.k8sClientSettings | nindent 12 }}
-          {{- end } }
+          {{- end }}
 
           {{- if (dig "landscaperConfig" "deployersConfig" "container" "hpa" false .imports) }}
           hpa:
@@ -409,7 +409,7 @@ deployItems:
           {{- if (dig "landscaperConfig" "deployersConfig" "container" "resources" false .imports) }}
           resources:
           {{- toYaml .imports.landscaperConfig.deployersConfig.container.resources | nindent 10 }}
-          {{- end } }
+          {{- end }}
 
           image:
             {{ $containerDeployerComponent := getComponent $landscaperComponent "name" "container-deployer" }}
