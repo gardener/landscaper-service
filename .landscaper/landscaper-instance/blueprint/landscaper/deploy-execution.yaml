@@ -78,30 +78,14 @@ deployItems:
                 {{- end }}
 
         controller:
-          containerName: landscaper-controller
-          serviceAccountName: landscaper-controller
-          roleName: landscaper-controller
-
           resourceCluster:
             kubeconfig: |
             {{- .imports.landscaperControllerKubeconfigYaml | nindent 14 }}
 
-          replicaCount: 1
-
+          {{- if (dig "landscaperConfig" "resources" false .imports) }}
           resources:
-            requests:
-              cpu: 100m
-              memory: 100Mi
-
-          hpa:
-            minReplicas: 1
-            maxReplicas: 1
-            averageCpuUtilization: 80
-            averageMemoryUtilization: 80
-
-          service:
-            type: ClusterIP
-            port: 80
+          {{- toYaml .imports.landscaperConfig.resources | nindent 12 }}
+          {{- end }}
 
           {{ $landscaperImgresource := getResource $landscaperComponent "name" "landscaper-controller" }}
           {{ $landscaperImgrepo := ociRefRepo $landscaperImgresource.access.imageReference }}
@@ -112,15 +96,13 @@ deployItems:
             pullPolicy: IfNotPresent
 
           main:
-            containerName: landscaper-main
-
             {{- if (dig "landscaperConfig" "landscaper" "replicas" false .imports) }}
             replicaCount: {{ .imports.landscaperConfig.landscaper.replicas }}
             {{- end }}
 
             {{- if (dig "landscaperConfig" "resourcesMain" false .imports) }}
             resources:
-            {{- toYaml .imports.landscaperConfig.landscaper.resourcesMain | nindent 14 }}
+            {{- toYaml .imports.landscaperConfig.resourcesMain | nindent 14 }}
             {{- end }}
 
             {{- if (dig "landscaperConfig" "hpaMain" false .imports) }}
@@ -137,7 +119,6 @@ deployItems:
             {{- end }}
 
         webhooksServer:
-          containerName: landscaper-webhooks
           certificatesNamespace: {{ .imports.targetClusterNamespace }}
 
           resourceCluster:
@@ -148,24 +129,6 @@ deployItems:
           replicaCount: {{ .imports.landscaperConfig.webhooksServer.replicas }}
           {{- end }}
 
-          {{- if (dig "landscaperConfig" "webhooksServer" "resources" false .imports) }}
-          resources:
-          {{- toYaml .imports.landscaperConfig.webhooksServer.resources | nindent 12 }}
-          {{- end }}
-
-          {{- if (dig "landscaperConfig" "webhooksServer" "hpa" false .imports) }}
-          hpa:
-            {{- if (dig "landscaperConfig" "webhooksServer" "hpa" "maxReplicas" false .imports) }}
-            maxReplicas: {{ .imports.landscaperConfig.webhooksServer.hpa.maxReplicas }}
-            {{- end }}
-            {{- if (dig "landscaperConfig" "webhooksServer" "hpa" "averageCpuUtilization" false .imports) }}
-            averageCpuUtilization: { { .imports.landscaperConfig.webhooksServer.hpa.averageCpuUtilization }}
-            {{- end }}
-            {{- if (dig "landscaperConfig" "webhooksServer" "hpa" "averageMemoryUtilization" false .imports) }}
-            averageMemoryUtilization: { { .imports.landscaperConfig.webhooksServer.hpa.averageMemoryUtilization }}
-            {{- end }}
-          {{- end }}
-
           service:
             type: ClusterIP
             {{- if (dig "landscaperConfig" "webhooksServer" "servicePort" false .imports) }}
@@ -174,9 +137,6 @@ deployItems:
 
           ingress:
             host: {{ .imports.webhooksHostName }}
-            className: nginx
-            dns:
-              class: garden
 
           {{ $webhooksImgresource := getResource $landscaperComponent "name" "landscaper-webhooks-server" }}
           {{ $webhooksImgrepo := ociRefRepo $webhooksImgresource.access.imageReference }}
@@ -214,8 +174,7 @@ deployItems:
         deployer:
           name: helm-{{ .imports.hostingClusterNamespace }}-helm-deployer
           identity: helm-{{ .imports.hostingClusterNamespace }}
-          containerName: helm-deployer
-          serviceAccountName: helm-deployer
+
           {{- if (dig "landscaperConfig" "landscaper" "verbosity" false .imports) }}
           verbosity: {{ .imports.landscaperConfig.landscaper.verbosity }}
           {{- end }}
@@ -223,8 +182,6 @@ deployItems:
           resourceCluster:
             kubeconfig: |
             {{- .imports.landscaperControllerKubeconfigYaml | nindent 14 }}
-
-          replicaCount: 1
 
           {{- if (dig "landscaperConfig" "deployersConfig" "helm" "deployer" "controller" false .imports) }}
           controller:
@@ -292,8 +249,6 @@ deployItems:
         deployer:
           name: manifest-{{ .imports.hostingClusterNamespace }}-manifest-deployer
           identity: manifest-{{ .imports.hostingClusterNamespace }}
-          container-name: manifest-deployer
-          serviceAccountName: manifest-deployer
 
           {{- if (dig "landscaperConfig" "landscaper" "verbosity" false .imports) }}
           verbosity: {{ .imports.landscaperConfig.landscaper.verbosity }}
@@ -303,7 +258,6 @@ deployItems:
             kubeconfig: |
             {{- .imports.landscaperControllerKubeconfigYaml | nindent 14 }}
 
-          replicaCount: 1
           {{- if (dig "landscaperConfig" "deployersConfig" "manifest" "deployer" "controller" false .imports) }}
           controller:
           {{- toYaml .imports.landscaperConfig.deployersConfig.manifest.deployer.controller | nindent 12 }}
@@ -370,8 +324,6 @@ deployItems:
         deployer:
           name: container-{{ .imports.hostingClusterNamespace }}-container-deployer
           identity: container-{{ .imports.hostingClusterNamespace }}
-          containerName: container-deployer
-          serviceAccountName: container-deployer
 
           {{- if (dig "landscaperConfig" "landscaper" "verbosity" false .imports) }}
           verbosity: {{ .imports.landscaperConfig.landscaper.verbosity }}
@@ -380,8 +332,6 @@ deployItems:
           resourceCluster:
             kubeconfig: |
             {{- .imports.landscaperControllerKubeconfigYaml | nindent 14 }}
-
-          replicaCount: 1
 
           {{- if (dig "landscaperConfig" "deployersConfig" "container" "deployer" "controller" false .imports) }}
           controller:

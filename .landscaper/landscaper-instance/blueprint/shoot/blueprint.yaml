@@ -62,12 +62,6 @@ imports:
         - user
         - password
 
-  - name: subaccountId
-    required: false
-    type: data
-    schema:
-      type: string
-
   - name: rotationConfig
     type: data
     schema:

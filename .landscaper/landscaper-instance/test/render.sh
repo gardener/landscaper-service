@@ -14,8 +14,31 @@ envsubst <"${BASE_DIR}/resources.yaml" >"${RESOURCES_FILE}"
 LANDSCAPER_COMPONENT_REF="$(yq ./.landscaper/landscaper-instance/component-references.yaml -ojson -I=0)"
 yq ".component.componentReferences += [${LANDSCAPER_COMPONENT_REF}]" "${TEST_DIR}/component-descriptor.yaml" > "${COMPONENT_DESCRIPTOR_FILE}"
 
+# render global installation blueprint
+echo "!!! render global installation blueprint !!!"
 landscaper-cli blueprints render ${BASE_DIR}/blueprint/installation \
     -c "${COMPONENT_DESCRIPTOR_FILE}" \
-    -f "${TEST_DIR}/values.yaml" \
+    -f "${TEST_DIR}/values-global.yaml" \
     -e "${TEST_DIR}/export-templates.yaml" \
+    -r "${RESOURCES_FILE}"
+
+# render shoot blueprint
+echo "!!! render shoot blueprint !!!"
+landscaper-cli blueprints render ${BASE_DIR}/blueprint/shoot \
+    -c "${COMPONENT_DESCRIPTOR_FILE}" \
+    -f "${TEST_DIR}/values-shoot.yaml" \
+    -r "${RESOURCES_FILE}"
+
+# render shoot blueprint
+echo "!!! render landscaper rbac blueprint !!!"
+landscaper-cli blueprints render ${BASE_DIR}/blueprint/rbac \
+    -c "${COMPONENT_DESCRIPTOR_FILE}" \
+    -f "${TEST_DIR}/values-rbac.yaml" \
+    -r "${RESOURCES_FILE}"
+
+# render shoot blueprint
+echo "!!! render sidecar rbac blueprint !!!"
+landscaper-cli blueprints render ${BASE_DIR}/blueprint/rbac \
+    -c "${COMPONENT_DESCRIPTOR_FILE}" \
+    -f "${TEST_DIR}/values-sidecar-rbac.yaml" \
     -r "${RESOURCES_FILE}"
