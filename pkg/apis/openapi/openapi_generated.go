@@ -1261,6 +1261,12 @@ func schema_pkg_apis_core_v1alpha1_Landscaper(ref common.ReferenceCallback) comm
 							Ref: ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.DeployItemTimeouts"),
 						},
 					},
+					"useOCMLib": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"boolean"},
+							Format: "",
+						},
+					},
 				},
 			},
 		},

@@ -1002,6 +1002,7 @@ func autoConvert_v1alpha1_Landscaper_To_core_Landscaper(in *Landscaper, out *cor
 	out.Controllers = (*core.Controllers)(unsafe.Pointer(in.Controllers))
 	out.K8SClientSettings = (*core.K8SClientSettings)(unsafe.Pointer(in.K8SClientSettings))
 	out.DeployItemTimeouts = (*core.DeployItemTimeouts)(unsafe.Pointer(in.DeployItemTimeouts))
+	out.UseOCMLib = in.UseOCMLib
 	return nil
 }
 
@@ -1014,6 +1015,7 @@ func autoConvert_core_Landscaper_To_v1alpha1_Landscaper(in *core.Landscaper, out
 	out.Controllers = (*Controllers)(unsafe.Pointer(in.Controllers))
 	out.K8SClientSettings = (*K8SClientSettings)(unsafe.Pointer(in.K8SClientSettings))
 	out.DeployItemTimeouts = (*DeployItemTimeouts)(unsafe.Pointer(in.DeployItemTimeouts))
+	out.UseOCMLib = in.UseOCMLib
 	return nil
 }
 

@@ -117,6 +117,7 @@ type Landscaper struct {
 	DeployItemTimeouts *lssv1alpha1.DeployItemTimeouts `json:"deployItemTimeouts,omitempty"`
 	// K8SClientSettings defines k8s client settings like burst and qps.
 	K8SClientSettings *lssv1alpha1.K8SClientSettings `json:"k8sClientSettings,omitempty"`
+	UseOCMLib         bool                           `json:"useOCMLib,omitempty"`
 }
 
 // Webhooks specifies the landscaper webhooks server configuration.

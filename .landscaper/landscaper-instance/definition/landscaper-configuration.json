@@ -47,6 +47,9 @@
         "k8sClientSettings": {
           "type": "object"
         },
+        "useOCMLib": {
+          "type": "boolean"
+        },
         "deployItemTimeouts": {
           "type": "object"
         }
