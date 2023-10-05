@@ -15,7 +15,7 @@ relation: external
 version: v1.13.1
 access:
   type: ociRegistry
-  imageReference: eu.gcr.io/gardener-project/landscaper-service/charts/cert-manager@sha256:674552b27878738099d7d6e420257470fd16495e2698af2596eb785f32f52166
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/charts/cert-manager@sha256:1f2383a6cd2dd6b19ddc399e5bcdc8729206f3a1e5246cac8bcc853e3dcd8ec8
 ...
 ---
 type: ociImage
