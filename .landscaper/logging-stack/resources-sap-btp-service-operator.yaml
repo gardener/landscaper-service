@@ -15,7 +15,7 @@ relation: external
 version: v0.5.3
 access:
   type: ociRegistry
-  imageReference: eu.gcr.io/gardener-project/landscaper-service/charts/sap-btp-operator@sha256:2c56156015bd2a98ab05735822407b108e5b15a3988f7f7fc8c6fbb30dcb6144
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/charts/sap-btp-operator@sha256:0011496faab112cb352dde60575b81bf63b78e646765bd0858c183d60ef55e33
 ...
 ---
 type: ociImage
