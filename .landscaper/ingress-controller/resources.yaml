@@ -12,17 +12,17 @@ input:
 type: helm.io/chart
 name: ingress-nginx-chart
 relation: external
-version: 4.8.0
+version: 4.8.1
 access:
   type: ociRegistry
-  imageReference: eu.gcr.io/gardener-project/landscaper-service/charts/ingress-nginx@sha256:af7270d44a4862fa55198e1f73e80670cf3bf8dd58b50720ec940922ec178297
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/charts/ingress-nginx@sha256:ebc6d2a2f7b3a4bc39f29f35f2c1e79eac988565b443f9a46692ffe5cf466431
 ...
 ---
 type: ociImage
 name: ingress-nginx-controller
-version: v1.9.0
+version: v1.9.1
 relation: external
 access:
   type: ociRegistry
-  imageReference: eu.gcr.io/gardener-project/landscaper-service/ingress-nginx/controller@sha256:73b7133b828d3b29e4cdfbcdb5bcdee9ffc3c2ea058fe81319634eac50a97f43
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/ingress-nginx/controller@sha256:65c804ad254ac378d316919687b782850dd36c1f677f1115a1db29da59376f18
 ...
