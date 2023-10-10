@@ -2,13 +2,13 @@ deployItems:
   - name: ls-service-target-shoot-sidecar-server
     type: landscaper.gardener.cloud/helm
     target:
-      import: hostingCluster
+      import: targetCluster
     config:
       apiVersion: helm.deployer.landscaper.gardener.cloud/v1alpha1
       kind: ProviderConfiguration
       updateStrategy: patch
       name: ls-service-target-shoot-sidecar-server
-      namespace: {{ .imports.hostingClusterNamespace }}
+      namespace: {{ .imports.targetClusterNamespace }}
       createNamespace: true
 
       readinessChecks:
@@ -19,8 +19,8 @@ deployItems:
             resourceSelector:
               - apiVersion: landscaper.gardener.cloud/v1alpha1
                 kind: LsHealthCheck
-                name: landscaper-{{ .imports.hostingClusterNamespace }}
-                namespace: {{ .imports.hostingClusterNamespace }}
+                name: landscaper-{{ .imports.targetClusterNamespace }}
+                namespace: {{ .imports.targetClusterNamespace }}
             requirements:
               - jsonPath: .status
                 operator: ==
@@ -32,8 +32,8 @@ deployItems:
         ref: {{ $resource.access.imageReference }}
 
       values:
-        nameOverride: laas-{{ .imports.hostingClusterNamespace }}-shoot-sidecar
-        fullnameOverride: laas-{{ .imports.hostingClusterNamespace }}-shoot-sidecar
+        nameOverride: laas-{{ .imports.targetClusterNamespace }}-shoot-sidecar
+        fullnameOverride: laas-{{ .imports.targetClusterNamespace }}-shoot-sidecar
 
         lsServiceTargetShootSidecar:
           verbosity: {{ .imports.sidecarConfig.verbosity | default "info" }}

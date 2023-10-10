@@ -2,28 +2,15 @@ apiVersion: landscaper.gardener.cloud/v1alpha1
 kind: Blueprint
 
 imports:
-  - name: shootCluster
+  - name: dataPlaneCluster
     required: true
     targetType: landscaper.gardener.cloud/kubernetes-cluster
 
-  - name: targetClusterNamespace
+  - name: dataPlaneClusterNamespace
     required: true
     type: data
     schema:
       type: string
-
-  - name: shootClusterEndpoint
-    required: true
-    type: data
-    schema:
-      type: string
-
-  - name: shootConfig
-    type: data
-    schema:
-      description: |
-        The "shootConfig" Specifies the gardener shoot configuration.
-      $ref: "cd://resources/shoot-config-definition"
 
   - name: rotationConfig
     type: data

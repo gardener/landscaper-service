@@ -4,14 +4,14 @@ deployItems:
   - name: landscaper
     type: landscaper.gardener.cloud/helm
     target:
-      import: hostingCluster
+      import: targetCluster
     timeout: 15m
     config:
       apiVersion: helm.deployer.landscaper.gardener.cloud/v1alpha1
       kind: ProviderConfiguration
       updateStrategy: patch
       name: landscaper
-      namespace: {{ .imports.hostingClusterNamespace }}
+      namespace: {{ .imports.targetClusterNamespace }}
       createNamespace: true
 
       readinessChecks:
@@ -23,8 +23,8 @@ deployItems:
             resourceSelector:
               - apiVersion: networking.k8s.io/v1
                 kind: Ingress
-                name: landscaper-{{ .imports.hostingClusterNamespace }}-webhooks
-                namespace: {{ .imports.hostingClusterNamespace }}
+                name: landscaper-{{ .imports.targetClusterNamespace }}-webhooks
+                namespace: {{ .imports.targetClusterNamespace }}
             requirements:
               - jsonPath: .status.loadBalancer.ingress[0]
                 operator: exists
@@ -34,8 +34,8 @@ deployItems:
         ref: {{ $resource.access.imageReference }}
 
       values:
-        nameOverride: landscaper-{{ .imports.hostingClusterNamespace }}
-        fullnameOverride: landscaper-{{ .imports.hostingClusterNamespace }}
+        nameOverride: landscaper-{{ .imports.targetClusterNamespace }}
+        fullnameOverride: landscaper-{{ .imports.targetClusterNamespace }}
 
         landscaper:
           verbosity: {{ .imports.landscaperConfig.landscaper.verbosity | default "info" }}
@@ -71,18 +71,18 @@ deployItems:
           {{- end }}
 
           healthCheck:
-            name: landscaper-{{ .imports.hostingClusterNamespace }}
+            name: landscaper-{{ .imports.targetClusterNamespace }}
             additionalDeployments:
               deployments:
-                - laas-{{ .imports.hostingClusterNamespace }}-shoot-sidecar
+                - laas-{{ .imports.targetClusterNamespace }}-shoot-sidecar
 {{ if has "helm" .imports.landscaperConfig.deployers }}
-                - helm-{{ .imports.hostingClusterNamespace }}-helm-deployer
+                - helm-{{ .imports.targetClusterNamespace }}-helm-deployer
 {{ end }}
 {{ if has "manifest" .imports.landscaperConfig.deployers }}
-                - manifest-{{ .imports.hostingClusterNamespace }}-manifest-deployer
+                - manifest-{{ .imports.targetClusterNamespace }}-manifest-deployer
 {{ end }}
 {{ if has "container" .imports.landscaperConfig.deployers }}
-                - container-{{ .imports.hostingClusterNamespace }}-container-deployer
+                - container-{{ .imports.targetClusterNamespace }}-container-deployer
 {{ end }}
 
         image: {}
@@ -123,7 +123,7 @@ deployItems:
 
           servicePort: {{ .imports.landscaperConfig.webhooksServer.servicePort | default 9443 }}
           disableWebhooks: []
-          certificatesNamespace: {{ .imports.targetClusterNamespace }}
+          certificatesNamespace: {{ .imports.dataPlaneClusterNamespace }}
 
           ingress:
             host: {{ .imports.webhooksHostName }}
@@ -158,7 +158,7 @@ deployItems:
             controller:
               create: true
               annotations: {}
-              name: landscaper-{{ .imports.hostingClusterNamespace }}
+              name: landscaper-{{ .imports.targetClusterNamespace }}
             webhooksServer:
               name: landscaper-webhooks
 
@@ -189,15 +189,15 @@ deployItems:
   - name: helm-deployer
     type: landscaper.gardener.cloud/helm
     target:
-      import: hostingCluster
+      import: targetCluster
     dependsOn:
       - landscaper
     config:
       apiVersion: helm.deployer.landscaper.gardener.cloud/v1alpha1
       kind: ProviderConfiguration
       updateStrategy: patch
-      name: helm-{{ .imports.hostingClusterNamespace }}
-      namespace: {{ .imports.hostingClusterNamespace }}
+      name: helm-{{ .imports.targetClusterNamespace }}
+      namespace: {{ .imports.targetClusterNamespace }}
 
       helmDeployment: false
       createNamespace: false
@@ -212,9 +212,9 @@ deployItems:
 
       values:
         nameOverride: helm-deployer
-        fullnameOverride: helm-{{ .imports.hostingClusterNamespace }}-helm-deployer
+        fullnameOverride: helm-{{ .imports.targetClusterNamespace }}-helm-deployer
 
-        identity: helm-{{ .imports.hostingClusterNamespace }}
+        identity: helm-{{ .imports.targetClusterNamespace }}
 
         deployer:
           verbosityLevel: {{ .imports.landscaperConfig.landscaper.verbosity | default "info" }}
@@ -262,15 +262,15 @@ deployItems:
   - name: manifest-deployer
     type: landscaper.gardener.cloud/helm
     target:
-      import: hostingCluster
+      import: targetCluster
     dependsOn:
       - landscaper
     config:
       apiVersion: helm.deployer.landscaper.gardener.cloud/v1alpha1
       kind: ProviderConfiguration
       updateStrategy: patch
-      name: manifest-{{ .imports.hostingClusterNamespace }}
-      namespace: {{ .imports.hostingClusterNamespace }}
+      name: manifest-{{ .imports.targetClusterNamespace }}
+      namespace: {{ .imports.targetClusterNamespace }}
 
       helmDeployment: false
       createNamespace: false
@@ -285,9 +285,9 @@ deployItems:
 
       values:
         nameOverride: manifest-deployer
-        fullnameOverride: manifest-{{ .imports.hostingClusterNamespace }}-manifest-deployer
+        fullnameOverride: manifest-{{ .imports.targetClusterNamespace }}-manifest-deployer
 
-        identity: manifest-{{ .imports.hostingClusterNamespace }}
+        identity: manifest-{{ .imports.targetClusterNamespace }}
 
         deployer:
           verbosityLevel: {{ .imports.landscaperConfig.landscaper.verbosity | default "info" }}
@@ -335,15 +335,15 @@ deployItems:
   - name: container-deployer
     type: landscaper.gardener.cloud/helm
     target:
-      import: hostingCluster
+      import: targetCluster
     dependsOn:
       - landscaper
     config:
       apiVersion: helm.deployer.landscaper.gardener.cloud/v1alpha1
       kind: ProviderConfiguration
       updateStrategy: patch
-      name: container-{{ .imports.hostingClusterNamespace }}
-      namespace: {{ .imports.hostingClusterNamespace }}
+      name: container-{{ .imports.targetClusterNamespace }}
+      namespace: {{ .imports.targetClusterNamespace }}
 
       helmDeployment: false
       createNamespace: false
@@ -358,9 +358,9 @@ deployItems:
 
       values:
         nameOverride: container-deployer
-        fullnameOverride: container-{{ .imports.hostingClusterNamespace }}-container-deployer
+        fullnameOverride: container-{{ .imports.targetClusterNamespace }}-container-deployer
 
-        identity: container-{{ .imports.hostingClusterNamespace }}
+        identity: container-{{ .imports.targetClusterNamespace }}
 
         deployer:
           verbosityLevel: {{ .imports.landscaperConfig.landscaper.verbosity | default "info" }}

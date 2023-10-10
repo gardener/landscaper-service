@@ -2,13 +2,13 @@ deployItems:
   - name: sidecar-rbac
     type: landscaper.gardener.cloud/helm
     target:
-      import: shootCluster
+      import: dataPlaneCluster
     config:
       apiVersion: helm.deployer.landscaper.gardener.cloud/v1alpha1
       kind: ProviderConfiguration
       updateStrategy: patch
       name: sidecar-rbac
-      namespace: {{ .imports.targetClusterNamespace }}
+      namespace: {{ .imports.dataPlaneClusterNamespace }}
       createNamespace: true
 
       chart:

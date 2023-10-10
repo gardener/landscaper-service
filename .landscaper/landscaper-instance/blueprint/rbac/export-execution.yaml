@@ -1,9 +1,6 @@
 exports:
   landscaperControllerKubeconfigYaml: |
-    {{- getServiceAccountKubeconfig "landscaper-controller" .imports.targetClusterNamespace .imports.rotationConfig.tokenExpirationSeconds .imports.shootCluster | b64dec | nindent 4 }}
+    {{- getServiceAccountKubeconfig "landscaper-controller" .imports.targetClusterNamespace .imports.rotationConfig.tokenExpirationSeconds .imports.dataPlaneCluster | b64dec | nindent 4 }}
 
   landscaperWebhooksKubeconfigYaml: |
-    {{- getServiceAccountKubeconfig "landscaper-webhooks" .imports.targetClusterNamespace .imports.rotationConfig.tokenExpirationSeconds .imports.shootCluster | b64dec | nindent 4 }}
-
-  landscaperUserKubeconfigYaml: |
-    {{- getOidcKubeconfig .imports.shootConfig.kubernetes.kubeAPIServer.oidcConfig.issuerURL .imports.shootConfig.kubernetes.kubeAPIServer.oidcConfig.clientID .imports.shootCluster | b64dec | nindent 4 }}
+    {{- getServiceAccountKubeconfig "landscaper-webhooks" .imports.targetClusterNamespace .imports.rotationConfig.tokenExpirationSeconds .imports.dataPlaneCluster | b64dec | nindent 4 }}

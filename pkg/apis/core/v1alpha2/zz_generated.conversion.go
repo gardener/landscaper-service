@@ -912,14 +912,10 @@ func autoConvert_v1alpha2_InstanceStatus_To_core_InstanceStatus(in *InstanceStat
 	out.LastError = (*core.Error)(unsafe.Pointer(in.LastError))
 	out.LandscaperServiceComponent = (*core.LandscaperServiceComponent)(unsafe.Pointer(in.LandscaperServiceComponent))
 	out.ContextRef = (*core.ObjectReference)(unsafe.Pointer(in.ContextRef))
-	out.TargetRef = (*core.ObjectReference)(unsafe.Pointer(in.TargetRef))
-	out.GardenerServiceAccountRef = (*core.ObjectReference)(unsafe.Pointer(in.GardenerServiceAccountRef))
+	out.TargetClusterRef = (*core.ObjectReference)(unsafe.Pointer(in.TargetClusterRef))
+	out.DataPlaneClusterRef = (*core.ObjectReference)(unsafe.Pointer(in.DataPlaneClusterRef))
 	out.InstallationRef = (*core.ObjectReference)(unsafe.Pointer(in.InstallationRef))
-	out.ClusterEndpoint = in.ClusterEndpoint
-	out.UserKubeconfig = in.UserKubeconfig
 	out.AdminKubeconfig = in.AdminKubeconfig
-	out.ShootName = in.ShootName
-	out.ShootNamespace = in.ShootNamespace
 	return nil
 }
 
@@ -933,14 +929,10 @@ func autoConvert_core_InstanceStatus_To_v1alpha2_InstanceStatus(in *core.Instanc
 	out.LastError = (*Error)(unsafe.Pointer(in.LastError))
 	out.LandscaperServiceComponent = (*LandscaperServiceComponent)(unsafe.Pointer(in.LandscaperServiceComponent))
 	out.ContextRef = (*ObjectReference)(unsafe.Pointer(in.ContextRef))
-	out.TargetRef = (*ObjectReference)(unsafe.Pointer(in.TargetRef))
-	out.GardenerServiceAccountRef = (*ObjectReference)(unsafe.Pointer(in.GardenerServiceAccountRef))
+	out.TargetClusterRef = (*ObjectReference)(unsafe.Pointer(in.TargetClusterRef))
+	out.DataPlaneClusterRef = (*ObjectReference)(unsafe.Pointer(in.DataPlaneClusterRef))
 	out.InstallationRef = (*ObjectReference)(unsafe.Pointer(in.InstallationRef))
-	out.ClusterEndpoint = in.ClusterEndpoint
-	out.UserKubeconfig = in.UserKubeconfig
 	out.AdminKubeconfig = in.AdminKubeconfig
-	out.ShootName = in.ShootName
-	out.ShootNamespace = in.ShootNamespace
 	return nil
 }
 

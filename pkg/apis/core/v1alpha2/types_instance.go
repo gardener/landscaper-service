@@ -83,37 +83,21 @@ type InstanceStatus struct {
 	// +optional
 	ContextRef *ObjectReference `json:"contextRef,omitempty"`
 
-	// TargetRef references the Target for this Instance.
+	// TargetClusterRef references the Target for this Instance.
 	// +optional
-	TargetRef *ObjectReference `json:"targetRef,omitempty"`
+	TargetClusterRef *ObjectReference `json:"targetClusterRef,omitempty"`
 
-	// GardenerServiceAccountRef references the Target for the Gardener service account.
+	// TargetClusterRef references the Target for this Instance.
 	// +optional
-	GardenerServiceAccountRef *ObjectReference `json:"gardenerServiceAccountRef"`
+	DataPlaneClusterRef *ObjectReference `json:"dataPlaneClusterRef,omitempty"`
 
 	// InstallationRef references the Installation for this Instance.
 	// +optional
 	InstallationRef *ObjectReference `json:"installationRef,omitempty"`
 
-	// ClusterEndpointRef contains the URL at which the landscaper cluster is accessible.
-	// +optional
-	ClusterEndpoint string `json:"clusterEndpoint,omitempty"`
-
-	// UserKubeconfig contains the user kubeconfig which can be used for accessing the landscaper cluster.
-	// +optional
-	UserKubeconfig string `json:"userKubeconfig,omitempty"`
-
 	// AdminKubeconfig contains the admin kubeconfig which can be used for accessing the landscaper cluster.
 	// +optional
 	AdminKubeconfig string `json:"adminKubeconfig,omitempty"`
-
-	// ShootName is the name of the corresponding shoot cluster.
-	// +optional
-	ShootName string `json:"shootName,omitempty"`
-
-	// ShootNamespace is the namespace in which the shoot resource is being created.
-	// +optional
-	ShootNamespace string `json:"shootNamespace,omitempty"`
 }
 
 var InstanceDefinition = lsschema.CustomResourceDefinition{

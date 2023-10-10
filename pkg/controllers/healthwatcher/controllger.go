@@ -279,7 +279,7 @@ func transferLsHealthCheckStatusToAvailabilityInstance(availabilityInstance *lss
 }
 
 func extractTargetClusterNamespaceFromInstallation(inst lsv1alpha1.Installation) (string, error) {
-	hostingClusterNamespaceRaw, ok := inst.Spec.ImportDataMappings[installation.HostingClusterNamespaceImportName]
+	hostingClusterNamespaceRaw, ok := inst.Spec.ImportDataMappings[installation.TargetClusterNamespaceImportName]
 	if !ok {
 		return "", errors.New("could not find hostingClusterNamespace in installation reference")
 	}

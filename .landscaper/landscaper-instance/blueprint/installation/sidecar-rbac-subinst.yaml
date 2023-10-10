@@ -8,13 +8,11 @@ blueprint:
 
 imports:
   targets:
-    - name: shootCluster
-      target: shootCluster
+    - name: dataPlaneCluster
+      target: dataPlaneCluster
   data:
-    - name: targetClusterNamespace
-      dataRef: targetClusterNamespace
-    - name: shootClusterEndpoint
-      dataRef: shootClusterEndpoint
+    - name: dataPlaneClusterNamespace
+      dataRef: dataPlaneClusterNamespace
     - name: rotationConfig
       dataRef: rotationConfig
 

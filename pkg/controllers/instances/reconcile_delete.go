@@ -68,7 +68,7 @@ func (c *Controller) handleDelete(ctx context.Context, instance *lssv1alpha2.Ins
 		}, nil
 	}
 
-	if instance.Status.TargetRef != nil && !instance.Status.TargetRef.IsEmpty() {
+	if instance.Status.TargetClusterRef != nil && !instance.Status.TargetClusterRef.IsEmpty() {
 		if targetDeleted, err = c.ensureDeleteTargetForInstance(ctx, instance); err != nil {
 			return reconcile.Result{}, lsserrors.NewWrappedError(err, curOp, "DeleteTarget", err.Error())
 		}
@@ -155,12 +155,12 @@ func (c *Controller) ensureDeleteTargetForInstance(ctx context.Context, instance
 	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(instance).String()},
 		lc.KeyMethod, "ensureDeleteTargetForInstance")
 
-	logger.Info("Delete target for instance", lc.KeyResource, instance.Status.TargetRef.NamespacedName().String())
+	logger.Info("Delete target for instance", lc.KeyResource, instance.Status.TargetClusterRef.NamespacedName().String())
 	target := &lsv1alpha1.Target{}
 
-	if err := c.Client().Get(ctx, instance.Status.TargetRef.NamespacedName(), target); err != nil {
+	if err := c.Client().Get(ctx, instance.Status.TargetClusterRef.NamespacedName(), target); err != nil {
 		if apierrors.IsNotFound(err) {
-			instance.Status.TargetRef = nil
+			instance.Status.TargetClusterRef = nil
 			if err := c.Client().Status().Update(ctx, instance); err != nil {
 				return false, fmt.Errorf("failed to remove target reference: %w", err)
 			}

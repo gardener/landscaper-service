@@ -423,13 +423,13 @@ func (in *InstanceStatus) DeepCopyInto(out *InstanceStatus) {
 		*out = new(ObjectReference)
 		**out = **in
 	}
-	if in.TargetRef != nil {
-		in, out := &in.TargetRef, &out.TargetRef
+	if in.TargetClusterRef != nil {
+		in, out := &in.TargetClusterRef, &out.TargetClusterRef
 		*out = new(ObjectReference)
 		**out = **in
 	}
-	if in.GardenerServiceAccountRef != nil {
-		in, out := &in.GardenerServiceAccountRef, &out.GardenerServiceAccountRef
+	if in.DataPlaneClusterRef != nil {
+		in, out := &in.DataPlaneClusterRef, &out.DataPlaneClusterRef
 		*out = new(ObjectReference)
 		**out = **in
 	}

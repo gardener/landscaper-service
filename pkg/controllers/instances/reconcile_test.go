@@ -97,7 +97,7 @@ var _ = Describe("Reconcile", func() {
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
 
-		Expect(instance.Status.TargetRef).ToNot(BeNil())
+		Expect(instance.Status.TargetClusterRef).ToNot(BeNil())
 		Expect(instance.Status.InstallationRef).ToNot(BeNil())
 
 		context := &lsv1alpha1.Context{}
@@ -106,7 +106,7 @@ var _ = Describe("Reconcile", func() {
 		Expect(context.RepositoryContext.Type).To(Equal("ociRegistry"))
 
 		target := &lsv1alpha1.Target{}
-		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: instance.Status.TargetRef.Name, Namespace: instance.Status.TargetRef.Namespace}, target)).To(Succeed())
+		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: instance.Status.TargetClusterRef.Name, Namespace: instance.Status.TargetClusterRef.Namespace}, target)).To(Succeed())
 		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: instance.Status.GardenerServiceAccountRef.Name, Namespace: instance.Status.GardenerServiceAccountRef.Namespace}, target)).To(Succeed())
 
 		installation := &lsv1alpha1.Installation{}
@@ -114,8 +114,8 @@ var _ = Describe("Reconcile", func() {
 		Expect(installation.Spec.Context).To(ContainSubstring("test-"))
 		Expect(installation.Spec.ComponentDescriptor.Reference.Version).To(Equal(op.Config().LandscaperServiceComponent.Version))
 		Expect(installation.Spec.ComponentDescriptor.Reference.ComponentName).To(Equal(op.Config().LandscaperServiceComponent.Name))
-		Expect(installation.Spec.ImportDataMappings[lsinstallation.HostingClusterNamespaceImportName]).To(Equal(utils.StringToAnyJSON("12345-abcdef")))
-		Expect(installation.Spec.ImportDataMappings[lsinstallation.TargetClusterNamespaceImportName]).To(Equal(utils.StringToAnyJSON(lsinstallation.TargetClusterNamespace)))
+		Expect(installation.Spec.ImportDataMappings[lsinstallation.TargetClusterNamespaceImportName]).To(Equal(utils.StringToAnyJSON("12345-abcdef")))
+		Expect(installation.Spec.ImportDataMappings[lsinstallation.DataPlaneClusterNamespaceImportName]).To(Equal(utils.StringToAnyJSON(lsinstallation.DataPlaneClusterNamespace)))
 		Expect(installation.Spec.ImportDataMappings[lsinstallation.WebhooksHostNameImportName]).To(Equal(utils.StringToAnyJSON("12345-abcdef.ingress.mycluster.external")))
 		Expect(installation.Spec.ImportDataMappings[lsinstallation.ShootNameImportName]).To(Equal(utils.StringToAnyJSON(uniqueId[:8])))
 		Expect(installation.Spec.ImportDataMappings[lsinstallation.ShootNamespaceImportName]).To(Equal(utils.StringToAnyJSON("garden-test")))
@@ -400,7 +400,7 @@ var _ = Describe("Reconcile", func() {
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
 
-		Expect(instance.Status.TargetRef).To(BeNil())
+		Expect(instance.Status.TargetClusterRef).To(BeNil())
 		Expect(instance.Status.InstallationRef).To(BeNil())
 	})
 
@@ -433,7 +433,7 @@ var _ = Describe("Reconcile", func() {
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
 
-		Expect(instance.Status.TargetRef).ToNot(BeNil())
+		Expect(instance.Status.TargetClusterRef).ToNot(BeNil())
 		Expect(instance.Status.InstallationRef).ToNot(BeNil())
 
 		installation := &lsv1alpha1.Installation{}

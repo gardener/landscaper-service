@@ -14,7 +14,6 @@ import (
 	guuid "github.com/google/uuid"
 
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
@@ -48,7 +47,6 @@ type Controller struct {
 
 	ReconcileFunc    func(ctx context.Context, instance *lssv1alpha2.Instance) error
 	HandleDeleteFunc func(ctx context.Context, instance *lssv1alpha2.Instance) (reconcile.Result, error)
-	ListShootsFunc   func(ctx context.Context, instance *lssv1alpha2.Instance) (*unstructured.UnstructuredList, error)
 
 	kubeClientExtractor healthwatcher.ServiceTargetConfigKubeClientExtractorInterface
 }
@@ -82,7 +80,6 @@ func NewController(logger logging.Logger, c client.Client, scheme *runtime.Schem
 	}
 	ctrl.ReconcileFunc = ctrl.reconcile
 	ctrl.HandleDeleteFunc = ctrl.handleDelete
-	ctrl.ListShootsFunc = ctrl.listShoots
 	op := operation.NewOperation(c, scheme, config)
 	ctrl.Operation = *op
 	return ctrl, nil
@@ -105,7 +102,6 @@ func NewTestActuator(op operation.Operation, logger logging.Logger) *Controller 
 	}
 	ctrl.ReconcileFunc = ctrl.reconcile
 	ctrl.HandleDeleteFunc = ctrl.handleDelete
-	ctrl.ListShootsFunc = ctrl.listShoots
 	return ctrl
 }
 

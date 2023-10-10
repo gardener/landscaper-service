@@ -34,10 +34,12 @@ const (
 	// WebhooksServicePortDefault is the default service port for the landscaper webhooks server deployment.
 	WebhooksServicePortDefault = 9443
 
-	// HostingClusterNamespaceImportName is the import name for the hosting cluster namespace.
-	HostingClusterNamespaceImportName = "hostingClusterNamespace"
-	// TargetClusterNamespaceImportName is the import for the target cluster namespace.
+	TargetClusterImportName    = "targetCluster"
+	DataPlaneClusterImportName = "dataPlaneCluster"
+	// TargetClusterNamespaceImportName is the import name for the hosting cluster namespace.
 	TargetClusterNamespaceImportName = "targetClusterNamespace"
+	// DataPlaneClusterNamespaceImportName is the import for the target cluster namespace.
+	DataPlaneClusterNamespaceImportName = "dataPlaneClusterNamespace"
 	// RegistryConfigImportName is the import for the registry configuration.
 	RegistryConfigImportName = "registryConfig"
 	// LandscaperConfigImportName is the import for the landscaper configuration.
@@ -46,30 +48,12 @@ const (
 	SidecarConfigImportName = "sidecarConfig"
 	// RotationConfigImportName is the import for the rotation configuration.
 	RotationConfigImportName = "rotationConfig"
-	// ShootNameImportName is the import for the shoot name.
-	ShootNameImportName = "shootName"
-	// ShootNamespaceImportName is the import for the shoot namespace.
-	ShootNamespaceImportName = "shootNamespace"
-	// ShootSecretBindingImportName is the import for the name of the shoot secret binding.
-	ShootSecretBindingImportName = "shootSecretBindingName"
-	// ShootLabelsImportName is the import for the shoot labels.
-	ShootLabelsImportName = "shootLabels"
-	// ShootConfigImportName is the shoot configuration import.
-	ShootConfigImportName = "shootConfig"
 	//WebhooksHostNameImportName is the import for the webhooks host name.
 	WebhooksHostNameImportName = "webhooksHostName"
-	// AuditPolicyImportName is the import for the audit policy configuration.
-	AuditPolicyImportName = "auditPolicy"
-	// AuditLogServiceImportName is the import for the audit log service settings.
-	AuditLogServiceImportName = "auditLogService"
 
-	// TargetClusterNamespace is the target cluster namespace used for landscaper internals.
-	TargetClusterNamespace = "ls-system"
+	// DataPlaneClusterNamespace is the target cluster namespace used for landscaper internals.
+	DataPlaneClusterNamespace = "ls-system"
 
-	// ClusterEndpointExportName is the name of the cluster endpoint export.
-	ClusterEndpointExportName = "landscaperClusterEndpoint"
-	// UserKubeconfigExportName is the name of the user kubeconfig export.
-	UserKubeconfigExportName = "landscaperUserKubeconfig"
 	// AdminKubeconfigExportName is the name of the admin kubeconfig export.
 	AdminKubeconfigExportName = "landscaperAdminKubeconfig"
 )

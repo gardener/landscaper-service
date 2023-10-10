@@ -9,7 +9,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"reflect"
-	"strings"
 	"time"
 
 	cdv2 "github.com/gardener/component-spec/bindings-go/apis/v2"
@@ -19,27 +18,15 @@ import (
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/types"
-	"k8s.io/apimachinery/pkg/util/sets"
-	"k8s.io/apimachinery/pkg/util/yaml"
-	"k8s.io/client-go/tools/clientcmd"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
-	lssconfig "github.com/gardener/landscaper-service/pkg/apis/config"
 	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
 	"github.com/gardener/landscaper-service/pkg/apis/errors"
 	lsinstallation "github.com/gardener/landscaper-service/pkg/apis/installation"
 	"github.com/gardener/landscaper-service/pkg/utils"
-)
-
-var (
-	// ClusterKubeconfigExportLabel is the label for the cluster kubeconfig export data object.
-	ClusterKubeconfigExportLabel = fmt.Sprintf("%s=%s", lsv1alpha1.DataObjectKeyLabel, lsinstallation.UserKubeconfigExportName)
-	// ClusterEndpointExportLabel is the label for the cluster api export data object.
-	ClusterEndpointExportLabel = fmt.Sprintf("%s=%s", lsv1alpha1.DataObjectKeyLabel, lsinstallation.ClusterEndpointExportName)
 )
 
 const (
@@ -70,11 +57,11 @@ func (c *Controller) reconcile(ctx context.Context, instance *lssv1alpha2.Instan
 		return errors.NewWrappedError(err, currOp, "ReconcileContextFailed", err.Error())
 	}
 
-	if err := c.reconcileGardenerServiceAccountTarget(ctx, instance); err != nil {
+	if err := c.reconcileDataPlaneClusterTarget(ctx, instance); err != nil {
 		return errors.NewWrappedError(err, currOp, "ReconcileGardenerServiceAccountTargetFailed", err.Error())
 	}
 
-	if err := c.reconcileTarget(ctx, instance); err != nil {
+	if err := c.reconcileTargetClusterTarget(ctx, instance); err != nil {
 		return errors.NewWrappedError(err, currOp, "ReconcileTargetFailed", err.Error())
 	}
 
@@ -118,7 +105,7 @@ func (c *Controller) reconcileContext(ctx context.Context, instance *lssv1alpha2
 	return nil
 }
 
-// mutateTarget creates or updates the context for an instance.
+// mutateTargetClusterTarget creates or updates the context for an instance.
 func (c *Controller) mutateContext(ctx context.Context, context *lsv1alpha1.Context, instance *lssv1alpha2.Instance) error {
 	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(instance).String()},
 		lc.KeyMethod, "mutateContext")
@@ -171,48 +158,48 @@ func (c *Controller) mutateContext(ctx context.Context, context *lsv1alpha1.Cont
 	return nil
 }
 
-// reconcileTarget reconciles the target for an instance.
-func (c *Controller) reconcileTarget(ctx context.Context, instance *lssv1alpha2.Instance) error {
+// reconcileTargetClusterTarget reconciles the target for an instance.
+func (c *Controller) reconcileTargetClusterTarget(ctx context.Context, instance *lssv1alpha2.Instance) error {
 	target := &lsv1alpha1.Target{}
 	target.GenerateName = fmt.Sprintf("%s-", instance.GetName())
 	target.Namespace = instance.GetNamespace()
 
-	if instance.Status.TargetRef != nil && !instance.Status.TargetRef.IsEmpty() {
-		target.Name = instance.Status.TargetRef.Name
-		target.Namespace = instance.Status.TargetRef.Namespace
+	if instance.Status.TargetClusterRef != nil && !instance.Status.TargetClusterRef.IsEmpty() {
+		target.Name = instance.Status.TargetClusterRef.Name
+		target.Namespace = instance.Status.TargetClusterRef.Namespace
 	}
 
 	_, err := kubernetes.CreateOrUpdate(ctx, c.Client(), target, func() error {
-		return c.mutateTarget(ctx, target, instance)
+		return c.mutateTargetClusterTarget(ctx, target, instance)
 	})
 
 	if err != nil {
 		return fmt.Errorf("unable to create/update target: %w", err)
 	}
 
-	if instance.Status.TargetRef == nil || !instance.Status.TargetRef.IsObject(target) {
-		instance.Status.TargetRef = &lssv1alpha2.ObjectReference{
+	if instance.Status.TargetClusterRef == nil || !instance.Status.TargetClusterRef.IsObject(target) {
+		instance.Status.TargetClusterRef = &lssv1alpha2.ObjectReference{
 			Name:      target.GetName(),
 			Namespace: target.GetNamespace(),
 		}
 
 		if err := c.Client().Status().Update(ctx, instance); err != nil {
-			return fmt.Errorf("unable to update target reference for instance: %w", err)
+			return fmt.Errorf("unable to update target cluster target reference for instance: %w", err)
 		}
 	}
 
 	return nil
 }
 
-// mutateTarget creates or updates the target for an instance.
-func (c *Controller) mutateTarget(ctx context.Context, target *lsv1alpha1.Target, instance *lssv1alpha2.Instance) error {
+// mutateTargetClusterTarget creates or updates the target for an instance.
+func (c *Controller) mutateTargetClusterTarget(ctx context.Context, target *lsv1alpha1.Target, instance *lssv1alpha2.Instance) error {
 	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(instance).String()},
-		lc.KeyMethod, "mutateTarget")
+		lc.KeyMethod, "mutateTargetClusterTarget")
 
 	if len(target.Name) > 0 {
-		logger.Info("Updating target", lc.KeyResource, client.ObjectKeyFromObject(target).String())
+		logger.Info("Updating target cluster target", lc.KeyResource, client.ObjectKeyFromObject(target).String())
 	} else {
-		logger.Info("Creating target", lc.KeyResource, types.NamespacedName{Name: target.GenerateName, Namespace: target.Namespace}.String())
+		logger.Info("Creating target cluster target", lc.KeyResource, types.NamespacedName{Name: target.GenerateName, Namespace: target.Namespace}.String())
 	}
 
 	if err := controllerutil.SetControllerReference(instance, target, c.Scheme()); err != nil {
@@ -255,48 +242,54 @@ func (c *Controller) mutateTarget(ctx context.Context, target *lsv1alpha1.Target
 	return nil
 }
 
-// reconcileGardenerServiceAccountTarget reconciles the target for the gardener service account.
-func (c *Controller) reconcileGardenerServiceAccountTarget(ctx context.Context, instance *lssv1alpha2.Instance) error {
+// reconcileDataPlaneClusterTarget reconciles the target for the gardener service account.
+func (c *Controller) reconcileDataPlaneClusterTarget(ctx context.Context, instance *lssv1alpha2.Instance) error {
 	target := &lsv1alpha1.Target{}
-	target.GenerateName = fmt.Sprintf("%s-gardener-sa-", instance.GetName())
+	target.GenerateName = fmt.Sprintf("%s-data-plane-", instance.GetName())
 	target.Namespace = instance.GetNamespace()
 
-	if instance.Status.GardenerServiceAccountRef != nil && !instance.Status.GardenerServiceAccountRef.IsEmpty() {
-		target.Name = instance.Status.GardenerServiceAccountRef.Name
-		target.Namespace = instance.Status.GardenerServiceAccountRef.Namespace
+	if instance.Status.DataPlaneClusterRef != nil && !instance.Status.DataPlaneClusterRef.IsEmpty() {
+		target.Name = instance.Status.DataPlaneClusterRef.Name
+		target.Namespace = instance.Status.DataPlaneClusterRef.Namespace
 	}
 
 	_, err := kubernetes.CreateOrUpdate(ctx, c.Client(), target, func() error {
-		return c.mutateGardenerServiceAccountTarget(ctx, target, instance)
+		return c.mutateDataPlaneClusterTarget(ctx, target, instance)
 	})
 
-	if instance.Status.GardenerServiceAccountRef == nil || !instance.Status.GardenerServiceAccountRef.IsObject(target) {
-		instance.Status.GardenerServiceAccountRef = &lssv1alpha2.ObjectReference{
+	if instance.Status.DataPlaneClusterRef == nil || !instance.Status.DataPlaneClusterRef.IsObject(target) {
+		instance.Status.DataPlaneClusterRef = &lssv1alpha2.ObjectReference{
 			Name:      target.GetName(),
 			Namespace: target.GetNamespace(),
 		}
 
 		if err := c.Client().Status().Update(ctx, instance); err != nil {
-			return fmt.Errorf("unable to gardener service account target reference for instance: %w", err)
+			return fmt.Errorf("unable to update data plane cluster target reference for instance: %w", err)
 		}
 	}
 
 	return err
 }
 
-// mutateGardenerServiceAccountTarget creates or updates the target for the gardener service account.
-func (c *Controller) mutateGardenerServiceAccountTarget(ctx context.Context, target *lsv1alpha1.Target, instance *lssv1alpha2.Instance) error {
+// mutateDataPlaneClusterTarget creates or updates the target for the gardener service account.
+func (c *Controller) mutateDataPlaneClusterTarget(ctx context.Context, target *lsv1alpha1.Target, instance *lssv1alpha2.Instance) error {
 	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(instance).String()},
-		lc.KeyMethod, "mutateGardenerServiceAccountTarget")
+		lc.KeyMethod, "mutateDataPlaneClusterTarget")
 
 	if len(target.Name) > 0 {
-		logger.Info("Updating target", lc.KeyResource, client.ObjectKeyFromObject(target).String())
+		logger.Info("Updating data plane cluster target", lc.KeyResource, client.ObjectKeyFromObject(target).String())
 	} else {
-		logger.Info("Creating target", lc.KeyResource, types.NamespacedName{Name: target.GenerateName, Namespace: target.Namespace}.String())
+		logger.Info("Creating data plane cluster target", lc.KeyResource, types.NamespacedName{Name: target.GenerateName, Namespace: target.Namespace}.String())
 	}
 
 	if err := controllerutil.SetControllerReference(instance, target, c.Scheme()); err != nil {
 		return fmt.Errorf("unable to set controller reference for target: %w", err)
+	}
+
+	if len(instance.Spec.DataPlane.Kubeconfig) > 0 {
+
+	} else {
+
 	}
 
 	saConfig := c.Config().GardenerConfiguration.ServiceAccountKubeconfig
@@ -335,9 +328,6 @@ func (c *Controller) mutateGardenerServiceAccountTarget(ctx context.Context, tar
 // reconcileInstallation reconciles the installation for an instance
 func (c *Controller) reconcileInstallation(ctx context.Context, instance *lssv1alpha2.Instance) error {
 	old := instance.DeepCopy()
-	if err := c.handleShootName(ctx, instance); err != nil {
-		return err
-	}
 
 	if !reflect.DeepEqual(old.Status, instance.Status) {
 		if err := c.Client().Status().Update(ctx, instance); err != nil {
@@ -449,25 +439,6 @@ func (c *Controller) mutateInstallation(ctx context.Context, installation *lsv1a
 		return fmt.Errorf("unable to marshal rotation config: %w", err)
 	}
 
-	shootConfig := &lssconfig.ShootConfiguration{}
-	c.Config().ShootConfiguration.DeepCopyInto(shootConfig)
-
-	shootConfigRaw, err := json.Marshal(shootConfig)
-	if err != nil {
-		return fmt.Errorf("unable to marshal shoot config: %w", err)
-	}
-
-	shootLabels := map[string]string{
-		lssv1alpha2.ShootTenantIDLabel:          instance.Spec.TenantId,
-		lssv1alpha2.ShootInstanceNameLabel:      instance.Name,
-		lssv1alpha2.ShootInstanceNamespaceLabel: instance.Namespace,
-		lssv1alpha2.ShootInstanceIDLabel:        instance.Spec.ID,
-	}
-	shootLabelsRaw, err := json.Marshal(shootLabels)
-	if err != nil {
-		return fmt.Errorf("unable to marshal shoot labels: %w", err)
-	}
-
 	installation.Spec = lsv1alpha1.InstallationSpec{
 		Context: instance.Status.ContextRef.Name,
 		ComponentDescriptor: &lsv1alpha1.ComponentDescriptorDefinition{
@@ -484,39 +455,26 @@ func (c *Controller) mutateInstallation(ctx context.Context, installation *lsv1a
 		Imports: lsv1alpha1.InstallationImports{
 			Targets: []lsv1alpha1.TargetImport{
 				{
-					Name:   "hostingCluster",
-					Target: instance.Status.TargetRef.Name,
+					Name:   lsinstallation.TargetClusterImportName,
+					Target: instance.Status.TargetClusterRef.Name,
 				},
 				{
-					Name:   "gardenerServiceAccount",
+					Name:   lsinstallation.DataPlaneClusterNamespace,
 					Target: instance.Status.GardenerServiceAccountRef.Name,
 				},
 			},
 		},
 		ImportDataMappings: map[string]lsv1alpha1.AnyJSON{
-			lsinstallation.HostingClusterNamespaceImportName: utils.StringToAnyJSON(fmt.Sprintf("%s-%s", instance.Spec.TenantId, instance.Spec.ID)),
-			lsinstallation.TargetClusterNamespaceImportName:  utils.StringToAnyJSON(lsinstallation.TargetClusterNamespace),
-			lsinstallation.RegistryConfigImportName:          *registryConfigRaw,
-			lsinstallation.LandscaperConfigImportName:        *landscaperConfigRaw,
-			lsinstallation.SidecarConfigImportName:           *sidecarConfigRaw,
-			lsinstallation.RotationConfigImportName:          *rotationConfigRaw,
-			lsinstallation.ShootNameImportName:               utils.StringToAnyJSON(instance.Status.ShootName),
-			lsinstallation.ShootNamespaceImportName:          utils.StringToAnyJSON(instance.Status.ShootNamespace),
-			lsinstallation.ShootSecretBindingImportName:      utils.StringToAnyJSON(c.Config().GardenerConfiguration.ShootSecretBindingName),
-			lsinstallation.ShootLabelsImportName:             lsv1alpha1.NewAnyJSON(shootLabelsRaw),
-			lsinstallation.ShootConfigImportName:             lsv1alpha1.NewAnyJSON(shootConfigRaw),
-			lsinstallation.WebhooksHostNameImportName:        utils.StringToAnyJSON(fmt.Sprintf("%s-%s.%s", instance.Spec.TenantId, instance.Spec.ID, config.Spec.IngressDomain)),
+			lsinstallation.TargetClusterNamespaceImportName:    utils.StringToAnyJSON(fmt.Sprintf("%s-%s", instance.Spec.TenantId, instance.Spec.ID)),
+			lsinstallation.DataPlaneClusterNamespaceImportName: utils.StringToAnyJSON(lsinstallation.DataPlaneClusterNamespace),
+			lsinstallation.RegistryConfigImportName:            *registryConfigRaw,
+			lsinstallation.LandscaperConfigImportName:          *landscaperConfigRaw,
+			lsinstallation.SidecarConfigImportName:             *sidecarConfigRaw,
+			lsinstallation.RotationConfigImportName:            *rotationConfigRaw,
+			lsinstallation.WebhooksHostNameImportName:          utils.StringToAnyJSON(fmt.Sprintf("%s-%s.%s", instance.Spec.TenantId, instance.Spec.ID, config.Spec.IngressDomain)),
 		},
 		Exports: lsv1alpha1.InstallationExports{
 			Data: []lsv1alpha1.DataExport{
-				{
-					Name:    lsinstallation.ClusterEndpointExportName,
-					DataRef: lsinstallation.GetInstallationExportDataRef(instance, lsinstallation.ClusterEndpointExportName),
-				},
-				{
-					Name:    lsinstallation.UserKubeconfigExportName,
-					DataRef: lsinstallation.GetInstallationExportDataRef(instance, lsinstallation.UserKubeconfigExportName),
-				},
 				{
 					Name:    lsinstallation.AdminKubeconfigExportName,
 					DataRef: lsinstallation.GetInstallationExportDataRef(instance, lsinstallation.AdminKubeconfigExportName),
@@ -531,40 +489,6 @@ func (c *Controller) mutateInstallation(ctx context.Context, installation *lsv1a
 				Interval: &lsv1alpha1.Duration{Duration: time.Duration(failedReconcileSeconds) * time.Second},
 			},
 		},
-	}
-
-	if c.Config().AuditLogConfig != nil {
-		logger.Info("Setting audit log configuration")
-
-		auditPolicyCm := &corev1.ConfigMap{}
-		if err := c.Client().Get(ctx, c.Config().AuditLogConfig.AuditPolicy.NamespacedName(), auditPolicyCm); err != nil {
-			return fmt.Errorf("unable to retrieve audit policy from config map %q: %w", c.Config().AuditLogConfig.AuditPolicy.NamespacedName(), err)
-		}
-
-		auditPolicyRawStr, ok := auditPolicyCm.Data[c.Config().AuditLogConfig.AuditPolicy.Key]
-		if !ok {
-			return fmt.Errorf("audit policy config map has no key %q", c.Config().AuditLogConfig.AuditPolicy.Key)
-		}
-
-		var auditPolicy map[string]interface{}
-		decoder := yaml.NewYAMLOrJSONDecoder(strings.NewReader(auditPolicyRawStr), 512)
-		if err := decoder.Decode(&auditPolicy); err != nil {
-			return fmt.Errorf("failed to decode audit policy: %w", err)
-		}
-
-		auditPolicyRaw, err := json.Marshal(auditPolicy)
-		if err != nil {
-			return fmt.Errorf("failed to marshal audit policy: %w", err)
-		}
-
-		installation.Spec.ImportDataMappings[lsinstallation.AuditPolicyImportName] = lsv1alpha1.NewAnyJSON(auditPolicyRaw)
-
-		auditLogServiceRaw, err := json.Marshal(c.Config().AuditLogConfig.AuditLogService)
-		if err != nil {
-			return fmt.Errorf("failed to marshal audit log service configuration: %w", err)
-		}
-
-		installation.Spec.ImportDataMappings[lsinstallation.AuditLogServiceImportName] = lsv1alpha1.NewAnyJSON(auditLogServiceRaw)
 	}
 
 	if !InstallationSpecDeepEquals(oldInstallationSpec, installation.Spec.DeepCopy()) {
@@ -601,9 +525,7 @@ func (c *Controller) handleExports(ctx context.Context, instance *lssv1alpha2.In
 	}
 
 	if len(dataObjects.Items) > 0 {
-		userKubeconfigExportName := lsinstallation.GetInstallationExportDataRef(instance, lsinstallation.UserKubeconfigExportName)
 		adminKubeconfigExportName := lsinstallation.GetInstallationExportDataRef(instance, lsinstallation.AdminKubeconfigExportName)
-		clusterEndpointExportName := lsinstallation.GetInstallationExportDataRef(instance, lsinstallation.ClusterEndpointExportName)
 
 		for _, do := range dataObjects.Items {
 			key, ok := do.Labels[lsv1alpha1.DataObjectKeyLabel]
@@ -612,23 +534,11 @@ func (c *Controller) handleExports(ctx context.Context, instance *lssv1alpha2.In
 			}
 
 			switch key {
-			case userKubeconfigExportName:
-				logger.Info("found export data object for user kubeconfig",
-					lc.KeyResource, types.NamespacedName{Name: do.Name, Namespace: do.Namespace}.String())
-				if err := json.Unmarshal(do.Data.RawMessage, &instance.Status.UserKubeconfig); err != nil {
-					return fmt.Errorf("unable to unmarshal user kubeconfig: %w", err)
-				}
 			case adminKubeconfigExportName:
 				logger.Info("found export data object for user kubeconfig",
 					lc.KeyResource, types.NamespacedName{Name: do.Name, Namespace: do.Namespace}.String())
 				if err := json.Unmarshal(do.Data.RawMessage, &instance.Status.AdminKubeconfig); err != nil {
 					return fmt.Errorf("unable to unmarshal admin kubeconfig: %w", err)
-				}
-			case clusterEndpointExportName:
-				logger.Info("found export data object for cluster endpoint",
-					lc.KeyResource, types.NamespacedName{Name: do.Name, Namespace: do.Namespace}.String())
-				if err := json.Unmarshal(do.Data.RawMessage, &instance.Status.ClusterEndpoint); err != nil {
-					return fmt.Errorf("unable to unmarshal ClusterEndpoint: %w", err)
 				}
 			default:
 				continue
@@ -637,87 +547,4 @@ func (c *Controller) handleExports(ctx context.Context, instance *lssv1alpha2.In
 	}
 
 	return nil
-}
-
-// handleShootName tries to generate a shoot name if it not already exists.
-func (c *Controller) handleShootName(ctx context.Context, instance *lssv1alpha2.Instance) error {
-	shootNamespace := fmt.Sprintf("garden-%s", c.Config().GardenerConfiguration.ProjectName)
-	instance.Status.ShootNamespace = shootNamespace
-
-	if len(instance.Status.ShootName) > 0 {
-		return nil
-	}
-
-	shootList, err := c.ListShootsFunc(ctx, instance)
-	if err != nil {
-		return err
-	}
-
-	existingShoots := sets.NewString()
-	for _, i := range shootList.Items {
-		existingShoots.Insert(i.GetName())
-	}
-
-	var shootName string
-	for shootName = c.NewUniqueID(); existingShoots.Has(shootName); shootName = c.NewUniqueID() {
-	}
-
-	instance.Status.ShootName = shootName
-
-	return nil
-}
-
-// listShoots lists all shoot resources for the instances shoot namespace.
-func (c *Controller) listShoots(ctx context.Context, instance *lssv1alpha2.Instance) (*unstructured.UnstructuredList, error) {
-	shootList := &unstructured.UnstructuredList{
-		Object: map[string]interface{}{
-			"apiVersion": shootAPIVersion,
-			"kind":       shootKind,
-		},
-	}
-
-	saClient, err := c.getGardenerServiceAccountClient(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := saClient.List(ctx, shootList, &client.ListOptions{Namespace: instance.Status.ShootNamespace}); err != nil {
-		return nil, fmt.Errorf("failed to list shoots: %w", err)
-	}
-
-	return shootList, nil
-}
-
-// getGardenerServiceAccountClient retrieves and initializes the gardener service account client, if necessary.
-func (c *Controller) getGardenerServiceAccountClient(ctx context.Context) (client.Client, error) {
-	gardenerServiceAccountSecret := &corev1.Secret{}
-	if err := c.Client().Get(ctx, c.Config().GardenerConfiguration.ServiceAccountKubeconfig.NamespacedName(), gardenerServiceAccountSecret); err != nil {
-		return nil, fmt.Errorf("failed to load gardener service account secret: %w", err)
-	}
-
-	key := c.Config().GardenerConfiguration.ServiceAccountKubeconfig.Key
-	kubeconfig, ok := gardenerServiceAccountSecret.Data[key]
-	if !ok {
-		return nil, fmt.Errorf("gardener service account secret has no key %q", key)
-	}
-
-	clientCfg, err := clientcmd.Load(kubeconfig)
-	if err != nil {
-		return nil, fmt.Errorf("failed to load gardener service account kubeconfig: %w", err)
-	}
-
-	loader := clientcmd.NewDefaultClientConfig(*clientCfg, nil)
-	restConfig, err := loader.ClientConfig()
-	if err != nil {
-		return nil, fmt.Errorf("failed to load gardener service account rest config: %w", err)
-	}
-
-	saClient, err := client.New(restConfig, client.Options{
-		Scheme: c.Scheme(),
-	})
-	if err != nil {
-		return nil, fmt.Errorf("failed to create client for gardener service account: %w", err)
-	}
-
-	return saClient, nil
 }

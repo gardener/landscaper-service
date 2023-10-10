@@ -2,74 +2,31 @@ apiVersion: landscaper.gardener.cloud/v1alpha1
 kind: Blueprint
 
 imports:
-   # The "hostingCluster" specifies the target Kubernetes cluster into which the landscaper service will be installed.
-  - name: hostingCluster
+   # The "targetCluster" specifies the target Kubernetes cluster into which the landscaper service will be installed.
+  - name: targetCluster
     required: true
     targetType: landscaper.gardener.cloud/kubernetes-cluster
-
-  - name: gardenerServiceAccount
-    required: true
-    targetType: landscaper.gardener.cloud/kubernetes-cluster
-
-  - name: hostingClusterNamespace
-    required: true
-    type: data
-    schema:
-      description: |
-        The "hostingClusterNamespace" is the namespace in the hosting cluster into which the landscaper service is getting installed.
-        Only one landscaper server per namespace can be installed.
-      type: string
 
   - name: targetClusterNamespace
     required: true
     type: data
     schema:
       description: |
-        The "targetClusterNamespace" is the namespace in the target shoot cluster into which the deployer installations are getting installed.
+        The "targetClusterNamespace" is the namespace in the hosting cluster into which the landscaper service is getting installed.
+        Only one landscaper server per namespace can be installed.
       type: string
 
-  - name: shootName
+  - name: dataPlaneCluster
     required: true
-    type: data
-    schema:
-      type: string
+    targetType: landscaper.gardener.cloud/kubernetes-cluster
 
-  - name: shootNamespace
+  - name: dataPlaneClusterNamespace
     required: true
-    type: data
-    schema:
-      type: string
-
-  - name: shootSecretBindingName
-    required: true
-    type: data
-    schema:
-      type: string
-
-  - name: shootLabels
-    required: false
-    type: data
-    schema:
-      type: object
-
-  - name: shootConfig
     type: data
     schema:
       description: |
-        The "shootConfig" Specifies the gardener shoot configuration.
-      $ref: "cd://resources/shoot-config-definition"
-
-  - name: auditPolicy
-    required: false
-    type: data
-    schema:
-      type: object
-
-  - name: auditLogService
-    required: false
-    type: data
-    schema:
-      type: object
+        The "dataPlaneClusterNamespace" is the namespace in the data plane cluster which the landscaper watches.
+      type: string
 
   - name: registryConfig
     type: data
@@ -108,20 +65,6 @@ imports:
       $ref: "cd://resources/rotation-config-definition"
 
 exports:
-  - name: landscaperClusterEndpoint
-    type: data
-    schema:
-      description: |
-        The API server endpoint at which the landscaper is available.
-      type: string
-
-  - name: landscaperUserKubeconfig
-    type: data
-    schema:
-      description: |
-        The user kubeconfig which can be used to connect to the API server (Base64 encoded).
-      type: string
-
   - name: landscaperAdminKubeconfig
     type: data
     schema:
@@ -134,12 +77,9 @@ exportExecutions:
     type: GoTemplate
     template: |
       exports:
-        landscaperClusterEndpoint: {{ .values.dataobjects.shootClusterEndpoint }}
-        landscaperUserKubeconfig: {{ .values.dataobjects.landscaperUserKubeconfigYaml | b64enc }}
         landscaperAdminKubeconfig: {{ .values.dataobjects.shootClusterKubeconfig | b64enc }}
 
 subinstallations:
-  - file: /shoot-cluster-subinst.yaml
   - file: /landscaper-rbac-subinst.yaml
   - file: /landscaper-deployment-subinst.yaml
   - file: /sidecar-subinst.yaml

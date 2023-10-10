@@ -8,13 +8,13 @@ blueprint:
 
 imports:
   targets:
-    - name: hostingCluster
-      target: hostingCluster
+    - name: targetCluster
+      target: targetCluster
   data:
-    - name: hostingClusterNamespace
-      dataRef: hostingClusterNamespace
     - name: targetClusterNamespace
       dataRef: targetClusterNamespace
+    - name: dataPlaneClusterNamespace
+      dataRef: dataPlaneClusterNamespace
     - name: landscaperControllerKubeconfigYaml
       dataRef: landscaperControllerKubeconfigYaml
     - name: landscaperWebhooksKubeconfigYaml

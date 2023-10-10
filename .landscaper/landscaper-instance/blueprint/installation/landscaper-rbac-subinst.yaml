@@ -13,10 +13,8 @@ imports:
   data:
     - name: targetClusterNamespace
       dataRef: targetClusterNamespace
-    - name: shootClusterEndpoint
-      dataRef: shootClusterEndpoint
-    - name: shootConfig
-      dataRef: shootConfig
+    - name: dataPlaneClusterEndpoint
+      dataRef: dataPlaneClusterEndpoint
     - name: rotationConfig
       dataRef: rotationConfig
 
@@ -26,5 +24,3 @@ exports:
       dataRef: landscaperControllerKubeconfigYaml
     - name: landscaperWebhooksKubeconfigYaml
       dataRef: landscaperWebhooksKubeconfigYaml
-    - name: landscaperUserKubeconfigYaml
-      dataRef: landscaperUserKubeconfigYaml

@@ -289,10 +289,6 @@ spec:
                 description: AdminKubeconfig contains the admin kubeconfig which can
                   be used for accessing the landscaper cluster.
                 type: string
-              clusterEndpoint:
-                description: ClusterEndpointRef contains the URL at which the landscaper
-                  cluster is accessible.
-                type: string
               contextRef:
                 description: ContextRef references the landscaper context for this
                   Instance.
@@ -306,9 +302,8 @@ spec:
                 required:
                 - name
                 type: object
-              gardenerServiceAccountRef:
-                description: GardenerServiceAccountRef references the Target for the
-                  Gardener service account.
+              dataPlaneClusterRef:
+                description: TargetClusterRef references the Target for this Instance.
                 properties:
                   name:
                     description: Name is the name of the kubernetes object.
@@ -384,15 +379,8 @@ spec:
                   is updated on mutation by the landscaper service controller.
                 format: int64
                 type: integer
-              shootName:
-                description: ShootName is the name of the corresponding shoot cluster.
-                type: string
-              shootNamespace:
-                description: ShootNamespace is the namespace in which the shoot resource
-                  is being created.
-                type: string
-              targetRef:
-                description: TargetRef references the Target for this Instance.
+              targetClusterRef:
+                description: TargetClusterRef references the Target for this Instance.
                 properties:
                   name:
                     description: Name is the name of the kubernetes object.
@@ -403,10 +391,6 @@ spec:
                 required:
                 - name
                 type: object
-              userKubeconfig:
-                description: UserKubeconfig contains the user kubeconfig which can
-                  be used for accessing the landscaper cluster.
-                type: string
             type: object
         required:
         - spec

@@ -8,11 +8,11 @@ blueprint:
 
 imports:
   targets:
-    - name: hostingCluster
-      target: hostingCluster
+    - name: targetCluster
+      target: targetCluster
   data:
-    - name: hostingClusterNamespace
-      dataRef: hostingClusterNamespace
+    - name: targetClusterNamespace
+      dataRef: targetClusterNamespace
     - name: landscaperControllerKubeconfigYaml
       dataRef: sidecarControllerKubeconfigYaml
     - name: sidecarConfig

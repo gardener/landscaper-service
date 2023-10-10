@@ -1120,15 +1120,15 @@ func schema_pkg_apis_core_v1alpha2_InstanceStatus(ref common.ReferenceCallback) 
 							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.ObjectReference"),
 						},
 					},
-					"targetRef": {
+					"targetClusterRef": {
 						SchemaProps: spec.SchemaProps{
-							Description: "TargetRef references the Target for this Instance.",
+							Description: "TargetClusterRef references the Target for this Instance.",
 							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.ObjectReference"),
 						},
 					},
-					"gardenerServiceAccountRef": {
+					"dataPlaneClusterRef": {
 						SchemaProps: spec.SchemaProps{
-							Description: "GardenerServiceAccountRef references the Target for the Gardener service account.",
+							Description: "TargetClusterRef references the Target for this Instance.",
 							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.ObjectReference"),
 						},
 					},
@@ -1138,37 +1138,9 @@ func schema_pkg_apis_core_v1alpha2_InstanceStatus(ref common.ReferenceCallback) 
 							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.ObjectReference"),
 						},
 					},
-					"clusterEndpoint": {
-						SchemaProps: spec.SchemaProps{
-							Description: "ClusterEndpointRef contains the URL at which the landscaper cluster is accessible.",
-							Type:        []string{"string"},
-							Format:      "",
-						},
-					},
-					"userKubeconfig": {
-						SchemaProps: spec.SchemaProps{
-							Description: "UserKubeconfig contains the user kubeconfig which can be used for accessing the landscaper cluster.",
-							Type:        []string{"string"},
-							Format:      "",
-						},
-					},
 					"adminKubeconfig": {
 						SchemaProps: spec.SchemaProps{
 							Description: "AdminKubeconfig contains the admin kubeconfig which can be used for accessing the landscaper cluster.",
-							Type:        []string{"string"},
-							Format:      "",
-						},
-					},
-					"shootName": {
-						SchemaProps: spec.SchemaProps{
-							Description: "ShootName is the name of the corresponding shoot cluster.",
-							Type:        []string{"string"},
-							Format:      "",
-						},
-					},
-					"shootNamespace": {
-						SchemaProps: spec.SchemaProps{
-							Description: "ShootNamespace is the namespace in which the shoot resource is being created.",
 							Type:        []string{"string"},
 							Format:      "",
 						},
