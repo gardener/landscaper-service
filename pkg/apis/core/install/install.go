@@ -9,12 +9,12 @@ import (
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 
 	"github.com/gardener/landscaper-service/pkg/apis/core"
-	"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
 )
 
 var (
 	schemeBuilder = runtime.NewSchemeBuilder(
-		v1alpha1.AddToScheme,
+		v1alpha2.AddToScheme,
 		core.AddToScheme,
 		setVersionPriority,
 	)
@@ -23,7 +23,7 @@ var (
 )
 
 func setVersionPriority(scheme *runtime.Scheme) error {
-	return scheme.SetVersionPriority(v1alpha1.SchemeGroupVersion)
+	return scheme.SetVersionPriority(v1alpha2.SchemeGroupVersion)
 }
 
 // Install installs all APIs in the scheme.

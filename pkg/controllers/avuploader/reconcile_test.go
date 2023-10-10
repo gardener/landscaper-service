@@ -12,7 +12,7 @@ import (
 
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 
-	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
 	"github.com/gardener/landscaper-service/test/utils/envtest"
 
 	avuploader "github.com/gardener/landscaper-service/pkg/controllers/avuploader"
@@ -38,12 +38,12 @@ var _ = Describe("Reconcile", func() {
 
 var _ = Describe("avs request construction", func() {
 	It("should construct a UP avs request", func() {
-		availabilityCollection := lssv1alpha1.AvailabilityCollection{
-			Status: lssv1alpha1.AvailabilityCollectionStatus{
-				Instances: []lssv1alpha1.AvailabilityInstance{
+		availabilityCollection := lssv1alpha2.AvailabilityCollection{
+			Status: lssv1alpha2.AvailabilityCollectionStatus{
+				Instances: []lssv1alpha2.AvailabilityInstance{
 					{
 						Status: string(lsv1alpha1.LsHealthCheckStatusOk),
-						ObjectReference: lssv1alpha1.ObjectReference{
+						ObjectReference: lssv1alpha2.ObjectReference{
 							Name:      "instance1",
 							Namespace: "instance1-namespace",
 						},
@@ -57,12 +57,12 @@ var _ = Describe("avs request construction", func() {
 	})
 
 	It("should construct a DOWN avs request", func() {
-		availabilityCollection := lssv1alpha1.AvailabilityCollection{
-			Status: lssv1alpha1.AvailabilityCollectionStatus{
-				Instances: []lssv1alpha1.AvailabilityInstance{
+		availabilityCollection := lssv1alpha2.AvailabilityCollection{
+			Status: lssv1alpha2.AvailabilityCollectionStatus{
+				Instances: []lssv1alpha2.AvailabilityInstance{
 					{
 						Status: string(lsv1alpha1.LsHealthCheckStatusOk),
-						ObjectReference: lssv1alpha1.ObjectReference{
+						ObjectReference: lssv1alpha2.ObjectReference{
 							Name:      "instance1",
 							Namespace: "instance1-namespace",
 						},
@@ -70,16 +70,16 @@ var _ = Describe("avs request construction", func() {
 					{
 						Status:       string(lsv1alpha1.LsHealthCheckStatusFailed),
 						FailedReason: "timeout",
-						ObjectReference: lssv1alpha1.ObjectReference{
+						ObjectReference: lssv1alpha2.ObjectReference{
 							Name:      "instance2",
 							Namespace: "instance2-namespace",
 						},
 					},
 				},
-				Self: lssv1alpha1.AvailabilityInstance{
+				Self: lssv1alpha2.AvailabilityInstance{
 					Status:       string(lsv1alpha1.LsHealthCheckStatusFailed),
 					FailedReason: "timeout2",
-					ObjectReference: lssv1alpha1.ObjectReference{
+					ObjectReference: lssv1alpha2.ObjectReference{
 						Name:      "self",
 						Namespace: "landscaper",
 					},

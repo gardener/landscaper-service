@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package v1alpha1
+package v1alpha2
 
 import (
 	lsschema "github.com/gardener/landscaper/apis/schema"
@@ -45,13 +45,7 @@ type LandscaperDeploymentSpec struct {
 	// LandscaperConfiguration contains the configuration for the landscaper service deployment
 	LandscaperConfiguration LandscaperConfiguration `json:"landscaperConfiguration"`
 
-	// OIDCConfig describes the OIDC config of the customer resource cluster (shoot cluster)
-	// +optional
-	OIDCConfig *OIDCConfig `json:"oidcConfig,omitempty"`
-
-	// HighAvailabilityConfig specifies the HA configuration of the resource cluster (shoot cluster)
-	// +optional
-	HighAvailabilityConfig *HighAvailabilityConfig `json:"highAvailabilityConfig"`
+	DataPlane DataPlane `json:"dataPlane"`
 }
 
 // LandscaperDeploymentStatus contains the status of a LandscaperDeployment.

@@ -22,7 +22,7 @@ import (
 	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
 
 	coreconfig "github.com/gardener/landscaper-service/pkg/apis/config"
-	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
 	lsserrors "github.com/gardener/landscaper-service/pkg/apis/errors"
 	"github.com/gardener/landscaper-service/pkg/operation"
 )
@@ -34,8 +34,8 @@ type Controller struct {
 
 	UniqueIDFunc func() string
 
-	ReconcileFunc    func(ctx context.Context, deployment *lssv1alpha1.LandscaperDeployment) error
-	HandleDeleteFunc func(ctx context.Context, deployment *lssv1alpha1.LandscaperDeployment) error
+	ReconcileFunc    func(ctx context.Context, deployment *lssv1alpha2.LandscaperDeployment) error
+	HandleDeleteFunc func(ctx context.Context, deployment *lssv1alpha2.LandscaperDeployment) error
 }
 
 // NewUniqueID creates a new unique id string with a length of 8.
@@ -80,7 +80,7 @@ func NewTestActuator(op operation.Operation, logger logging.Logger) *Controller 
 func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reconcile.Result, error) {
 	logger, ctx := c.log.StartReconcileAndAddToContext(ctx, req)
 
-	deployment := &lssv1alpha1.LandscaperDeployment{}
+	deployment := &lssv1alpha2.LandscaperDeployment{}
 	if err := c.Client().Get(ctx, req.NamespacedName, deployment); err != nil {
 		if apierrors.IsNotFound(err) {
 			logger.Info(err.Error())
@@ -101,8 +101,8 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	}
 
 	// set finalizer
-	if deployment.DeletionTimestamp.IsZero() && !kutils.HasFinalizer(deployment, lssv1alpha1.LandscaperServiceFinalizer) {
-		controllerutil.AddFinalizer(deployment, lssv1alpha1.LandscaperServiceFinalizer)
+	if deployment.DeletionTimestamp.IsZero() && !kutils.HasFinalizer(deployment, lssv1alpha2.LandscaperServiceFinalizer) {
+		controllerutil.AddFinalizer(deployment, lssv1alpha2.LandscaperServiceFinalizer)
 		if err := c.Client().Update(ctx, deployment); err != nil {
 			return reconcile.Result{}, err
 		}
@@ -119,7 +119,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 }
 
 // handleErrorFunc updates the error status of a landscaper deployment
-func (c *Controller) handleErrorFunc(deployment *lssv1alpha1.LandscaperDeployment) func(ctx context.Context, err error) error {
+func (c *Controller) handleErrorFunc(deployment *lssv1alpha2.LandscaperDeployment) func(ctx context.Context, err error) error {
 	old := deployment.DeepCopy()
 	return func(ctx context.Context, err error) error {
 		logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(deployment).String()})

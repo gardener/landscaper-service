@@ -11,7 +11,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
 	"github.com/gardener/landscaper-service/pkg/utils"
 )
 
@@ -19,10 +19,10 @@ const keyOnDeleteStrategy = "onDeleteStrategy"
 
 type triggerDeletionFunc func(ctx context.Context, cl client.Client, inst *v1alpha1.Installation) error
 
-func getTriggerDeletionFunction(ctx context.Context, namespaceRegistration *lssv1alpha1.NamespaceRegistration) (triggerDeletionFunc, error) {
+func getTriggerDeletionFunction(ctx context.Context, namespaceRegistration *lssv1alpha2.NamespaceRegistration) (triggerDeletionFunc, error) {
 	logger, _ := logging.FromContextOrNew(ctx, nil)
 
-	strategy, found := namespaceRegistration.Annotations[lssv1alpha1.LandscaperServiceOnDeleteStrategyAnnotation]
+	strategy, found := namespaceRegistration.Annotations[lssv1alpha2.LandscaperServiceOnDeleteStrategyAnnotation]
 	if !found {
 		strategy = ""
 	}
@@ -31,9 +31,9 @@ func getTriggerDeletionFunction(ctx context.Context, namespaceRegistration *lssv
 	switch strategy {
 	case "":
 		return triggerDeletionByDefaultStrategy, nil
-	case lssv1alpha1.LandscaperServiceOnDeleteStrategyDeleteAllInstallations:
+	case lssv1alpha2.LandscaperServiceOnDeleteStrategyDeleteAllInstallations:
 		return triggerDeletionWithUninstall, nil
-	case lssv1alpha1.LandscaperServiceOnDeleteStrategyDeleteAllInstallationsWithoutUninstall:
+	case lssv1alpha2.LandscaperServiceOnDeleteStrategyDeleteAllInstallationsWithoutUninstall:
 		return triggerDeletionWithoutUninstall, nil
 	default:
 		logger.Info("unknown on-delete-strategy", keyOnDeleteStrategy, strategy)
@@ -59,7 +59,7 @@ func triggerDeletionByDefaultStrategy(ctx context.Context, cl client.Client, ins
 func triggerDeletionWithUninstall(ctx context.Context, cl client.Client, inst *v1alpha1.Installation) error {
 	_, ctx = logging.FromContextOrNew(ctx, nil,
 		lc.KeyResource, client.ObjectKeyFromObject(inst).String(),
-		keyOnDeleteStrategy, lssv1alpha1.LandscaperServiceOnDeleteStrategyDeleteAllInstallations)
+		keyOnDeleteStrategy, lssv1alpha2.LandscaperServiceOnDeleteStrategyDeleteAllInstallations)
 
 	return deleteOrRetriggerDelete(ctx, cl, inst)
 }
@@ -68,7 +68,7 @@ func triggerDeletionWithUninstall(ctx context.Context, cl client.Client, inst *v
 func triggerDeletionWithoutUninstall(ctx context.Context, cl client.Client, inst *v1alpha1.Installation) error {
 	_, ctx = logging.FromContextOrNew(ctx, nil,
 		lc.KeyResource, client.ObjectKeyFromObject(inst).String(),
-		keyOnDeleteStrategy, lssv1alpha1.LandscaperServiceOnDeleteStrategyDeleteAllInstallationsWithoutUninstall)
+		keyOnDeleteStrategy, lssv1alpha2.LandscaperServiceOnDeleteStrategyDeleteAllInstallationsWithoutUninstall)
 
 	if err := ensureDeleteWithoutUninstallAnnotation(ctx, cl, inst); err != nil {
 		return err

@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package v1alpha1
+package v1alpha2
 
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -163,17 +163,7 @@ type LandscaperServiceComponent struct {
 	Version string `json:"version"`
 }
 
-// OIDCConfig defines the OIDC configuration
-type OIDCConfig struct {
-	ClientID      string `json:"clientID,omitempty"`
-	IssuerURL     string `json:"issuerURL,omitempty"`
-	UsernameClaim string `json:"usernameClaim,omitempty"`
-	GroupsClaim   string `json:"groupsClaim,omitempty"`
-}
-
-// HighAvailabilityConfig specifies the HA configuration for the resource cluster (shoot cluster)
-type HighAvailabilityConfig struct {
-	// ControlPlaneFailureTolerance specifies the Kubernetes control plane failure tolerance mode.
-	// Allowed values are: node, zone
-	ControlPlaneFailureTolerance string `json:"controlPlaneFailureTolerance"`
+type DataPlane struct {
+	SecretRef  SecretReference `json:"secretRef"`
+	Kubeconfig string          `json:"kubeconfig"`
 }

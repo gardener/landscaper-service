@@ -9,6 +9,8 @@ import (
 	"fmt"
 	"os"
 
+	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
+
 	lsinstall "github.com/gardener/landscaper/apis/core/install"
 	"github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
@@ -25,7 +27,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 
 	lssinstall "github.com/gardener/landscaper-service/pkg/apis/core/install"
-	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	"github.com/gardener/landscaper-service/pkg/controllers/namespaceregistration"
 	"github.com/gardener/landscaper-service/pkg/controllers/subjectsync"
 	"github.com/gardener/landscaper-service/pkg/crdmanager"
@@ -231,13 +232,13 @@ func createLsUserRolebindingIfNotExist(ctx context.Context, c client.Client) err
 }
 
 func createSubjectsListIfNotExist(ctx context.Context, c client.Client) error {
-	subjectList := &lssv1alpha1.SubjectList{
+	subjectList := &lssv1alpha2.SubjectList{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      subjectsync.SUBJECT_LIST_NAME,
 			Namespace: subjectsync.LS_USER_NAMESPACE,
 		},
-		Spec: lssv1alpha1.SubjectListSpec{
-			Subjects: []lssv1alpha1.Subject{},
+		Spec: lssv1alpha2.SubjectListSpec{
+			Subjects: []lssv1alpha2.Subject{},
 		},
 	}
 	if err := c.Create(ctx, subjectList); err != nil && !apierrors.IsAlreadyExists(err) {

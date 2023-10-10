@@ -22,7 +22,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 
-	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
 	deploymentscontroller "github.com/gardener/landscaper-service/pkg/controllers/landscaperdeployments"
 	"github.com/gardener/landscaper-service/pkg/operation"
 	testutils "github.com/gardener/landscaper-service/test/utils"
@@ -31,20 +31,20 @@ import (
 
 var _ = Describe("SortServiceTargetConfigs", func() {
 	It("should sort descending by priority", func() {
-		configs := &lssv1alpha1.ServiceTargetConfigList{
-			Items: []lssv1alpha1.ServiceTargetConfig{
+		configs := &lssv1alpha2.ServiceTargetConfigList{
+			Items: []lssv1alpha2.ServiceTargetConfig{
 				{
-					Spec: lssv1alpha1.ServiceTargetConfigSpec{
+					Spec: lssv1alpha2.ServiceTargetConfigSpec{
 						Priority: 20,
 					},
 				},
 				{
-					Spec: lssv1alpha1.ServiceTargetConfigSpec{
+					Spec: lssv1alpha2.ServiceTargetConfigSpec{
 						Priority: 10,
 					},
 				},
 				{
-					Spec: lssv1alpha1.ServiceTargetConfigSpec{
+					Spec: lssv1alpha2.ServiceTargetConfigSpec{
 						Priority: 30,
 					},
 				},
@@ -59,17 +59,17 @@ var _ = Describe("SortServiceTargetConfigs", func() {
 	})
 
 	It("should sort ascending by usage", func() {
-		configs := &lssv1alpha1.ServiceTargetConfigList{
-			Items: []lssv1alpha1.ServiceTargetConfig{
+		configs := &lssv1alpha2.ServiceTargetConfigList{
+			Items: []lssv1alpha2.ServiceTargetConfig{
 				{
 					ObjectMeta: metav1.ObjectMeta{
 						Name: "first",
 					},
-					Spec: lssv1alpha1.ServiceTargetConfigSpec{
+					Spec: lssv1alpha2.ServiceTargetConfigSpec{
 						Priority: 10,
 					},
-					Status: lssv1alpha1.ServiceTargetConfigStatus{
-						InstanceRefs: []lssv1alpha1.ObjectReference{
+					Status: lssv1alpha2.ServiceTargetConfigStatus{
+						InstanceRefs: []lssv1alpha2.ObjectReference{
 							{
 								Name:      "foo",
 								Namespace: "bar",
@@ -81,7 +81,7 @@ var _ = Describe("SortServiceTargetConfigs", func() {
 					ObjectMeta: metav1.ObjectMeta{
 						Name: "second",
 					},
-					Spec: lssv1alpha1.ServiceTargetConfigSpec{
+					Spec: lssv1alpha2.ServiceTargetConfigSpec{
 						Priority: 10,
 					},
 				},
@@ -89,11 +89,11 @@ var _ = Describe("SortServiceTargetConfigs", func() {
 					ObjectMeta: metav1.ObjectMeta{
 						Name: "third",
 					},
-					Spec: lssv1alpha1.ServiceTargetConfigSpec{
+					Spec: lssv1alpha2.ServiceTargetConfigSpec{
 						Priority: 10,
 					},
-					Status: lssv1alpha1.ServiceTargetConfigStatus{
-						InstanceRefs: []lssv1alpha1.ObjectReference{
+					Status: lssv1alpha2.ServiceTargetConfigStatus{
+						InstanceRefs: []lssv1alpha2.ObjectReference{
 							{
 								Name:      "foo",
 								Namespace: "bar",
@@ -116,17 +116,17 @@ var _ = Describe("SortServiceTargetConfigs", func() {
 	})
 
 	It("should sort by priority and usage", func() {
-		configs := &lssv1alpha1.ServiceTargetConfigList{
-			Items: []lssv1alpha1.ServiceTargetConfig{
+		configs := &lssv1alpha2.ServiceTargetConfigList{
+			Items: []lssv1alpha2.ServiceTargetConfig{
 				{
 					ObjectMeta: metav1.ObjectMeta{
 						Name: "first",
 					},
-					Spec: lssv1alpha1.ServiceTargetConfigSpec{
+					Spec: lssv1alpha2.ServiceTargetConfigSpec{
 						Priority: 30,
 					},
-					Status: lssv1alpha1.ServiceTargetConfigStatus{
-						InstanceRefs: []lssv1alpha1.ObjectReference{
+					Status: lssv1alpha2.ServiceTargetConfigStatus{
+						InstanceRefs: []lssv1alpha2.ObjectReference{
 							{
 								Name:      "foo",
 								Namespace: "bar",
@@ -138,7 +138,7 @@ var _ = Describe("SortServiceTargetConfigs", func() {
 					ObjectMeta: metav1.ObjectMeta{
 						Name: "second",
 					},
-					Spec: lssv1alpha1.ServiceTargetConfigSpec{
+					Spec: lssv1alpha2.ServiceTargetConfigSpec{
 						Priority: 20,
 					},
 				},
@@ -146,11 +146,11 @@ var _ = Describe("SortServiceTargetConfigs", func() {
 					ObjectMeta: metav1.ObjectMeta{
 						Name: "third",
 					},
-					Spec: lssv1alpha1.ServiceTargetConfigSpec{
+					Spec: lssv1alpha2.ServiceTargetConfigSpec{
 						Priority: 40,
 					},
-					Status: lssv1alpha1.ServiceTargetConfigStatus{
-						InstanceRefs: []lssv1alpha1.ObjectReference{
+					Status: lssv1alpha2.ServiceTargetConfigStatus{
+						InstanceRefs: []lssv1alpha2.ObjectReference{
 							{
 								Name:      "foo",
 								Namespace: "bar",
@@ -203,7 +203,7 @@ var _ = Describe("Reconcile", func() {
 
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(deployment))
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(deployment), deployment)).To(Succeed())
-		Expect(kutil.HasFinalizer(deployment, lssv1alpha1.LandscaperServiceFinalizer)).To(BeTrue())
+		Expect(kutil.HasFinalizer(deployment, lssv1alpha2.LandscaperServiceFinalizer)).To(BeTrue())
 		Expect(deployment.Status.ObservedGeneration).To(Equal(int64(1)))
 	})
 
@@ -221,7 +221,7 @@ var _ = Describe("Reconcile", func() {
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(deployment), deployment)).To(Succeed())
 		Expect(deployment.Status.InstanceRef).ToNot(BeNil())
 
-		instance := &lssv1alpha1.Instance{}
+		instance := &lssv1alpha2.Instance{}
 		err = testenv.Client.Get(ctx, types.NamespacedName{Name: deployment.Status.InstanceRef.Name, Namespace: deployment.Status.InstanceRef.Namespace}, instance)
 		Expect(err).ToNot(HaveOccurred())
 		Expect(instance.Spec.ServiceTargetConfigRef.Name).To(Equal("config3"))
@@ -262,7 +262,7 @@ var _ = Describe("Reconcile", func() {
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(deployment), deployment)).To(Succeed())
 		Expect(deployment.Status.InstanceRef).ToNot(BeNil())
 
-		instance := &lssv1alpha1.Instance{}
+		instance := &lssv1alpha2.Instance{}
 		err = testenv.Client.Get(ctx, types.NamespacedName{Name: deployment.Status.InstanceRef.Name, Namespace: deployment.Status.InstanceRef.Namespace}, instance)
 		Expect(err).ToNot(HaveOccurred())
 		uid := instance.Spec.ID
@@ -306,7 +306,7 @@ var _ = Describe("Reconcile", func() {
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(deployment), deployment)).To(Succeed())
 		Expect(deployment.Status.InstanceRef).ToNot(BeNil())
 
-		instance := &lssv1alpha1.Instance{}
+		instance := &lssv1alpha2.Instance{}
 		err = testenv.Client.Get(ctx, types.NamespacedName{Name: deployment.Status.InstanceRef.Name, Namespace: deployment.Status.InstanceRef.Namespace}, instance)
 		Expect(err).ToNot(HaveOccurred())
 
@@ -326,7 +326,7 @@ var _ = Describe("Reconcile", func() {
 
 		deployment := state.GetDeployment("test")
 
-		ctrl.ReconcileFunc = func(ctx context.Context, deployment *lssv1alpha1.LandscaperDeployment) error {
+		ctrl.ReconcileFunc = func(ctx context.Context, deployment *lssv1alpha2.LandscaperDeployment) error {
 			return lsserrors.NewWrappedError(fmt.Errorf(reason), operation, reason, message)
 		}
 
@@ -368,10 +368,10 @@ var _ = Describe("Reconcile", func() {
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(deployment), deployment)).To(Succeed())
 		Expect(deployment.Status.InstanceRef).ToNot(BeNil())
 
-		instance := &lssv1alpha1.Instance{}
+		instance := &lssv1alpha2.Instance{}
 		err = testenv.Client.Get(ctx, types.NamespacedName{Name: deployment.Status.InstanceRef.Name, Namespace: deployment.Status.InstanceRef.Namespace}, instance)
 		Expect(err).ToNot(HaveOccurred())
-		Expect(utils.HasOperationAnnotation(instance, lssv1alpha1.LandscaperServiceOperationIgnore)).To(BeTrue())
+		Expect(utils.HasOperationAnnotation(instance, lssv1alpha2.LandscaperServiceOperationIgnore)).To(BeTrue())
 
 		utils.RemoveOperationAnnotation(deployment)
 		err = testenv.Client.Update(ctx, deployment)
@@ -381,6 +381,6 @@ var _ = Describe("Reconcile", func() {
 
 		err = testenv.Client.Get(ctx, types.NamespacedName{Name: deployment.Status.InstanceRef.Name, Namespace: deployment.Status.InstanceRef.Namespace}, instance)
 		Expect(err).ToNot(HaveOccurred())
-		Expect(utils.HasOperationAnnotation(instance, lssv1alpha1.LandscaperServiceOperationIgnore)).To(BeFalse())
+		Expect(utils.HasOperationAnnotation(instance, lssv1alpha2.LandscaperServiceOperationIgnore)).To(BeFalse())
 	})
 })

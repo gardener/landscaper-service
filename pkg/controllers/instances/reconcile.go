@@ -29,7 +29,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
 	lssconfig "github.com/gardener/landscaper-service/pkg/apis/config"
-	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
 	"github.com/gardener/landscaper-service/pkg/apis/errors"
 	lsinstallation "github.com/gardener/landscaper-service/pkg/apis/installation"
 	"github.com/gardener/landscaper-service/pkg/utils"
@@ -63,7 +63,7 @@ const (
 )
 
 // reconcile reconciles an instance.
-func (c *Controller) reconcile(ctx context.Context, instance *lssv1alpha1.Instance) error {
+func (c *Controller) reconcile(ctx context.Context, instance *lssv1alpha2.Instance) error {
 	currOp := "Reconcile"
 
 	if err := c.reconcileContext(ctx, instance); err != nil {
@@ -86,7 +86,7 @@ func (c *Controller) reconcile(ctx context.Context, instance *lssv1alpha1.Instan
 }
 
 // reconcileContext reconciles the context for an instance.
-func (c *Controller) reconcileContext(ctx context.Context, instance *lssv1alpha1.Instance) error {
+func (c *Controller) reconcileContext(ctx context.Context, instance *lssv1alpha2.Instance) error {
 	landscaperContext := &lsv1alpha1.Context{}
 	landscaperContext.GenerateName = fmt.Sprintf("%s-", instance.GetName())
 	landscaperContext.Namespace = instance.GetNamespace()
@@ -105,7 +105,7 @@ func (c *Controller) reconcileContext(ctx context.Context, instance *lssv1alpha1
 	}
 
 	if instance.Status.ContextRef == nil || !instance.Status.ContextRef.IsObject(landscaperContext) {
-		instance.Status.ContextRef = &lssv1alpha1.ObjectReference{
+		instance.Status.ContextRef = &lssv1alpha2.ObjectReference{
 			Name:      landscaperContext.GetName(),
 			Namespace: landscaperContext.GetNamespace(),
 		}
@@ -119,7 +119,7 @@ func (c *Controller) reconcileContext(ctx context.Context, instance *lssv1alpha1
 }
 
 // mutateTarget creates or updates the context for an instance.
-func (c *Controller) mutateContext(ctx context.Context, context *lsv1alpha1.Context, instance *lssv1alpha1.Instance) error {
+func (c *Controller) mutateContext(ctx context.Context, context *lsv1alpha1.Context, instance *lssv1alpha2.Instance) error {
 	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(instance).String()},
 		lc.KeyMethod, "mutateContext")
 
@@ -172,7 +172,7 @@ func (c *Controller) mutateContext(ctx context.Context, context *lsv1alpha1.Cont
 }
 
 // reconcileTarget reconciles the target for an instance.
-func (c *Controller) reconcileTarget(ctx context.Context, instance *lssv1alpha1.Instance) error {
+func (c *Controller) reconcileTarget(ctx context.Context, instance *lssv1alpha2.Instance) error {
 	target := &lsv1alpha1.Target{}
 	target.GenerateName = fmt.Sprintf("%s-", instance.GetName())
 	target.Namespace = instance.GetNamespace()
@@ -191,7 +191,7 @@ func (c *Controller) reconcileTarget(ctx context.Context, instance *lssv1alpha1.
 	}
 
 	if instance.Status.TargetRef == nil || !instance.Status.TargetRef.IsObject(target) {
-		instance.Status.TargetRef = &lssv1alpha1.ObjectReference{
+		instance.Status.TargetRef = &lssv1alpha2.ObjectReference{
 			Name:      target.GetName(),
 			Namespace: target.GetNamespace(),
 		}
@@ -205,7 +205,7 @@ func (c *Controller) reconcileTarget(ctx context.Context, instance *lssv1alpha1.
 }
 
 // mutateTarget creates or updates the target for an instance.
-func (c *Controller) mutateTarget(ctx context.Context, target *lsv1alpha1.Target, instance *lssv1alpha1.Instance) error {
+func (c *Controller) mutateTarget(ctx context.Context, target *lsv1alpha1.Target, instance *lssv1alpha2.Instance) error {
 	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(instance).String()},
 		lc.KeyMethod, "mutateTarget")
 
@@ -219,7 +219,7 @@ func (c *Controller) mutateTarget(ctx context.Context, target *lsv1alpha1.Target
 		return fmt.Errorf("unable to set controller reference for target: %w", err)
 	}
 
-	config := &lssv1alpha1.ServiceTargetConfig{}
+	config := &lssv1alpha2.ServiceTargetConfig{}
 	if err := c.Client().Get(ctx, instance.Spec.ServiceTargetConfigRef.NamespacedName(), config); err != nil {
 		return fmt.Errorf("unable to get service target config for instance: %w", err)
 	}
@@ -256,7 +256,7 @@ func (c *Controller) mutateTarget(ctx context.Context, target *lsv1alpha1.Target
 }
 
 // reconcileGardenerServiceAccountTarget reconciles the target for the gardener service account.
-func (c *Controller) reconcileGardenerServiceAccountTarget(ctx context.Context, instance *lssv1alpha1.Instance) error {
+func (c *Controller) reconcileGardenerServiceAccountTarget(ctx context.Context, instance *lssv1alpha2.Instance) error {
 	target := &lsv1alpha1.Target{}
 	target.GenerateName = fmt.Sprintf("%s-gardener-sa-", instance.GetName())
 	target.Namespace = instance.GetNamespace()
@@ -271,7 +271,7 @@ func (c *Controller) reconcileGardenerServiceAccountTarget(ctx context.Context, 
 	})
 
 	if instance.Status.GardenerServiceAccountRef == nil || !instance.Status.GardenerServiceAccountRef.IsObject(target) {
-		instance.Status.GardenerServiceAccountRef = &lssv1alpha1.ObjectReference{
+		instance.Status.GardenerServiceAccountRef = &lssv1alpha2.ObjectReference{
 			Name:      target.GetName(),
 			Namespace: target.GetNamespace(),
 		}
@@ -285,7 +285,7 @@ func (c *Controller) reconcileGardenerServiceAccountTarget(ctx context.Context, 
 }
 
 // mutateGardenerServiceAccountTarget creates or updates the target for the gardener service account.
-func (c *Controller) mutateGardenerServiceAccountTarget(ctx context.Context, target *lsv1alpha1.Target, instance *lssv1alpha1.Instance) error {
+func (c *Controller) mutateGardenerServiceAccountTarget(ctx context.Context, target *lsv1alpha1.Target, instance *lssv1alpha2.Instance) error {
 	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(instance).String()},
 		lc.KeyMethod, "mutateGardenerServiceAccountTarget")
 
@@ -333,7 +333,7 @@ func (c *Controller) mutateGardenerServiceAccountTarget(ctx context.Context, tar
 }
 
 // reconcileInstallation reconciles the installation for an instance
-func (c *Controller) reconcileInstallation(ctx context.Context, instance *lssv1alpha1.Instance) error {
+func (c *Controller) reconcileInstallation(ctx context.Context, instance *lssv1alpha2.Instance) error {
 	old := instance.DeepCopy()
 	if err := c.handleShootName(ctx, instance); err != nil {
 		return err
@@ -367,12 +367,12 @@ func (c *Controller) reconcileInstallation(ctx context.Context, instance *lssv1a
 	}
 
 	old = instance.DeepCopy()
-	instance.Status.InstallationRef = &lssv1alpha1.ObjectReference{
+	instance.Status.InstallationRef = &lssv1alpha2.ObjectReference{
 		Name:      installation.GetName(),
 		Namespace: installation.GetNamespace(),
 	}
 
-	instance.Status.LandscaperServiceComponent = &lssv1alpha1.LandscaperServiceComponent{
+	instance.Status.LandscaperServiceComponent = &lssv1alpha2.LandscaperServiceComponent{
 		Name:    installation.Spec.ComponentDescriptor.Reference.ComponentName,
 		Version: installation.Spec.ComponentDescriptor.Reference.Version,
 	}
@@ -391,7 +391,7 @@ func (c *Controller) reconcileInstallation(ctx context.Context, instance *lssv1a
 }
 
 // mutateInstallation creates or updates the installation for an instance.
-func (c *Controller) mutateInstallation(ctx context.Context, installation *lsv1alpha1.Installation, instance *lssv1alpha1.Instance) error {
+func (c *Controller) mutateInstallation(ctx context.Context, installation *lsv1alpha1.Installation, instance *lssv1alpha2.Instance) error {
 	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(instance).String()},
 		lc.KeyMethod, "mutateInstallation")
 
@@ -408,7 +408,7 @@ func (c *Controller) mutateInstallation(ctx context.Context, installation *lsv1a
 		return fmt.Errorf("unable to set owner reference for installation: %w", err)
 	}
 
-	config := &lssv1alpha1.ServiceTargetConfig{}
+	config := &lssv1alpha2.ServiceTargetConfig{}
 	if err := c.Client().Get(ctx, instance.Spec.ServiceTargetConfigRef.NamespacedName(), config); err != nil {
 		return fmt.Errorf("unable to get service target config for instance: %w", err)
 	}
@@ -452,34 +452,16 @@ func (c *Controller) mutateInstallation(ctx context.Context, installation *lsv1a
 	shootConfig := &lssconfig.ShootConfiguration{}
 	c.Config().ShootConfiguration.DeepCopyInto(shootConfig)
 
-	if instance.Spec.OIDCConfig != nil {
-		// Overwrite the default oidc config with instance specific values
-		shootConfig.Kubernetes.KubeAPIServer.OIDCConfig.ClientID = instance.Spec.OIDCConfig.ClientID
-		shootConfig.Kubernetes.KubeAPIServer.OIDCConfig.IssuerURL = instance.Spec.OIDCConfig.IssuerURL
-		shootConfig.Kubernetes.KubeAPIServer.OIDCConfig.UsernameClaim = instance.Spec.OIDCConfig.UsernameClaim
-		shootConfig.Kubernetes.KubeAPIServer.OIDCConfig.GroupsClaim = instance.Spec.OIDCConfig.GroupsClaim
-	}
-
-	if instance.Spec.HighAvailabilityConfig != nil {
-		shootConfig.ControlPlane = &lssconfig.ControlPlane{
-			HighAvailability: lssconfig.HighAvailability{
-				FailureTolerance: lssconfig.FailureTolerance{
-					Type: instance.Spec.HighAvailabilityConfig.ControlPlaneFailureTolerance,
-				},
-			},
-		}
-	}
-
 	shootConfigRaw, err := json.Marshal(shootConfig)
 	if err != nil {
 		return fmt.Errorf("unable to marshal shoot config: %w", err)
 	}
 
 	shootLabels := map[string]string{
-		lssv1alpha1.ShootTenantIDLabel:          instance.Spec.TenantId,
-		lssv1alpha1.ShootInstanceNameLabel:      instance.Name,
-		lssv1alpha1.ShootInstanceNamespaceLabel: instance.Namespace,
-		lssv1alpha1.ShootInstanceIDLabel:        instance.Spec.ID,
+		lssv1alpha2.ShootTenantIDLabel:          instance.Spec.TenantId,
+		lssv1alpha2.ShootInstanceNameLabel:      instance.Name,
+		lssv1alpha2.ShootInstanceNamespaceLabel: instance.Namespace,
+		lssv1alpha2.ShootInstanceIDLabel:        instance.Spec.ID,
 	}
 	shootLabelsRaw, err := json.Marshal(shootLabels)
 	if err != nil {
@@ -598,7 +580,7 @@ func (c *Controller) mutateInstallation(ctx context.Context, installation *lsv1a
 }
 
 // handleExports tries to find the exports of the installation and update the instance status accordingly.
-func (c *Controller) handleExports(ctx context.Context, instance *lssv1alpha1.Instance, installation *lsv1alpha1.Installation) error {
+func (c *Controller) handleExports(ctx context.Context, instance *lssv1alpha2.Instance, installation *lsv1alpha1.Installation) error {
 	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(instance).String()},
 		lc.KeyMethod, "handleExports")
 
@@ -658,7 +640,7 @@ func (c *Controller) handleExports(ctx context.Context, instance *lssv1alpha1.In
 }
 
 // handleShootName tries to generate a shoot name if it not already exists.
-func (c *Controller) handleShootName(ctx context.Context, instance *lssv1alpha1.Instance) error {
+func (c *Controller) handleShootName(ctx context.Context, instance *lssv1alpha2.Instance) error {
 	shootNamespace := fmt.Sprintf("garden-%s", c.Config().GardenerConfiguration.ProjectName)
 	instance.Status.ShootNamespace = shootNamespace
 
@@ -686,7 +668,7 @@ func (c *Controller) handleShootName(ctx context.Context, instance *lssv1alpha1.
 }
 
 // listShoots lists all shoot resources for the instances shoot namespace.
-func (c *Controller) listShoots(ctx context.Context, instance *lssv1alpha1.Instance) (*unstructured.UnstructuredList, error) {
+func (c *Controller) listShoots(ctx context.Context, instance *lssv1alpha2.Instance) (*unstructured.UnstructuredList, error) {
 	shootList := &unstructured.UnstructuredList{
 		Object: map[string]interface{}{
 			"apiVersion": shootAPIVersion,

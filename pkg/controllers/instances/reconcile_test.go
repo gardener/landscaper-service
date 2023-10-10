@@ -26,7 +26,7 @@ import (
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 
 	lssconfig "github.com/gardener/landscaper-service/pkg/apis/config"
-	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
 	lsserrors "github.com/gardener/landscaper-service/pkg/apis/errors"
 	lsinstallation "github.com/gardener/landscaper-service/pkg/apis/installation"
 	instancescontroller "github.com/gardener/landscaper-service/pkg/controllers/instances"
@@ -53,7 +53,7 @@ var _ = Describe("Reconcile", func() {
 		op = operation.NewOperation(testenv.Client, envtest.LandscaperServiceScheme, testutils.DefaultControllerConfiguration())
 		Expect(testutils.CreateServiceAccountSecret(ctx, op.Client(), op.Config())).To(Succeed())
 		ctrl = instancescontroller.NewTestActuator(*op, logging.Discard())
-		ctrl.ListShootsFunc = func(ctx context.Context, instance *lssv1alpha1.Instance) (*unstructured.UnstructuredList, error) {
+		ctrl.ListShootsFunc = func(ctx context.Context, instance *lssv1alpha2.Instance) (*unstructured.UnstructuredList, error) {
 			return &unstructured.UnstructuredList{
 				Items: []unstructured.Unstructured{},
 			}, nil
@@ -80,7 +80,7 @@ var _ = Describe("Reconcile", func() {
 
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
-		Expect(kutil.HasFinalizer(instance, lssv1alpha1.LandscaperServiceFinalizer)).To(BeTrue())
+		Expect(kutil.HasFinalizer(instance, lssv1alpha2.LandscaperServiceFinalizer)).To(BeTrue())
 		Expect(instance.Status.ObservedGeneration).To(Equal(int64(1)))
 	})
 
@@ -132,10 +132,10 @@ var _ = Describe("Reconcile", func() {
 		shootLabelsRaw := installation.Spec.ImportDataMappings[lsinstallation.ShootLabelsImportName]
 		var shootLabels map[string]interface{}
 		Expect(json.Unmarshal(shootLabelsRaw.RawMessage, &shootLabels)).To(Succeed())
-		Expect(shootLabels).To(HaveKeyWithValue(lssv1alpha1.ShootTenantIDLabel, instance.Spec.TenantId))
-		Expect(shootLabels).To(HaveKeyWithValue(lssv1alpha1.ShootInstanceIDLabel, instance.Spec.ID))
-		Expect(shootLabels).To(HaveKeyWithValue(lssv1alpha1.ShootInstanceNameLabel, instance.Name))
-		Expect(shootLabels).To(HaveKeyWithValue(lssv1alpha1.ShootInstanceNamespaceLabel, instance.Namespace))
+		Expect(shootLabels).To(HaveKeyWithValue(lssv1alpha2.ShootTenantIDLabel, instance.Spec.TenantId))
+		Expect(shootLabels).To(HaveKeyWithValue(lssv1alpha2.ShootInstanceIDLabel, instance.Spec.ID))
+		Expect(shootLabels).To(HaveKeyWithValue(lssv1alpha2.ShootInstanceNameLabel, instance.Name))
+		Expect(shootLabels).To(HaveKeyWithValue(lssv1alpha2.ShootInstanceNamespaceLabel, instance.Namespace))
 
 		Expect(installation.Annotations).ToNot(BeNil())
 		Expect(installation.Annotations).To(HaveKey(lsv1alpha1.OperationAnnotation))
@@ -360,7 +360,7 @@ var _ = Describe("Reconcile", func() {
 
 		instance := state.GetInstance("test")
 
-		ctrl.ReconcileFunc = func(ctx context.Context, deployment *lssv1alpha1.Instance) error {
+		ctrl.ReconcileFunc = func(ctx context.Context, deployment *lssv1alpha2.Instance) error {
 			return lsserrors.NewWrappedError(fmt.Errorf(reason), operation, reason, message)
 		}
 

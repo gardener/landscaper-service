@@ -1,67 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
   "definitions": {
-    "core-v1alpha1-Controller": {
-      "description": "Controller specifies the config for a landscaper controller.",
-      "type": "object",
-      "properties": {
-        "workers": {
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "core-v1alpha1-Controllers": {
-      "description": "Controllers specifies the config for the \"main\" landscaper controllers, i.e. the installation and execution controller.",
-      "type": "object",
-      "properties": {
-        "executions": {
-          "$ref": "#/definitions/core-v1alpha1-Controller"
-        },
-        "installations": {
-          "$ref": "#/definitions/core-v1alpha1-Controller"
-        }
-      }
-    },
-    "core-v1alpha1-DeployItemTimeouts": {
-      "description": "DeployItemTimeouts configures the timeout controller.",
-      "type": "object",
-      "properties": {
-        "pickup": {
-          "type": "string"
-        },
-        "progressingDefault": {
-          "type": "string"
-        }
-      }
-    },
-    "core-v1alpha1-Deployer": {
-      "type": "object",
-      "properties": {
-        "controller": {
-          "$ref": "#/definitions/core-v1alpha1-Controller"
-        },
-        "k8sClientSettings": {
-          "$ref": "#/definitions/core-v1alpha1-K8SClientSettings"
-        }
-      }
-    },
-    "core-v1alpha1-DeployerConfig": {
-      "description": "DeployerConfig configures a deployer.",
-      "type": "object",
-      "properties": {
-        "deployer": {
-          "$ref": "#/definitions/core-v1alpha1-Deployer"
-        },
-        "hpa": {
-          "$ref": "#/definitions/core-v1alpha1-HPA"
-        },
-        "resources": {
-          "$ref": "#/definitions/core-v1alpha1-Resources"
-        }
-      }
-    },
-    "core-v1alpha1-Error": {
+    "core-v1alpha2-Error": {
       "description": "Error holds information about an error that occurred.",
       "type": "object",
       "required": [
@@ -99,226 +39,21 @@
         }
       }
     },
-    "core-v1alpha1-HPA": {
-      "description": "HPA configures the horizontal pod autoscaling of pods.",
-      "type": "object",
-      "properties": {
-        "averageCpuUtilization": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "averageMemoryUtilization": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "maxReplicas": {
-          "type": "integer",
-          "format": "int32"
-        }
-      }
+    "core-v1alpha2-NamespaceRegistrationSpec": {
+      "type": "object"
     },
-    "core-v1alpha1-HighAvailabilityConfig": {
-      "description": "HighAvailabilityConfig specifies the HA configuration for the resource cluster (shoot cluster)",
+    "core-v1alpha2-NamespaceRegistrationStatus": {
       "type": "object",
       "required": [
-        "controlPlaneFailureTolerance"
+        "phase"
       ],
       "properties": {
-        "controlPlaneFailureTolerance": {
-          "description": "ControlPlaneFailureTolerance specifies the Kubernetes control plane failure tolerance mode. Allowed values are: node, zone",
-          "type": "string",
-          "default": ""
-        }
-      }
-    },
-    "core-v1alpha1-K8SClientLimits": {
-      "description": "K8SClientLimits specifies the settings for a k8s client.",
-      "type": "object",
-      "properties": {
-        "burst": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "qps": {
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "core-v1alpha1-K8SClientSettings": {
-      "description": "K8SClientSettings specifies the settings for the k8s clients which landscaper uses to access host and resource cluster.",
-      "type": "object",
-      "properties": {
-        "hostClient": {
-          "$ref": "#/definitions/core-v1alpha1-K8SClientLimits"
-        },
-        "resourceClient": {
-          "$ref": "#/definitions/core-v1alpha1-K8SClientLimits"
-        }
-      }
-    },
-    "core-v1alpha1-Landscaper": {
-      "type": "object",
-      "properties": {
-        "controllers": {
-          "$ref": "#/definitions/core-v1alpha1-Controllers"
-        },
-        "deployItemTimeouts": {
-          "$ref": "#/definitions/core-v1alpha1-DeployItemTimeouts"
-        },
-        "k8sClientSettings": {
-          "$ref": "#/definitions/core-v1alpha1-K8SClientSettings"
-        }
-      }
-    },
-    "core-v1alpha1-LandscaperConfiguration": {
-      "description": "LandscaperConfiguration contains the configuration for a landscaper service deployment.",
-      "type": "object",
-      "required": [
-        "deployers"
-      ],
-      "properties": {
-        "deployers": {
-          "description": "Deployers is the list of deployers that are getting installed alongside with this Instance.",
-          "type": "array",
-          "items": {
-            "type": "string",
-            "default": ""
-          }
-        },
-        "deployersConfig": {
-          "description": "DeployersConfig specifies the configuration for the landscaper standard deployers.",
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "#/definitions/core-v1alpha1-DeployerConfig"
-          }
-        },
-        "hpaMain": {
-          "description": "HPAMain configures the horizontal pod autoscaling of the \"main\" landscaper pods, i.e. the pods of installation and execution controller.",
-          "$ref": "#/definitions/core-v1alpha1-HPA"
-        },
-        "landscaper": {
-          "$ref": "#/definitions/core-v1alpha1-Landscaper"
-        },
-        "resources": {
-          "description": "Resources configures the resources of the \"central\" landscaper pod, i.e. the pod responsible for crds creation, deployer management, context controller.",
-          "$ref": "#/definitions/core-v1alpha1-Resources"
-        },
-        "resourcesMain": {
-          "description": "ResourcesMain configures the resources of the \"main\" landscaper pods, i.e. the pods of installation and execution controller.",
-          "$ref": "#/definitions/core-v1alpha1-Resources"
-        }
-      }
-    },
-    "core-v1alpha1-LandscaperDeploymentSpec": {
-      "description": "LandscaperDeploymentSpec contains the specification for a LandscaperDeployment.",
-      "type": "object",
-      "required": [
-        "tenantId",
-        "purpose",
-        "landscaperConfiguration"
-      ],
-      "properties": {
-        "highAvailabilityConfig": {
-          "description": "HighAvailabilityConfig specifies the HA configuration of the resource cluster (shoot cluster)",
-          "$ref": "#/definitions/core-v1alpha1-HighAvailabilityConfig"
-        },
-        "landscaperConfiguration": {
-          "description": "LandscaperConfiguration contains the configuration for the landscaper service deployment",
-          "default": {},
-          "$ref": "#/definitions/core-v1alpha1-LandscaperConfiguration"
-        },
-        "oidcConfig": {
-          "description": "OIDCConfig describes the OIDC config of the customer resource cluster (shoot cluster)",
-          "$ref": "#/definitions/core-v1alpha1-OIDCConfig"
-        },
-        "purpose": {
-          "description": "Purpose contains the purpose of this LandscaperDeployment.",
-          "type": "string",
-          "default": ""
-        },
-        "tenantId": {
-          "description": "TenantId is the unique identifier of the owning tenant.",
-          "type": "string",
-          "default": ""
-        }
-      }
-    },
-    "core-v1alpha1-LandscaperDeploymentStatus": {
-      "description": "LandscaperDeploymentStatus contains the status of a LandscaperDeployment.",
-      "type": "object",
-      "properties": {
-        "instanceRef": {
-          "description": "InstanceRef references the instance that is created for this LandscaperDeployment.",
-          "$ref": "#/definitions/core-v1alpha1-ObjectReference"
-        },
         "lastError": {
-          "description": "LastError describes the last error that occurred.",
-          "$ref": "#/definitions/core-v1alpha1-Error"
+          "$ref": "#/definitions/core-v1alpha2-Error"
         },
-        "observedGeneration": {
-          "description": "ObservedGeneration is the most recent generation observed for this LandscaperDeployment. It corresponds to the LandscaperDeployment generation, which is updated on mutation by the landscaper service controller.",
-          "type": "integer",
-          "format": "int64",
-          "default": 0
-        }
-      }
-    },
-    "core-v1alpha1-OIDCConfig": {
-      "description": "OIDCConfig defines the OIDC configuration",
-      "type": "object",
-      "properties": {
-        "clientID": {
-          "type": "string"
-        },
-        "groupsClaim": {
-          "type": "string"
-        },
-        "issuerURL": {
-          "type": "string"
-        },
-        "usernameClaim": {
-          "type": "string"
-        }
-      }
-    },
-    "core-v1alpha1-ObjectReference": {
-      "description": "ObjectReference is the reference to a kubernetes object.",
-      "type": "object",
-      "required": [
-        "name"
-      ],
-      "properties": {
-        "name": {
-          "description": "Name is the name of the kubernetes object.",
+        "phase": {
           "type": "string",
           "default": ""
-        },
-        "namespace": {
-          "description": "Namespace is the namespace of kubernetes object.",
-          "type": "string",
-          "default": ""
-        }
-      }
-    },
-    "core-v1alpha1-ResourceRequests": {
-      "type": "object",
-      "properties": {
-        "cpu": {
-          "type": "string"
-        },
-        "memory": {
-          "type": "string"
-        }
-      }
-    },
-    "core-v1alpha1-Resources": {
-      "description": "Resources configures the resources of pods (requested cpu and memory)",
-      "type": "object",
-      "properties": {
-        "requests": {
-          "default": {},
-          "$ref": "#/definitions/core-v1alpha1-ResourceRequests"
         }
       }
     },
@@ -499,7 +234,6 @@
       "format": "date-time"
     }
   },
-  "description": "The LandscaperDeployment is created to define a deployment of the landscaper.",
   "properties": {
     "apiVersion": {
       "description": "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
@@ -514,19 +248,19 @@
       "default": {}
     },
     "spec": {
-      "$ref": "#/definitions/core-v1alpha1-LandscaperDeploymentSpec",
+      "$ref": "#/definitions/core-v1alpha2-NamespaceRegistrationSpec",
       "default": {},
-      "description": "Spec contains the specification for the LandscaperDeployment"
+      "description": "Spec contains the specification for the NamespaceRegistration."
     },
     "status": {
-      "$ref": "#/definitions/core-v1alpha1-LandscaperDeploymentStatus",
+      "$ref": "#/definitions/core-v1alpha2-NamespaceRegistrationStatus",
       "default": {},
-      "description": "Status contains the status of the LandscaperDeployment."
+      "description": "Status contains the status for the NamespaceRegistration."
     }
   },
   "required": [
     "spec"
   ],
-  "title": "core-v1alpha1-LandscaperDeployment",
+  "title": "core-v1alpha2-NamespaceRegistration",
   "type": "object"
 }

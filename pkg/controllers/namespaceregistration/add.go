@@ -14,7 +14,7 @@ import (
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 
 	coreconfig "github.com/gardener/landscaper-service/pkg/apis/config"
-	"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
 )
 
 // AddControllerToManager adds the Namespaceregistration Controller to the manager
@@ -29,7 +29,7 @@ func AddControllerToManager(logger logging.Logger, mgr manager.Manager, config *
 		predicate.GenerationChangedPredicate{}, predicate.AnnotationChangedPredicate{}))
 
 	return builder.ControllerManagedBy(mgr).
-		For(&v1alpha1.NamespaceRegistration{}, predicates).
+		For(&v1alpha2.NamespaceRegistration{}, predicates).
 		WithLogConstructor(func(r *reconcile.Request) logr.Logger { return log.Logr() }).
 		Complete(ctrl)
 }

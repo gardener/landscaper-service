@@ -24,7 +24,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	coreconfig "github.com/gardener/landscaper-service/pkg/apis/config"
-	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
 	"github.com/gardener/landscaper-service/pkg/controllers/subjectsync"
 	"github.com/gardener/landscaper-service/pkg/operation"
 	"github.com/gardener/landscaper-service/pkg/utils"
@@ -45,8 +45,8 @@ type Controller struct {
 	operation.TargetShootSidecarOperation
 	log logging.Logger
 
-	ReconcileFunc    func(ctx context.Context, namespaceRegistration *lssv1alpha1.NamespaceRegistration) (reconcile.Result, error)
-	HandleDeleteFunc func(ctx context.Context, namespaceRegistration *lssv1alpha1.NamespaceRegistration) (reconcile.Result, error)
+	ReconcileFunc    func(ctx context.Context, namespaceRegistration *lssv1alpha2.NamespaceRegistration) (reconcile.Result, error)
+	HandleDeleteFunc func(ctx context.Context, namespaceRegistration *lssv1alpha2.NamespaceRegistration) (reconcile.Result, error)
 }
 
 func NewController(logger logging.Logger, c client.Client, scheme *runtime.Scheme, config *coreconfig.TargetShootSidecarConfiguration) (reconcile.Reconciler, error) {
@@ -76,7 +76,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 	logger.Info("start reconcile namespaceRegistration")
 
-	namespaceRegistration := &lssv1alpha1.NamespaceRegistration{}
+	namespaceRegistration := &lssv1alpha2.NamespaceRegistration{}
 	if err := c.Client().Get(ctx, req.NamespacedName, namespaceRegistration); err != nil {
 		logger.Error(err, "failed loading namespaceregistration")
 		if apierrors.IsNotFound(err) {
@@ -103,8 +103,8 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	}
 
 	// set finalizer
-	if namespaceRegistration.DeletionTimestamp.IsZero() && !kutils.HasFinalizer(namespaceRegistration, lssv1alpha1.LandscaperServiceFinalizer) {
-		controllerutil.AddFinalizer(namespaceRegistration, lssv1alpha1.LandscaperServiceFinalizer)
+	if namespaceRegistration.DeletionTimestamp.IsZero() && !kutils.HasFinalizer(namespaceRegistration, lssv1alpha2.LandscaperServiceFinalizer) {
+		controllerutil.AddFinalizer(namespaceRegistration, lssv1alpha2.LandscaperServiceFinalizer)
 		if err := c.Client().Update(ctx, namespaceRegistration); err != nil {
 			logger.Error(err, "failed adding finalizer to namespaceregistration")
 			return reconcile.Result{RequeueAfter: requeueAfterDuration}, nil
@@ -120,14 +120,14 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	return c.reconcile(ctx, namespaceRegistration)
 }
 
-func (c *Controller) handleDelete(ctx context.Context, namespaceRegistration *lssv1alpha1.NamespaceRegistration) (reconcile.Result, error) {
+func (c *Controller) handleDelete(ctx context.Context, namespaceRegistration *lssv1alpha2.NamespaceRegistration) (reconcile.Result, error) {
 	logger, ctx := logging.FromContextOrNew(ctx, nil)
 
 	namespace := &corev1.Namespace{}
 	if err := c.Client().Get(ctx, types.NamespacedName{Name: namespaceRegistration.GetName()}, namespace); err != nil {
 		if apierrors.IsNotFound(err) {
 			logger.Info("namespace not found, removing namespaceregistration")
-			controllerutil.RemoveFinalizer(namespaceRegistration, lssv1alpha1.LandscaperServiceFinalizer)
+			controllerutil.RemoveFinalizer(namespaceRegistration, lssv1alpha2.LandscaperServiceFinalizer)
 			if err := c.Client().Update(ctx, namespaceRegistration); err != nil {
 				logger.Error(err, "failed removing finalizer")
 				return reconcile.Result{RequeueAfter: requeueAfterDuration}, nil
@@ -141,7 +141,7 @@ func (c *Controller) handleDelete(ctx context.Context, namespaceRegistration *ls
 	return c.removeResourcesAndNamespace(ctx, namespaceRegistration, namespace)
 }
 
-func (c *Controller) removeResourcesAndNamespace(ctx context.Context, namespaceRegistration *lssv1alpha1.NamespaceRegistration,
+func (c *Controller) removeResourcesAndNamespace(ctx context.Context, namespaceRegistration *lssv1alpha2.NamespaceRegistration,
 	namespace *corev1.Namespace) (reconcile.Result, error) {
 
 	logger, ctx := logging.FromContextOrNew(ctx, nil)
@@ -206,7 +206,7 @@ func (c *Controller) removeResourcesAndNamespace(ctx context.Context, namespaceR
 	return c.removeAccessDataAndNamespace(ctx, namespaceRegistration, namespace)
 }
 
-func (c *Controller) removeAccessDataAndNamespace(ctx context.Context, namespaceRegistration *lssv1alpha1.NamespaceRegistration,
+func (c *Controller) removeAccessDataAndNamespace(ctx context.Context, namespaceRegistration *lssv1alpha2.NamespaceRegistration,
 	namespace *corev1.Namespace) (reconcile.Result, error) {
 
 	logger, ctx := logging.FromContextOrNew(ctx, nil)
@@ -244,7 +244,7 @@ func (c *Controller) removeAccessDataAndNamespace(ctx context.Context, namespace
 		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseDeleting, "failed deleting namespace", err)
 	}
 
-	controllerutil.RemoveFinalizer(namespaceRegistration, lssv1alpha1.LandscaperServiceFinalizer)
+	controllerutil.RemoveFinalizer(namespaceRegistration, lssv1alpha2.LandscaperServiceFinalizer)
 	if err := c.Client().Update(ctx, namespaceRegistration); err != nil {
 		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseDeleting, "failed removing finalizer", err)
 	}
@@ -252,7 +252,7 @@ func (c *Controller) removeAccessDataAndNamespace(ctx context.Context, namespace
 	return reconcile.Result{}, nil
 }
 
-func (c *Controller) reconcile(ctx context.Context, namespaceRegistration *lssv1alpha1.NamespaceRegistration) (reconcile.Result, error) {
+func (c *Controller) reconcile(ctx context.Context, namespaceRegistration *lssv1alpha2.NamespaceRegistration) (reconcile.Result, error) {
 	logger, ctx := logging.FromContextOrNew(ctx, nil)
 
 	if namespaceRegistration.Status.Phase == PhaseCompleted {
@@ -296,7 +296,7 @@ func (c *Controller) reconcile(ctx context.Context, namespaceRegistration *lssv1
 	return reconcile.Result{}, nil
 }
 
-func (c *Controller) createRoleIfNotExistOrUpdate(ctx context.Context, namespaceRegistration *lssv1alpha1.NamespaceRegistration) error {
+func (c *Controller) createRoleIfNotExistOrUpdate(ctx context.Context, namespaceRegistration *lssv1alpha2.NamespaceRegistration) error {
 	logger, ctx := logging.FromContextOrNew(ctx, nil)
 
 	rules := []rbacv1.PolicyRule{
@@ -331,11 +331,11 @@ func (c *Controller) createRoleIfNotExistOrUpdate(ctx context.Context, namespace
 	return nil
 }
 
-func (c *Controller) createRoleBindingIfNotExistOrUpdate(ctx context.Context, namespaceRegistration *lssv1alpha1.NamespaceRegistration) error {
+func (c *Controller) createRoleBindingIfNotExistOrUpdate(ctx context.Context, namespaceRegistration *lssv1alpha2.NamespaceRegistration) error {
 	logger, ctx := logging.FromContextOrNew(ctx, nil)
 
 	// load subjectList from CR
-	subjectList := &lssv1alpha1.SubjectList{}
+	subjectList := &lssv1alpha2.SubjectList{}
 	if err := c.Client().Get(ctx, types.NamespacedName{Name: subjectsync.SUBJECT_LIST_NAME, Namespace: subjectsync.LS_USER_NAMESPACE}, subjectList); err != nil {
 		logger.Error(err, "failed loading subjectlist cr")
 		return fmt.Errorf("failed loading subjectlist %w", err)
@@ -369,7 +369,7 @@ func (c *Controller) createRoleBindingIfNotExistOrUpdate(ctx context.Context, na
 	return nil
 }
 
-func (c *Controller) triggerDeletionOfInstallations(ctx context.Context, namespaceRegistration *lssv1alpha1.NamespaceRegistration, installations []v1alpha1.Installation) error {
+func (c *Controller) triggerDeletionOfInstallations(ctx context.Context, namespaceRegistration *lssv1alpha2.NamespaceRegistration, installations []v1alpha1.Installation) error {
 	triggerDeletion, err := getTriggerDeletionFunction(ctx, namespaceRegistration)
 	if err != nil {
 		return err
@@ -389,7 +389,7 @@ func (c *Controller) triggerDeletionOfInstallations(ctx context.Context, namespa
 	return triggerErr
 }
 
-func (c *Controller) logErrorUpdateAndRetry(ctx context.Context, namespaceRegistration *lssv1alpha1.NamespaceRegistration,
+func (c *Controller) logErrorUpdateAndRetry(ctx context.Context, namespaceRegistration *lssv1alpha2.NamespaceRegistration,
 	phase, msg string, err error) (reconcile.Result, error) {
 	logger, ctx := logging.FromContextOrNew(ctx, nil)
 
@@ -408,19 +408,19 @@ func (c *Controller) logErrorUpdateAndRetry(ctx context.Context, namespaceRegist
 	return reconcile.Result{RequeueAfter: requeueAfterDuration}, nil
 }
 
-func (c *Controller) updateStatus(namespaceRegistration *lssv1alpha1.NamespaceRegistration, phase string,
-	lastError *lssv1alpha1.Error) {
+func (c *Controller) updateStatus(namespaceRegistration *lssv1alpha2.NamespaceRegistration, phase string,
+	lastError *lssv1alpha2.Error) {
 	namespaceRegistration.Status.Phase = phase
 	namespaceRegistration.Status.LastError = lastError
 }
 
-func (c *Controller) createError(phase, reason string, err error) *lssv1alpha1.Error {
+func (c *Controller) createError(phase, reason string, err error) *lssv1alpha2.Error {
 	msg := ""
 	if err != nil {
 		msg = err.Error()
 	}
 
-	return &lssv1alpha1.Error{
+	return &lssv1alpha2.Error{
 		Operation:          phase,
 		LastTransitionTime: metav1.Now(),
 		LastUpdateTime:     metav1.Now(),

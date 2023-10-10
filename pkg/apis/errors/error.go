@@ -10,13 +10,13 @@ import (
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
 )
 
 // Error is a wrapper around the landscaper service crd error
 // that implements the go error interface.
 type Error struct {
-	lssErr lssv1alpha1.Error
+	lssErr lssv1alpha2.Error
 	err    error
 }
 
@@ -29,7 +29,7 @@ func (e *Error) Error() string {
 }
 
 // LandscaperServiceError returns the wrapped landscaper error.
-func (e *Error) LandscaperServiceError() *lssv1alpha1.Error {
+func (e *Error) LandscaperServiceError() *lssv1alpha2.Error {
 	return e.lssErr.DeepCopy()
 }
 
@@ -41,7 +41,7 @@ func (e *Error) Unwrap() error {
 // NewError creates a new landscaper service internal error
 func NewError(operation, reason, message string) *Error {
 	return &Error{
-		lssErr: lssv1alpha1.Error{
+		lssErr: lssv1alpha2.Error{
 			Operation:          operation,
 			Reason:             reason,
 			Message:            message,
@@ -54,7 +54,7 @@ func NewError(operation, reason, message string) *Error {
 // NewWrappedError creates a new landscaper service internal error that wraps another error
 func NewWrappedError(err error, operation, reason, message string) *Error {
 	return &Error{
-		lssErr: lssv1alpha1.Error{
+		lssErr: lssv1alpha2.Error{
 			Operation:          operation,
 			Reason:             reason,
 			Message:            message,
@@ -84,7 +84,7 @@ func IsError(err error) (*Error, bool) {
 }
 
 // TryUpdateError tries to update the properties of the last error if the err is an internal landscaper services error.
-func TryUpdateError(lastErr *lssv1alpha1.Error, err error) *lssv1alpha1.Error {
+func TryUpdateError(lastErr *lssv1alpha2.Error, err error) *lssv1alpha2.Error {
 	if err == nil {
 		return nil
 	}
@@ -95,8 +95,8 @@ func TryUpdateError(lastErr *lssv1alpha1.Error, err error) *lssv1alpha1.Error {
 }
 
 // UpdatedError updates the properties of an error.
-func UpdatedError(lastError *lssv1alpha1.Error, operation, reason, message string) *lssv1alpha1.Error {
-	newError := &lssv1alpha1.Error{
+func UpdatedError(lastError *lssv1alpha2.Error, operation, reason, message string) *lssv1alpha2.Error {
+	newError := &lssv1alpha2.Error{
 		Operation:          operation,
 		Reason:             reason,
 		Message:            message,
@@ -111,6 +111,6 @@ func UpdatedError(lastError *lssv1alpha1.Error, operation, reason, message strin
 }
 
 // UpdatedError updates the properties of an existing error.
-func (e Error) UpdatedError(lastError *lssv1alpha1.Error) *lssv1alpha1.Error {
+func (e Error) UpdatedError(lastError *lssv1alpha2.Error) *lssv1alpha2.Error {
 	return UpdatedError(lastError, e.lssErr.Operation, e.lssErr.Reason, e.lssErr.Message)
 }

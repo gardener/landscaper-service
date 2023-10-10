@@ -12,7 +12,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
 	"github.com/gardener/landscaper-service/pkg/utils"
 )
 
@@ -30,7 +30,7 @@ var _ = Describe("Utils", func() {
 	})
 
 	It("should find a reference in a reference list", func() {
-		refList := []lssv1alpha1.ObjectReference{
+		refList := []lssv1alpha2.ObjectReference{
 			{
 				Name:      "one",
 				Namespace: "ns",
@@ -41,13 +41,13 @@ var _ = Describe("Utils", func() {
 			},
 		}
 
-		refContained := lssv1alpha1.ObjectReference{
+		refContained := lssv1alpha2.ObjectReference{
 			Name:      "two",
 			Namespace: "ns",
 		}
 		Expect(utils.ContainsReference(refList, &refContained)).To(BeTrue())
 
-		refNotContained := lssv1alpha1.ObjectReference{
+		refNotContained := lssv1alpha2.ObjectReference{
 			Name:      "two",
 			Namespace: "other",
 		}
@@ -55,7 +55,7 @@ var _ = Describe("Utils", func() {
 	})
 
 	It("should remove a reference from a reference list", func() {
-		refList := []lssv1alpha1.ObjectReference{
+		refList := []lssv1alpha2.ObjectReference{
 			{
 				Name:      "one",
 				Namespace: "ns",
@@ -66,7 +66,7 @@ var _ = Describe("Utils", func() {
 			},
 		}
 
-		toRemove := lssv1alpha1.ObjectReference{
+		toRemove := lssv1alpha2.ObjectReference{
 			Name:      "one",
 			Namespace: "ns",
 		}
@@ -78,7 +78,7 @@ var _ = Describe("Utils", func() {
 		newList = utils.RemoveReference(newList, &toRemove)
 		Expect(newList).To(HaveLen(1))
 
-		toRemove = lssv1alpha1.ObjectReference{
+		toRemove = lssv1alpha2.ObjectReference{
 			Name:      "two",
 			Namespace: "ns",
 		}
@@ -89,24 +89,24 @@ var _ = Describe("Utils", func() {
 
 	It("should detect operation annotations", func() {
 		secret := &corev1.Secret{}
-		Expect(utils.HasOperationAnnotation(secret, lssv1alpha1.LandscaperServiceOperationIgnore)).To(BeFalse())
+		Expect(utils.HasOperationAnnotation(secret, lssv1alpha2.LandscaperServiceOperationIgnore)).To(BeFalse())
 
 		secret.ObjectMeta.Annotations = map[string]string{
 			"someKey": "someVar",
 		}
-		Expect(utils.HasOperationAnnotation(secret, lssv1alpha1.LandscaperServiceOperationIgnore)).To(BeFalse())
+		Expect(utils.HasOperationAnnotation(secret, lssv1alpha2.LandscaperServiceOperationIgnore)).To(BeFalse())
 
-		secret.ObjectMeta.Annotations[lssv1alpha1.LandscaperServiceOperationAnnotation] = "invalid"
-		Expect(utils.HasOperationAnnotation(secret, lssv1alpha1.LandscaperServiceOperationIgnore)).To(BeFalse())
+		secret.ObjectMeta.Annotations[lssv1alpha2.LandscaperServiceOperationAnnotation] = "invalid"
+		Expect(utils.HasOperationAnnotation(secret, lssv1alpha2.LandscaperServiceOperationIgnore)).To(BeFalse())
 
-		secret.ObjectMeta.Annotations[lssv1alpha1.LandscaperServiceOperationAnnotation] = lssv1alpha1.LandscaperServiceOperationIgnore
-		Expect(utils.HasOperationAnnotation(secret, lssv1alpha1.LandscaperServiceOperationIgnore)).To(BeTrue())
+		secret.ObjectMeta.Annotations[lssv1alpha2.LandscaperServiceOperationAnnotation] = lssv1alpha2.LandscaperServiceOperationIgnore
+		Expect(utils.HasOperationAnnotation(secret, lssv1alpha2.LandscaperServiceOperationIgnore)).To(BeTrue())
 	})
 
 	It("should set operation annotation", func() {
 		secret := &corev1.Secret{}
-		utils.SetOperationAnnotation(secret, lssv1alpha1.LandscaperServiceOperationIgnore)
-		Expect(secret.ObjectMeta.Annotations).To(HaveKeyWithValue(lssv1alpha1.LandscaperServiceOperationAnnotation, lssv1alpha1.LandscaperServiceOperationIgnore))
+		utils.SetOperationAnnotation(secret, lssv1alpha2.LandscaperServiceOperationIgnore)
+		Expect(secret.ObjectMeta.Annotations).To(HaveKeyWithValue(lssv1alpha2.LandscaperServiceOperationAnnotation, lssv1alpha2.LandscaperServiceOperationIgnore))
 
 		secret = &corev1.Secret{
 			ObjectMeta: metav1.ObjectMeta{
@@ -115,8 +115,8 @@ var _ = Describe("Utils", func() {
 				},
 			},
 		}
-		utils.SetOperationAnnotation(secret, lssv1alpha1.LandscaperServiceOperationIgnore)
-		Expect(secret.ObjectMeta.Annotations).To(HaveKeyWithValue(lssv1alpha1.LandscaperServiceOperationAnnotation, lssv1alpha1.LandscaperServiceOperationIgnore))
+		utils.SetOperationAnnotation(secret, lssv1alpha2.LandscaperServiceOperationIgnore)
+		Expect(secret.ObjectMeta.Annotations).To(HaveKeyWithValue(lssv1alpha2.LandscaperServiceOperationAnnotation, lssv1alpha2.LandscaperServiceOperationIgnore))
 		Expect(secret.ObjectMeta.Annotations).To(HaveKeyWithValue("someKey", "someVar"))
 	})
 
@@ -125,12 +125,12 @@ var _ = Describe("Utils", func() {
 			ObjectMeta: metav1.ObjectMeta{
 				Annotations: map[string]string{
 					"someKey": "someVar",
-					lssv1alpha1.LandscaperServiceOperationAnnotation: lssv1alpha1.LandscaperServiceOperationIgnore,
+					lssv1alpha2.LandscaperServiceOperationAnnotation: lssv1alpha2.LandscaperServiceOperationIgnore,
 				},
 			},
 		}
 		utils.RemoveOperationAnnotation(secret)
-		Expect(secret.ObjectMeta.Annotations).ToNot(HaveKeyWithValue(lssv1alpha1.LandscaperServiceOperationAnnotation, lssv1alpha1.LandscaperServiceOperationIgnore))
+		Expect(secret.ObjectMeta.Annotations).ToNot(HaveKeyWithValue(lssv1alpha2.LandscaperServiceOperationAnnotation, lssv1alpha2.LandscaperServiceOperationIgnore))
 		Expect(secret.ObjectMeta.Annotations).To(HaveKeyWithValue("someKey", "someVar"))
 	})
 })

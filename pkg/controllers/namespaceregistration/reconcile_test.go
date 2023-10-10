@@ -21,7 +21,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
-	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
 	"github.com/gardener/landscaper-service/pkg/controllers/namespaceregistration"
 	"github.com/gardener/landscaper-service/pkg/controllers/subjectsync"
 	"github.com/gardener/landscaper-service/pkg/operation"
@@ -63,7 +63,7 @@ var _ = Describe("Reconcile", func() {
 		// check finalizer and phase
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(namespaceRegistration), namespaceRegistration)).To(Succeed())
 		Expect(len(namespaceRegistration.Finalizers)).To(Equal(1))
-		Expect(namespaceRegistration.Finalizers[0]).To(Equal(lssv1alpha1.LandscaperServiceFinalizer))
+		Expect(namespaceRegistration.Finalizers[0]).To(Equal(lssv1alpha2.LandscaperServiceFinalizer))
 		Expect(namespaceRegistration.Status.Phase).To(Equal("Completed"))
 
 		// check for namespace being created

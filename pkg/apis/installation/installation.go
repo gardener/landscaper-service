@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"strings"
 
-	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
 
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 
@@ -113,10 +113,10 @@ type Landscaper struct {
 	Verbosity string `json:"verbosity,omitempty"`
 	// Replicas defines the number of replicas for the landscaper controller deployment.
 	Replicas           int                             `json:"replicas,omitempty"`
-	Controllers        *lssv1alpha1.Controllers        `json:"controllers,omitempty"`
-	DeployItemTimeouts *lssv1alpha1.DeployItemTimeouts `json:"deployItemTimeouts,omitempty"`
+	Controllers        *lssv1alpha2.Controllers        `json:"controllers,omitempty"`
+	DeployItemTimeouts *lssv1alpha2.DeployItemTimeouts `json:"deployItemTimeouts,omitempty"`
 	// K8SClientSettings defines k8s client settings like burst and qps.
-	K8SClientSettings *lssv1alpha1.K8SClientSettings `json:"k8sClientSettings,omitempty"`
+	K8SClientSettings *lssv1alpha2.K8SClientSettings `json:"k8sClientSettings,omitempty"`
 }
 
 // Webhooks specifies the landscaper webhooks server configuration.
@@ -133,13 +133,13 @@ type LandscaperConfig struct {
 	Landscaper Landscaper `json:"landscaper"`
 	// Webhooks specifies the landscaper webhooks server configuration.
 	Webhooks      Webhooks               `json:"webhooksServer"`
-	Resources     *lssv1alpha1.Resources `json:"resources,omitempty"`
-	ResourcesMain *lssv1alpha1.Resources `json:"resourcesMain,omitempty"`
-	HPAMain       *lssv1alpha1.HPA       `json:"hpaMain,omitempty"`
+	Resources     *lssv1alpha2.Resources `json:"resources,omitempty"`
+	ResourcesMain *lssv1alpha2.Resources `json:"resourcesMain,omitempty"`
+	HPAMain       *lssv1alpha2.HPA       `json:"hpaMain,omitempty"`
 	// Deployers specifies the list of landscaper standard deployers that are getting installed.
 	Deployers []string `json:"deployers"`
 	// DeployersConfig specifies the configuration for the landscaper standard deployers.
-	DeployersConfig map[string]*lssv1alpha1.DeployerConfig `json:"deployersConfig,omitempty"`
+	DeployersConfig map[string]*lssv1alpha2.DeployerConfig `json:"deployersConfig,omitempty"`
 }
 
 // NewLandscaperConfig creates a new landscaper configuration initialized with default values.
@@ -216,7 +216,7 @@ func toAnyJSON(obj any) (*lsv1alpha1.AnyJSON, error) {
 
 // GetInstallationExportDataRef returns the export data ref that is dynamically created based on the instance name.
 // The data ref string is compatible to be used as a kubernetes object name.
-func GetInstallationExportDataRef(instance *lssv1alpha1.Instance, exportName string) string {
+func GetInstallationExportDataRef(instance *lssv1alpha2.Instance, exportName string) string {
 	dataRef := fmt.Sprintf("%s-%s", strings.ToLower(exportName), instance.GetName())
 	return dataRef
 }

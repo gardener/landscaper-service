@@ -14,16 +14,16 @@ import (
 
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 
-	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
 	"github.com/gardener/landscaper-service/pkg/webhook"
 	"github.com/gardener/landscaper-service/test/utils/envtest"
 )
 
-func createInstance(name, namespace string) *lssv1alpha1.Instance {
-	instance := &lssv1alpha1.Instance{
+func createInstance(name, namespace string) *lssv1alpha2.Instance {
+	instance := &lssv1alpha2.Instance{
 		TypeMeta: metav1.TypeMeta{
-			Kind:       lssv1alpha1.InstanceDefinition.Names.Kind,
-			APIVersion: lssv1alpha1.SchemeGroupVersion.String(),
+			Kind:       lssv1alpha2.InstanceDefinition.Names.Kind,
+			APIVersion: lssv1alpha2.SchemeGroupVersion.String(),
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      name,
@@ -50,14 +50,14 @@ var _ = Describe("LandscaperDeployment", func() {
 	It("should allow valid resource", func() {
 		testObj := createInstance("test", "lss-system")
 
-		testObj.Spec = lssv1alpha1.InstanceSpec{
+		testObj.Spec = lssv1alpha2.InstanceSpec{
 			TenantId: "test0001",
 			ID:       "inst0001",
-			ServiceTargetConfigRef: lssv1alpha1.ObjectReference{
+			ServiceTargetConfigRef: lssv1alpha2.ObjectReference{
 				Name:      "test",
 				Namespace: "lss-system",
 			},
-			LandscaperConfiguration: lssv1alpha1.LandscaperConfiguration{
+			LandscaperConfiguration: lssv1alpha2.LandscaperConfiguration{
 				Deployers: []string{
 					"helm",
 				},
@@ -73,14 +73,14 @@ var _ = Describe("LandscaperDeployment", func() {
 	It("should deny resource with invalid tenant id", func() {
 		testObj := createInstance("test", "lss-system")
 
-		testObj.Spec = lssv1alpha1.InstanceSpec{
+		testObj.Spec = lssv1alpha2.InstanceSpec{
 			TenantId: "test00001",
 			ID:       "inst0001",
-			ServiceTargetConfigRef: lssv1alpha1.ObjectReference{
+			ServiceTargetConfigRef: lssv1alpha2.ObjectReference{
 				Name:      "test",
 				Namespace: "lss-system",
 			},
-			LandscaperConfiguration: lssv1alpha1.LandscaperConfiguration{
+			LandscaperConfiguration: lssv1alpha2.LandscaperConfiguration{
 				Deployers: []string{
 					"helm",
 				},
@@ -101,14 +101,14 @@ var _ = Describe("LandscaperDeployment", func() {
 	It("should deny resource with invalid instance id", func() {
 		testObj := createInstance("test", "lss-system")
 
-		testObj.Spec = lssv1alpha1.InstanceSpec{
+		testObj.Spec = lssv1alpha2.InstanceSpec{
 			TenantId: "test0001",
 			ID:       "inst00001",
-			ServiceTargetConfigRef: lssv1alpha1.ObjectReference{
+			ServiceTargetConfigRef: lssv1alpha2.ObjectReference{
 				Name:      "test",
 				Namespace: "lss-system",
 			},
-			LandscaperConfiguration: lssv1alpha1.LandscaperConfiguration{
+			LandscaperConfiguration: lssv1alpha2.LandscaperConfiguration{
 				Deployers: []string{
 					"helm",
 				},
@@ -129,14 +129,14 @@ var _ = Describe("LandscaperDeployment", func() {
 	It("should deny resource with invalid service target config ref", func() {
 		testObj := createInstance("test", "lss-system")
 
-		testObj.Spec = lssv1alpha1.InstanceSpec{
+		testObj.Spec = lssv1alpha2.InstanceSpec{
 			TenantId: "test0001",
 			ID:       "inst0001",
-			ServiceTargetConfigRef: lssv1alpha1.ObjectReference{
+			ServiceTargetConfigRef: lssv1alpha2.ObjectReference{
 				Name:      "",
 				Namespace: "",
 			},
-			LandscaperConfiguration: lssv1alpha1.LandscaperConfiguration{
+			LandscaperConfiguration: lssv1alpha2.LandscaperConfiguration{
 				Deployers: []string{
 					"helm",
 				},
@@ -157,14 +157,14 @@ var _ = Describe("LandscaperDeployment", func() {
 	It("should allow a valid update", func() {
 		testObj := createInstance("test", "lss-system")
 
-		testObj.Spec = lssv1alpha1.InstanceSpec{
+		testObj.Spec = lssv1alpha2.InstanceSpec{
 			TenantId: "test0001",
 			ID:       "inst0001",
-			ServiceTargetConfigRef: lssv1alpha1.ObjectReference{
+			ServiceTargetConfigRef: lssv1alpha2.ObjectReference{
 				Name:      "test",
 				Namespace: "lss-system",
 			},
-			LandscaperConfiguration: lssv1alpha1.LandscaperConfiguration{
+			LandscaperConfiguration: lssv1alpha2.LandscaperConfiguration{
 				Deployers: []string{
 					"helm",
 				},
@@ -190,14 +190,14 @@ var _ = Describe("LandscaperDeployment", func() {
 	It("should deny an update of the tenant id", func() {
 		testObj := createInstance("test", "lss-system")
 
-		testObj.Spec = lssv1alpha1.InstanceSpec{
+		testObj.Spec = lssv1alpha2.InstanceSpec{
 			TenantId: "test0001",
 			ID:       "inst0001",
-			ServiceTargetConfigRef: lssv1alpha1.ObjectReference{
+			ServiceTargetConfigRef: lssv1alpha2.ObjectReference{
 				Name:      "test",
 				Namespace: "lss-system",
 			},
-			LandscaperConfiguration: lssv1alpha1.LandscaperConfiguration{
+			LandscaperConfiguration: lssv1alpha2.LandscaperConfiguration{
 				Deployers: []string{
 					"helm",
 				},
@@ -221,14 +221,14 @@ var _ = Describe("LandscaperDeployment", func() {
 	It("should deny an update of the instance id", func() {
 		testObj := createInstance("test", "lss-system")
 
-		testObj.Spec = lssv1alpha1.InstanceSpec{
+		testObj.Spec = lssv1alpha2.InstanceSpec{
 			TenantId: "test0001",
 			ID:       "inst0001",
-			ServiceTargetConfigRef: lssv1alpha1.ObjectReference{
+			ServiceTargetConfigRef: lssv1alpha2.ObjectReference{
 				Name:      "test",
 				Namespace: "lss-system",
 			},
-			LandscaperConfiguration: lssv1alpha1.LandscaperConfiguration{
+			LandscaperConfiguration: lssv1alpha2.LandscaperConfiguration{
 				Deployers: []string{
 					"helm",
 				},
@@ -252,14 +252,14 @@ var _ = Describe("LandscaperDeployment", func() {
 	It("should deny an update of the service target config ref", func() {
 		testObj := createInstance("test", "lss-system")
 
-		testObj.Spec = lssv1alpha1.InstanceSpec{
+		testObj.Spec = lssv1alpha2.InstanceSpec{
 			TenantId: "test0001",
 			ID:       "inst0001",
-			ServiceTargetConfigRef: lssv1alpha1.ObjectReference{
+			ServiceTargetConfigRef: lssv1alpha2.ObjectReference{
 				Name:      "test",
 				Namespace: "lss-system",
 			},
-			LandscaperConfiguration: lssv1alpha1.LandscaperConfiguration{
+			LandscaperConfiguration: lssv1alpha2.LandscaperConfiguration{
 				Deployers: []string{
 					"helm",
 				},
@@ -272,50 +272,10 @@ var _ = Describe("LandscaperDeployment", func() {
 		Expect(response.Allowed).To(BeTrue())
 
 		oldObject := testObj.DeepCopyObject()
-		testObj.Spec.ServiceTargetConfigRef = lssv1alpha1.ObjectReference{
+		testObj.Spec.ServiceTargetConfigRef = lssv1alpha2.ObjectReference{
 			Name:      "test1",
 			Namespace: "lss-system",
 		}
-
-		request = CreateAdmissionRequestUpdate(testObj, oldObject)
-		response = validator.Handle(ctx, request)
-		Expect(response).ToNot(BeNil())
-		Expect(response.Allowed).To(BeFalse())
-	})
-
-	It("should validate high availability config", func() {
-		testObj := createInstance("test", "lss-system")
-		testObj.Spec = lssv1alpha1.InstanceSpec{
-			TenantId: "test0001",
-			ID:       "inst0001",
-			ServiceTargetConfigRef: lssv1alpha1.ObjectReference{
-				Name:      "test",
-				Namespace: "lss-system",
-			},
-			LandscaperConfiguration: lssv1alpha1.LandscaperConfiguration{
-				Deployers: []string{
-					"helm",
-				},
-			},
-		}
-
-		request := CreateAdmissionRequest(testObj)
-		response := validator.Handle(ctx, request)
-		Expect(response).ToNot(BeNil())
-		Expect(response.Allowed).To(BeTrue())
-
-		oldObject := testObj.DeepCopyObject()
-		testObj.Spec.HighAvailabilityConfig = &lssv1alpha1.HighAvailabilityConfig{
-			ControlPlaneFailureTolerance: "node",
-		}
-
-		request = CreateAdmissionRequestUpdate(testObj, oldObject)
-		response = validator.Handle(ctx, request)
-		Expect(response).ToNot(BeNil())
-		Expect(response.Allowed).To(BeTrue())
-
-		oldObject = testObj.DeepCopyObject()
-		testObj.Spec.HighAvailabilityConfig.ControlPlaneFailureTolerance = "zone"
 
 		request = CreateAdmissionRequestUpdate(testObj, oldObject)
 		response = validator.Handle(ctx, request)

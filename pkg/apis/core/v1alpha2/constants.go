@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package v1alpha1
+package v1alpha2
 
 const (
 	// LandscaperServiceFinalizer is the finalizer used for landscaper-service objects.

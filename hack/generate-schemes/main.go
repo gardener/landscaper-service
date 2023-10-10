@@ -13,7 +13,7 @@ import (
 	"github.com/gardener/landscaper/apis/hack/generate-schemes/app"
 	lsschema "github.com/gardener/landscaper/apis/schema"
 
-	corelsv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	corelsv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
 
 	"github.com/gardener/landscaper-service/pkg/apis/openapi"
 )
@@ -27,7 +27,7 @@ var Exports = []string{
 }
 
 var CRDs = []lsschema.CustomResourceDefinitions{
-	corelsv1alpha1.ResourceDefinition,
+	corelsv1alpha2.ResourceDefinition,
 }
 
 var (

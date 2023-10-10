@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package v1alpha1
+package v1alpha2
 
 import (
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
@@ -51,17 +51,11 @@ type InstanceSpec struct {
 	// ServiceTargetConfigRef specifies the target cluster for which the installation is created.
 	ServiceTargetConfigRef ObjectReference `json:"serviceTargetConfigRef"`
 
-	// OIDCConfig describes the OIDC config of the customer resource cluster (shoot cluster)
-	// +optional
-	OIDCConfig *OIDCConfig `json:"oidcConfig,omitempty"`
-
 	// AutomaticReconcile specifies the configuration on when this instance is being automatically reconciled.
 	// +optional
 	AutomaticReconcile *AutomaticReconcile `json:"automaticReconcile,omitempty"`
 
-	// HighAvailabilityConfig specifies the HA configuration of the resource cluster (shoot cluster)
-	// +optional
-	HighAvailabilityConfig *HighAvailabilityConfig `json:"highAvailabilityConfig"`
+	DataPlane DataPlane `json:"dataPlane"`
 }
 
 // AutomaticReconcile defines the automatic reconcile configuration.

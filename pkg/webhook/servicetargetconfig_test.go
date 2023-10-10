@@ -15,16 +15,16 @@ import (
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 
 	lsscore "github.com/gardener/landscaper-service/pkg/apis/core"
-	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
 	"github.com/gardener/landscaper-service/pkg/webhook"
 	"github.com/gardener/landscaper-service/test/utils/envtest"
 )
 
-func createServiceTargetConfig(name, namespace string) *lssv1alpha1.ServiceTargetConfig {
-	config := &lssv1alpha1.ServiceTargetConfig{
+func createServiceTargetConfig(name, namespace string) *lssv1alpha2.ServiceTargetConfig {
+	config := &lssv1alpha2.ServiceTargetConfig{
 		TypeMeta: metav1.TypeMeta{
-			Kind:       lssv1alpha1.ServiceTargetConfigDefinition.Names.Kind,
-			APIVersion: lssv1alpha1.SchemeGroupVersion.String(),
+			Kind:       lssv1alpha2.ServiceTargetConfigDefinition.Names.Kind,
+			APIVersion: lssv1alpha2.SchemeGroupVersion.String(),
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      name,
@@ -54,10 +54,10 @@ var _ = Describe("ServiceTargetConfig", func() {
 		testObj.ObjectMeta.Labels = map[string]string{
 			lsscore.ServiceTargetConfigVisibleLabelName: "true",
 		}
-		testObj.Spec = lssv1alpha1.ServiceTargetConfigSpec{
+		testObj.Spec = lssv1alpha2.ServiceTargetConfigSpec{
 			Priority: 10,
-			SecretRef: lssv1alpha1.SecretReference{
-				ObjectReference: lssv1alpha1.ObjectReference{
+			SecretRef: lssv1alpha2.SecretReference{
+				ObjectReference: lssv1alpha2.ObjectReference{
 					Name:      "target",
 					Namespace: "lss-system",
 				},
@@ -75,10 +75,10 @@ var _ = Describe("ServiceTargetConfig", func() {
 	It("should deny resource with missing labels", func() {
 		testObj := createServiceTargetConfig("test", "lss-system")
 
-		testObj.Spec = lssv1alpha1.ServiceTargetConfigSpec{
+		testObj.Spec = lssv1alpha2.ServiceTargetConfigSpec{
 			Priority: 10,
-			SecretRef: lssv1alpha1.SecretReference{
-				ObjectReference: lssv1alpha1.ObjectReference{
+			SecretRef: lssv1alpha2.SecretReference{
+				ObjectReference: lssv1alpha2.ObjectReference{
 					Name:      "target",
 					Namespace: "lss-system",
 				},
@@ -103,10 +103,10 @@ var _ = Describe("ServiceTargetConfig", func() {
 		testObj.ObjectMeta.Labels = map[string]string{
 			lsscore.ServiceTargetConfigVisibleLabelName: "abc",
 		}
-		testObj.Spec = lssv1alpha1.ServiceTargetConfigSpec{
+		testObj.Spec = lssv1alpha2.ServiceTargetConfigSpec{
 			Priority: 10,
-			SecretRef: lssv1alpha1.SecretReference{
-				ObjectReference: lssv1alpha1.ObjectReference{
+			SecretRef: lssv1alpha2.SecretReference{
+				ObjectReference: lssv1alpha2.ObjectReference{
 					Name:      "target",
 					Namespace: "lss-system",
 				},
@@ -131,10 +131,10 @@ var _ = Describe("ServiceTargetConfig", func() {
 		testObj.ObjectMeta.Labels = map[string]string{
 			lsscore.ServiceTargetConfigVisibleLabelName: "true",
 		}
-		testObj.Spec = lssv1alpha1.ServiceTargetConfigSpec{
+		testObj.Spec = lssv1alpha2.ServiceTargetConfigSpec{
 			Priority: 10,
-			SecretRef: lssv1alpha1.SecretReference{
-				ObjectReference: lssv1alpha1.ObjectReference{
+			SecretRef: lssv1alpha2.SecretReference{
+				ObjectReference: lssv1alpha2.ObjectReference{
 					Name:      "",
 					Namespace: "",
 				},
@@ -161,10 +161,10 @@ var _ = Describe("ServiceTargetConfig", func() {
 		testObj.ObjectMeta.Labels = map[string]string{
 			lsscore.ServiceTargetConfigVisibleLabelName: "true",
 		}
-		testObj.Spec = lssv1alpha1.ServiceTargetConfigSpec{
+		testObj.Spec = lssv1alpha2.ServiceTargetConfigSpec{
 			Priority: 10,
-			SecretRef: lssv1alpha1.SecretReference{
-				ObjectReference: lssv1alpha1.ObjectReference{
+			SecretRef: lssv1alpha2.SecretReference{
+				ObjectReference: lssv1alpha2.ObjectReference{
 					Name:      "target",
 					Namespace: "lss-system",
 				},

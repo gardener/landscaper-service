@@ -21,7 +21,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	coreconfig "github.com/gardener/landscaper-service/pkg/apis/config"
-	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
 	"github.com/gardener/landscaper-service/pkg/operation"
 )
 
@@ -29,7 +29,7 @@ type Controller struct {
 	operation.TargetShootSidecarOperation
 	log logging.Logger
 
-	ReconcileFunc func(ctx context.Context, subjectList *lssv1alpha1.SubjectList) (reconcile.Result, error)
+	ReconcileFunc func(ctx context.Context, subjectList *lssv1alpha2.SubjectList) (reconcile.Result, error)
 }
 
 func NewController(logger logging.Logger, c client.Client, scheme *runtime.Scheme, config *coreconfig.TargetShootSidecarConfiguration) (reconcile.Reconciler, error) {
@@ -56,7 +56,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 	logger.Info("start reconcile subjectList")
 
-	subjectList := &lssv1alpha1.SubjectList{}
+	subjectList := &lssv1alpha2.SubjectList{}
 	if err := c.Client().Get(ctx, req.NamespacedName, subjectList); err != nil {
 		logger.Error(err, "failed loading subjectlist cr")
 		if apierrors.IsNotFound(err) {
@@ -66,8 +66,8 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	}
 
 	// set finalizer
-	if subjectList.DeletionTimestamp.IsZero() && !kutils.HasFinalizer(subjectList, lssv1alpha1.LandscaperServiceFinalizer) {
-		controllerutil.AddFinalizer(subjectList, lssv1alpha1.LandscaperServiceFinalizer)
+	if subjectList.DeletionTimestamp.IsZero() && !kutils.HasFinalizer(subjectList, lssv1alpha2.LandscaperServiceFinalizer) {
+		controllerutil.AddFinalizer(subjectList, lssv1alpha2.LandscaperServiceFinalizer)
 		if err := c.Client().Update(ctx, subjectList); err != nil {
 			return reconcile.Result{}, err
 		}
@@ -82,7 +82,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	return c.reconcile(ctx, subjectList)
 }
 
-func (c *Controller) reconcile(ctx context.Context, subjectList *lssv1alpha1.SubjectList) (reconcile.Result, error) {
+func (c *Controller) reconcile(ctx context.Context, subjectList *lssv1alpha2.SubjectList) (reconcile.Result, error) {
 	logger, ctx := logging.FromContextOrNew(ctx, nil)
 
 	// convert subjects of the SubjectList custom resource into rbac subjects

@@ -18,7 +18,7 @@ import (
 	"github.com/gardener/landscaper-service/pkg/operation"
 	"github.com/gardener/landscaper-service/test/utils/envtest"
 
-	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
 
 	avmonitorregistration "github.com/gardener/landscaper-service/pkg/controllers/avmonitorregistration"
 	testutils "github.com/gardener/landscaper-service/test/utils"
@@ -54,7 +54,7 @@ var _ = Describe("Reconcile", func() {
 		instance := state.GetInstance("test")
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
 
-		availabilitycollection := &lssv1alpha1.AvailabilityCollection{}
+		availabilitycollection := &lssv1alpha2.AvailabilityCollection{}
 		Expect(testenv.Client.Get(ctx, types.NamespacedName{Namespace: op.Config().AvailabilityMonitoring.AvailabilityCollectionNamespace, Name: op.Config().AvailabilityMonitoring.AvailabilityCollectionName}, availabilitycollection)).To(Succeed())
 		Expect(len(availabilitycollection.Spec.InstanceRefs)).To(Equal(0))
 	})
@@ -68,7 +68,7 @@ var _ = Describe("Reconcile", func() {
 		instance := state.GetInstance("test")
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
 
-		availabilitycollection := &lssv1alpha1.AvailabilityCollection{}
+		availabilitycollection := &lssv1alpha2.AvailabilityCollection{}
 		Expect(testenv.Client.Get(ctx, types.NamespacedName{Namespace: op.Config().AvailabilityMonitoring.AvailabilityCollectionNamespace, Name: op.Config().AvailabilityMonitoring.AvailabilityCollectionName}, availabilitycollection)).To(Succeed())
 		Expect(len(availabilitycollection.Spec.InstanceRefs)).To(Equal(1))
 	})
@@ -81,7 +81,7 @@ var _ = Describe("Reconcile", func() {
 		instance := state.GetInstance("test")
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
 
-		availabilitycollection := &lssv1alpha1.AvailabilityCollection{}
+		availabilitycollection := &lssv1alpha2.AvailabilityCollection{}
 		Expect(testenv.Client.Get(ctx, types.NamespacedName{Namespace: op.Config().AvailabilityMonitoring.AvailabilityCollectionNamespace, Name: op.Config().AvailabilityMonitoring.AvailabilityCollectionName}, availabilitycollection)).To(Succeed())
 		Expect(len(availabilitycollection.Spec.InstanceRefs)).To(Equal(1))
 

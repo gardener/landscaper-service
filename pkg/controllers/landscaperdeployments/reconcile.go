@@ -21,17 +21,17 @@ import (
 	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
 
 	lsscore "github.com/gardener/landscaper-service/pkg/apis/core"
-	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
 	lsserrors "github.com/gardener/landscaper-service/pkg/apis/errors"
 	"github.com/gardener/landscaper-service/pkg/utils"
 )
 
 // reconcile reconciles a landscaper deployment
-func (c *Controller) reconcile(ctx context.Context, deployment *lssv1alpha1.LandscaperDeployment) error {
+func (c *Controller) reconcile(ctx context.Context, deployment *lssv1alpha2.LandscaperDeployment) error {
 	currOp := "Reconcile"
 
 	// reconcile instance
-	instance := &lssv1alpha1.Instance{}
+	instance := &lssv1alpha2.Instance{}
 	instance.GenerateName = fmt.Sprintf("%s-", deployment.GetName())
 	instance.Namespace = deployment.GetNamespace()
 	if deployment.Status.InstanceRef != nil && !deployment.Status.InstanceRef.IsEmpty() {
@@ -49,7 +49,7 @@ func (c *Controller) reconcile(ctx context.Context, deployment *lssv1alpha1.Land
 
 	// set the instance reference for the deployment if not already set
 	if deployment.Status.InstanceRef == nil || !deployment.Status.InstanceRef.IsObject(instance) {
-		deployment.Status.InstanceRef = &lssv1alpha1.ObjectReference{
+		deployment.Status.InstanceRef = &lssv1alpha2.ObjectReference{
 			Name:      instance.GetName(),
 			Namespace: instance.GetNamespace(),
 		}
@@ -60,12 +60,12 @@ func (c *Controller) reconcile(ctx context.Context, deployment *lssv1alpha1.Land
 	}
 
 	// if not already added, add the instance reference to the service target configuration
-	serviceTargetConf := &lssv1alpha1.ServiceTargetConfig{}
+	serviceTargetConf := &lssv1alpha2.ServiceTargetConfig{}
 	if err := c.Client().Get(ctx, instance.Spec.ServiceTargetConfigRef.NamespacedName(), serviceTargetConf); err != nil {
 		return lsserrors.NewWrappedError(err, currOp, "GetServiceTargetConfig", err.Error())
 	}
 
-	instanceRef := &lssv1alpha1.ObjectReference{
+	instanceRef := &lssv1alpha2.ObjectReference{
 		Name:      instance.GetName(),
 		Namespace: instance.GetNamespace(),
 	}
@@ -81,7 +81,7 @@ func (c *Controller) reconcile(ctx context.Context, deployment *lssv1alpha1.Land
 }
 
 // mutateInstance creates/updates the instance for a landscaper deployment
-func (c *Controller) mutateInstance(ctx context.Context, deployment *lssv1alpha1.LandscaperDeployment, instance *lssv1alpha1.Instance) error {
+func (c *Controller) mutateInstance(ctx context.Context, deployment *lssv1alpha2.LandscaperDeployment, instance *lssv1alpha2.Instance) error {
 	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(deployment).String()},
 		lc.KeyMethod, "mutateInstance")
 
@@ -95,10 +95,10 @@ func (c *Controller) mutateInstance(ctx context.Context, deployment *lssv1alpha1
 		return fmt.Errorf("unable to set controller reference for instance: %w", err)
 	}
 
-	if utils.HasOperationAnnotation(deployment, lssv1alpha1.LandscaperServiceOperationIgnore) {
-		utils.SetOperationAnnotation(instance, lssv1alpha1.LandscaperServiceOperationIgnore)
+	if utils.HasOperationAnnotation(deployment, lssv1alpha2.LandscaperServiceOperationIgnore) {
+		utils.SetOperationAnnotation(instance, lssv1alpha2.LandscaperServiceOperationIgnore)
 	} else {
-		if utils.HasOperationAnnotation(instance, lssv1alpha1.LandscaperServiceOperationIgnore) {
+		if utils.HasOperationAnnotation(instance, lssv1alpha2.LandscaperServiceOperationIgnore) {
 			utils.RemoveOperationAnnotation(instance)
 		}
 	}
@@ -115,7 +115,7 @@ func (c *Controller) mutateInstance(ctx context.Context, deployment *lssv1alpha1
 	}
 
 	if len(instance.Spec.ID) == 0 {
-		instanceList := &lssv1alpha1.InstanceList{}
+		instanceList := &lssv1alpha2.InstanceList{}
 		if err := c.Client().List(ctx, instanceList, &client.ListOptions{Namespace: deployment.Namespace}); err != nil {
 			return fmt.Errorf("unable to list instances in namespace %s: %w", deployment.Namespace, err)
 		}
@@ -133,8 +133,7 @@ func (c *Controller) mutateInstance(ctx context.Context, deployment *lssv1alpha1
 
 	instance.Spec.TenantId = deployment.Spec.TenantId
 	instance.Spec.LandscaperConfiguration = deployment.Spec.LandscaperConfiguration
-	instance.Spec.OIDCConfig = deployment.Spec.OIDCConfig
-	instance.Spec.HighAvailabilityConfig = deployment.Spec.HighAvailabilityConfig
+	instance.Spec.DataPlane = deployment.Spec.DataPlane
 
 	c.Operation.Scheme().Default(instance)
 
@@ -142,8 +141,8 @@ func (c *Controller) mutateInstance(ctx context.Context, deployment *lssv1alpha1
 }
 
 // findServiceTargetConfig tries to find a service target configuration that applies to the deployment requirements and has capacity available.
-func (c *Controller) findServiceTargetConfig(ctx context.Context) (*lssv1alpha1.ServiceTargetConfig, error) {
-	serviceTargetConfigs := &lssv1alpha1.ServiceTargetConfigList{}
+func (c *Controller) findServiceTargetConfig(ctx context.Context) (*lssv1alpha2.ServiceTargetConfig, error) {
+	serviceTargetConfigs := &lssv1alpha2.ServiceTargetConfigList{}
 	selectorBuilder := strings.Builder{}
 	selectorBuilder.WriteString(fmt.Sprintf("%s=true", lsscore.ServiceTargetConfigVisibleLabelName))
 
@@ -167,7 +166,7 @@ func (c *Controller) findServiceTargetConfig(ctx context.Context) (*lssv1alpha1.
 }
 
 // SortServiceTargetConfigs sorts all configs by priority and usage.
-func SortServiceTargetConfigs(configs *lssv1alpha1.ServiceTargetConfigList) {
+func SortServiceTargetConfigs(configs *lssv1alpha2.ServiceTargetConfigList) {
 	if len(configs.Items) == 0 {
 		return
 	}

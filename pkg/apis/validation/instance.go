@@ -48,10 +48,6 @@ func validateInstanceSpec(spec *lsscore.InstanceSpec, fldPath *field.Path) field
 		allErrs = append(allErrs, field.Invalid(fldPath.Child("id"), spec.TenantId, fmt.Sprintf("must be exactly of size %d", InstanceIdLength)))
 	}
 
-	if spec.HighAvailabilityConfig != nil {
-		allErrs = append(allErrs, ValidateHighAvailabilityConfig(spec.HighAvailabilityConfig, fldPath.Child("highAvailabilityConfig"))...)
-	}
-
 	return allErrs
 }
 
@@ -68,12 +64,6 @@ func validateInstanceSpecUpdate(spec *lsscore.InstanceSpec, oldSpec *lsscore.Ins
 
 	if !spec.ServiceTargetConfigRef.Equals(&oldSpec.ServiceTargetConfigRef) {
 		allErrs = append(allErrs, field.Forbidden(fldPath.Child("serviceTargetConfigRef"), "is immutable"))
-	}
-
-	if spec.HighAvailabilityConfig != nil && oldSpec.HighAvailabilityConfig != nil {
-		if spec.HighAvailabilityConfig.ControlPlaneFailureTolerance != oldSpec.HighAvailabilityConfig.ControlPlaneFailureTolerance {
-			allErrs = append(allErrs, field.Forbidden(fldPath.Child("highAvailabilityConfig").Child("controlPlaneFailureTolerance"), "is immutable"))
-		}
 	}
 
 	return allErrs

@@ -22,51 +22,50 @@ import (
 
 func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenAPIDefinition {
 	return map[string]common.OpenAPIDefinition{
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AutomaticReconcile":           schema_pkg_apis_core_v1alpha1_AutomaticReconcile(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AvailabilityCollection":       schema_pkg_apis_core_v1alpha1_AvailabilityCollection(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AvailabilityCollectionList":   schema_pkg_apis_core_v1alpha1_AvailabilityCollectionList(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AvailabilityCollectionSpec":   schema_pkg_apis_core_v1alpha1_AvailabilityCollectionSpec(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AvailabilityCollectionStatus": schema_pkg_apis_core_v1alpha1_AvailabilityCollectionStatus(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AvailabilityInstance":         schema_pkg_apis_core_v1alpha1_AvailabilityInstance(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Controller":                   schema_pkg_apis_core_v1alpha1_Controller(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Controllers":                  schema_pkg_apis_core_v1alpha1_Controllers(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.DeployItemTimeouts":           schema_pkg_apis_core_v1alpha1_DeployItemTimeouts(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Deployer":                     schema_pkg_apis_core_v1alpha1_Deployer(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.DeployerConfig":               schema_pkg_apis_core_v1alpha1_DeployerConfig(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Error":                        schema_pkg_apis_core_v1alpha1_Error(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.HPA":                          schema_pkg_apis_core_v1alpha1_HPA(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.HighAvailabilityConfig":       schema_pkg_apis_core_v1alpha1_HighAvailabilityConfig(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Instance":                     schema_pkg_apis_core_v1alpha1_Instance(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceList":                 schema_pkg_apis_core_v1alpha1_InstanceList(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceSpec":                 schema_pkg_apis_core_v1alpha1_InstanceSpec(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceStatus":               schema_pkg_apis_core_v1alpha1_InstanceStatus(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.K8SClientLimits":              schema_pkg_apis_core_v1alpha1_K8SClientLimits(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.K8SClientSettings":            schema_pkg_apis_core_v1alpha1_K8SClientSettings(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Landscaper":                   schema_pkg_apis_core_v1alpha1_Landscaper(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperConfiguration":      schema_pkg_apis_core_v1alpha1_LandscaperConfiguration(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeployment":         schema_pkg_apis_core_v1alpha1_LandscaperDeployment(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentList":     schema_pkg_apis_core_v1alpha1_LandscaperDeploymentList(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentSpec":     schema_pkg_apis_core_v1alpha1_LandscaperDeploymentSpec(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentStatus":   schema_pkg_apis_core_v1alpha1_LandscaperDeploymentStatus(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperServiceComponent":   schema_pkg_apis_core_v1alpha1_LandscaperServiceComponent(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.NamespaceRegistration":        schema_pkg_apis_core_v1alpha1_NamespaceRegistration(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.NamespaceRegistrationList":    schema_pkg_apis_core_v1alpha1_NamespaceRegistrationList(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.NamespaceRegistrationSpec":    schema_pkg_apis_core_v1alpha1_NamespaceRegistrationSpec(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.NamespaceRegistrationStatus":  schema_pkg_apis_core_v1alpha1_NamespaceRegistrationStatus(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.OIDCConfig":                   schema_pkg_apis_core_v1alpha1_OIDCConfig(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference":              schema_pkg_apis_core_v1alpha1_ObjectReference(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ResourceRequests":             schema_pkg_apis_core_v1alpha1_ResourceRequests(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Resources":                    schema_pkg_apis_core_v1alpha1_Resources(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SecretReference":              schema_pkg_apis_core_v1alpha1_SecretReference(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfig":          schema_pkg_apis_core_v1alpha1_ServiceTargetConfig(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfigList":      schema_pkg_apis_core_v1alpha1_ServiceTargetConfigList(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfigSpec":      schema_pkg_apis_core_v1alpha1_ServiceTargetConfigSpec(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfigStatus":    schema_pkg_apis_core_v1alpha1_ServiceTargetConfigStatus(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Subject":                      schema_pkg_apis_core_v1alpha1_Subject(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SubjectList":                  schema_pkg_apis_core_v1alpha1_SubjectList(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SubjectListList":              schema_pkg_apis_core_v1alpha1_SubjectListList(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SubjectListSpec":              schema_pkg_apis_core_v1alpha1_SubjectListSpec(ref),
-		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SubjectListStatus":            schema_pkg_apis_core_v1alpha1_SubjectListStatus(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.AutomaticReconcile":           schema_pkg_apis_core_v1alpha2_AutomaticReconcile(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.AvailabilityCollection":       schema_pkg_apis_core_v1alpha2_AvailabilityCollection(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.AvailabilityCollectionList":   schema_pkg_apis_core_v1alpha2_AvailabilityCollectionList(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.AvailabilityCollectionSpec":   schema_pkg_apis_core_v1alpha2_AvailabilityCollectionSpec(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.AvailabilityCollectionStatus": schema_pkg_apis_core_v1alpha2_AvailabilityCollectionStatus(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.AvailabilityInstance":         schema_pkg_apis_core_v1alpha2_AvailabilityInstance(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.Controller":                   schema_pkg_apis_core_v1alpha2_Controller(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.Controllers":                  schema_pkg_apis_core_v1alpha2_Controllers(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.DataPlane":                    schema_pkg_apis_core_v1alpha2_DataPlane(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.DeployItemTimeouts":           schema_pkg_apis_core_v1alpha2_DeployItemTimeouts(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.Deployer":                     schema_pkg_apis_core_v1alpha2_Deployer(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.DeployerConfig":               schema_pkg_apis_core_v1alpha2_DeployerConfig(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.Error":                        schema_pkg_apis_core_v1alpha2_Error(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.HPA":                          schema_pkg_apis_core_v1alpha2_HPA(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.Instance":                     schema_pkg_apis_core_v1alpha2_Instance(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.InstanceList":                 schema_pkg_apis_core_v1alpha2_InstanceList(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.InstanceSpec":                 schema_pkg_apis_core_v1alpha2_InstanceSpec(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.InstanceStatus":               schema_pkg_apis_core_v1alpha2_InstanceStatus(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.K8SClientLimits":              schema_pkg_apis_core_v1alpha2_K8SClientLimits(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.K8SClientSettings":            schema_pkg_apis_core_v1alpha2_K8SClientSettings(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.Landscaper":                   schema_pkg_apis_core_v1alpha2_Landscaper(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.LandscaperConfiguration":      schema_pkg_apis_core_v1alpha2_LandscaperConfiguration(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.LandscaperDeployment":         schema_pkg_apis_core_v1alpha2_LandscaperDeployment(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.LandscaperDeploymentList":     schema_pkg_apis_core_v1alpha2_LandscaperDeploymentList(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.LandscaperDeploymentSpec":     schema_pkg_apis_core_v1alpha2_LandscaperDeploymentSpec(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.LandscaperDeploymentStatus":   schema_pkg_apis_core_v1alpha2_LandscaperDeploymentStatus(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.LandscaperServiceComponent":   schema_pkg_apis_core_v1alpha2_LandscaperServiceComponent(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.NamespaceRegistration":        schema_pkg_apis_core_v1alpha2_NamespaceRegistration(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.NamespaceRegistrationList":    schema_pkg_apis_core_v1alpha2_NamespaceRegistrationList(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.NamespaceRegistrationSpec":    schema_pkg_apis_core_v1alpha2_NamespaceRegistrationSpec(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.NamespaceRegistrationStatus":  schema_pkg_apis_core_v1alpha2_NamespaceRegistrationStatus(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.ObjectReference":              schema_pkg_apis_core_v1alpha2_ObjectReference(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.ResourceRequests":             schema_pkg_apis_core_v1alpha2_ResourceRequests(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.Resources":                    schema_pkg_apis_core_v1alpha2_Resources(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.SecretReference":              schema_pkg_apis_core_v1alpha2_SecretReference(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.ServiceTargetConfig":          schema_pkg_apis_core_v1alpha2_ServiceTargetConfig(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.ServiceTargetConfigList":      schema_pkg_apis_core_v1alpha2_ServiceTargetConfigList(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.ServiceTargetConfigSpec":      schema_pkg_apis_core_v1alpha2_ServiceTargetConfigSpec(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.ServiceTargetConfigStatus":    schema_pkg_apis_core_v1alpha2_ServiceTargetConfigStatus(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.Subject":                      schema_pkg_apis_core_v1alpha2_Subject(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.SubjectList":                  schema_pkg_apis_core_v1alpha2_SubjectList(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.SubjectListList":              schema_pkg_apis_core_v1alpha2_SubjectListList(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.SubjectListSpec":              schema_pkg_apis_core_v1alpha2_SubjectListSpec(ref),
+		"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.SubjectListStatus":            schema_pkg_apis_core_v1alpha2_SubjectListStatus(ref),
 		"github.com/gardener/landscaper/apis/core/v1alpha1.AnyJSON":                                  schema_landscaper_apis_core_v1alpha1_AnyJSON(ref),
 		"github.com/gardener/landscaper/apis/core/v1alpha1.AutomaticReconcile":                       schema_landscaper_apis_core_v1alpha1_AutomaticReconcile(ref),
 		"github.com/gardener/landscaper/apis/core/v1alpha1.AutomaticReconcileStatus":                 schema_landscaper_apis_core_v1alpha1_AutomaticReconcileStatus(ref),
@@ -439,7 +438,7 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_AutomaticReconcile(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_AutomaticReconcile(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -462,7 +461,7 @@ func schema_pkg_apis_core_v1alpha1_AutomaticReconcile(ref common.ReferenceCallba
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_AvailabilityCollection(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_AvailabilityCollection(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -493,14 +492,14 @@ func schema_pkg_apis_core_v1alpha1_AvailabilityCollection(ref common.ReferenceCa
 						SchemaProps: spec.SchemaProps{
 							Description: "Spec contains the specification for the AvailabilityCollection.",
 							Default:     map[string]interface{}{},
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AvailabilityCollectionSpec"),
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.AvailabilityCollectionSpec"),
 						},
 					},
 					"status": {
 						SchemaProps: spec.SchemaProps{
 							Description: "Status contains the status for the AvailabilityCollection.",
 							Default:     map[string]interface{}{},
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AvailabilityCollectionStatus"),
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.AvailabilityCollectionStatus"),
 						},
 					},
 				},
@@ -508,11 +507,11 @@ func schema_pkg_apis_core_v1alpha1_AvailabilityCollection(ref common.ReferenceCa
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AvailabilityCollectionSpec", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AvailabilityCollectionStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.AvailabilityCollectionSpec", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.AvailabilityCollectionStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_AvailabilityCollectionList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_AvailabilityCollectionList(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -546,7 +545,7 @@ func schema_pkg_apis_core_v1alpha1_AvailabilityCollectionList(ref common.Referen
 								Schema: &spec.Schema{
 									SchemaProps: spec.SchemaProps{
 										Default: map[string]interface{}{},
-										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AvailabilityCollection"),
+										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.AvailabilityCollection"),
 									},
 								},
 							},
@@ -557,11 +556,11 @@ func schema_pkg_apis_core_v1alpha1_AvailabilityCollectionList(ref common.Referen
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AvailabilityCollection", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.AvailabilityCollection", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_AvailabilityCollectionSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_AvailabilityCollectionSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -576,7 +575,7 @@ func schema_pkg_apis_core_v1alpha1_AvailabilityCollectionSpec(ref common.Referen
 								Schema: &spec.Schema{
 									SchemaProps: spec.SchemaProps{
 										Default: map[string]interface{}{},
-										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference"),
+										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.ObjectReference"),
 									},
 								},
 							},
@@ -587,11 +586,11 @@ func schema_pkg_apis_core_v1alpha1_AvailabilityCollectionSpec(ref common.Referen
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.ObjectReference"},
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_AvailabilityCollectionStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_AvailabilityCollectionStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -627,7 +626,7 @@ func schema_pkg_apis_core_v1alpha1_AvailabilityCollectionStatus(ref common.Refer
 								Schema: &spec.Schema{
 									SchemaProps: spec.SchemaProps{
 										Default: map[string]interface{}{},
-										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AvailabilityInstance"),
+										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.AvailabilityInstance"),
 									},
 								},
 							},
@@ -637,7 +636,7 @@ func schema_pkg_apis_core_v1alpha1_AvailabilityCollectionStatus(ref common.Refer
 						SchemaProps: spec.SchemaProps{
 							Description: "Self collects the status the own landscaper",
 							Default:     map[string]interface{}{},
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AvailabilityInstance"),
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.AvailabilityInstance"),
 						},
 					},
 				},
@@ -645,11 +644,11 @@ func schema_pkg_apis_core_v1alpha1_AvailabilityCollectionStatus(ref common.Refer
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AvailabilityInstance", "k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.AvailabilityInstance", "k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_AvailabilityInstance(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_AvailabilityInstance(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -695,7 +694,7 @@ func schema_pkg_apis_core_v1alpha1_AvailabilityInstance(ref common.ReferenceCall
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_Controller(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_Controller(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -714,7 +713,7 @@ func schema_pkg_apis_core_v1alpha1_Controller(ref common.ReferenceCallback) comm
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_Controllers(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_Controllers(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -723,23 +722,51 @@ func schema_pkg_apis_core_v1alpha1_Controllers(ref common.ReferenceCallback) com
 				Properties: map[string]spec.Schema{
 					"installations": {
 						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Controller"),
+							Ref: ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.Controller"),
 						},
 					},
 					"executions": {
 						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Controller"),
+							Ref: ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.Controller"),
 						},
 					},
 				},
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Controller"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.Controller"},
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_DeployItemTimeouts(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_DataPlane(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"secretRef": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.SecretReference"),
+						},
+					},
+					"kubeconfig": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
+						},
+					},
+				},
+				Required: []string{"secretRef", "kubeconfig"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.SecretReference"},
+	}
+}
+
+func schema_pkg_apis_core_v1alpha2_DeployItemTimeouts(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -764,7 +791,7 @@ func schema_pkg_apis_core_v1alpha1_DeployItemTimeouts(ref common.ReferenceCallba
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_Deployer(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_Deployer(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -772,23 +799,23 @@ func schema_pkg_apis_core_v1alpha1_Deployer(ref common.ReferenceCallback) common
 				Properties: map[string]spec.Schema{
 					"controller": {
 						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Controller"),
+							Ref: ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.Controller"),
 						},
 					},
 					"k8sClientSettings": {
 						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.K8SClientSettings"),
+							Ref: ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.K8SClientSettings"),
 						},
 					},
 				},
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Controller", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.K8SClientSettings"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.Controller", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.K8SClientSettings"},
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_DeployerConfig(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_DeployerConfig(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -797,28 +824,28 @@ func schema_pkg_apis_core_v1alpha1_DeployerConfig(ref common.ReferenceCallback) 
 				Properties: map[string]spec.Schema{
 					"deployer": {
 						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Deployer"),
+							Ref: ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.Deployer"),
 						},
 					},
 					"resources": {
 						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Resources"),
+							Ref: ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.Resources"),
 						},
 					},
 					"hpa": {
 						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.HPA"),
+							Ref: ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.HPA"),
 						},
 					},
 				},
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Deployer", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.HPA", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Resources"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.Deployer", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.HPA", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.Resources"},
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_Error(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_Error(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -872,7 +899,7 @@ func schema_pkg_apis_core_v1alpha1_Error(ref common.ReferenceCallback) common.Op
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_HPA(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_HPA(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -903,29 +930,7 @@ func schema_pkg_apis_core_v1alpha1_HPA(ref common.ReferenceCallback) common.Open
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_HighAvailabilityConfig(ref common.ReferenceCallback) common.OpenAPIDefinition {
-	return common.OpenAPIDefinition{
-		Schema: spec.Schema{
-			SchemaProps: spec.SchemaProps{
-				Description: "HighAvailabilityConfig specifies the HA configuration for the resource cluster (shoot cluster)",
-				Type:        []string{"object"},
-				Properties: map[string]spec.Schema{
-					"controlPlaneFailureTolerance": {
-						SchemaProps: spec.SchemaProps{
-							Description: "ControlPlaneFailureTolerance specifies the Kubernetes control plane failure tolerance mode. Allowed values are: node, zone",
-							Default:     "",
-							Type:        []string{"string"},
-							Format:      "",
-						},
-					},
-				},
-				Required: []string{"controlPlaneFailureTolerance"},
-			},
-		},
-	}
-}
-
-func schema_pkg_apis_core_v1alpha1_Instance(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_Instance(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -956,14 +961,14 @@ func schema_pkg_apis_core_v1alpha1_Instance(ref common.ReferenceCallback) common
 						SchemaProps: spec.SchemaProps{
 							Description: "Spec contains the specification for the Instance.",
 							Default:     map[string]interface{}{},
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceSpec"),
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.InstanceSpec"),
 						},
 					},
 					"status": {
 						SchemaProps: spec.SchemaProps{
 							Description: "Status contains the status for the Instance.",
 							Default:     map[string]interface{}{},
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceStatus"),
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.InstanceStatus"),
 						},
 					},
 				},
@@ -971,11 +976,11 @@ func schema_pkg_apis_core_v1alpha1_Instance(ref common.ReferenceCallback) common
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceSpec", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.InstanceStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.InstanceSpec", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.InstanceStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_InstanceList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_InstanceList(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -1009,7 +1014,7 @@ func schema_pkg_apis_core_v1alpha1_InstanceList(ref common.ReferenceCallback) co
 								Schema: &spec.Schema{
 									SchemaProps: spec.SchemaProps{
 										Default: map[string]interface{}{},
-										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Instance"),
+										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.Instance"),
 									},
 								},
 							},
@@ -1020,11 +1025,11 @@ func schema_pkg_apis_core_v1alpha1_InstanceList(ref common.ReferenceCallback) co
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Instance", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.Instance", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_InstanceSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_InstanceSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -1051,44 +1056,38 @@ func schema_pkg_apis_core_v1alpha1_InstanceSpec(ref common.ReferenceCallback) co
 						SchemaProps: spec.SchemaProps{
 							Description: "LandscaperConfiguration contains the configuration for the landscaper service deployment",
 							Default:     map[string]interface{}{},
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperConfiguration"),
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.LandscaperConfiguration"),
 						},
 					},
 					"serviceTargetConfigRef": {
 						SchemaProps: spec.SchemaProps{
 							Description: "ServiceTargetConfigRef specifies the target cluster for which the installation is created.",
 							Default:     map[string]interface{}{},
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference"),
-						},
-					},
-					"oidcConfig": {
-						SchemaProps: spec.SchemaProps{
-							Description: "OIDCConfig describes the OIDC config of the customer resource cluster (shoot cluster)",
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.OIDCConfig"),
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.ObjectReference"),
 						},
 					},
 					"automaticReconcile": {
 						SchemaProps: spec.SchemaProps{
 							Description: "AutomaticReconcile specifies the configuration on when this instance is being automatically reconciled.",
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AutomaticReconcile"),
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.AutomaticReconcile"),
 						},
 					},
-					"highAvailabilityConfig": {
+					"dataPlane": {
 						SchemaProps: spec.SchemaProps{
-							Description: "HighAvailabilityConfig specifies the HA configuration of the resource cluster (shoot cluster)",
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.HighAvailabilityConfig"),
+							Default: map[string]interface{}{},
+							Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.DataPlane"),
 						},
 					},
 				},
-				Required: []string{"tenantId", "id", "landscaperConfiguration", "serviceTargetConfigRef"},
+				Required: []string{"tenantId", "id", "landscaperConfiguration", "serviceTargetConfigRef", "dataPlane"},
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.AutomaticReconcile", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.HighAvailabilityConfig", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperConfiguration", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.OIDCConfig", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.AutomaticReconcile", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.DataPlane", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.LandscaperConfiguration", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.ObjectReference"},
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_InstanceStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_InstanceStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -1106,37 +1105,37 @@ func schema_pkg_apis_core_v1alpha1_InstanceStatus(ref common.ReferenceCallback) 
 					"lastError": {
 						SchemaProps: spec.SchemaProps{
 							Description: "LastError describes the last error that occurred.",
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Error"),
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.Error"),
 						},
 					},
 					"landscaperServiceComponent": {
 						SchemaProps: spec.SchemaProps{
 							Description: "LandscaperServiceComponent define the landscaper server component that is used for this instance.",
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperServiceComponent"),
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.LandscaperServiceComponent"),
 						},
 					},
 					"contextRef": {
 						SchemaProps: spec.SchemaProps{
 							Description: "ContextRef references the landscaper context for this Instance.",
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference"),
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.ObjectReference"),
 						},
 					},
 					"targetRef": {
 						SchemaProps: spec.SchemaProps{
 							Description: "TargetRef references the Target for this Instance.",
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference"),
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.ObjectReference"),
 						},
 					},
 					"gardenerServiceAccountRef": {
 						SchemaProps: spec.SchemaProps{
 							Description: "GardenerServiceAccountRef references the Target for the Gardener service account.",
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference"),
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.ObjectReference"),
 						},
 					},
 					"installationRef": {
 						SchemaProps: spec.SchemaProps{
 							Description: "InstallationRef references the Installation for this Instance.",
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference"),
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.ObjectReference"),
 						},
 					},
 					"clusterEndpoint": {
@@ -1178,11 +1177,11 @@ func schema_pkg_apis_core_v1alpha1_InstanceStatus(ref common.ReferenceCallback) 
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Error", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperServiceComponent", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.Error", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.LandscaperServiceComponent", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.ObjectReference"},
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_K8SClientLimits(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_K8SClientLimits(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -1207,7 +1206,7 @@ func schema_pkg_apis_core_v1alpha1_K8SClientLimits(ref common.ReferenceCallback)
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_K8SClientSettings(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_K8SClientSettings(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -1216,23 +1215,23 @@ func schema_pkg_apis_core_v1alpha1_K8SClientSettings(ref common.ReferenceCallbac
 				Properties: map[string]spec.Schema{
 					"hostClient": {
 						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.K8SClientLimits"),
+							Ref: ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.K8SClientLimits"),
 						},
 					},
 					"resourceClient": {
 						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.K8SClientLimits"),
+							Ref: ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.K8SClientLimits"),
 						},
 					},
 				},
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.K8SClientLimits"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.K8SClientLimits"},
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_Landscaper(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_Landscaper(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -1240,28 +1239,28 @@ func schema_pkg_apis_core_v1alpha1_Landscaper(ref common.ReferenceCallback) comm
 				Properties: map[string]spec.Schema{
 					"controllers": {
 						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Controllers"),
+							Ref: ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.Controllers"),
 						},
 					},
 					"k8sClientSettings": {
 						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.K8SClientSettings"),
+							Ref: ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.K8SClientSettings"),
 						},
 					},
 					"deployItemTimeouts": {
 						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.DeployItemTimeouts"),
+							Ref: ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.DeployItemTimeouts"),
 						},
 					},
 				},
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Controllers", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.DeployItemTimeouts", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.K8SClientSettings"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.Controllers", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.DeployItemTimeouts", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.K8SClientSettings"},
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_LandscaperConfiguration(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_LandscaperConfiguration(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -1270,25 +1269,25 @@ func schema_pkg_apis_core_v1alpha1_LandscaperConfiguration(ref common.ReferenceC
 				Properties: map[string]spec.Schema{
 					"landscaper": {
 						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Landscaper"),
+							Ref: ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.Landscaper"),
 						},
 					},
 					"resources": {
 						SchemaProps: spec.SchemaProps{
 							Description: "Resources configures the resources of the \"central\" landscaper pod, i.e. the pod responsible for crds creation, deployer management, context controller.",
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Resources"),
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.Resources"),
 						},
 					},
 					"resourcesMain": {
 						SchemaProps: spec.SchemaProps{
 							Description: "ResourcesMain configures the resources of the \"main\" landscaper pods, i.e. the pods of installation and execution controller.",
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Resources"),
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.Resources"),
 						},
 					},
 					"hpaMain": {
 						SchemaProps: spec.SchemaProps{
 							Description: "HPAMain configures the horizontal pod autoscaling of the \"main\" landscaper pods, i.e. the pods of installation and execution controller.",
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.HPA"),
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.HPA"),
 						},
 					},
 					"deployers": {
@@ -1314,7 +1313,7 @@ func schema_pkg_apis_core_v1alpha1_LandscaperConfiguration(ref common.ReferenceC
 								Allows: true,
 								Schema: &spec.Schema{
 									SchemaProps: spec.SchemaProps{
-										Ref: ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.DeployerConfig"),
+										Ref: ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.DeployerConfig"),
 									},
 								},
 							},
@@ -1325,11 +1324,11 @@ func schema_pkg_apis_core_v1alpha1_LandscaperConfiguration(ref common.ReferenceC
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.DeployerConfig", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.HPA", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Landscaper", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Resources"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.DeployerConfig", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.HPA", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.Landscaper", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.Resources"},
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_LandscaperDeployment(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_LandscaperDeployment(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -1360,14 +1359,14 @@ func schema_pkg_apis_core_v1alpha1_LandscaperDeployment(ref common.ReferenceCall
 						SchemaProps: spec.SchemaProps{
 							Description: "Spec contains the specification for the LandscaperDeployment",
 							Default:     map[string]interface{}{},
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentSpec"),
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.LandscaperDeploymentSpec"),
 						},
 					},
 					"status": {
 						SchemaProps: spec.SchemaProps{
 							Description: "Status contains the status of the LandscaperDeployment.",
 							Default:     map[string]interface{}{},
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentStatus"),
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.LandscaperDeploymentStatus"),
 						},
 					},
 				},
@@ -1375,11 +1374,11 @@ func schema_pkg_apis_core_v1alpha1_LandscaperDeployment(ref common.ReferenceCall
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentSpec", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeploymentStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.LandscaperDeploymentSpec", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.LandscaperDeploymentStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_LandscaperDeploymentList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_LandscaperDeploymentList(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -1413,7 +1412,7 @@ func schema_pkg_apis_core_v1alpha1_LandscaperDeploymentList(ref common.Reference
 								Schema: &spec.Schema{
 									SchemaProps: spec.SchemaProps{
 										Default: map[string]interface{}{},
-										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeployment"),
+										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.LandscaperDeployment"),
 									},
 								},
 							},
@@ -1424,11 +1423,11 @@ func schema_pkg_apis_core_v1alpha1_LandscaperDeploymentList(ref common.Reference
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperDeployment", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.LandscaperDeployment", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_LandscaperDeploymentSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_LandscaperDeploymentSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -1455,31 +1454,25 @@ func schema_pkg_apis_core_v1alpha1_LandscaperDeploymentSpec(ref common.Reference
 						SchemaProps: spec.SchemaProps{
 							Description: "LandscaperConfiguration contains the configuration for the landscaper service deployment",
 							Default:     map[string]interface{}{},
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperConfiguration"),
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.LandscaperConfiguration"),
 						},
 					},
-					"oidcConfig": {
+					"dataPlane": {
 						SchemaProps: spec.SchemaProps{
-							Description: "OIDCConfig describes the OIDC config of the customer resource cluster (shoot cluster)",
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.OIDCConfig"),
-						},
-					},
-					"highAvailabilityConfig": {
-						SchemaProps: spec.SchemaProps{
-							Description: "HighAvailabilityConfig specifies the HA configuration of the resource cluster (shoot cluster)",
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.HighAvailabilityConfig"),
+							Default: map[string]interface{}{},
+							Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.DataPlane"),
 						},
 					},
 				},
-				Required: []string{"tenantId", "purpose", "landscaperConfiguration"},
+				Required: []string{"tenantId", "purpose", "landscaperConfiguration", "dataPlane"},
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.HighAvailabilityConfig", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.LandscaperConfiguration", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.OIDCConfig"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.DataPlane", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.LandscaperConfiguration"},
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_LandscaperDeploymentStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_LandscaperDeploymentStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -1497,24 +1490,24 @@ func schema_pkg_apis_core_v1alpha1_LandscaperDeploymentStatus(ref common.Referen
 					"lastError": {
 						SchemaProps: spec.SchemaProps{
 							Description: "LastError describes the last error that occurred.",
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Error"),
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.Error"),
 						},
 					},
 					"instanceRef": {
 						SchemaProps: spec.SchemaProps{
 							Description: "InstanceRef references the instance that is created for this LandscaperDeployment.",
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference"),
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.ObjectReference"),
 						},
 					},
 				},
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Error", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.Error", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.ObjectReference"},
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_LandscaperServiceComponent(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_LandscaperServiceComponent(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -1544,7 +1537,7 @@ func schema_pkg_apis_core_v1alpha1_LandscaperServiceComponent(ref common.Referen
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_NamespaceRegistration(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_NamespaceRegistration(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -1574,14 +1567,14 @@ func schema_pkg_apis_core_v1alpha1_NamespaceRegistration(ref common.ReferenceCal
 						SchemaProps: spec.SchemaProps{
 							Description: "Spec contains the specification for the NamespaceRegistration.",
 							Default:     map[string]interface{}{},
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.NamespaceRegistrationSpec"),
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.NamespaceRegistrationSpec"),
 						},
 					},
 					"status": {
 						SchemaProps: spec.SchemaProps{
 							Description: "Status contains the status for the NamespaceRegistration.",
 							Default:     map[string]interface{}{},
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.NamespaceRegistrationStatus"),
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.NamespaceRegistrationStatus"),
 						},
 					},
 				},
@@ -1589,11 +1582,11 @@ func schema_pkg_apis_core_v1alpha1_NamespaceRegistration(ref common.ReferenceCal
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.NamespaceRegistrationSpec", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.NamespaceRegistrationStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.NamespaceRegistrationSpec", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.NamespaceRegistrationStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_NamespaceRegistrationList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_NamespaceRegistrationList(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -1627,7 +1620,7 @@ func schema_pkg_apis_core_v1alpha1_NamespaceRegistrationList(ref common.Referenc
 								Schema: &spec.Schema{
 									SchemaProps: spec.SchemaProps{
 										Default: map[string]interface{}{},
-										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.NamespaceRegistration"),
+										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.NamespaceRegistration"),
 									},
 								},
 							},
@@ -1638,11 +1631,11 @@ func schema_pkg_apis_core_v1alpha1_NamespaceRegistrationList(ref common.Referenc
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.NamespaceRegistration", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.NamespaceRegistration", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_NamespaceRegistrationSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_NamespaceRegistrationSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -1652,7 +1645,7 @@ func schema_pkg_apis_core_v1alpha1_NamespaceRegistrationSpec(ref common.Referenc
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_NamespaceRegistrationStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_NamespaceRegistrationStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -1667,7 +1660,7 @@ func schema_pkg_apis_core_v1alpha1_NamespaceRegistrationStatus(ref common.Refere
 					},
 					"lastError": {
 						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Error"),
+							Ref: ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.Error"),
 						},
 					},
 				},
@@ -1675,48 +1668,11 @@ func schema_pkg_apis_core_v1alpha1_NamespaceRegistrationStatus(ref common.Refere
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Error"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.Error"},
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_OIDCConfig(ref common.ReferenceCallback) common.OpenAPIDefinition {
-	return common.OpenAPIDefinition{
-		Schema: spec.Schema{
-			SchemaProps: spec.SchemaProps{
-				Description: "OIDCConfig defines the OIDC configuration",
-				Type:        []string{"object"},
-				Properties: map[string]spec.Schema{
-					"clientID": {
-						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "",
-						},
-					},
-					"issuerURL": {
-						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "",
-						},
-					},
-					"usernameClaim": {
-						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "",
-						},
-					},
-					"groupsClaim": {
-						SchemaProps: spec.SchemaProps{
-							Type:   []string{"string"},
-							Format: "",
-						},
-					},
-				},
-			},
-		},
-	}
-}
-
-func schema_pkg_apis_core_v1alpha1_ObjectReference(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_ObjectReference(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -1746,7 +1702,7 @@ func schema_pkg_apis_core_v1alpha1_ObjectReference(ref common.ReferenceCallback)
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_ResourceRequests(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_ResourceRequests(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -1770,7 +1726,7 @@ func schema_pkg_apis_core_v1alpha1_ResourceRequests(ref common.ReferenceCallback
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_Resources(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_Resources(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -1780,18 +1736,18 @@ func schema_pkg_apis_core_v1alpha1_Resources(ref common.ReferenceCallback) commo
 					"requests": {
 						SchemaProps: spec.SchemaProps{
 							Default: map[string]interface{}{},
-							Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ResourceRequests"),
+							Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.ResourceRequests"),
 						},
 					},
 				},
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ResourceRequests"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.ResourceRequests"},
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_SecretReference(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_SecretReference(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -1829,7 +1785,7 @@ func schema_pkg_apis_core_v1alpha1_SecretReference(ref common.ReferenceCallback)
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_ServiceTargetConfig(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_ServiceTargetConfig(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -1860,14 +1816,14 @@ func schema_pkg_apis_core_v1alpha1_ServiceTargetConfig(ref common.ReferenceCallb
 						SchemaProps: spec.SchemaProps{
 							Description: "Spec contains the specification for the ServiceTargetConfig",
 							Default:     map[string]interface{}{},
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfigSpec"),
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.ServiceTargetConfigSpec"),
 						},
 					},
 					"status": {
 						SchemaProps: spec.SchemaProps{
 							Description: "Status contains the status of the ServiceTargetConfig.",
 							Default:     map[string]interface{}{},
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfigStatus"),
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.ServiceTargetConfigStatus"),
 						},
 					},
 				},
@@ -1875,11 +1831,11 @@ func schema_pkg_apis_core_v1alpha1_ServiceTargetConfig(ref common.ReferenceCallb
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfigSpec", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfigStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.ServiceTargetConfigSpec", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.ServiceTargetConfigStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_ServiceTargetConfigList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_ServiceTargetConfigList(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -1913,7 +1869,7 @@ func schema_pkg_apis_core_v1alpha1_ServiceTargetConfigList(ref common.ReferenceC
 								Schema: &spec.Schema{
 									SchemaProps: spec.SchemaProps{
 										Default: map[string]interface{}{},
-										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfig"),
+										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.ServiceTargetConfig"),
 									},
 								},
 							},
@@ -1924,11 +1880,11 @@ func schema_pkg_apis_core_v1alpha1_ServiceTargetConfigList(ref common.ReferenceC
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ServiceTargetConfig", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.ServiceTargetConfig", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_ServiceTargetConfigSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_ServiceTargetConfigSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -1947,7 +1903,7 @@ func schema_pkg_apis_core_v1alpha1_ServiceTargetConfigSpec(ref common.ReferenceC
 						SchemaProps: spec.SchemaProps{
 							Description: "SecretRef references the secret that contains the kubeconfig of the target cluster.",
 							Default:     map[string]interface{}{},
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SecretReference"),
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.SecretReference"),
 						},
 					},
 					"ingressDomain": {
@@ -1963,11 +1919,11 @@ func schema_pkg_apis_core_v1alpha1_ServiceTargetConfigSpec(ref common.ReferenceC
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SecretReference"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.SecretReference"},
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_ServiceTargetConfigStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_ServiceTargetConfigStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -1990,7 +1946,7 @@ func schema_pkg_apis_core_v1alpha1_ServiceTargetConfigStatus(ref common.Referenc
 								Schema: &spec.Schema{
 									SchemaProps: spec.SchemaProps{
 										Default: map[string]interface{}{},
-										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference"),
+										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.ObjectReference"),
 									},
 								},
 							},
@@ -2000,11 +1956,11 @@ func schema_pkg_apis_core_v1alpha1_ServiceTargetConfigStatus(ref common.Referenc
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.ObjectReference"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.ObjectReference"},
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_Subject(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_Subject(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -2041,7 +1997,7 @@ func schema_pkg_apis_core_v1alpha1_Subject(ref common.ReferenceCallback) common.
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_SubjectList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_SubjectList(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -2071,14 +2027,14 @@ func schema_pkg_apis_core_v1alpha1_SubjectList(ref common.ReferenceCallback) com
 						SchemaProps: spec.SchemaProps{
 							Description: "Spec contains the specification for the SubjectList.",
 							Default:     map[string]interface{}{},
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SubjectListSpec"),
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.SubjectListSpec"),
 						},
 					},
 					"status": {
 						SchemaProps: spec.SchemaProps{
 							Description: "Status contains the status for the SubjectList.",
 							Default:     map[string]interface{}{},
-							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SubjectListStatus"),
+							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.SubjectListStatus"),
 						},
 					},
 				},
@@ -2086,11 +2042,11 @@ func schema_pkg_apis_core_v1alpha1_SubjectList(ref common.ReferenceCallback) com
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SubjectListSpec", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SubjectListStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.SubjectListSpec", "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.SubjectListStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_SubjectListList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_SubjectListList(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -2124,7 +2080,7 @@ func schema_pkg_apis_core_v1alpha1_SubjectListList(ref common.ReferenceCallback)
 								Schema: &spec.Schema{
 									SchemaProps: spec.SchemaProps{
 										Default: map[string]interface{}{},
-										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SubjectList"),
+										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.SubjectList"),
 									},
 								},
 							},
@@ -2135,11 +2091,11 @@ func schema_pkg_apis_core_v1alpha1_SubjectListList(ref common.ReferenceCallback)
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.SubjectList", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.SubjectList", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_SubjectListSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_SubjectListSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -2154,7 +2110,7 @@ func schema_pkg_apis_core_v1alpha1_SubjectListSpec(ref common.ReferenceCallback)
 								Schema: &spec.Schema{
 									SchemaProps: spec.SchemaProps{
 										Default: map[string]interface{}{},
-										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Subject"),
+										Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.Subject"),
 									},
 								},
 							},
@@ -2165,11 +2121,11 @@ func schema_pkg_apis_core_v1alpha1_SubjectListSpec(ref common.ReferenceCallback)
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1.Subject"},
+			"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.Subject"},
 	}
 }
 
-func schema_pkg_apis_core_v1alpha1_SubjectListStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_core_v1alpha2_SubjectListStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -2963,6 +2919,13 @@ func schema_landscaper_apis_core_v1alpha1_Context(ref common.ReferenceCallback) 
 							Ref:         ref("github.com/gardener/component-spec/bindings-go/apis/v2.UnstructuredTypedObject"),
 						},
 					},
+					"useOCM": {
+						SchemaProps: spec.SchemaProps{
+							Description: "UseOCM defines whether OCM is used to process installations that reference this context.",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
 					"registryPullSecrets": {
 						SchemaProps: spec.SchemaProps{
 							Description: "RegistryPullSecrets defines a list of registry credentials that are used to pull blueprints, component descriptors and jsonschemas from the respective registry. For more info see: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ Note that the type information is used to determine the secret key and the type of the secret.",
@@ -3396,20 +3359,6 @@ func schema_landscaper_apis_core_v1alpha1_DeployItemSpec(ref common.ReferenceCal
 						SchemaProps: spec.SchemaProps{
 							Description: "Configuration contains the deployer type specific configuration.",
 							Ref:         ref("k8s.io/apimachinery/pkg/runtime.RawExtension"),
-						},
-					},
-					"registryPullSecrets": {
-						SchemaProps: spec.SchemaProps{
-							Description: "RegistryPullSecrets defines a list of registry credentials that are used to pull blueprints, component descriptors and jsonschemas from the respective registry. For more info see: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ Note that the type information is used to determine the secret key and the type of the secret.",
-							Type:        []string{"array"},
-							Items: &spec.SchemaOrArray{
-								Schema: &spec.Schema{
-									SchemaProps: spec.SchemaProps{
-										Default: map[string]interface{}{},
-										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference"),
-									},
-								},
-							},
 						},
 					},
 					"timeout": {
@@ -4296,25 +4245,11 @@ func schema_landscaper_apis_core_v1alpha1_ExecutionSpec(ref common.ReferenceCall
 							Format:      "byte",
 						},
 					},
-					"registryPullSecrets": {
-						SchemaProps: spec.SchemaProps{
-							Description: "RegistryPullSecrets defines a list of registry credentials that are used to pull blueprints, component descriptors and jsonschemas from the respective registry. For more info see: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ Note that the type information is used to determine the secret key and the type of the secret.",
-							Type:        []string{"array"},
-							Items: &spec.SchemaOrArray{
-								Schema: &spec.Schema{
-									SchemaProps: spec.SchemaProps{
-										Default: map[string]interface{}{},
-										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference"),
-									},
-								},
-							},
-						},
-					},
 				},
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper/apis/core/v1alpha1.DeployItemTemplate", "github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference"},
+			"github.com/gardener/landscaper/apis/core/v1alpha1.DeployItemTemplate"},
 	}
 }
 
@@ -4930,20 +4865,6 @@ func schema_landscaper_apis_core_v1alpha1_InstallationSpec(ref common.ReferenceC
 							Ref:         ref("github.com/gardener/landscaper/apis/core/v1alpha1.BlueprintDefinition"),
 						},
 					},
-					"registryPullSecrets": {
-						SchemaProps: spec.SchemaProps{
-							Description: "RegistryPullSecrets defines a list of registry credentials that are used to pull blueprints, component descriptors and jsonschemas from the respective registry. For more info see: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ Note that the type information is used to determine the secret key and the type of the secret.",
-							Type:        []string{"array"},
-							Items: &spec.SchemaOrArray{
-								Schema: &spec.Schema{
-									SchemaProps: spec.SchemaProps{
-										Default: map[string]interface{}{},
-										Ref:     ref("github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference"),
-									},
-								},
-							},
-						},
-					},
 					"imports": {
 						SchemaProps: spec.SchemaProps{
 							Description: "Imports define the imported data objects and targets.",
@@ -4997,7 +4918,7 @@ func schema_landscaper_apis_core_v1alpha1_InstallationSpec(ref common.ReferenceC
 			},
 		},
 		Dependencies: []string{
-			"github.com/gardener/landscaper/apis/core/v1alpha1.AnyJSON", "github.com/gardener/landscaper/apis/core/v1alpha1.AutomaticReconcile", "github.com/gardener/landscaper/apis/core/v1alpha1.BlueprintDefinition", "github.com/gardener/landscaper/apis/core/v1alpha1.ComponentDescriptorDefinition", "github.com/gardener/landscaper/apis/core/v1alpha1.InstallationExports", "github.com/gardener/landscaper/apis/core/v1alpha1.InstallationImports", "github.com/gardener/landscaper/apis/core/v1alpha1.ObjectReference"},
+			"github.com/gardener/landscaper/apis/core/v1alpha1.AnyJSON", "github.com/gardener/landscaper/apis/core/v1alpha1.AutomaticReconcile", "github.com/gardener/landscaper/apis/core/v1alpha1.BlueprintDefinition", "github.com/gardener/landscaper/apis/core/v1alpha1.ComponentDescriptorDefinition", "github.com/gardener/landscaper/apis/core/v1alpha1.InstallationExports", "github.com/gardener/landscaper/apis/core/v1alpha1.InstallationImports"},
 	}
 }
 

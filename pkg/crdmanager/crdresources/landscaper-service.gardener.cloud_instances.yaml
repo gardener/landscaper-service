@@ -23,7 +23,7 @@ spec:
     - jsonPath: .metadata.creationTimestamp
       name: Age
       type: date
-    name: v1alpha1
+    name: v1alpha2
     schema:
       openAPIV3Schema:
         description: The Instance is created for each LandscaperDeployment. The landscaper
@@ -44,17 +44,29 @@ spec:
                 required:
                 - interval
                 type: object
-              highAvailabilityConfig:
-                description: HighAvailabilityConfig specifies the HA configuration
-                  of the resource cluster (shoot cluster)
+              dataPlane:
                 properties:
-                  controlPlaneFailureTolerance:
-                    description: 'ControlPlaneFailureTolerance specifies the Kubernetes
-                      control plane failure tolerance mode. Allowed values are: node,
-                      zone'
+                  kubeconfig:
                     type: string
+                  secretRef:
+                    description: SecretReference is a reference to data in a secret.
+                    properties:
+                      key:
+                        description: Key is the name of the key in the secret that
+                          holds the data.
+                        type: string
+                      name:
+                        description: Name is the name of the kubernetes object.
+                        type: string
+                      namespace:
+                        description: Namespace is the namespace of kubernetes object.
+                        type: string
+                    required:
+                    - name
+                    type: object
                 required:
-                - controlPlaneFailureTolerance
+                - secretRef
+                - kubeconfig
                 type: object
               id:
                 description: ID is the id of this instance
@@ -247,19 +259,6 @@ spec:
                 required:
                 - deployers
                 type: object
-              oidcConfig:
-                description: OIDCConfig describes the OIDC config of the customer
-                  resource cluster (shoot cluster)
-                properties:
-                  clientID:
-                    type: string
-                  groupsClaim:
-                    type: string
-                  issuerURL:
-                    type: string
-                  usernameClaim:
-                    type: string
-                type: object
               serviceTargetConfigRef:
                 description: ServiceTargetConfigRef specifies the target cluster for
                   which the installation is created.
@@ -281,6 +280,7 @@ spec:
             - id
             - landscaperConfiguration
             - serviceTargetConfigRef
+            - dataPlane
             type: object
           status:
             description: Status contains the status for the Instance.

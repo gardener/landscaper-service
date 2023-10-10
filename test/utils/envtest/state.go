@@ -12,7 +12,7 @@ import (
 
 	"github.com/gardener/landscaper-service/pkg/controllers/subjectsync"
 
-	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
 )
 
 // State holds the information used within a single test.
@@ -21,11 +21,11 @@ type State struct {
 	Namespace string
 
 	// Deployments contains all landscaper deployments in this test environment.
-	Deployments map[string]*lssv1alpha1.LandscaperDeployment
+	Deployments map[string]*lssv1alpha2.LandscaperDeployment
 	// Instances contains all instances in this test environment.
-	Instances map[string]*lssv1alpha1.Instance
+	Instances map[string]*lssv1alpha2.Instance
 	// Configs contains all service target configs in this test environment.
-	Configs map[string]*lssv1alpha1.ServiceTargetConfig
+	Configs map[string]*lssv1alpha2.ServiceTargetConfig
 	// Secrets contains all secrets in this test environment.
 	Secrets map[string]*corev1.Secret
 	// ConfigMaps contains all config maps in this test environment.
@@ -43,22 +43,22 @@ type State struct {
 	// Contexts contains all contexts in this test environment
 	Contexts map[string]*lsv1alpha1.Context
 	// AvailabilityCollections contains all availabilityCollections in this test environment
-	AvailabilityCollections map[string]*lssv1alpha1.AvailabilityCollection
+	AvailabilityCollections map[string]*lssv1alpha2.AvailabilityCollection
 	// LsHealthChecks contains all LsHealthCheck in this test environment
 	LsHealthChecks map[string]*lsv1alpha1.LsHealthCheck
 	// NamespaceRegistrations contains all NamespaceRegistration in this test environment
-	NamespaceRegistrations map[string]*lssv1alpha1.NamespaceRegistration
+	NamespaceRegistrations map[string]*lssv1alpha2.NamespaceRegistration
 	// SubjectLists contains all SubjectList in this test environment
-	SubjectLists map[string]*lssv1alpha1.SubjectList
+	SubjectLists map[string]*lssv1alpha2.SubjectList
 }
 
 // NewState creates a new state.
 func NewState(namespace string) *State {
 	return &State{
 		Namespace:               namespace,
-		Deployments:             make(map[string]*lssv1alpha1.LandscaperDeployment),
-		Instances:               make(map[string]*lssv1alpha1.Instance),
-		Configs:                 make(map[string]*lssv1alpha1.ServiceTargetConfig),
+		Deployments:             make(map[string]*lssv1alpha2.LandscaperDeployment),
+		Instances:               make(map[string]*lssv1alpha2.Instance),
+		Configs:                 make(map[string]*lssv1alpha2.ServiceTargetConfig),
 		Secrets:                 make(map[string]*corev1.Secret),
 		ConfigMaps:              make(map[string]*corev1.ConfigMap),
 		Installations:           make(map[string]*lsv1alpha1.Installation),
@@ -67,25 +67,25 @@ func NewState(namespace string) *State {
 		TargetSync:              make(map[string]*lsv1alpha1.TargetSync),
 		Targets:                 make(map[string]*lsv1alpha1.Target),
 		Contexts:                make(map[string]*lsv1alpha1.Context),
-		AvailabilityCollections: make(map[string]*lssv1alpha1.AvailabilityCollection),
+		AvailabilityCollections: make(map[string]*lssv1alpha2.AvailabilityCollection),
 		LsHealthChecks:          make(map[string]*lsv1alpha1.LsHealthCheck),
-		NamespaceRegistrations:  make(map[string]*lssv1alpha1.NamespaceRegistration),
-		SubjectLists:            make(map[string]*lssv1alpha1.SubjectList),
+		NamespaceRegistrations:  make(map[string]*lssv1alpha2.NamespaceRegistration),
+		SubjectLists:            make(map[string]*lssv1alpha2.SubjectList),
 	}
 }
 
 // GetDeployment retrieves a landscaper deployment by the given name.
-func (s *State) GetDeployment(name string) *lssv1alpha1.LandscaperDeployment {
+func (s *State) GetDeployment(name string) *lssv1alpha2.LandscaperDeployment {
 	return s.Deployments[s.Namespace+"/"+name]
 }
 
 // GetInstance retrieves an instance by the given name.
-func (s *State) GetInstance(name string) *lssv1alpha1.Instance {
+func (s *State) GetInstance(name string) *lssv1alpha2.Instance {
 	return s.Instances[s.Namespace+"/"+name]
 }
 
 // GetConfig retrieves a landscaper target config by the given name.
-func (s *State) GetConfig(name string) *lssv1alpha1.ServiceTargetConfig {
+func (s *State) GetConfig(name string) *lssv1alpha2.ServiceTargetConfig {
 	return s.Configs[s.Namespace+"/"+name]
 }
 
@@ -127,7 +127,7 @@ func (s *State) GetContext(name string) *lsv1alpha1.Context {
 }
 
 // GetAvailabilityCollection retrieves a AvailabilityCollection by the given name
-func (s *State) GetAvailabilityCollection(name string) *lssv1alpha1.AvailabilityCollection {
+func (s *State) GetAvailabilityCollection(name string) *lssv1alpha2.AvailabilityCollection {
 	return s.AvailabilityCollections[s.Namespace+"/"+name]
 }
 
@@ -142,23 +142,23 @@ func (s *State) GetLsHealthCheckInNamespace(name string, namespace string) *lsv1
 }
 
 // GetNamespaceRegistration retrieves a NamespaceRegistration by the given name in the given namespace
-func (s *State) GetNamespaceRegistration(name string) *lssv1alpha1.NamespaceRegistration {
+func (s *State) GetNamespaceRegistration(name string) *lssv1alpha2.NamespaceRegistration {
 	return s.NamespaceRegistrations[s.Namespace+"/"+name]
 }
 
 // GetSubjectListInNamespace retrieves a SubjectList by the given name in the given namespace
-func (s *State) GetSubjectList(name string) *lssv1alpha1.SubjectList {
+func (s *State) GetSubjectList(name string) *lssv1alpha2.SubjectList {
 	return s.SubjectLists[subjectsync.LS_USER_NAMESPACE+"/"+name]
 }
 
 // AddObject adds a client.Object to the state.
 func (s *State) AddObject(object client.Object) {
 	switch o := object.(type) {
-	case *lssv1alpha1.LandscaperDeployment:
+	case *lssv1alpha2.LandscaperDeployment:
 		s.Deployments[types.NamespacedName{Name: o.Name, Namespace: o.Namespace}.String()] = o.DeepCopy()
-	case *lssv1alpha1.Instance:
+	case *lssv1alpha2.Instance:
 		s.Instances[types.NamespacedName{Name: o.Name, Namespace: o.Namespace}.String()] = o.DeepCopy()
-	case *lssv1alpha1.ServiceTargetConfig:
+	case *lssv1alpha2.ServiceTargetConfig:
 		s.Configs[types.NamespacedName{Name: o.Name, Namespace: o.Namespace}.String()] = o.DeepCopy()
 	case *corev1.Secret:
 		if o.Data == nil {
@@ -182,13 +182,13 @@ func (s *State) AddObject(object client.Object) {
 		s.Targets[types.NamespacedName{Name: o.Name, Namespace: o.Namespace}.String()] = o.DeepCopy()
 	case *lsv1alpha1.Context:
 		s.Contexts[types.NamespacedName{Name: o.Name, Namespace: o.Namespace}.String()] = o.DeepCopy()
-	case *lssv1alpha1.AvailabilityCollection:
+	case *lssv1alpha2.AvailabilityCollection:
 		s.AvailabilityCollections[types.NamespacedName{Name: o.Name, Namespace: o.Namespace}.String()] = o.DeepCopy()
 	case *lsv1alpha1.LsHealthCheck:
 		s.LsHealthChecks[types.NamespacedName{Name: o.Name, Namespace: o.Namespace}.String()] = o.DeepCopy()
-	case *lssv1alpha1.NamespaceRegistration:
+	case *lssv1alpha2.NamespaceRegistration:
 		s.NamespaceRegistrations[types.NamespacedName{Name: o.Name, Namespace: o.Namespace}.String()] = o.DeepCopy()
-	case *lssv1alpha1.SubjectList:
+	case *lssv1alpha2.SubjectList:
 		s.SubjectLists[types.NamespacedName{Name: o.Name, Namespace: o.Namespace}.String()] = o.DeepCopy()
 	}
 }

@@ -16,7 +16,7 @@ import (
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 
-	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -62,7 +62,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 	//get availabilityCollection
 	logger.Debug("fetch availabilityCollection")
-	availabilityCollection := &lssv1alpha1.AvailabilityCollection{}
+	availabilityCollection := &lssv1alpha2.AvailabilityCollection{}
 	if err := c.Client().Get(ctx, req.NamespacedName, availabilityCollection); err != nil {
 		logger.Error(err, "failed loading AvailabilityCollection")
 		return reconcile.Result{}, err
@@ -100,7 +100,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 }
 
-func constructAvsRequest(availabilityCollection lssv1alpha1.AvailabilityCollection) AvsRequest {
+func constructAvsRequest(availabilityCollection lssv1alpha2.AvailabilityCollection) AvsRequest {
 	//Fill failedInstances with all failed. A failed instance will create an instance outage. If this instance is not in the array anymore, instance outage is resolved
 	// Overall status is derived if len(failedInstances) > 0
 	failedInstances := []AvsInstance{}

@@ -13,7 +13,7 @@ import (
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 
 	coreconfig "github.com/gardener/landscaper-service/pkg/apis/config"
-	"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
 )
 
 // AddControllerToManager adds the AVUploader controller to the manager
@@ -31,7 +31,7 @@ func AddControllerToManager(logger logging.Logger, mgr manager.Manager, config *
 	}
 
 	return builder.ControllerManagedBy(mgr).
-		For(&v1alpha1.AvailabilityCollection{}).
+		For(&v1alpha2.AvailabilityCollection{}).
 		WithLogConstructor(func(r *reconcile.Request) logr.Logger { return log.Logr() }).
 		Complete(ctrl)
 }

@@ -10,4 +10,4 @@
 
 // Package v1alpha1 is a version of the API.
 // +groupName=landscaper-service.gardener.cloud
-package v1alpha1
+package v1alpha2

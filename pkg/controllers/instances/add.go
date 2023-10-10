@@ -15,7 +15,7 @@ import (
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 
 	coreconfig "github.com/gardener/landscaper-service/pkg/apis/config"
-	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
 )
 
 // AddControllerToManager adds the instances controller to the manager
@@ -27,7 +27,7 @@ func AddControllerToManager(logger logging.Logger, mgr manager.Manager, config *
 	}
 
 	return builder.ControllerManagedBy(mgr).
-		For(&lssv1alpha1.Instance{}).
+		For(&lssv1alpha2.Instance{}).
 		Owns(&lsv1alpha1.Installation{}).
 		Owns(&lsv1alpha1.Target{}).
 		Owns(&lsv1alpha1.Context{}).

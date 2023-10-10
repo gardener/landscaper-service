@@ -20,7 +20,7 @@ import (
 	kutil "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 
-	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
 	"github.com/gardener/landscaper-service/pkg/operation"
 	"github.com/gardener/landscaper-service/test/utils/envtest"
 
@@ -203,7 +203,7 @@ var _ = Describe("Reconcile", func() {
 })
 var _ = Describe("failed/succeded state handling", func() {
 	It("should set status to successful if not timeout and lshealthcheck is ok", func() {
-		avInstance := &lssv1alpha1.AvailabilityInstance{}
+		avInstance := &lssv1alpha2.AvailabilityInstance{}
 		lsHealthChecks := &lsv1alpha1.LsHealthCheckList{
 			Items: []lsv1alpha1.LsHealthCheck{
 				{
@@ -217,7 +217,7 @@ var _ = Describe("failed/succeded state handling", func() {
 		Expect(avInstance.Status).To(Equal(string(lsv1alpha1.LsHealthCheckStatusOk)))
 	})
 	It("should set status to successful if lshealthcheck is failed but not timeouted", func() {
-		avInstance := &lssv1alpha1.AvailabilityInstance{}
+		avInstance := &lssv1alpha2.AvailabilityInstance{}
 		lsHealthChecks := &lsv1alpha1.LsHealthCheckList{
 			Items: []lsv1alpha1.LsHealthCheck{
 				{
@@ -233,7 +233,7 @@ var _ = Describe("failed/succeded state handling", func() {
 		Expect(avInstance.FailedReason).To(ContainSubstring("to transition to status=Failed"))
 	})
 	It("should set status to failed if timeout but lshealthcheck is ok", func() {
-		avInstance := &lssv1alpha1.AvailabilityInstance{}
+		avInstance := &lssv1alpha2.AvailabilityInstance{}
 		lsHealthChecks := &lsv1alpha1.LsHealthCheckList{
 			Items: []lsv1alpha1.LsHealthCheck{
 				{
@@ -248,7 +248,7 @@ var _ = Describe("failed/succeded state handling", func() {
 		Expect(avInstance.FailedReason).To(ContainSubstring("timeout"))
 	})
 	It("should set status to failed if timeout and lshealthcheck is failed", func() {
-		avInstance := &lssv1alpha1.AvailabilityInstance{}
+		avInstance := &lssv1alpha2.AvailabilityInstance{}
 		lsHealthChecks := &lsv1alpha1.LsHealthCheckList{
 			Items: []lsv1alpha1.LsHealthCheck{
 				{

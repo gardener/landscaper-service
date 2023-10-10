@@ -18,7 +18,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
-	"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
 	"github.com/gardener/landscaper-service/pkg/controllers/subjectsync"
 	"github.com/gardener/landscaper-service/pkg/operation"
 	testutils "github.com/gardener/landscaper-service/test/utils"
@@ -269,7 +269,7 @@ var _ = Describe("Reconcile", func() {
 		Expect(updatedUserRoleBinding.Subjects[0].Namespace).To(Equal(subjectsync.LS_USER_NAMESPACE))
 
 		//delete service account
-		subjectlist.Spec.Subjects = []v1alpha1.Subject{}
+		subjectlist.Spec.Subjects = []v1alpha2.Subject{}
 		Expect(testenv.Client.Update(ctx, subjectlist)).To(Succeed())
 		//reconcile for finalizer
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(subjectlist))
@@ -396,7 +396,7 @@ var _ = Describe("Reconcile", func() {
 		Expect(updatedUserRoleBinding.Subjects[2].Name).To(Equal("testserviceaccount"))
 		Expect(updatedUserRoleBinding.Subjects[2].Namespace).To(Equal(subjectsync.LS_USER_NAMESPACE))
 
-		subjectlist.Spec.Subjects = []v1alpha1.Subject{}
+		subjectlist.Spec.Subjects = []v1alpha2.Subject{}
 		Expect(testenv.Client.Update(ctx, subjectlist)).To(Succeed())
 		//reconcile for finalizer
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(subjectlist))

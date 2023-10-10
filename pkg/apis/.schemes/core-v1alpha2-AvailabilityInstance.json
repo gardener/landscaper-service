@@ -29,6 +29,6 @@
     "status",
     "failedReason"
   ],
-  "title": "core-v1alpha1-AvailabilityInstance",
+  "title": "core-v1alpha2-AvailabilityInstance",
   "type": "object"
 }

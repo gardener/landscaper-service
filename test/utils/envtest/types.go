@@ -16,7 +16,7 @@ import (
 	lscoreinstall "github.com/gardener/landscaper/apis/core/install"
 
 	lsscoreinstall "github.com/gardener/landscaper-service/pkg/apis/core/install"
-	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
 )
 
 var (
@@ -61,11 +61,11 @@ func init() {
 	lscoreinstall.Install(LandscaperServiceScheme)
 	utilruntime.Must(kubernetescheme.AddToScheme(LandscaperServiceScheme))
 
-	DeploymentGVK, err = apiutil.GVKForObject(&lssv1alpha1.LandscaperDeployment{}, LandscaperServiceScheme)
+	DeploymentGVK, err = apiutil.GVKForObject(&lssv1alpha2.LandscaperDeployment{}, LandscaperServiceScheme)
 	utilruntime.Must(err)
-	InstanceGVK, err = apiutil.GVKForObject(&lssv1alpha1.Instance{}, LandscaperServiceScheme)
+	InstanceGVK, err = apiutil.GVKForObject(&lssv1alpha2.Instance{}, LandscaperServiceScheme)
 	utilruntime.Must(err)
-	ConfigGVK, err = apiutil.GVKForObject(&lssv1alpha1.ServiceTargetConfig{}, LandscaperServiceScheme)
+	ConfigGVK, err = apiutil.GVKForObject(&lssv1alpha2.ServiceTargetConfig{}, LandscaperServiceScheme)
 	utilruntime.Must(err)
 	SecretGVK, err = apiutil.GVKForObject(&corev1.Secret{}, LandscaperServiceScheme)
 	utilruntime.Must(err)
@@ -83,12 +83,12 @@ func init() {
 	utilruntime.Must(err)
 	ContextGVK, err = apiutil.GVKForObject(&lsv1alpha1.Context{}, LandscaperServiceScheme)
 	utilruntime.Must(err)
-	AvailabilityCollectionGVK, err = apiutil.GVKForObject(&lssv1alpha1.AvailabilityCollection{}, LandscaperServiceScheme)
+	AvailabilityCollectionGVK, err = apiutil.GVKForObject(&lssv1alpha2.AvailabilityCollection{}, LandscaperServiceScheme)
 	utilruntime.Must(err)
 	LsHealthCheckGVK, err = apiutil.GVKForObject(&lsv1alpha1.LsHealthCheck{}, LandscaperServiceScheme)
 	utilruntime.Must(err)
-	NamespaceRegistrationGVK, err = apiutil.GVKForObject(&lssv1alpha1.NamespaceRegistration{}, LandscaperServiceScheme)
+	NamespaceRegistrationGVK, err = apiutil.GVKForObject(&lssv1alpha2.NamespaceRegistration{}, LandscaperServiceScheme)
 	utilruntime.Must(err)
-	SubjectListGVK, err = apiutil.GVKForObject(&lssv1alpha1.SubjectList{}, LandscaperServiceScheme)
+	SubjectListGVK, err = apiutil.GVKForObject(&lssv1alpha2.SubjectList{}, LandscaperServiceScheme)
 	utilruntime.Must(err)
 }

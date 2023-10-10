@@ -19,7 +19,6 @@ install-requirements:
 .PHONY: revendor
 revendor:
 	@$(REPO_ROOT)/hack/revendor.sh
-	@cd $(REPO_ROOT)/integration-test && $(REPO_ROOT)/hack/revendor.sh
 
 .PHONY: format
 format:

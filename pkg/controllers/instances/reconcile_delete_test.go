@@ -25,7 +25,7 @@ import (
 	kutil "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 
-	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
 	instancescontroller "github.com/gardener/landscaper-service/pkg/controllers/instances"
 	"github.com/gardener/landscaper-service/pkg/operation"
 	testutils "github.com/gardener/landscaper-service/test/utils"
@@ -70,7 +70,7 @@ var _ = Describe("Delete", func() {
 
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
-		Expect(kutil.HasFinalizer(instance, lssv1alpha1.LandscaperServiceFinalizer)).To(BeTrue())
+		Expect(kutil.HasFinalizer(instance, lssv1alpha2.LandscaperServiceFinalizer)).To(BeTrue())
 
 		Expect(testenv.Client.Delete(ctx, instance)).To(Succeed())
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
@@ -90,7 +90,7 @@ var _ = Describe("Delete", func() {
 
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
-		Expect(kutil.HasFinalizer(instance, lssv1alpha1.LandscaperServiceFinalizer)).To(BeTrue())
+		Expect(kutil.HasFinalizer(instance, lssv1alpha2.LandscaperServiceFinalizer)).To(BeTrue())
 
 		Expect(testenv.Client.Delete(ctx, instance)).To(Succeed())
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
@@ -114,7 +114,7 @@ var _ = Describe("Delete", func() {
 
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
-		Expect(kutil.HasFinalizer(instance, lssv1alpha1.LandscaperServiceFinalizer)).To(BeTrue())
+		Expect(kutil.HasFinalizer(instance, lssv1alpha2.LandscaperServiceFinalizer)).To(BeTrue())
 
 		Expect(testenv.Client.Delete(ctx, instance)).To(Succeed())
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
@@ -145,7 +145,7 @@ var _ = Describe("Delete", func() {
 
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
-		Expect(kutil.HasFinalizer(instance, lssv1alpha1.LandscaperServiceFinalizer)).To(BeTrue())
+		Expect(kutil.HasFinalizer(instance, lssv1alpha2.LandscaperServiceFinalizer)).To(BeTrue())
 
 		Expect(testenv.Client.Delete(ctx, instance)).To(Succeed())
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
@@ -169,7 +169,7 @@ var _ = Describe("Delete", func() {
 
 		instance := state.GetInstance("test")
 
-		ctrl.HandleDeleteFunc = func(ctx context.Context, deployment *lssv1alpha1.Instance) (reconcile.Result, error) {
+		ctrl.HandleDeleteFunc = func(ctx context.Context, deployment *lssv1alpha2.Instance) (reconcile.Result, error) {
 			return reconcile.Result{}, lsserrors.NewWrappedError(fmt.Errorf(reason), operation, reason, message)
 		}
 

@@ -7,11 +7,11 @@ import (
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 	rbacv1 "k8s.io/api/rbac/v1"
 
-	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
 )
 
 // CreateSubjectsForSubjectList converts the subjects of the SubjectList custom resource into rbac subjects.
-func CreateSubjectsForSubjectList(ctx context.Context, subjectList *lssv1alpha1.SubjectList) []rbacv1.Subject {
+func CreateSubjectsForSubjectList(ctx context.Context, subjectList *lssv1alpha2.SubjectList) []rbacv1.Subject {
 	logger, _ := logging.FromContextOrNew(ctx, nil)
 
 	subjects := []rbacv1.Subject{}
@@ -29,7 +29,7 @@ func CreateSubjectsForSubjectList(ctx context.Context, subjectList *lssv1alpha1.
 }
 
 // createSubjectForSubjectListEntry converts a single subject of the SubjectList custom resource into an rbac subject.
-func createSubjectForSubjectListEntry(subjectListEntry lssv1alpha1.Subject) (*rbacv1.Subject, error) {
+func createSubjectForSubjectListEntry(subjectListEntry lssv1alpha2.Subject) (*rbacv1.Subject, error) {
 	switch subjectListEntry.Kind {
 	case SUBJECT_LIST_ENTRY_USER, SUBJECT_LIST_ENTRY_GROUP:
 		// if the entry has a namespace, we ignore it

@@ -47,10 +47,6 @@ func validateLandscaperDeploymentSpec(spec *lsscore.LandscaperDeploymentSpec, fl
 		allErrs = append(allErrs, field.Required(fldPath.Child("purpose"), "purpose may not be empty"))
 	}
 
-	if spec.HighAvailabilityConfig != nil {
-		allErrs = append(allErrs, ValidateHighAvailabilityConfig(spec.HighAvailabilityConfig, fldPath.Child("highAvailabilityConfig"))...)
-	}
-
 	return allErrs
 }
 
@@ -59,12 +55,6 @@ func validateLandscaperDeploymentSpecUpdate(spec *lsscore.LandscaperDeploymentSp
 
 	if spec.TenantId != oldSpec.TenantId {
 		allErrs = append(allErrs, field.Forbidden(fldPath.Child("tenantId"), "is immutable"))
-	}
-
-	if spec.HighAvailabilityConfig != nil && oldSpec.HighAvailabilityConfig != nil {
-		if spec.HighAvailabilityConfig.ControlPlaneFailureTolerance != oldSpec.HighAvailabilityConfig.ControlPlaneFailureTolerance {
-			allErrs = append(allErrs, field.Forbidden(fldPath.Child("highAvailabilityConfig").Child("controlPlaneFailureTolerance"), "is immutable"))
-		}
 	}
 
 	return allErrs
