@@ -11,7 +11,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/validation/field"
 
-	lsscore "github.com/gardener/landscaper-service/pkg/apis/core"
+	"github.com/gardener/landscaper-service/pkg/apis/provisioning"
 )
 
 const (
@@ -20,7 +20,7 @@ const (
 )
 
 // ValidateInstance validates an instance
-func ValidateInstance(instance *lsscore.Instance, oldInstance *lsscore.Instance) field.ErrorList {
+func ValidateInstance(instance *provisioning.Instance, oldInstance *provisioning.Instance) field.ErrorList {
 	allErrs := field.ErrorList{}
 	allErrs = append(allErrs, validateInstanceObjectMeta(&instance.ObjectMeta, field.NewPath("metadata"))...)
 	allErrs = append(allErrs, validateInstanceSpec(&instance.Spec, field.NewPath("spec"))...)
@@ -36,7 +36,7 @@ func validateInstanceObjectMeta(objMeta *metav1.ObjectMeta, fldPath *field.Path)
 	return allErrs
 }
 
-func validateInstanceSpec(spec *lsscore.InstanceSpec, fldPath *field.Path) field.ErrorList {
+func validateInstanceSpec(spec *provisioning.InstanceSpec, fldPath *field.Path) field.ErrorList {
 	allErrs := field.ErrorList{}
 	allErrs = append(allErrs, ValidateObjectReference(&spec.ServiceTargetConfigRef, fldPath.Child("serviceTargetConfigRef"))...)
 
@@ -53,7 +53,7 @@ func validateInstanceSpec(spec *lsscore.InstanceSpec, fldPath *field.Path) field
 	return allErrs
 }
 
-func validateInstanceSpecUpdate(spec *lsscore.InstanceSpec, oldSpec *lsscore.InstanceSpec, fldPath *field.Path) field.ErrorList {
+func validateInstanceSpecUpdate(spec *provisioning.InstanceSpec, oldSpec *provisioning.InstanceSpec, fldPath *field.Path) field.ErrorList {
 	allErrs := field.ErrorList{}
 
 	if spec.TenantId != oldSpec.TenantId {

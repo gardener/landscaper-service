@@ -9,6 +9,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/gardener/landscaper-service/pkg/apis/provisioning"
+
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 	admissionv1 "k8s.io/api/admission/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -16,7 +18,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
 
-	lsscore "github.com/gardener/landscaper-service/pkg/apis/core"
 	"github.com/gardener/landscaper-service/pkg/apis/validation"
 )
 
@@ -69,14 +70,14 @@ type LandscaperDeploymentValidator struct{ abstractValidator }
 
 // Handle handles a request to the webhook
 func (dv *LandscaperDeploymentValidator) Handle(_ context.Context, req admission.Request) admission.Response {
-	deployment := &lsscore.LandscaperDeployment{}
+	deployment := &provisioning.LandscaperDeployment{}
 	if _, _, err := dv.decoder.Decode(req.Object.Raw, nil, deployment); err != nil {
 		return admission.Errored(http.StatusBadRequest, err)
 	}
 
-	var oldDeployment *lsscore.LandscaperDeployment
+	var oldDeployment *provisioning.LandscaperDeployment
 	if req.Operation == admissionv1.Update && req.OldObject.Raw != nil {
-		oldDeployment = &lsscore.LandscaperDeployment{}
+		oldDeployment = &provisioning.LandscaperDeployment{}
 		if _, _, err := dv.decoder.Decode(req.OldObject.Raw, nil, oldDeployment); err != nil {
 			return admission.Errored(http.StatusBadRequest, err)
 		}
@@ -96,14 +97,14 @@ type InstanceValidator struct{ abstractValidator }
 
 // Handle handles a request to the webhook
 func (iv *InstanceValidator) Handle(_ context.Context, req admission.Request) admission.Response {
-	instance := &lsscore.Instance{}
+	instance := &provisioning.Instance{}
 	if _, _, err := iv.decoder.Decode(req.Object.Raw, nil, instance); err != nil {
 		return admission.Errored(http.StatusBadRequest, err)
 	}
 
-	var oldInstance *lsscore.Instance
+	var oldInstance *provisioning.Instance
 	if req.Operation == admissionv1.Update && req.OldObject.Raw != nil {
-		oldInstance = &lsscore.Instance{}
+		oldInstance = &provisioning.Instance{}
 		if _, _, err := iv.decoder.Decode(req.OldObject.Raw, nil, oldInstance); err != nil {
 			return admission.Errored(http.StatusBadRequest, err)
 		}
@@ -123,7 +124,7 @@ type ServiceTargetConfigValidator struct{ abstractValidator }
 
 // Handle handles a request to the webhook
 func (sv *ServiceTargetConfigValidator) Handle(_ context.Context, req admission.Request) admission.Response {
-	config := &lsscore.ServiceTargetConfig{}
+	config := &provisioning.ServiceTargetConfig{}
 	if _, _, err := sv.decoder.Decode(req.Object.Raw, nil, config); err != nil {
 		return admission.Errored(http.StatusBadRequest, err)
 	}

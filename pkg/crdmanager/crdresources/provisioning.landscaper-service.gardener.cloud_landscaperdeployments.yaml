@@ -1,0 +1,319 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  creationTimestamp: null
+  name: landscaperdeployments.provisioning.landscaper-service.gardener.cloud
+spec:
+  group: provisioning.landscaper-service.gardener.cloud
+  names:
+    kind: LandscaperDeployment
+    plural: landscaperdeployments
+    shortNames:
+    - lsdepl
+    singular: landscaperdeployment
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .status.instanceRef.name
+      name: Instance
+      type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1alpha2
+    schema:
+      openAPIV3Schema:
+        description: The LandscaperDeployment is created to define a deployment of
+          the landscaper.
+        properties:
+          spec:
+            description: Spec contains the specification for the LandscaperDeployment
+            properties:
+              dataPlane:
+                properties:
+                  kubeconfig:
+                    type: string
+                  secretRef:
+                    description: SecretReference is a reference to data in a secret.
+                    properties:
+                      key:
+                        description: Key is the name of the key in the secret that
+                          holds the data.
+                        type: string
+                      name:
+                        description: Name is the name of the kubernetes object.
+                        type: string
+                      namespace:
+                        description: Namespace is the namespace of kubernetes object.
+                        type: string
+                    required:
+                    - name
+                    type: object
+                type: object
+              landscaperConfiguration:
+                description: LandscaperConfiguration contains the configuration for
+                  the landscaper service deployment
+                properties:
+                  deployers:
+                    description: Deployers is the list of deployers that are getting
+                      installed alongside with this Instance.
+                    items:
+                      type: string
+                    type: array
+                  deployersConfig:
+                    additionalProperties:
+                      description: DeployerConfig configures a deployer.
+                      properties:
+                        deployer:
+                          properties:
+                            controller:
+                              description: Controller specifies the config for a landscaper
+                                controller.
+                              properties:
+                                workers:
+                                  format: int32
+                                  type: integer
+                              type: object
+                            k8sClientSettings:
+                              description: K8SClientSettings specifies the settings
+                                for the k8s clients which landscaper uses to access
+                                host and resource cluster.
+                              properties:
+                                hostClient:
+                                  description: K8SClientLimits specifies the settings
+                                    for a k8s client.
+                                  properties:
+                                    burst:
+                                      format: int32
+                                      type: integer
+                                    qps:
+                                      format: int32
+                                      type: integer
+                                  type: object
+                                resourceClient:
+                                  description: K8SClientLimits specifies the settings
+                                    for a k8s client.
+                                  properties:
+                                    burst:
+                                      format: int32
+                                      type: integer
+                                    qps:
+                                      format: int32
+                                      type: integer
+                                  type: object
+                              type: object
+                          type: object
+                        hpa:
+                          description: HPA configures the horizontal pod autoscaling
+                            of pods.
+                          properties:
+                            averageCpuUtilization:
+                              format: int32
+                              type: integer
+                            averageMemoryUtilization:
+                              format: int32
+                              type: integer
+                            maxReplicas:
+                              format: int32
+                              type: integer
+                          type: object
+                        resources:
+                          description: Resources configures the resources of pods
+                            (requested cpu and memory)
+                          properties:
+                            requests:
+                              properties:
+                                cpu:
+                                  type: string
+                                memory:
+                                  type: string
+                              type: object
+                          type: object
+                      type: object
+                    description: DeployersConfig specifies the configuration for the
+                      landscaper standard deployers.
+                    type: object
+                  hpaMain:
+                    description: HPAMain configures the horizontal pod autoscaling
+                      of the "main" landscaper pods, i.e. the pods of installation
+                      and execution controller.
+                    properties:
+                      averageCpuUtilization:
+                        format: int32
+                        type: integer
+                      averageMemoryUtilization:
+                        format: int32
+                        type: integer
+                      maxReplicas:
+                        format: int32
+                        type: integer
+                    type: object
+                  landscaper:
+                    properties:
+                      controllers:
+                        description: Controllers specifies the config for the "main"
+                          landscaper controllers, i.e. the installation and execution
+                          controller.
+                        properties:
+                          executions:
+                            description: Controller specifies the config for a landscaper
+                              controller.
+                            properties:
+                              workers:
+                                format: int32
+                                type: integer
+                            type: object
+                          installations:
+                            description: Controller specifies the config for a landscaper
+                              controller.
+                            properties:
+                              workers:
+                                format: int32
+                                type: integer
+                            type: object
+                        type: object
+                      deployItemTimeouts:
+                        description: DeployItemTimeouts configures the timeout controller.
+                        properties:
+                          pickup:
+                            type: string
+                          progressingDefault:
+                            type: string
+                        type: object
+                      k8sClientSettings:
+                        description: K8SClientSettings specifies the settings for
+                          the k8s clients which landscaper uses to access host and
+                          resource cluster.
+                        properties:
+                          hostClient:
+                            description: K8SClientLimits specifies the settings for
+                              a k8s client.
+                            properties:
+                              burst:
+                                format: int32
+                                type: integer
+                              qps:
+                                format: int32
+                                type: integer
+                            type: object
+                          resourceClient:
+                            description: K8SClientLimits specifies the settings for
+                              a k8s client.
+                            properties:
+                              burst:
+                                format: int32
+                                type: integer
+                              qps:
+                                format: int32
+                                type: integer
+                            type: object
+                        type: object
+                    type: object
+                  resources:
+                    description: Resources configures the resources of the "central"
+                      landscaper pod, i.e. the pod responsible for crds creation,
+                      deployer management, context controller.
+                    properties:
+                      requests:
+                        properties:
+                          cpu:
+                            type: string
+                          memory:
+                            type: string
+                        type: object
+                    type: object
+                  resourcesMain:
+                    description: ResourcesMain configures the resources of the "main"
+                      landscaper pods, i.e. the pods of installation and execution
+                      controller.
+                    properties:
+                      requests:
+                        properties:
+                          cpu:
+                            type: string
+                          memory:
+                            type: string
+                        type: object
+                    type: object
+                required:
+                - deployers
+                type: object
+              purpose:
+                description: Purpose contains the purpose of this LandscaperDeployment.
+                type: string
+              tenantId:
+                description: TenantId is the unique identifier of the owning tenant.
+                type: string
+            required:
+            - tenantId
+            - purpose
+            - landscaperConfiguration
+            - dataPlane
+            type: object
+          status:
+            description: Status contains the status of the LandscaperDeployment.
+            properties:
+              instanceRef:
+                description: InstanceRef references the instance that is created for
+                  this LandscaperDeployment.
+                properties:
+                  name:
+                    description: Name is the name of the kubernetes object.
+                    type: string
+                  namespace:
+                    description: Namespace is the namespace of kubernetes object.
+                    type: string
+                required:
+                - name
+                type: object
+              lastError:
+                description: LastError describes the last error that occurred.
+                properties:
+                  lastTransitionTime:
+                    description: Last time the condition transitioned from one status
+                      to another.
+                    format: date-time
+                    type: string
+                  lastUpdateTime:
+                    description: Last time the condition was updated.
+                    format: date-time
+                    type: string
+                  message:
+                    description: A human-readable message indicating details about
+                      the transition.
+                    type: string
+                  operation:
+                    description: Operation describes the operator where the error
+                      occurred.
+                    type: string
+                  reason:
+                    description: The reason for the condition's last transition.
+                    type: string
+                required:
+                - operation
+                - lastTransitionTime
+                - lastUpdateTime
+                - reason
+                - message
+                type: object
+              observedGeneration:
+                description: ObservedGeneration is the most recent generation observed
+                  for this LandscaperDeployment. It corresponds to the LandscaperDeployment
+                  generation, which is updated on mutation by the landscaper service
+                  controller.
+                format: int64
+                type: integer
+            type: object
+        required:
+        - spec
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []

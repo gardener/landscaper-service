@@ -7,10 +7,10 @@ package servicetargetconfigs
 import (
 	"context"
 
-	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
+	provisioningv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/provisioning/v1alpha2"
 )
 
 // reconcile reconciles a service target config.
-func (c *Controller) reconcile(_ context.Context, _ *lssv1alpha2.ServiceTargetConfig) error {
+func (c *Controller) reconcile(_ context.Context, _ *provisioningv1alpha2.ServiceTargetConfig) error {
 	return nil
 }

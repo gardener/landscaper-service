@@ -11,11 +11,12 @@ import (
 
 	lsinstall "github.com/gardener/landscaper/apis/core/install"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
+
 	"github.com/spf13/cobra"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 
-	lssinstall "github.com/gardener/landscaper-service/pkg/apis/core/install"
+	provisioninginstall "github.com/gardener/landscaper-service/pkg/apis/provisioning/install"
 	"github.com/gardener/landscaper-service/pkg/controllers/avmonitorregistration"
 	"github.com/gardener/landscaper-service/pkg/controllers/avuploader"
 	"github.com/gardener/landscaper-service/pkg/controllers/healthwatcher"
@@ -74,7 +75,7 @@ func (o *options) run(ctx context.Context) error {
 		return err
 	}
 
-	lssinstall.Install(mgr.GetScheme())
+	provisioninginstall.Install(mgr.GetScheme())
 	lsinstall.Install(mgr.GetScheme())
 
 	ctrlLogger := o.Log.WithName("controllers")

@@ -14,17 +14,17 @@ import (
 
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 
-	lsscore "github.com/gardener/landscaper-service/pkg/apis/core"
-	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
+	"github.com/gardener/landscaper-service/pkg/apis/provisioning"
+	provisioningv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/provisioning/v1alpha2"
 	"github.com/gardener/landscaper-service/pkg/webhook"
 	"github.com/gardener/landscaper-service/test/utils/envtest"
 )
 
-func createServiceTargetConfig(name, namespace string) *lssv1alpha2.ServiceTargetConfig {
-	config := &lssv1alpha2.ServiceTargetConfig{
+func createServiceTargetConfig(name, namespace string) *provisioningv1alpha2.ServiceTargetConfig {
+	config := &provisioningv1alpha2.ServiceTargetConfig{
 		TypeMeta: metav1.TypeMeta{
-			Kind:       lssv1alpha2.ServiceTargetConfigDefinition.Names.Kind,
-			APIVersion: lssv1alpha2.SchemeGroupVersion.String(),
+			Kind:       provisioningv1alpha2.ServiceTargetConfigDefinition.Names.Kind,
+			APIVersion: provisioningv1alpha2.SchemeGroupVersion.String(),
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      name,
@@ -52,12 +52,12 @@ var _ = Describe("ServiceTargetConfig", func() {
 		testObj := createServiceTargetConfig("test", "lss-system")
 
 		testObj.ObjectMeta.Labels = map[string]string{
-			lsscore.ServiceTargetConfigVisibleLabelName: "true",
+			provisioning.ServiceTargetConfigVisibleLabelName: "true",
 		}
-		testObj.Spec = lssv1alpha2.ServiceTargetConfigSpec{
+		testObj.Spec = provisioningv1alpha2.ServiceTargetConfigSpec{
 			Priority: 10,
-			SecretRef: lssv1alpha2.SecretReference{
-				ObjectReference: lssv1alpha2.ObjectReference{
+			SecretRef: provisioningv1alpha2.SecretReference{
+				ObjectReference: provisioningv1alpha2.ObjectReference{
 					Name:      "target",
 					Namespace: "lss-system",
 				},
@@ -75,10 +75,10 @@ var _ = Describe("ServiceTargetConfig", func() {
 	It("should deny resource with missing labels", func() {
 		testObj := createServiceTargetConfig("test", "lss-system")
 
-		testObj.Spec = lssv1alpha2.ServiceTargetConfigSpec{
+		testObj.Spec = provisioningv1alpha2.ServiceTargetConfigSpec{
 			Priority: 10,
-			SecretRef: lssv1alpha2.SecretReference{
-				ObjectReference: lssv1alpha2.ObjectReference{
+			SecretRef: provisioningv1alpha2.SecretReference{
+				ObjectReference: provisioningv1alpha2.ObjectReference{
 					Name:      "target",
 					Namespace: "lss-system",
 				},
@@ -101,12 +101,12 @@ var _ = Describe("ServiceTargetConfig", func() {
 		testObj := createServiceTargetConfig("test", "lss-system")
 
 		testObj.ObjectMeta.Labels = map[string]string{
-			lsscore.ServiceTargetConfigVisibleLabelName: "abc",
+			provisioning.ServiceTargetConfigVisibleLabelName: "abc",
 		}
-		testObj.Spec = lssv1alpha2.ServiceTargetConfigSpec{
+		testObj.Spec = provisioningv1alpha2.ServiceTargetConfigSpec{
 			Priority: 10,
-			SecretRef: lssv1alpha2.SecretReference{
-				ObjectReference: lssv1alpha2.ObjectReference{
+			SecretRef: provisioningv1alpha2.SecretReference{
+				ObjectReference: provisioningv1alpha2.ObjectReference{
 					Name:      "target",
 					Namespace: "lss-system",
 				},
@@ -129,12 +129,12 @@ var _ = Describe("ServiceTargetConfig", func() {
 		testObj := createServiceTargetConfig("test", "lss-system")
 
 		testObj.ObjectMeta.Labels = map[string]string{
-			lsscore.ServiceTargetConfigVisibleLabelName: "true",
+			provisioning.ServiceTargetConfigVisibleLabelName: "true",
 		}
-		testObj.Spec = lssv1alpha2.ServiceTargetConfigSpec{
+		testObj.Spec = provisioningv1alpha2.ServiceTargetConfigSpec{
 			Priority: 10,
-			SecretRef: lssv1alpha2.SecretReference{
-				ObjectReference: lssv1alpha2.ObjectReference{
+			SecretRef: provisioningv1alpha2.SecretReference{
+				ObjectReference: provisioningv1alpha2.ObjectReference{
 					Name:      "",
 					Namespace: "",
 				},
@@ -159,12 +159,12 @@ var _ = Describe("ServiceTargetConfig", func() {
 		testObj := createServiceTargetConfig("test", "lss-system")
 
 		testObj.ObjectMeta.Labels = map[string]string{
-			lsscore.ServiceTargetConfigVisibleLabelName: "true",
+			provisioning.ServiceTargetConfigVisibleLabelName: "true",
 		}
-		testObj.Spec = lssv1alpha2.ServiceTargetConfigSpec{
+		testObj.Spec = provisioningv1alpha2.ServiceTargetConfigSpec{
 			Priority: 10,
-			SecretRef: lssv1alpha2.SecretReference{
-				ObjectReference: lssv1alpha2.ObjectReference{
+			SecretRef: provisioningv1alpha2.SecretReference{
+				ObjectReference: provisioningv1alpha2.ObjectReference{
 					Name:      "target",
 					Namespace: "lss-system",
 				},

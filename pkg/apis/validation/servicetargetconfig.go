@@ -9,11 +9,11 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/validation/field"
 
-	lsscore "github.com/gardener/landscaper-service/pkg/apis/core"
+	"github.com/gardener/landscaper-service/pkg/apis/provisioning"
 )
 
 // ValidateServiceTargetConfig validates a ServiceTargetConfig
-func ValidateServiceTargetConfig(config *lsscore.ServiceTargetConfig) field.ErrorList {
+func ValidateServiceTargetConfig(config *provisioning.ServiceTargetConfig) field.ErrorList {
 	allErrs := field.ErrorList{}
 	allErrs = append(allErrs, validateServiceTargetConfigObjectMeta(&config.ObjectMeta, field.NewPath("metadata"))...)
 	allErrs = append(allErrs, validateServiceTargetConfigSpec(&config.Spec, field.NewPath("spec"))...)
@@ -26,8 +26,8 @@ func validateServiceTargetConfigObjectMeta(objMeta *metav1.ObjectMeta, fldPath *
 
 	labelsPath := fldPath.Child("labels")
 
-	visibleLabelPath := labelsPath.Child(lsscore.ServiceTargetConfigVisibleLabelName)
-	visibleLabelValue, ok := objMeta.Labels[lsscore.ServiceTargetConfigVisibleLabelName]
+	visibleLabelPath := labelsPath.Child(provisioning.ServiceTargetConfigVisibleLabelName)
+	visibleLabelValue, ok := objMeta.Labels[provisioning.ServiceTargetConfigVisibleLabelName]
 	if !ok {
 		allErrs = append(allErrs, field.Required(visibleLabelPath, "label needs to be set"))
 	} else if visibleLabelValue != "true" && visibleLabelValue != "false" {
@@ -37,7 +37,7 @@ func validateServiceTargetConfigObjectMeta(objMeta *metav1.ObjectMeta, fldPath *
 	return allErrs
 }
 
-func validateServiceTargetConfigSpec(spec *lsscore.ServiceTargetConfigSpec, fldPath *field.Path) field.ErrorList {
+func validateServiceTargetConfigSpec(spec *provisioning.ServiceTargetConfigSpec, fldPath *field.Path) field.ErrorList {
 	allErrs := field.ErrorList{}
 
 	allErrs = append(allErrs, ValidateSecretReference(&spec.SecretRef, fldPath.Child("secretRef"))...)

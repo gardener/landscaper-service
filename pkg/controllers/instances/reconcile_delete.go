@@ -24,8 +24,9 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
-	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
-	lsserrors "github.com/gardener/landscaper-service/pkg/apis/errors"
+	"github.com/gardener/landscaper-service/pkg/apis/constants"
+	lsserrors "github.com/gardener/landscaper-service/pkg/apis/provisioning/errors"
+	provisioningv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/provisioning/v1alpha2"
 	"github.com/gardener/landscaper-service/pkg/utils"
 )
 
@@ -34,7 +35,7 @@ const (
 )
 
 // handleDelete handles the deletion of instances
-func (c *Controller) handleDelete(ctx context.Context, instance *lssv1alpha2.Instance) (reconcile.Result, error) {
+func (c *Controller) handleDelete(ctx context.Context, instance *provisioningv1alpha2.Instance) (reconcile.Result, error) {
 	var (
 		err                                 error
 		curOp                               = "Delete"
@@ -98,13 +99,13 @@ func (c *Controller) handleDelete(ctx context.Context, instance *lssv1alpha2.Ins
 		return reconcile.Result{}, nil
 	}
 
-	serviceTargetConfig := &lssv1alpha2.ServiceTargetConfig{}
+	serviceTargetConfig := &provisioningv1alpha2.ServiceTargetConfig{}
 	if err := c.Client().Get(ctx, instance.Spec.ServiceTargetConfigRef.NamespacedName(), serviceTargetConfig); err != nil {
 		return reconcile.Result{}, lsserrors.NewWrappedError(err, curOp, "GetServiceTargetConfig", err.Error())
 	}
 
 	// remove instance reference from service target config
-	serviceTargetConfig.Status.InstanceRefs = utils.RemoveReference(serviceTargetConfig.Status.InstanceRefs, &lssv1alpha2.ObjectReference{
+	serviceTargetConfig.Status.InstanceRefs = utils.RemoveReference(serviceTargetConfig.Status.InstanceRefs, &provisioningv1alpha2.ObjectReference{
 		Name:      instance.GetName(),
 		Namespace: instance.GetNamespace(),
 	})
@@ -113,7 +114,7 @@ func (c *Controller) handleDelete(ctx context.Context, instance *lssv1alpha2.Ins
 		return reconcile.Result{}, lsserrors.NewWrappedError(err, curOp, "RemoveRefFromServiceTargetConfig", err.Error())
 	}
 
-	controllerutil.RemoveFinalizer(instance, lssv1alpha2.LandscaperServiceFinalizer)
+	controllerutil.RemoveFinalizer(instance, constants.LandscaperServiceFinalizer)
 	if err := c.Client().Update(ctx, instance); err != nil {
 		return reconcile.Result{}, lsserrors.NewWrappedError(err, curOp, "RemoveFinalizer", err.Error())
 	}
@@ -122,7 +123,7 @@ func (c *Controller) handleDelete(ctx context.Context, instance *lssv1alpha2.Ins
 }
 
 // ensureDeleteInstallationForInstance ensures that the installation for an instance is deleted
-func (c *Controller) ensureDeleteInstallationForInstance(ctx context.Context, instance *lssv1alpha2.Instance) (bool, error) {
+func (c *Controller) ensureDeleteInstallationForInstance(ctx context.Context, instance *provisioningv1alpha2.Instance) (bool, error) {
 	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(instance).String()},
 		lc.KeyMethod, "ensureDeleteInstallationForInstance")
 
@@ -151,7 +152,7 @@ func (c *Controller) ensureDeleteInstallationForInstance(ctx context.Context, in
 }
 
 // ensureDeleteTargetClusterTargetForInstance ensures that the target for an instance is deleted
-func (c *Controller) ensureDeleteTargetClusterTargetForInstance(ctx context.Context, instance *lssv1alpha2.Instance) (bool, error) {
+func (c *Controller) ensureDeleteTargetClusterTargetForInstance(ctx context.Context, instance *provisioningv1alpha2.Instance) (bool, error) {
 	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(instance).String()},
 		lc.KeyMethod, "ensureDeleteTargetClusterTargetForInstance")
 
@@ -180,7 +181,7 @@ func (c *Controller) ensureDeleteTargetClusterTargetForInstance(ctx context.Cont
 }
 
 // ensureDeleteTargetClusterTargetForInstance ensures that the target for an instance is deleted
-func (c *Controller) ensureDeleteDataPlaneClusterTargetForInstance(ctx context.Context, instance *lssv1alpha2.Instance) (bool, error) {
+func (c *Controller) ensureDeleteDataPlaneClusterTargetForInstance(ctx context.Context, instance *provisioningv1alpha2.Instance) (bool, error) {
 	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(instance).String()},
 		lc.KeyMethod, "ensureDeleteDataPlaneClusterTargetForInstance")
 
@@ -209,7 +210,7 @@ func (c *Controller) ensureDeleteDataPlaneClusterTargetForInstance(ctx context.C
 }
 
 // ensureDeleteContextForInstance ensures that the context for an instance is deleted
-func (c *Controller) ensureDeleteContextForInstance(ctx context.Context, instance *lssv1alpha2.Instance) (bool, error) {
+func (c *Controller) ensureDeleteContextForInstance(ctx context.Context, instance *provisioningv1alpha2.Instance) (bool, error) {
 	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(instance).String()},
 		lc.KeyMethod, "ensureDeleteContextForInstance")
 
@@ -267,7 +268,7 @@ func (c *Controller) deleteSecretsForContext(ctx context.Context, landscaperCont
 }
 
 // ensureDeleteTargetClusterNamespace ensures that the target cluster namespace for an instance has been deleted.
-func (c *Controller) ensureDeleteTargetClusterNamespace(ctx context.Context, instance *lssv1alpha2.Instance) (bool, error) {
+func (c *Controller) ensureDeleteTargetClusterNamespace(ctx context.Context, instance *provisioningv1alpha2.Instance) (bool, error) {
 	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(instance).String()},
 		lc.KeyMethod, "ensureDeleteTargetClusterNamespace")
 
@@ -312,7 +313,7 @@ func (c *Controller) ensureDeleteTargetClusterNamespace(ctx context.Context, ins
 }
 
 // deleteTargetClusterRBAC deletes all clusterroles and bindings associated with this instance.
-func deleteTargetClusterRBAC(ctx context.Context, instance *lssv1alpha2.Instance, cl client.Client) {
+func deleteTargetClusterRBAC(ctx context.Context, instance *provisioningv1alpha2.Instance, cl client.Client) {
 	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(instance).String()},
 		lc.KeyMethod, "deleteTargetClusterRBAC")
 

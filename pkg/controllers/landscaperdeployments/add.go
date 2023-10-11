@@ -14,7 +14,7 @@ import (
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 
 	coreconfig "github.com/gardener/landscaper-service/pkg/apis/config"
-	"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
+	"github.com/gardener/landscaper-service/pkg/apis/provisioning/v1alpha2"
 )
 
 // AddControllerToManager adds the landscaperdeployments controller to the manager

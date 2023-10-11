@@ -7,11 +7,11 @@ package validation
 import (
 	"k8s.io/apimachinery/pkg/util/validation/field"
 
-	lsscore "github.com/gardener/landscaper-service/pkg/apis/core"
+	"github.com/gardener/landscaper-service/pkg/apis/provisioning"
 )
 
 // ValidateSecretReference validates a secret reference
-func ValidateSecretReference(ref *lsscore.SecretReference, fldPath *field.Path) field.ErrorList {
+func ValidateSecretReference(ref *provisioning.SecretReference, fldPath *field.Path) field.ErrorList {
 	allErrs := field.ErrorList{}
 
 	if len(ref.Key) == 0 {
@@ -23,7 +23,7 @@ func ValidateSecretReference(ref *lsscore.SecretReference, fldPath *field.Path) 
 }
 
 // ValidateObjectReference validates an object reference
-func ValidateObjectReference(ref *lsscore.ObjectReference, fldPath *field.Path) field.ErrorList {
+func ValidateObjectReference(ref *provisioning.ObjectReference, fldPath *field.Path) field.ErrorList {
 	allErrs := field.ErrorList{}
 
 	if len(ref.Name) == 0 {
@@ -37,7 +37,7 @@ func ValidateObjectReference(ref *lsscore.ObjectReference, fldPath *field.Path) 
 	return allErrs
 }
 
-func ValidateDataPlane(dataPlane *lsscore.DataPlane, fldPath *field.Path) field.ErrorList {
+func ValidateDataPlane(dataPlane *provisioning.DataPlane, fldPath *field.Path) field.ErrorList {
 	allErrs := field.ErrorList{}
 	kubeconfigStrEmpty := len(dataPlane.Kubeconfig) == 0
 	secretRefEmpty := dataPlane.SecretRef == nil

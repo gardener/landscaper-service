@@ -12,10 +12,9 @@ import (
 
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 
-	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
+	provisioningv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/provisioning/v1alpha2"
+	"github.com/gardener/landscaper-service/pkg/controllers/avuploader"
 	"github.com/gardener/landscaper-service/test/utils/envtest"
-
-	avuploader "github.com/gardener/landscaper-service/pkg/controllers/avuploader"
 )
 
 var _ = Describe("Reconcile", func() {
@@ -38,12 +37,12 @@ var _ = Describe("Reconcile", func() {
 
 var _ = Describe("avs request construction", func() {
 	It("should construct a UP avs request", func() {
-		availabilityCollection := lssv1alpha2.AvailabilityCollection{
-			Status: lssv1alpha2.AvailabilityCollectionStatus{
-				Instances: []lssv1alpha2.AvailabilityInstance{
+		availabilityCollection := provisioningv1alpha2.AvailabilityCollection{
+			Status: provisioningv1alpha2.AvailabilityCollectionStatus{
+				Instances: []provisioningv1alpha2.AvailabilityInstance{
 					{
 						Status: string(lsv1alpha1.LsHealthCheckStatusOk),
-						ObjectReference: lssv1alpha2.ObjectReference{
+						ObjectReference: provisioningv1alpha2.ObjectReference{
 							Name:      "instance1",
 							Namespace: "instance1-namespace",
 						},
@@ -57,12 +56,12 @@ var _ = Describe("avs request construction", func() {
 	})
 
 	It("should construct a DOWN avs request", func() {
-		availabilityCollection := lssv1alpha2.AvailabilityCollection{
-			Status: lssv1alpha2.AvailabilityCollectionStatus{
-				Instances: []lssv1alpha2.AvailabilityInstance{
+		availabilityCollection := provisioningv1alpha2.AvailabilityCollection{
+			Status: provisioningv1alpha2.AvailabilityCollectionStatus{
+				Instances: []provisioningv1alpha2.AvailabilityInstance{
 					{
 						Status: string(lsv1alpha1.LsHealthCheckStatusOk),
-						ObjectReference: lssv1alpha2.ObjectReference{
+						ObjectReference: provisioningv1alpha2.ObjectReference{
 							Name:      "instance1",
 							Namespace: "instance1-namespace",
 						},
@@ -70,16 +69,16 @@ var _ = Describe("avs request construction", func() {
 					{
 						Status:       string(lsv1alpha1.LsHealthCheckStatusFailed),
 						FailedReason: "timeout",
-						ObjectReference: lssv1alpha2.ObjectReference{
+						ObjectReference: provisioningv1alpha2.ObjectReference{
 							Name:      "instance2",
 							Namespace: "instance2-namespace",
 						},
 					},
 				},
-				Self: lssv1alpha2.AvailabilityInstance{
+				Self: provisioningv1alpha2.AvailabilityInstance{
 					Status:       string(lsv1alpha1.LsHealthCheckStatusFailed),
 					FailedReason: "timeout2",
-					ObjectReference: lssv1alpha2.ObjectReference{
+					ObjectReference: provisioningv1alpha2.ObjectReference{
 						Name:      "self",
 						Namespace: "landscaper",
 					},

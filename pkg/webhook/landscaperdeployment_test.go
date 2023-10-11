@@ -14,16 +14,16 @@ import (
 
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 
-	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
+	provisioningv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/provisioning/v1alpha2"
 	"github.com/gardener/landscaper-service/pkg/webhook"
 	"github.com/gardener/landscaper-service/test/utils/envtest"
 )
 
-func createLandscaperDeployment(name, namespace string) *lssv1alpha2.LandscaperDeployment {
-	deployment := &lssv1alpha2.LandscaperDeployment{
+func createLandscaperDeployment(name, namespace string) *provisioningv1alpha2.LandscaperDeployment {
+	deployment := &provisioningv1alpha2.LandscaperDeployment{
 		TypeMeta: metav1.TypeMeta{
-			Kind:       lssv1alpha2.LandscaperDeploymentDefinition.Names.Kind,
-			APIVersion: lssv1alpha2.SchemeGroupVersion.String(),
+			Kind:       provisioningv1alpha2.LandscaperDeploymentDefinition.Names.Kind,
+			APIVersion: provisioningv1alpha2.SchemeGroupVersion.String(),
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      name,
@@ -49,10 +49,10 @@ var _ = Describe("LandscaperDeployment", func() {
 
 	It("should allow valid resource", func() {
 		testObj := createLandscaperDeployment("test", "lss-system")
-		testObj.Spec = lssv1alpha2.LandscaperDeploymentSpec{
+		testObj.Spec = provisioningv1alpha2.LandscaperDeploymentSpec{
 			TenantId: "test0001",
 			Purpose:  "test",
-			LandscaperConfiguration: lssv1alpha2.LandscaperConfiguration{
+			LandscaperConfiguration: provisioningv1alpha2.LandscaperConfiguration{
 				Deployers: []string{
 					"helm",
 					"manifest",
@@ -68,10 +68,10 @@ var _ = Describe("LandscaperDeployment", func() {
 
 	It("should deny resource with invalid tenant id", func() {
 		testObj := createLandscaperDeployment("test", "lss-system")
-		testObj.Spec = lssv1alpha2.LandscaperDeploymentSpec{
+		testObj.Spec = provisioningv1alpha2.LandscaperDeploymentSpec{
 			TenantId: "test00001",
 			Purpose:  "test",
-			LandscaperConfiguration: lssv1alpha2.LandscaperConfiguration{
+			LandscaperConfiguration: provisioningv1alpha2.LandscaperConfiguration{
 				Deployers: []string{
 					"helm",
 					"manifest",
@@ -92,10 +92,10 @@ var _ = Describe("LandscaperDeployment", func() {
 
 	It("should deny resource with invalid purpose", func() {
 		testObj := createLandscaperDeployment("test", "lss-system")
-		testObj.Spec = lssv1alpha2.LandscaperDeploymentSpec{
+		testObj.Spec = provisioningv1alpha2.LandscaperDeploymentSpec{
 			TenantId: "test0001",
 			Purpose:  "",
-			LandscaperConfiguration: lssv1alpha2.LandscaperConfiguration{
+			LandscaperConfiguration: provisioningv1alpha2.LandscaperConfiguration{
 				Deployers: []string{
 					"helm",
 					"manifest",
@@ -116,10 +116,10 @@ var _ = Describe("LandscaperDeployment", func() {
 
 	It("should allow a valid update", func() {
 		testObj := createLandscaperDeployment("test", "lss-system")
-		testObj.Spec = lssv1alpha2.LandscaperDeploymentSpec{
+		testObj.Spec = provisioningv1alpha2.LandscaperDeploymentSpec{
 			TenantId: "test0001",
 			Purpose:  "test",
-			LandscaperConfiguration: lssv1alpha2.LandscaperConfiguration{
+			LandscaperConfiguration: provisioningv1alpha2.LandscaperConfiguration{
 				Deployers: []string{
 					"helm",
 					"manifest",
@@ -145,10 +145,10 @@ var _ = Describe("LandscaperDeployment", func() {
 
 	It("should deny an update of the tenant id", func() {
 		testObj := createLandscaperDeployment("test", "lss-system")
-		testObj.Spec = lssv1alpha2.LandscaperDeploymentSpec{
+		testObj.Spec = provisioningv1alpha2.LandscaperDeploymentSpec{
 			TenantId: "test0001",
 			Purpose:  "test",
-			LandscaperConfiguration: lssv1alpha2.LandscaperConfiguration{
+			LandscaperConfiguration: provisioningv1alpha2.LandscaperConfiguration{
 				Deployers: []string{
 					"helm",
 					"manifest",

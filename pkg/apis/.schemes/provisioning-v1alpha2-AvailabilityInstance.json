@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "definitions": {},
+  "description": "AvailabilityInstance contains the availability status for one instance.",
+  "properties": {
+    "failedReason": {
+      "default": "",
+      "description": "FailedReason is the reason the status is in failed.",
+      "type": "string"
+    },
+    "name": {
+      "default": "",
+      "description": "Name is the name of the kubernetes object.",
+      "type": "string"
+    },
+    "namespace": {
+      "default": "",
+      "description": "Namespace is the namespace of kubernetes object.",
+      "type": "string"
+    },
+    "status": {
+      "default": "",
+      "description": "Status is the availability status of the instance.",
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "status",
+    "failedReason"
+  ],
+  "title": "provisioning-v1alpha2-AvailabilityInstance",
+  "type": "object"
+}

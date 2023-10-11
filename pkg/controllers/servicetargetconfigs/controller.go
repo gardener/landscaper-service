@@ -18,7 +18,8 @@ import (
 	kutils "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 
 	coreconfig "github.com/gardener/landscaper-service/pkg/apis/config"
-	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
+	"github.com/gardener/landscaper-service/pkg/apis/constants"
+	provisioningv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/provisioning/v1alpha2"
 	"github.com/gardener/landscaper-service/pkg/operation"
 )
 
@@ -42,7 +43,7 @@ func NewController(logger logging.Logger, c client.Client, scheme *runtime.Schem
 func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reconcile.Result, error) {
 	logger, ctx := c.log.StartReconcileAndAddToContext(ctx, req)
 
-	config := &lssv1alpha2.ServiceTargetConfig{}
+	config := &provisioningv1alpha2.ServiceTargetConfig{}
 	if err := c.Client().Get(ctx, req.NamespacedName, config); err != nil {
 		if apierrors.IsNotFound(err) {
 			logger.Info(err.Error())
@@ -62,8 +63,8 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	}
 
 	// set finalizer
-	if config.DeletionTimestamp.IsZero() && !kutils.HasFinalizer(config, lssv1alpha2.LandscaperServiceFinalizer) {
-		controllerutil.AddFinalizer(config, lssv1alpha2.LandscaperServiceFinalizer)
+	if config.DeletionTimestamp.IsZero() && !kutils.HasFinalizer(config, constants.LandscaperServiceFinalizer) {
+		controllerutil.AddFinalizer(config, constants.LandscaperServiceFinalizer)
 		if err := c.Client().Update(ctx, config); err != nil {
 			return reconcile.Result{}, err
 		}
@@ -72,7 +73,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 	if !config.DeletionTimestamp.IsZero() {
 		// TODO: handle delete
-		controllerutil.RemoveFinalizer(config, lssv1alpha2.LandscaperServiceFinalizer)
+		controllerutil.RemoveFinalizer(config, constants.LandscaperServiceFinalizer)
 		if err := c.Client().Update(ctx, config); err != nil {
 			return reconcile.Result{}, err
 		}

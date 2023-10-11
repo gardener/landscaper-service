@@ -9,17 +9,17 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"io"
 	"os"
 	"path/filepath"
 	"time"
 
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
-
-	"html/template"
-
 	kutil "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
+
 	"github.com/pkg/errors"
+
 	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -30,7 +30,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
 
-	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
+	dataplanev1alpha1 "github.com/gardener/landscaper-service/pkg/apis/dataplane/v1alpha1"
+	provisioningv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/provisioning/v1alpha2"
 )
 
 // Environment is the test environment
@@ -367,19 +368,19 @@ func (e *Environment) decodeAndAppendLSSObject(data []byte, objects []client.Obj
 
 	switch gvk.Kind {
 	case DeploymentGVK.Kind:
-		deployment := &lssv1alpha2.LandscaperDeployment{}
+		deployment := &provisioningv1alpha2.LandscaperDeployment{}
 		if _, _, err := decoder.Decode(data, nil, deployment); err != nil {
 			return nil, fmt.Errorf("unable to decode file as landscaper deployment: %w", err)
 		}
 		return append(objects, deployment), nil
 	case InstanceGVK.Kind:
-		instance := &lssv1alpha2.Instance{}
+		instance := &provisioningv1alpha2.Instance{}
 		if _, _, err := decoder.Decode(data, nil, instance); err != nil {
 			return nil, fmt.Errorf("unable to decode file as instance: %w", err)
 		}
 		return append(objects, instance), nil
 	case ConfigGVK.Kind:
-		config := &lssv1alpha2.ServiceTargetConfig{}
+		config := &provisioningv1alpha2.ServiceTargetConfig{}
 		if _, _, err := decoder.Decode(data, nil, config); err != nil {
 			return nil, fmt.Errorf("unable to decode file as service target config: %w", err)
 		}
@@ -433,7 +434,7 @@ func (e *Environment) decodeAndAppendLSSObject(data []byte, objects []client.Obj
 		}
 		return append(objects, context), nil
 	case AvailabilityCollectionGVK.Kind:
-		availabilityCollection := &lssv1alpha2.AvailabilityCollection{}
+		availabilityCollection := &provisioningv1alpha2.AvailabilityCollection{}
 		if _, _, err := decoder.Decode(data, nil, availabilityCollection); err != nil {
 			return nil, fmt.Errorf("unable to decode file as availability collection: %w", err)
 		}
@@ -445,13 +446,13 @@ func (e *Environment) decodeAndAppendLSSObject(data []byte, objects []client.Obj
 		}
 		return append(objects, lshealthcheck), nil
 	case NamespaceRegistrationGVK.Kind:
-		namespaceRegistration := &lssv1alpha2.NamespaceRegistration{}
+		namespaceRegistration := &dataplanev1alpha1.NamespaceRegistration{}
 		if _, _, err := decoder.Decode(data, nil, namespaceRegistration); err != nil {
 			return nil, fmt.Errorf("unable to decode file as  NamespaceRegistration: %w", err)
 		}
 		return append(objects, namespaceRegistration), nil
 	case SubjectListGVK.Kind:
-		subjectList := &lssv1alpha2.SubjectList{}
+		subjectList := &dataplanev1alpha1.SubjectList{}
 		if _, _, err := decoder.Decode(data, nil, subjectList); err != nil {
 			return nil, fmt.Errorf("unable to decode file as  SubjectList: %w", err)
 		}

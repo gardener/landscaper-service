@@ -9,11 +9,6 @@ import (
 	"fmt"
 	"os"
 
-	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
-
-	lsinstall "github.com/gardener/landscaper/apis/core/install"
-	"github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
-	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 	"github.com/spf13/cobra"
 	corev1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
@@ -26,7 +21,12 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 
-	lssinstall "github.com/gardener/landscaper-service/pkg/apis/core/install"
+	lsinstall "github.com/gardener/landscaper/apis/core/install"
+	"github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
+
+	dataplaneinstall "github.com/gardener/landscaper-service/pkg/apis/dataplane/install"
+	dataplanev1alpha1 "github.com/gardener/landscaper-service/pkg/apis/dataplane/v1alpha1"
 	"github.com/gardener/landscaper-service/pkg/controllers/namespaceregistration"
 	"github.com/gardener/landscaper-service/pkg/controllers/subjectsync"
 	"github.com/gardener/landscaper-service/pkg/crdmanager"
@@ -81,7 +81,7 @@ func (o *options) run(ctx context.Context) error {
 		return err
 	}
 
-	lssinstall.Install(mgr.GetScheme())
+	dataplaneinstall.Install(mgr.GetScheme())
 	lsinstall.Install(mgr.GetScheme())
 
 	o.Log.Info("Fetching client for init")
@@ -135,7 +135,7 @@ func (o *options) ensureCRDs(ctx context.Context, mgr manager.Manager) error {
 
 func createClientForInit(config *rest.Config) (client.Client, error) {
 	scheme := runtime.NewScheme()
-	lssinstall.Install(scheme)
+	dataplaneinstall.Install(scheme)
 	lsinstall.Install(scheme)
 	utilruntime.Must(rbacv1.AddToScheme(scheme))
 	utilruntime.Must(corev1.AddToScheme(scheme))
@@ -232,13 +232,13 @@ func createLsUserRolebindingIfNotExist(ctx context.Context, c client.Client) err
 }
 
 func createSubjectsListIfNotExist(ctx context.Context, c client.Client) error {
-	subjectList := &lssv1alpha2.SubjectList{
+	subjectList := &dataplanev1alpha1.SubjectList{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      subjectsync.SUBJECT_LIST_NAME,
 			Namespace: subjectsync.LS_USER_NAMESPACE,
 		},
-		Spec: lssv1alpha2.SubjectListSpec{
-			Subjects: []lssv1alpha2.Subject{},
+		Spec: dataplanev1alpha1.SubjectListSpec{
+			Subjects: []dataplanev1alpha1.Subject{},
 		},
 	}
 	if err := c.Create(ctx, subjectList); err != nil && !apierrors.IsAlreadyExists(err) {

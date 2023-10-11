@@ -9,8 +9,6 @@ import (
 	"fmt"
 	"time"
 
-	lsserrors "github.com/gardener/landscaper-service/pkg/apis/errors"
-
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 
 	. "github.com/onsi/ginkgo"
@@ -19,7 +17,9 @@ import (
 	kutil "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	"k8s.io/apimachinery/pkg/types"
 
-	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
+	"github.com/gardener/landscaper-service/pkg/apis/constants"
+	lsserrors "github.com/gardener/landscaper-service/pkg/apis/provisioning/errors"
+	provisioningv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/provisioning/v1alpha2"
 	deploymentscontroller "github.com/gardener/landscaper-service/pkg/controllers/landscaperdeployments"
 	"github.com/gardener/landscaper-service/pkg/operation"
 	testutils "github.com/gardener/landscaper-service/test/utils"
@@ -56,7 +56,7 @@ var _ = Describe("Delete", func() {
 
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(deployment))
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(deployment), deployment)).To(Succeed())
-		Expect(kutil.HasFinalizer(deployment, lssv1alpha2.LandscaperServiceFinalizer)).To(BeTrue())
+		Expect(kutil.HasFinalizer(deployment, constants.LandscaperServiceFinalizer)).To(BeTrue())
 
 		Expect(testenv.Client.Delete(ctx, deployment)).To(Succeed())
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(deployment))
@@ -77,7 +77,7 @@ var _ = Describe("Delete", func() {
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(deployment), deployment)).To(Succeed())
 		Expect(deployment.Status.InstanceRef).ToNot(BeNil())
 
-		instance := &lssv1alpha2.Instance{}
+		instance := &provisioningv1alpha2.Instance{}
 		err = testenv.Client.Get(ctx, types.NamespacedName{Name: deployment.Status.InstanceRef.Name, Namespace: deployment.Status.InstanceRef.Namespace}, instance)
 		Expect(err).ToNot(HaveOccurred())
 
@@ -102,7 +102,7 @@ var _ = Describe("Delete", func() {
 
 		deployment := state.GetDeployment("test")
 
-		ctrl.HandleDeleteFunc = func(ctx context.Context, deployment *lssv1alpha2.LandscaperDeployment) error {
+		ctrl.HandleDeleteFunc = func(ctx context.Context, deployment *provisioningv1alpha2.LandscaperDeployment) error {
 			return lsserrors.NewWrappedError(fmt.Errorf(reason), operation, reason, message)
 		}
 

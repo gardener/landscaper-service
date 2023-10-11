@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"strings"
 
-	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
+	provisioningv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/provisioning/v1alpha2"
 
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 
@@ -96,11 +96,11 @@ type Landscaper struct {
 	// Verbosity defines the logging verbosity level.
 	Verbosity string `json:"verbosity,omitempty"`
 	// Replicas defines the number of replicas for the landscaper controller deployment.
-	Replicas           int                             `json:"replicas,omitempty"`
-	Controllers        *lssv1alpha2.Controllers        `json:"controllers,omitempty"`
-	DeployItemTimeouts *lssv1alpha2.DeployItemTimeouts `json:"deployItemTimeouts,omitempty"`
+	Replicas           int                                      `json:"replicas,omitempty"`
+	Controllers        *provisioningv1alpha2.Controllers        `json:"controllers,omitempty"`
+	DeployItemTimeouts *provisioningv1alpha2.DeployItemTimeouts `json:"deployItemTimeouts,omitempty"`
 	// K8SClientSettings defines k8s client settings like burst and qps.
-	K8SClientSettings *lssv1alpha2.K8SClientSettings `json:"k8sClientSettings,omitempty"`
+	K8SClientSettings *provisioningv1alpha2.K8SClientSettings `json:"k8sClientSettings,omitempty"`
 }
 
 // Webhooks specifies the landscaper webhooks server configuration.
@@ -116,14 +116,14 @@ type LandscaperConfig struct {
 	// Landscaper specifies the landscaper controller configuration.
 	Landscaper Landscaper `json:"landscaper"`
 	// Webhooks specifies the landscaper webhooks server configuration.
-	Webhooks      Webhooks               `json:"webhooksServer"`
-	Resources     *lssv1alpha2.Resources `json:"resources,omitempty"`
-	ResourcesMain *lssv1alpha2.Resources `json:"resourcesMain,omitempty"`
-	HPAMain       *lssv1alpha2.HPA       `json:"hpaMain,omitempty"`
+	Webhooks      Webhooks                        `json:"webhooksServer"`
+	Resources     *provisioningv1alpha2.Resources `json:"resources,omitempty"`
+	ResourcesMain *provisioningv1alpha2.Resources `json:"resourcesMain,omitempty"`
+	HPAMain       *provisioningv1alpha2.HPA       `json:"hpaMain,omitempty"`
 	// Deployers specifies the list of landscaper standard deployers that are getting installed.
 	Deployers []string `json:"deployers"`
 	// DeployersConfig specifies the configuration for the landscaper standard deployers.
-	DeployersConfig map[string]*lssv1alpha2.DeployerConfig `json:"deployersConfig,omitempty"`
+	DeployersConfig map[string]*provisioningv1alpha2.DeployerConfig `json:"deployersConfig,omitempty"`
 }
 
 // NewLandscaperConfig creates a new landscaper configuration initialized with default values.
@@ -200,7 +200,7 @@ func toAnyJSON(obj any) (*lsv1alpha1.AnyJSON, error) {
 
 // GetInstallationExportDataRef returns the export data ref that is dynamically created based on the instance name.
 // The data ref string is compatible to be used as a kubernetes object name.
-func GetInstallationExportDataRef(instance *lssv1alpha2.Instance, exportName string) string {
+func GetInstallationExportDataRef(instance *provisioningv1alpha2.Instance, exportName string) string {
 	dataRef := fmt.Sprintf("%s-%s", strings.ToLower(exportName), instance.GetName())
 	return dataRef
 }

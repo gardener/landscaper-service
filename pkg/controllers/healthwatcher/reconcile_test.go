@@ -20,12 +20,11 @@ import (
 	kutil "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 
-	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
+	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/provisioning/v1alpha2"
+	"github.com/gardener/landscaper-service/pkg/controllers/healthwatcher"
 	"github.com/gardener/landscaper-service/pkg/operation"
-	"github.com/gardener/landscaper-service/test/utils/envtest"
-
-	healthwatcher "github.com/gardener/landscaper-service/pkg/controllers/healthwatcher"
 	testutils "github.com/gardener/landscaper-service/test/utils"
+	"github.com/gardener/landscaper-service/test/utils/envtest"
 )
 
 type TestServiceTargetKubeClientExtractor struct{}

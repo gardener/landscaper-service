@@ -17,7 +17,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	coreconfig "github.com/gardener/landscaper-service/pkg/apis/config"
-	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
+	provisioningv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/provisioning/v1alpha2"
 	"github.com/gardener/landscaper-service/pkg/operation"
 )
 
@@ -47,17 +47,17 @@ func NewTestActuator(op operation.Operation, logger logging.Logger) *Controller 
 func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reconcile.Result, error) {
 	logger, ctx := c.log.StartReconcileAndAddToContext(ctx, req)
 
-	availabilityCollection := &lssv1alpha2.AvailabilityCollection{}
+	availabilityCollection := &provisioningv1alpha2.AvailabilityCollection{}
 	availabilityCollection.Name = c.Operation.Config().AvailabilityMonitoring.AvailabilityCollectionName
 	availabilityCollection.Namespace = c.Operation.Config().AvailabilityMonitoring.AvailabilityCollectionNamespace
 
-	instances := &lssv1alpha2.InstanceList{}
+	instances := &provisioningv1alpha2.InstanceList{}
 	if err := c.Client().List(ctx, instances); err != nil {
 		logger.Error(err, "failed loading instances")
 		return reconcile.Result{}, err
 	}
 
-	instanceRefsToMonitor := []lssv1alpha2.ObjectReference{}
+	var instanceRefsToMonitor []provisioningv1alpha2.ObjectReference
 	for _, instance := range instances.Items {
 		logger, ctx := logging.FromContextOrNew(ctx, nil, "instance", types.NamespacedName{Name: instance.Name, Namespace: instance.Namespace}.String())
 		logger.Debug("register instance")
@@ -87,7 +87,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 		}
 
 		logger.Info("add instance to be monitored")
-		instanceRefsToMonitor = append(instanceRefsToMonitor, lssv1alpha2.ObjectReference{
+		instanceRefsToMonitor = append(instanceRefsToMonitor, provisioningv1alpha2.ObjectReference{
 			Name:      instance.Name,
 			Namespace: instance.Namespace,
 		})
@@ -95,7 +95,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 	logger.Debug("creating/updating spec", lc.KeyResource, client.ObjectKeyFromObject(availabilityCollection).String())
 	_, err := kubernetes.CreateOrUpdate(ctx, c.Client(), availabilityCollection, func() error {
-		availabilityCollection.Spec = lssv1alpha2.AvailabilityCollectionSpec{
+		availabilityCollection.Spec = provisioningv1alpha2.AvailabilityCollectionSpec{
 			InstanceRefs: instanceRefsToMonitor,
 		}
 		return nil

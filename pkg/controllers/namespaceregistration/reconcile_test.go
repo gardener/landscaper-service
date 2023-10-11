@@ -12,8 +12,10 @@ import (
 	"github.com/gardener/landscaper/apis/core/v1alpha1/helper"
 	kutil "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+
 	corev1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -21,7 +23,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
-	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
+	"github.com/gardener/landscaper-service/pkg/apis/constants"
 	"github.com/gardener/landscaper-service/pkg/controllers/namespaceregistration"
 	"github.com/gardener/landscaper-service/pkg/controllers/subjectsync"
 	"github.com/gardener/landscaper-service/pkg/operation"
@@ -63,7 +65,7 @@ var _ = Describe("Reconcile", func() {
 		// check finalizer and phase
 		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(namespaceRegistration), namespaceRegistration)).To(Succeed())
 		Expect(len(namespaceRegistration.Finalizers)).To(Equal(1))
-		Expect(namespaceRegistration.Finalizers[0]).To(Equal(lssv1alpha2.LandscaperServiceFinalizer))
+		Expect(namespaceRegistration.Finalizers[0]).To(Equal(constants.LandscaperServiceFinalizer))
 		Expect(namespaceRegistration.Status.Phase).To(Equal("Completed"))
 
 		// check for namespace being created

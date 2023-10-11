@@ -21,13 +21,22 @@ chmod +x ${PROJECT_ROOT}/vendor/k8s.io/code-generator/*
 
 export GOFLAGS=-mod=vendor
 
-echo "> Generating groups for Landscaper Service"
+echo "> Generating groups for Landscaper Service Provisioning"
 bash "${PROJECT_ROOT}"/vendor/k8s.io/code-generator/generate-internal-groups.sh \
   deepcopy,defaulter,conversion \
   $PROJECT_MOD_ROOT/pkg/generated \
   $PROJECT_MOD_ROOT/pkg/apis \
   $PROJECT_MOD_ROOT/pkg/apis \
-  "core:v1alpha2" \
+  "provisioning:v1alpha2" \
+  --go-header-file "${PROJECT_ROOT}/hack/boilerplate.go.txt"
+
+echo "> Generating groups for Landscaper Service DataPlane"
+bash "${PROJECT_ROOT}"/vendor/k8s.io/code-generator/generate-internal-groups.sh \
+  deepcopy,defaulter,conversion \
+  $PROJECT_MOD_ROOT/pkg/generated \
+  $PROJECT_MOD_ROOT/pkg/apis \
+  $PROJECT_MOD_ROOT/pkg/apis \
+  "dataplane:v1alpha1" \
   --go-header-file "${PROJECT_ROOT}/hack/boilerplate.go.txt"
 
 echo "> Generating groups for Config"
@@ -36,7 +45,7 @@ bash "${PROJECT_ROOT}"/vendor/k8s.io/code-generator/generate-internal-groups.sh 
   $PROJECT_MOD_ROOT/pkg/generated \
   $PROJECT_MOD_ROOT/pkg/apis \
   $PROJECT_MOD_ROOT/pkg/apis \
-  "config:v1alpha2" \
+  "config:v1alpha1" \
   --go-header-file "${PROJECT_ROOT}/hack/boilerplate.go.txt"
 
 echo "> Generating openapi definitions"
@@ -44,7 +53,8 @@ go install "${PROJECT_ROOT}"/vendor/k8s.io/kube-openapi/cmd/openapi-gen
 ${GOPATH}/bin/openapi-gen "$@" \
   --v 1 \
   --logtostderr \
-  --input-dirs=github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2 \
+  --input-dirs=github.com/gardener/landscaper-service/pkg/apis/provisioning/v1alpha2 \
+  --input-dirs=github.com/gardener/landscaper-service/pkg/apis/dataplane/v1alpha1 \
   --input-dirs=github.com/gardener/landscaper/apis/core/v1alpha1 \
   --input-dirs=k8s.io/api/core/v1 \
   --input-dirs=k8s.io/apimachinery/pkg/apis/meta/v1 \

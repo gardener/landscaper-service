@@ -5,7 +5,6 @@
 package envtest
 
 import (
-	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -14,9 +13,12 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client/apiutil"
 
 	lscoreinstall "github.com/gardener/landscaper/apis/core/install"
+	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 
-	lsscoreinstall "github.com/gardener/landscaper-service/pkg/apis/core/install"
-	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
+	dataplaneinstall "github.com/gardener/landscaper-service/pkg/apis/dataplane/install"
+	dataplanev1alpha2 "github.com/gardener/landscaper-service/pkg/apis/dataplane/v1alpha1"
+	provisioninginstall "github.com/gardener/landscaper-service/pkg/apis/provisioning/install"
+	provisioningv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/provisioning/v1alpha2"
 )
 
 var (
@@ -57,15 +59,16 @@ var (
 func init() {
 	var err error
 
-	lsscoreinstall.Install(LandscaperServiceScheme)
+	provisioninginstall.Install(LandscaperServiceScheme)
+	dataplaneinstall.Install(LandscaperServiceScheme)
 	lscoreinstall.Install(LandscaperServiceScheme)
 	utilruntime.Must(kubernetescheme.AddToScheme(LandscaperServiceScheme))
 
-	DeploymentGVK, err = apiutil.GVKForObject(&lssv1alpha2.LandscaperDeployment{}, LandscaperServiceScheme)
+	DeploymentGVK, err = apiutil.GVKForObject(&provisioningv1alpha2.LandscaperDeployment{}, LandscaperServiceScheme)
 	utilruntime.Must(err)
-	InstanceGVK, err = apiutil.GVKForObject(&lssv1alpha2.Instance{}, LandscaperServiceScheme)
+	InstanceGVK, err = apiutil.GVKForObject(&provisioningv1alpha2.Instance{}, LandscaperServiceScheme)
 	utilruntime.Must(err)
-	ConfigGVK, err = apiutil.GVKForObject(&lssv1alpha2.ServiceTargetConfig{}, LandscaperServiceScheme)
+	ConfigGVK, err = apiutil.GVKForObject(&provisioningv1alpha2.ServiceTargetConfig{}, LandscaperServiceScheme)
 	utilruntime.Must(err)
 	SecretGVK, err = apiutil.GVKForObject(&corev1.Secret{}, LandscaperServiceScheme)
 	utilruntime.Must(err)
@@ -83,12 +86,12 @@ func init() {
 	utilruntime.Must(err)
 	ContextGVK, err = apiutil.GVKForObject(&lsv1alpha1.Context{}, LandscaperServiceScheme)
 	utilruntime.Must(err)
-	AvailabilityCollectionGVK, err = apiutil.GVKForObject(&lssv1alpha2.AvailabilityCollection{}, LandscaperServiceScheme)
+	AvailabilityCollectionGVK, err = apiutil.GVKForObject(&provisioningv1alpha2.AvailabilityCollection{}, LandscaperServiceScheme)
 	utilruntime.Must(err)
 	LsHealthCheckGVK, err = apiutil.GVKForObject(&lsv1alpha1.LsHealthCheck{}, LandscaperServiceScheme)
 	utilruntime.Must(err)
-	NamespaceRegistrationGVK, err = apiutil.GVKForObject(&lssv1alpha2.NamespaceRegistration{}, LandscaperServiceScheme)
+	NamespaceRegistrationGVK, err = apiutil.GVKForObject(&dataplanev1alpha2.NamespaceRegistration{}, LandscaperServiceScheme)
 	utilruntime.Must(err)
-	SubjectListGVK, err = apiutil.GVKForObject(&lssv1alpha2.SubjectList{}, LandscaperServiceScheme)
+	SubjectListGVK, err = apiutil.GVKForObject(&dataplanev1alpha2.SubjectList{}, LandscaperServiceScheme)
 	utilruntime.Must(err)
 }

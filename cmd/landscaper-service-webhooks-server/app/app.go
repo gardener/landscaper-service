@@ -24,7 +24,7 @@ import (
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 	webhookcert "github.com/gardener/landscaper/controller-utils/pkg/webhook"
 
-	"github.com/gardener/landscaper-service/pkg/apis/core/install"
+	"github.com/gardener/landscaper-service/pkg/apis/provisioning/install"
 	"github.com/gardener/landscaper-service/pkg/version"
 	"github.com/gardener/landscaper-service/pkg/webhook"
 )

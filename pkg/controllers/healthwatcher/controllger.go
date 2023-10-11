@@ -27,8 +27,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	coreconfig "github.com/gardener/landscaper-service/pkg/apis/config"
-	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
 	"github.com/gardener/landscaper-service/pkg/apis/installation"
+	provisioningv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/provisioning/v1alpha2"
 	"github.com/gardener/landscaper-service/pkg/operation"
 )
 
@@ -69,7 +69,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 	//get availabilityCollection
 	logger.Debug("fetch availabilityCollection")
-	availabilityCollection := &lssv1alpha2.AvailabilityCollection{}
+	availabilityCollection := &provisioningv1alpha2.AvailabilityCollection{}
 	if err := c.Client().Get(ctx, req.NamespacedName, availabilityCollection); err != nil {
 		logger.Error(err, "failed loading AvailabilityCollection")
 		return reconcile.Result{}, err
@@ -84,7 +84,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	}
 
 	//clean status
-	availabilityCollection.Status.Instances = []lssv1alpha2.AvailabilityInstance{}
+	availabilityCollection.Status.Instances = []provisioningv1alpha2.AvailabilityInstance{}
 
 	for _, instanceRefToWatch := range availabilityCollection.Spec.InstanceRefs {
 		logger, ctx := logging.FromContextOrNew(ctx, nil, "instance", apitypes.NamespacedName{Name: instanceRefToWatch.Name, Namespace: instanceRefToWatch.Namespace}.String())
@@ -92,14 +92,14 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 		//get instance
 		logger.Debug("fetch instance")
-		instance := &lssv1alpha2.Instance{}
+		instance := &provisioningv1alpha2.Instance{}
 		if err := c.Client().Get(ctx, apitypes.NamespacedName{Name: instanceRefToWatch.Name, Namespace: instanceRefToWatch.Namespace}, instance); err != nil {
 			logger.Error(err, "failed loading instance")
 			return reconcile.Result{}, err
 		}
 
-		availabilityInstance := lssv1alpha2.AvailabilityInstance{
-			ObjectReference: lssv1alpha2.ObjectReference{
+		availabilityInstance := provisioningv1alpha2.AvailabilityInstance{
+			ObjectReference: provisioningv1alpha2.ObjectReference{
 				Name:      instance.Name,
 				Namespace: instance.Namespace,
 			},
@@ -194,9 +194,9 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 }
 
-func (c *Controller) getLsHealthCheckFromSelfLandscaper(ctx context.Context, namespace string) lssv1alpha2.AvailabilityInstance {
-	availabilityInstance := lssv1alpha2.AvailabilityInstance{
-		ObjectReference: lssv1alpha2.ObjectReference{
+func (c *Controller) getLsHealthCheckFromSelfLandscaper(ctx context.Context, namespace string) provisioningv1alpha2.AvailabilityInstance {
+	availabilityInstance := provisioningv1alpha2.AvailabilityInstance{
+		ObjectReference: provisioningv1alpha2.ObjectReference{
 			Name:      "self",
 			Namespace: namespace,
 		},
@@ -233,8 +233,8 @@ func (c *Controller) getLsHealthCheckFromSelfLandscaper(ctx context.Context, nam
 	return availabilityInstance
 }
 
-func logFailedInstances(logger logging.Logger, availabilityCollection lssv1alpha2.AvailabilityCollection) {
-	failedInstances := []lssv1alpha2.AvailabilityInstance{}
+func logFailedInstances(logger logging.Logger, availabilityCollection provisioningv1alpha2.AvailabilityCollection) {
+	failedInstances := []provisioningv1alpha2.AvailabilityInstance{}
 
 	for _, inst := range availabilityCollection.Status.Instances {
 		if inst.Status == string(lsv1alpha1.LsHealthCheckStatusFailed) {
@@ -249,12 +249,12 @@ func logFailedInstances(logger logging.Logger, availabilityCollection lssv1alpha
 	}
 }
 
-func setAvailabilityInstanceStatusToFailed(availabilityInstance *lssv1alpha2.AvailabilityInstance, failedReason string) {
+func setAvailabilityInstanceStatusToFailed(availabilityInstance *provisioningv1alpha2.AvailabilityInstance, failedReason string) {
 	availabilityInstance.Status = string(lsv1alpha1.LsHealthCheckStatusFailed)
 	availabilityInstance.FailedReason = failedReason
 }
 
-func transferLsHealthCheckStatusToAvailabilityInstance(availabilityInstance *lssv1alpha2.AvailabilityInstance, lsHealthChecks *lsv1alpha1.LsHealthCheckList, timeout time.Duration) {
+func transferLsHealthCheckStatusToAvailabilityInstance(availabilityInstance *provisioningv1alpha2.AvailabilityInstance, lsHealthChecks *lsv1alpha1.LsHealthCheckList, timeout time.Duration) {
 	if len(lsHealthChecks.Items) != 1 {
 		setAvailabilityInstanceStatusToFailed(availabilityInstance, "number of lsHealthChecks found != 1")
 		return
@@ -296,7 +296,7 @@ func (e *ServiceTargetConfigKubeClientExtractor) GetKubeClientFromServiceTargetC
 	if name == "" || namespace == "" {
 		return nil, errors.New("name or namespace of serviceTargetConfig is empty")
 	}
-	serviceTargetConfig := &lssv1alpha2.ServiceTargetConfig{}
+	serviceTargetConfig := &provisioningv1alpha2.ServiceTargetConfig{}
 	if err := client.Get(ctx, apitypes.NamespacedName{Name: name, Namespace: namespace}, serviceTargetConfig); err != nil {
 		if apierrors.IsNotFound(err) {
 			return nil, fmt.Errorf("failed loading ServiceTargetConfig %s:%s - not found: %w", name, namespace, err)

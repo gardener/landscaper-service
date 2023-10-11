@@ -7,11 +7,8 @@ package instances
 import (
 	"context"
 	"fmt"
-	"math/rand"
 	"reflect"
 	"time"
-
-	guuid "github.com/google/uuid"
 
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -24,8 +21,9 @@ import (
 	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
 
 	coreconfig "github.com/gardener/landscaper-service/pkg/apis/config"
-	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
-	lsserrors "github.com/gardener/landscaper-service/pkg/apis/errors"
+	"github.com/gardener/landscaper-service/pkg/apis/constants"
+	lsserrors "github.com/gardener/landscaper-service/pkg/apis/provisioning/errors"
+	provisioningv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/provisioning/v1alpha2"
 	"github.com/gardener/landscaper-service/pkg/controllers/healthwatcher"
 	"github.com/gardener/landscaper-service/pkg/operation"
 	"github.com/gardener/landscaper-service/pkg/utils"
@@ -43,39 +41,16 @@ type Controller struct {
 	operation.Operation
 	log logging.Logger
 
-	UniqueIDFunc func() string
-
-	ReconcileFunc    func(ctx context.Context, instance *lssv1alpha2.Instance) error
-	HandleDeleteFunc func(ctx context.Context, instance *lssv1alpha2.Instance) (reconcile.Result, error)
+	ReconcileFunc    func(ctx context.Context, instance *provisioningv1alpha2.Instance) error
+	HandleDeleteFunc func(ctx context.Context, instance *provisioningv1alpha2.Instance) (reconcile.Result, error)
 
 	kubeClientExtractor healthwatcher.ServiceTargetConfigKubeClientExtractorInterface
-}
-
-// NewUniqueID creates a new unique id string with a length of 8.
-func (c *Controller) NewUniqueID() string {
-	id := c.UniqueIDFunc()
-	if len(id) > 8 {
-		id = id[:8]
-	}
-	return id
-}
-
-func defaultUniqueIdFunc() string {
-	// it must be prevented that the first 8 chars are numbers
-	// this part is used for generating the shoot name but also machine names of a shoot and this is not allowed
-
-	id := guuid.New().String()
-	id = id[1:]
-	s := string(letterRunes[rand.Intn(len(letterRunes))])
-	t := s + id
-	return t
 }
 
 // NewController returns a new instances controller
 func NewController(logger logging.Logger, c client.Client, scheme *runtime.Scheme, config *coreconfig.LandscaperServiceConfiguration) (reconcile.Reconciler, error) {
 	ctrl := &Controller{
 		log:                 logger,
-		UniqueIDFunc:        defaultUniqueIdFunc,
 		kubeClientExtractor: &healthwatcher.ServiceTargetConfigKubeClientExtractor{},
 	}
 	ctrl.ReconcileFunc = ctrl.reconcile
@@ -97,7 +72,6 @@ func NewTestActuator(op operation.Operation, logger logging.Logger) *Controller 
 	ctrl := &Controller{
 		Operation:           op,
 		log:                 logger,
-		UniqueIDFunc:        defaultUniqueIdFunc,
 		kubeClientExtractor: &TestKubeClientExtractor{},
 	}
 	ctrl.ReconcileFunc = ctrl.reconcile
@@ -109,7 +83,7 @@ func NewTestActuator(op operation.Operation, logger logging.Logger) *Controller 
 func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reconcile.Result, error) {
 	logger, ctx := c.log.StartReconcileAndAddToContext(ctx, req)
 
-	instance := &lssv1alpha2.Instance{}
+	instance := &provisioningv1alpha2.Instance{}
 	if err := c.Client().Get(ctx, req.NamespacedName, instance); err != nil {
 		if apierrors.IsNotFound(err) {
 			logger.Info(err.Error())
@@ -130,8 +104,8 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	}
 
 	// set finalizer
-	if instance.DeletionTimestamp.IsZero() && !kutils.HasFinalizer(instance, lssv1alpha2.LandscaperServiceFinalizer) {
-		controllerutil.AddFinalizer(instance, lssv1alpha2.LandscaperServiceFinalizer)
+	if instance.DeletionTimestamp.IsZero() && !kutils.HasFinalizer(instance, constants.LandscaperServiceFinalizer) {
+		controllerutil.AddFinalizer(instance, constants.LandscaperServiceFinalizer)
 		if err := c.Client().Update(ctx, instance); err != nil {
 			return reconcile.Result{}, err
 		}
@@ -144,7 +118,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 		return result, errHdl(ctx, err)
 	}
 
-	if utils.HasOperationAnnotation(instance, lssv1alpha2.LandscaperServiceOperationIgnore) {
+	if utils.HasOperationAnnotation(instance, constants.LandscaperServiceOperationIgnore) {
 		logger.Info("instance has ignore annotation, skipping reconcile")
 		return computeAutomaticReconcile(instance, nil)
 	}
@@ -154,7 +128,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 }
 
 // handleErrorFunc updates the error status of an instance
-func (c *Controller) handleErrorFunc(instance *lssv1alpha2.Instance) func(ctx context.Context, err error) error {
+func (c *Controller) handleErrorFunc(instance *provisioningv1alpha2.Instance) func(ctx context.Context, err error) error {
 	old := instance.DeepCopy()
 	return func(ctx context.Context, err error) error {
 		logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(instance).String()})
@@ -179,7 +153,7 @@ func (c *Controller) handleErrorFunc(instance *lssv1alpha2.Instance) func(ctx co
 	}
 }
 
-func computeAutomaticReconcile(instance *lssv1alpha2.Instance, reconcileError error) (reconcile.Result, error) {
+func computeAutomaticReconcile(instance *provisioningv1alpha2.Instance, reconcileError error) (reconcile.Result, error) {
 	reconcileInterval := AutomaticReconcileDefaultDuration
 	if instance.Spec.AutomaticReconcile != nil {
 		reconcileInterval = instance.Spec.AutomaticReconcile.Interval.Duration

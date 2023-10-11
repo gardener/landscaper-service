@@ -9,12 +9,12 @@ import (
 	"strconv"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 
-	lssv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2"
+	"github.com/gardener/landscaper-service/pkg/apis/constants"
+	provisioningv1alpha2 "github.com/gardener/landscaper-service/pkg/apis/provisioning/v1alpha2"
 )
 
 // StringToAnyJSON marshals a string as an AnyJSON object.
@@ -33,7 +33,7 @@ func IntToAnyJSON(i int) lsv1alpha1.AnyJSON {
 }
 
 // ContainsReference checks whether the object reference list contains the specified object reference.
-func ContainsReference(refList []lssv1alpha2.ObjectReference, ref *lssv1alpha2.ObjectReference) bool {
+func ContainsReference(refList []provisioningv1alpha2.ObjectReference, ref *provisioningv1alpha2.ObjectReference) bool {
 	for _, e := range refList {
 		if e.Equals(ref) {
 			return true
@@ -43,7 +43,7 @@ func ContainsReference(refList []lssv1alpha2.ObjectReference, ref *lssv1alpha2.O
 }
 
 // RemoveReference removes the given object reference from the object reference list if contained.
-func RemoveReference(refList []lssv1alpha2.ObjectReference, ref *lssv1alpha2.ObjectReference) []lssv1alpha2.ObjectReference {
+func RemoveReference(refList []provisioningv1alpha2.ObjectReference, ref *provisioningv1alpha2.ObjectReference) []provisioningv1alpha2.ObjectReference {
 	for i, e := range refList {
 		if e.Equals(ref) {
 			refList[i] = refList[len(refList)-1]
@@ -61,7 +61,7 @@ func HasOperationAnnotation(object client.Object, operation string) bool {
 		return false
 	}
 
-	operationAnnotation, ok := annotations[lssv1alpha2.LandscaperServiceOperationAnnotation]
+	operationAnnotation, ok := annotations[constants.LandscaperServiceOperationAnnotation]
 	if !ok {
 		return false
 	}
@@ -76,14 +76,14 @@ func SetOperationAnnotation(object client.Object, operation string) {
 		annotations = make(map[string]string)
 		object.SetAnnotations(annotations)
 	}
-	annotations[lssv1alpha2.LandscaperServiceOperationAnnotation] = operation
+	annotations[constants.LandscaperServiceOperationAnnotation] = operation
 }
 
 // RemoveOperationAnnotation removes the operation annotation if it exists.
 func RemoveOperationAnnotation(object client.Object) {
 	annotations := object.GetAnnotations()
 	if annotations != nil {
-		delete(annotations, lssv1alpha2.LandscaperServiceOperationAnnotation)
+		delete(annotations, constants.LandscaperServiceOperationAnnotation)
 	}
 }
 

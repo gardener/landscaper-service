@@ -10,29 +10,30 @@ import (
 	"math"
 	"strings"
 
+	"github.com/gardener/landscaper-service/pkg/apis/provisioning"
+
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 	flag "github.com/spf13/pflag"
 	"k8s.io/apimachinery/pkg/util/validation/field"
 
-	"github.com/gardener/landscaper-service/pkg/apis/core"
 	"github.com/gardener/landscaper-service/pkg/webhook"
 )
 
 func defaultWebhookedResources() map[string]webhook.WebhookedResourceDefinition {
 	return map[string]webhook.WebhookedResourceDefinition{
 		"landscaperdeployments": {
-			APIGroup:     core.GroupName,
-			APIVersions:  []string{"v1alpha1"},
+			APIGroup:     provisioning.GroupName,
+			APIVersions:  []string{"v1alpha2"},
 			ResourceName: "landscaperdeployments",
 		},
 		"instances": {
-			APIGroup:     core.GroupName,
-			APIVersions:  []string{"v1alpha1"},
+			APIGroup:     provisioning.GroupName,
+			APIVersions:  []string{"v1alpha2"},
 			ResourceName: "instances",
 		},
 		"servicetargetconfigs": {
-			APIGroup:     core.GroupName,
-			APIVersions:  []string{"v1alpha1"},
+			APIGroup:     provisioning.GroupName,
+			APIVersions:  []string{"v1alpha2"},
 			ResourceName: "servicetargetconfigs",
 		},
 	}
