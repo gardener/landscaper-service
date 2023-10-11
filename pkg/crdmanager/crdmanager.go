@@ -18,7 +18,7 @@ const (
 	embedFSCrdRootDir = "crdresources"
 )
 
-//go:embed crdresources/landscaper-service.gardener.cloud*.yaml
+//go:embed crdresources/*.yaml
 var importedCrdFS embed.FS
 
 // NewCrdManager returns a new instance of the CRDManager
