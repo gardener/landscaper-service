@@ -69,7 +69,7 @@ func (c *Controller) handleDelete(ctx context.Context, instance *lssv1alpha2.Ins
 	}
 
 	if instance.Status.TargetClusterRef != nil && !instance.Status.TargetClusterRef.IsEmpty() {
-		if targetDeleted, err = c.ensureDeleteTargetForInstance(ctx, instance); err != nil {
+		if targetDeleted, err = c.ensureDeleteTargetClusterTargetForInstance(ctx, instance); err != nil {
 			return reconcile.Result{}, lsserrors.NewWrappedError(err, curOp, "DeleteTarget", err.Error())
 		}
 	}
@@ -84,8 +84,8 @@ func (c *Controller) handleDelete(ctx context.Context, instance *lssv1alpha2.Ins
 		}
 	}
 
-	if instance.Status.GardenerServiceAccountRef != nil && !instance.Status.GardenerServiceAccountRef.IsEmpty() {
-		if gardenerServiceAccountTargetDeleted, err = c.ensureDeleteGardenerServiceAccountTargetForInstance(ctx, instance); err != nil {
+	if instance.Status.DataPlaneClusterRef != nil && !instance.Status.DataPlaneClusterRef.IsEmpty() {
+		if gardenerServiceAccountTargetDeleted, err = c.ensureDeleteDataPlaneClusterTargetForInstance(ctx, instance); err != nil {
 			return reconcile.Result{}, lsserrors.NewWrappedError(err, curOp, "DeleteGardenerServiceAccountTarget", err.Error())
 		}
 	}
@@ -150,10 +150,10 @@ func (c *Controller) ensureDeleteInstallationForInstance(ctx context.Context, in
 	return false, nil
 }
 
-// ensureDeleteTargetForInstance ensures that the target for an instance is deleted
-func (c *Controller) ensureDeleteTargetForInstance(ctx context.Context, instance *lssv1alpha2.Instance) (bool, error) {
+// ensureDeleteTargetClusterTargetForInstance ensures that the target for an instance is deleted
+func (c *Controller) ensureDeleteTargetClusterTargetForInstance(ctx context.Context, instance *lssv1alpha2.Instance) (bool, error) {
 	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(instance).String()},
-		lc.KeyMethod, "ensureDeleteTargetForInstance")
+		lc.KeyMethod, "ensureDeleteTargetClusterTargetForInstance")
 
 	logger.Info("Delete target for instance", lc.KeyResource, instance.Status.TargetClusterRef.NamespacedName().String())
 	target := &lsv1alpha1.Target{}
@@ -179,29 +179,29 @@ func (c *Controller) ensureDeleteTargetForInstance(ctx context.Context, instance
 	return false, nil
 }
 
-// ensureDeleteTargetForInstance ensures that the target for an instance is deleted
-func (c *Controller) ensureDeleteGardenerServiceAccountTargetForInstance(ctx context.Context, instance *lssv1alpha2.Instance) (bool, error) {
+// ensureDeleteTargetClusterTargetForInstance ensures that the target for an instance is deleted
+func (c *Controller) ensureDeleteDataPlaneClusterTargetForInstance(ctx context.Context, instance *lssv1alpha2.Instance) (bool, error) {
 	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(instance).String()},
-		lc.KeyMethod, "ensureDeleteGardenerServiceAccountTargetForInstance")
+		lc.KeyMethod, "ensureDeleteDataPlaneClusterTargetForInstance")
 
-	logger.Info("Delete gardener service account target for instance", lc.KeyResource, instance.Status.GardenerServiceAccountRef.NamespacedName().String())
+	logger.Info("Delete data plane cluster target for instance", lc.KeyResource, instance.Status.DataPlaneClusterRef.NamespacedName().String())
 	target := &lsv1alpha1.Target{}
 
-	if err := c.Client().Get(ctx, instance.Status.GardenerServiceAccountRef.NamespacedName(), target); err != nil {
+	if err := c.Client().Get(ctx, instance.Status.DataPlaneClusterRef.NamespacedName(), target); err != nil {
 		if apierrors.IsNotFound(err) {
-			instance.Status.GardenerServiceAccountRef = nil
+			instance.Status.DataPlaneClusterRef = nil
 			if err := c.Client().Status().Update(ctx, instance); err != nil {
-				return false, fmt.Errorf("failed to remove gardener service account target reference: %w", err)
+				return false, fmt.Errorf("failed to remove data plane cluster target reference: %w", err)
 			}
 			return true, nil
 		} else {
-			return false, fmt.Errorf("unable to get gardener service account target for instance: %w", err)
+			return false, fmt.Errorf("unable to get data plane cluster target for instance: %w", err)
 		}
 	}
 
 	if target.DeletionTimestamp.IsZero() {
 		if err := c.Client().Delete(ctx, target); err != nil {
-			return false, fmt.Errorf("unable to delete gardener service account target for instance: %w", err)
+			return false, fmt.Errorf("unable to delete data plane cluster target for instance: %w", err)
 		}
 	}
 
