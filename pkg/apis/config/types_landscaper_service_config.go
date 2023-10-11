@@ -29,16 +29,6 @@ type LandscaperServiceConfiguration struct {
 
 	// LandscaperServiceComponent configures the landscaper component that is used by the landscaper service controller.
 	LandscaperServiceComponent LandscaperServiceComponentConfiguration `json:"landscaperServiceComponent"`
-
-	// GardenerConfiguration is the gardener specific configuration required for shoot management.
-	GardenerConfiguration GardenerConfiguration `json:"gardenerConfiguration"`
-
-	// ShootConfiguration is the specification to the gardener shoots.
-	ShootConfiguration ShootConfiguration `json:"shootConfiguration"`
-
-	// AuditLogConfig is the audit log configuration for the created shoots.
-	// +optional
-	AuditLogConfig *AuditLogConfiguration `json:"auditLogConfig"`
 }
 
 // AvailabilityMonitoringConfiguration is the configuration for the availability monitoring of the provisioned landscaper
@@ -102,36 +92,4 @@ type LandscaperServiceComponentConfiguration struct {
 	// RegistryPullSecrets can be used to specify secrets that are needed to access the repository context.
 	// +optional
 	RegistryPullSecrets []corev1.SecretReference `json:"registryPullSecrets,omitempty"`
-}
-
-// GardenerConfiguration is the gardener specific configuration required for shoot management.
-type GardenerConfiguration struct {
-	// ServiceAccountKubeconfig is the reference to the secret containing the service account kubeconfig.
-	ServiceAccountKubeconfig v1alpha1.SecretReference `json:"serviceAccountKubeconfig"`
-
-	// ProjectName is the name of gardener project.
-	ProjectName string `json:"projectName"`
-
-	// ShootSecretBindingName is the secret binding which is used to allocate resources for shoots.
-	ShootSecretBindingName string `json:"shootSecretBindingName"`
-}
-
-// AuditLogConfiguration specifies the shoot cluster audit log configuration.
-type AuditLogConfiguration struct {
-	// AuditLogService contains the audit log service configuration.
-	AuditLogService AuditLogService `json:"auditLogService"`
-	// AuditPolicy specifies the Kubernetes API server audit policy (audit.k8s.io Policy)
-	AuditPolicy v1alpha1.ConfigMapReference `json:"auditPolicy"`
-}
-
-// AuditLogService contains the audit log service configuration.
-type AuditLogService struct {
-	// TenantId is the tenant id of the BTP subaccount in which the audit log service is available.
-	TenantId string `json:"tenantId"`
-	// Url is the url of the audit log service key credentials.
-	Url string `json:"url"`
-	// User is the user of the audit log service key credentials.
-	User string `json:"user"`
-	// Password is the password of the audit log service key credentials.
-	Password string `json:"password"`
 }

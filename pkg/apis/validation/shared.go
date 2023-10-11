@@ -36,3 +36,19 @@ func ValidateObjectReference(ref *lsscore.ObjectReference, fldPath *field.Path) 
 
 	return allErrs
 }
+
+func ValidateDataPlane(dataPlane *lsscore.DataPlane, fldPath *field.Path) field.ErrorList {
+	allErrs := field.ErrorList{}
+	kubeconfigStrEmpty := len(dataPlane.Kubeconfig) == 0
+	secretRefEmpty := dataPlane.SecretRef == nil
+
+	if kubeconfigStrEmpty && secretRefEmpty {
+		allErrs = append(allErrs, field.Required(fldPath.Child("secretRef", "kubeconfig"), "either secretRef or kubeconfig need to be set"))
+	}
+
+	if !secretRefEmpty {
+		allErrs = append(allErrs, ValidateSecretReference(dataPlane.SecretRef, fldPath.Child("secretRef"))...)
+	}
+
+	return allErrs
+}

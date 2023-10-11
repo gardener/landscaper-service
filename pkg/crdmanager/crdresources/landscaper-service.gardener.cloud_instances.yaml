@@ -64,9 +64,6 @@ spec:
                     required:
                     - name
                     type: object
-                required:
-                - secretRef
-                - kubeconfig
                 type: object
               id:
                 description: ID is the id of this instance

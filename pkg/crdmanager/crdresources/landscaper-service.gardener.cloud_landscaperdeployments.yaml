@@ -49,9 +49,6 @@ spec:
                     required:
                     - name
                     type: object
-                required:
-                - secretRef
-                - kubeconfig
                 type: object
               landscaperConfiguration:
                 description: LandscaperConfiguration contains the configuration for

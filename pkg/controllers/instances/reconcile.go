@@ -286,24 +286,22 @@ func (c *Controller) mutateDataPlaneClusterTarget(ctx context.Context, target *l
 		return fmt.Errorf("unable to set controller reference for target: %w", err)
 	}
 
+	var kubeconfigStr string
+
 	if len(instance.Spec.DataPlane.Kubeconfig) > 0 {
-
+		kubeconfigStr = instance.Spec.DataPlane.Kubeconfig
 	} else {
+		secret := &corev1.Secret{}
+		if err := c.Client().Get(ctx, instance.Spec.DataPlane.SecretRef.NamespacedName(), secret); err != nil {
+			return fmt.Errorf("unable to get kubeconfig secret for gardener service account: %w", err)
+		}
 
+		val, ok := secret.Data[instance.Spec.DataPlane.SecretRef.Key]
+		if !ok {
+			return fmt.Errorf("unable to read kubeconfig from secret: missing key %q", instance.Spec.DataPlane.SecretRef.Key)
+		}
+		kubeconfigStr = string(val)
 	}
-
-	saConfig := c.Config().GardenerConfiguration.ServiceAccountKubeconfig
-
-	secret := &corev1.Secret{}
-	if err := c.Client().Get(ctx, saConfig.NamespacedName(), secret); err != nil {
-		return fmt.Errorf("unable to get kubeconfig secret for gardener service account: %w", err)
-	}
-
-	kubeconfig, ok := secret.Data[saConfig.Key]
-	if !ok {
-		return fmt.Errorf("unable to read kubeconfig from secret: missing key %q", saConfig.Key)
-	}
-	kubeconfigStr := string(kubeconfig)
 
 	targetConfig := targettypes.KubernetesClusterTargetConfig{
 		Kubeconfig: targettypes.ValueRef{
@@ -460,7 +458,7 @@ func (c *Controller) mutateInstallation(ctx context.Context, installation *lsv1a
 				},
 				{
 					Name:   lsinstallation.DataPlaneClusterNamespace,
-					Target: instance.Status.GardenerServiceAccountRef.Name,
+					Target: instance.Status.DataPlaneClusterRef.Name,
 				},
 			},
 		},

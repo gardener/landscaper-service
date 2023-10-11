@@ -164,6 +164,8 @@ type LandscaperServiceComponent struct {
 }
 
 type DataPlane struct {
-	SecretRef  SecretReference `json:"secretRef"`
-	Kubeconfig string          `json:"kubeconfig"`
+	// +optional
+	SecretRef *SecretReference `json:"secretRef"`
+	// +optional
+	Kubeconfig string `json:"kubeconfig"`
 }

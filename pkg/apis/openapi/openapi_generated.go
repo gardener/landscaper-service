@@ -746,8 +746,7 @@ func schema_pkg_apis_core_v1alpha2_DataPlane(ref common.ReferenceCallback) commo
 				Properties: map[string]spec.Schema{
 					"secretRef": {
 						SchemaProps: spec.SchemaProps{
-							Default: map[string]interface{}{},
-							Ref:     ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.SecretReference"),
+							Ref: ref("github.com/gardener/landscaper-service/pkg/apis/core/v1alpha2.SecretReference"),
 						},
 					},
 					"kubeconfig": {
@@ -758,7 +757,6 @@ func schema_pkg_apis_core_v1alpha2_DataPlane(ref common.ReferenceCallback) commo
 						},
 					},
 				},
-				Required: []string{"secretRef", "kubeconfig"},
 			},
 		},
 		Dependencies: []string{

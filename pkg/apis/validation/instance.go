@@ -48,6 +48,8 @@ func validateInstanceSpec(spec *lsscore.InstanceSpec, fldPath *field.Path) field
 		allErrs = append(allErrs, field.Invalid(fldPath.Child("id"), spec.TenantId, fmt.Sprintf("must be exactly of size %d", InstanceIdLength)))
 	}
 
+	allErrs = append(allErrs, ValidateDataPlane(&spec.DataPlane, fldPath.Child("dataPlane"))...)
+
 	return allErrs
 }
 

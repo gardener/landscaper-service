@@ -43,17 +43,12 @@
     },
     "core-v1alpha2-DataPlane": {
       "type": "object",
-      "required": [
-        "secretRef",
-        "kubeconfig"
-      ],
       "properties": {
         "kubeconfig": {
           "type": "string",
           "default": ""
         },
         "secretRef": {
-          "default": {},
           "$ref": "#/definitions/core-v1alpha2-SecretReference"
         }
       }

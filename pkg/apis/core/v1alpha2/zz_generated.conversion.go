@@ -666,9 +666,7 @@ func Convert_core_Controllers_To_v1alpha2_Controllers(in *core.Controllers, out 
 }
 
 func autoConvert_v1alpha2_DataPlane_To_core_DataPlane(in *DataPlane, out *core.DataPlane, s conversion.Scope) error {
-	if err := Convert_v1alpha2_SecretReference_To_core_SecretReference(&in.SecretRef, &out.SecretRef, s); err != nil {
-		return err
-	}
+	out.SecretRef = (*core.SecretReference)(unsafe.Pointer(in.SecretRef))
 	out.Kubeconfig = in.Kubeconfig
 	return nil
 }
@@ -679,9 +677,7 @@ func Convert_v1alpha2_DataPlane_To_core_DataPlane(in *DataPlane, out *core.DataP
 }
 
 func autoConvert_core_DataPlane_To_v1alpha2_DataPlane(in *core.DataPlane, out *DataPlane, s conversion.Scope) error {
-	if err := Convert_core_SecretReference_To_v1alpha2_SecretReference(&in.SecretRef, &out.SecretRef, s); err != nil {
-		return err
-	}
+	out.SecretRef = (*SecretReference)(unsafe.Pointer(in.SecretRef))
 	out.Kubeconfig = in.Kubeconfig
 	return nil
 }

@@ -47,6 +47,8 @@ func validateLandscaperDeploymentSpec(spec *lsscore.LandscaperDeploymentSpec, fl
 		allErrs = append(allErrs, field.Required(fldPath.Child("purpose"), "purpose may not be empty"))
 	}
 
+	allErrs = append(allErrs, ValidateDataPlane(&spec.DataPlane, fldPath.Child("dataPlane"))...)
+
 	return allErrs
 }
 
