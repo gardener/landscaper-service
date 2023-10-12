@@ -64,36 +64,6 @@ imports:
     schema:
       $ref: "local://registryPullSecrets"
 
-  - name: gardenerConfiguration
-    required: true
-    type: data
-    schema:
-      type: object
-      properties:
-        serviceAccountKubeconfig:
-          type: object
-          properties:
-            name:
-              type: string
-            namespace:
-              type: string
-            key:
-              type: string
-        projectName:
-          type: string
-
-  - name: auditLogConfiguration
-    required: false
-    type: data
-    schema:
-      type: object
-
-  - name: shootConfiguration
-    required: false
-    type: data
-    schema:
-      type: object
-
 deployExecutions:
   - name: deploy-execution
     file: /deploy-execution.yaml

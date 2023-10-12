@@ -67,25 +67,6 @@ deployItems:
               timeout: {{ .imports.AVSConfiguration.timeout | default "30s" }}
 {{- end }}
 
-          gardener:
-{{ toYaml .imports.gardenerConfiguration | indent 12 }}
-
-          {{ $shootConfiguration := ( fromJson (toString (readFile "./shoot-config.json"))) }}
-          {{ if .imports.shootConfiguration }}
-          {{ $shootConfiguration := merge $shootConfiguration .imports.shootConfiguration }}
-          {{ end }}
-          shootConfiguration:
-{{ toYaml $shootConfiguration | indent 12 }}
-
-{{ if .imports.auditLogConfiguration }}
-          {{ $auditPolicy := ( fromJson (toString (readFile "./audit-policy.json"))) }}
-          auditLogConfiguration:
-            auditLogService:
-{{ toYaml .imports.auditLogConfiguration.auditLogService | indent 14 }}
-            auditPolicy:
-{{ toYaml $auditPolicy | indent 14 }}
-{{ end }}
-
           landscaperServiceComponent:
             name: {{ $landscaperInstanceComponentName }}
             version: {{ $landscaperInstanceComponentVersion }}

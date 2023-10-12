@@ -36,24 +36,6 @@ landscaperservice:
   #     apiKey:
   #     timeout:
 
-  gardener:
-    serviceAccountKubeconfig:
-      name: gardener-service-account
-      namespace: laas-system
-      key: kubeconfig
-    projectName: laas
-
-  shootConfiguration: {}
-
-  # Audit Log configuration (optional)
-  # auditLogConfiguration:
-  #   auditLogService:
-  #     tenantId: abcdef-12345
-  #     url: https://api.auditlog.svc
-  #     user: auditlog-user
-  #     password: auditlog-password
-  #   auditPolicy: {}
-
 image: {}
 
 controller:

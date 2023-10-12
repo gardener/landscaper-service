@@ -153,19 +153,4 @@ availabilityMonitoring:
     timeout: {{ .Values.landscaperservice.availabilityMonitoring.AVSConfiguration.timeout | default "30s" }}
   {{- end }}
 
-gardenerConfiguration:
-{{ toYaml .Values.landscaperservice.gardener | indent 2 }}
-
-shootConfiguration:
-{{ toYaml .Values.landscaperservice.shootConfiguration | indent 2 }}
-
-{{- if .Values.landscaperservice.auditLogConfiguration }}
-auditLogConfig:
-  auditLogService:
-{{ toYaml .Values.landscaperservice.auditLogConfiguration.auditLogService | indent 4 }}
-  auditPolicy:
-    name: {{ include "landscaper-service.fullname" . }}-audit-policy
-    namespace: {{ .Release.Namespace }}
-    key: policy
-{{- end }}
 {{- end }}
