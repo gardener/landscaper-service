@@ -5,6 +5,7 @@
 package v1alpha1
 
 import (
+	"github.com/gardener/landscaper/apis/core/v1alpha1"
 	lsschema "github.com/gardener/landscaper/apis/schema"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -64,6 +65,24 @@ type AvailabilityInstance struct {
 	Status string `json:"status"`
 	// FailedReason is the reason the status is in failed.
 	FailedReason string `json:"failedReason"`
+
+	// FailedSince contains the timestamp since the object is in failed status
+	// +optional
+	FailedSince *metav1.Time `json:"failedSince,omitempty"`
+}
+
+func (r *AvailabilityInstance) SetStatusAndFailedSince(status v1alpha1.LsHealthCheckStatus, failedReason string, initOrContinueFailed bool) {
+	r.Status = string(status)
+	r.FailedReason = failedReason
+
+	if initOrContinueFailed {
+		if r.FailedSince == nil {
+			now := metav1.Now()
+			r.FailedSince = &now
+		}
+	} else {
+		r.FailedSince = nil
+	}
 }
 
 // AvailabilityCollectionSpec contains the spec for the AvailabilityCollection.

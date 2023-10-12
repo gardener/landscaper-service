@@ -61,6 +61,11 @@ spec:
                     failedReason:
                       description: FailedReason is the reason the status is in failed.
                       type: string
+                    failedSince:
+                      description: FailedSince contains the timestamp since the object
+                        is in failed status
+                      format: date-time
+                      type: string
                     name:
                       description: Name is the name of the kubernetes object.
                       type: string
@@ -97,6 +102,11 @@ spec:
                 properties:
                   failedReason:
                     description: FailedReason is the reason the status is in failed.
+                    type: string
+                  failedSince:
+                    description: FailedSince contains the timestamp since the object
+                      is in failed status
+                    format: date-time
                     type: string
                   name:
                     description: Name is the name of the kubernetes object.
