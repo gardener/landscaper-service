@@ -11,8 +11,8 @@ imports:
     - name: dataPlaneCluster
       target: dataPlaneCluster
   data:
-    - name: targetClusterNamespace
-      dataRef: targetClusterNamespace
+    - name: dataPlaneClusterNamespace
+      dataRef: dataPlaneClusterNamespace
     - name: rotationConfig
       dataRef: rotationConfig
 
