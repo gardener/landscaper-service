@@ -18,7 +18,6 @@ import (
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
@@ -365,10 +364,6 @@ func (c *Controller) reconcileInstallation(ctx context.Context, instance *provis
 		Version: installation.Spec.ComponentDescriptor.Reference.Version,
 	}
 
-	if err := c.handleExports(ctx, instance, installation); err != nil {
-		return err
-	}
-
 	if !reflect.DeepEqual(old.Status, instance.Status) {
 		if err := c.Client().Status().Update(ctx, instance); err != nil {
 			return fmt.Errorf("unable to update instance status: %w", err)
@@ -496,52 +491,6 @@ func (c *Controller) mutateInstallation(ctx context.Context, installation *lsv1a
 			installation.Annotations = make(map[string]string)
 		}
 		installation.Annotations[lsv1alpha1.OperationAnnotation] = string(lsv1alpha1.ReconcileOperation)
-	}
-
-	return nil
-}
-
-// handleExports tries to find the exports of the installation and update the instance status accordingly.
-func (c *Controller) handleExports(ctx context.Context, instance *provisioningv1alpha2.Instance, installation *lsv1alpha1.Installation) error {
-	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(instance).String()},
-		lc.KeyMethod, "handleExports")
-
-	dataObjects := &lsv1alpha1.DataObjectList{}
-
-	labelSelector := labels.SelectorFromSet(map[string]string{
-		lsv1alpha1.DataObjectSourceLabel:     fmt.Sprintf("Inst.%s", installation.GetName()),
-		lsv1alpha1.DataObjectSourceTypeLabel: string(lsv1alpha1.ExportDataObjectSourceType),
-	})
-
-	listOptions := client.ListOptions{
-		LabelSelector: labelSelector,
-		Namespace:     installation.GetNamespace(),
-	}
-
-	if err := c.Client().List(ctx, dataObjects, &listOptions); err != nil {
-		return fmt.Errorf("unable to list data objects for ClusterKubeconfig: %w", err)
-	}
-
-	if len(dataObjects.Items) > 0 {
-		adminKubeconfigExportName := lsinstallation.GetInstallationExportDataRef(instance, lsinstallation.AdminKubeconfigExportName)
-
-		for _, do := range dataObjects.Items {
-			key, ok := do.Labels[lsv1alpha1.DataObjectKeyLabel]
-			if !ok {
-				continue
-			}
-
-			switch key {
-			case adminKubeconfigExportName:
-				logger.Info("found export data object for user kubeconfig",
-					lc.KeyResource, types.NamespacedName{Name: do.Name, Namespace: do.Namespace}.String())
-				if err := json.Unmarshal(do.Data.RawMessage, &instance.Status.AdminKubeconfig); err != nil {
-					return fmt.Errorf("unable to unmarshal admin kubeconfig: %w", err)
-				}
-			default:
-				continue
-			}
-		}
 	}
 
 	return nil

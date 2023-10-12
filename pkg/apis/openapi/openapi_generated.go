@@ -1519,13 +1519,6 @@ func schema_pkg_apis_provisioning_v1alpha2_InstanceStatus(ref common.ReferenceCa
 							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/provisioning/v1alpha2.ObjectReference"),
 						},
 					},
-					"adminKubeconfig": {
-						SchemaProps: spec.SchemaProps{
-							Description: "AdminKubeconfig contains the admin kubeconfig which can be used for accessing the landscaper cluster.",
-							Type:        []string{"string"},
-							Format:      "",
-						},
-					},
 				},
 			},
 		},

@@ -282,10 +282,6 @@ spec:
           status:
             description: Status contains the status for the Instance.
             properties:
-              adminKubeconfig:
-                description: AdminKubeconfig contains the admin kubeconfig which can
-                  be used for accessing the landscaper cluster.
-                type: string
               contextRef:
                 description: ContextRef references the landscaper context for this
                   Instance.

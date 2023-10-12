@@ -821,7 +821,6 @@ func autoConvert_v1alpha2_InstanceStatus_To_provisioning_InstanceStatus(in *Inst
 	out.TargetClusterRef = (*provisioning.ObjectReference)(unsafe.Pointer(in.TargetClusterRef))
 	out.DataPlaneClusterRef = (*provisioning.ObjectReference)(unsafe.Pointer(in.DataPlaneClusterRef))
 	out.InstallationRef = (*provisioning.ObjectReference)(unsafe.Pointer(in.InstallationRef))
-	out.AdminKubeconfig = in.AdminKubeconfig
 	return nil
 }
 
@@ -838,7 +837,6 @@ func autoConvert_provisioning_InstanceStatus_To_v1alpha2_InstanceStatus(in *prov
 	out.TargetClusterRef = (*ObjectReference)(unsafe.Pointer(in.TargetClusterRef))
 	out.DataPlaneClusterRef = (*ObjectReference)(unsafe.Pointer(in.DataPlaneClusterRef))
 	out.InstallationRef = (*ObjectReference)(unsafe.Pointer(in.InstallationRef))
-	out.AdminKubeconfig = in.AdminKubeconfig
 	return nil
 }
 

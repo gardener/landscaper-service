@@ -64,21 +64,6 @@ imports:
         The configuration for the rotation of credentials.
       $ref: "cd://resources/rotation-config-definition"
 
-exports:
-  - name: landscaperAdminKubeconfig
-    type: data
-    schema:
-      description: |
-        The admin kubeconfig which can be used to connect to the API server (Base64 encoded).
-      type: string
-
-exportExecutions:
-  - name: export
-    type: GoTemplate
-    template: |
-      exports:
-        landscaperAdminKubeconfig: {{ .values.dataobjects.shootClusterKubeconfig | b64enc }}
-
 subinstallations:
   - file: /landscaper-rbac-subinst.yaml
   - file: /landscaper-deployment-subinst.yaml

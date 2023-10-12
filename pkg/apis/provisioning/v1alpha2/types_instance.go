@@ -94,10 +94,6 @@ type InstanceStatus struct {
 	// InstallationRef references the Installation for this Instance.
 	// +optional
 	InstallationRef *ObjectReference `json:"installationRef,omitempty"`
-
-	// AdminKubeconfig contains the admin kubeconfig which can be used for accessing the landscaper cluster.
-	// +optional
-	AdminKubeconfig string `json:"adminKubeconfig,omitempty"`
 }
 
 var InstanceDefinition = lsschema.CustomResourceDefinition{
