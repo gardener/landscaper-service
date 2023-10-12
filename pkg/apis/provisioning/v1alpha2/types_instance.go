@@ -94,6 +94,9 @@ type InstanceStatus struct {
 	// InstallationRef references the Installation for this Instance.
 	// +optional
 	InstallationRef *ObjectReference `json:"installationRef,omitempty"`
+
+	// +optional
+	Phase string `json:"phase"`
 }
 
 var InstanceDefinition = lsschema.CustomResourceDefinition{

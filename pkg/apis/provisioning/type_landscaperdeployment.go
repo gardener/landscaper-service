@@ -61,4 +61,7 @@ type LandscaperDeploymentStatus struct {
 	// InstanceRef references the instance that is created for this LandscaperDeployment.
 	// +optional
 	InstanceRef *ObjectReference `json:"instanceRef"`
+
+	// +optional
+	Phase string `json:"phase"`
 }

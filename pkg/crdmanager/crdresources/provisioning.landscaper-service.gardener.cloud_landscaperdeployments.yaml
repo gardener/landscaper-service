@@ -303,6 +303,8 @@ spec:
                   controller.
                 format: int64
                 type: integer
+              phase:
+                type: string
             type: object
         required:
         - spec

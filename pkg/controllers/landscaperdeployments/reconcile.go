@@ -7,6 +7,7 @@ package landscaperdeployments
 import (
 	"context"
 	"fmt"
+	"reflect"
 	"sort"
 	"strings"
 
@@ -30,6 +31,7 @@ import (
 // reconcile reconciles a landscaper deployment
 func (c *Controller) reconcile(ctx context.Context, deployment *provisioningv1alpha2.LandscaperDeployment) error {
 	currOp := "Reconcile"
+	old := deployment.DeepCopy()
 
 	// reconcile instance
 	instance := &provisioningv1alpha2.Instance{}
@@ -54,9 +56,17 @@ func (c *Controller) reconcile(ctx context.Context, deployment *provisioningv1al
 			Name:      instance.GetName(),
 			Namespace: instance.GetNamespace(),
 		}
+	}
 
+	if err := c.Client().Get(ctx, client.ObjectKeyFromObject(instance), instance); err != nil {
+		return lsserrors.NewWrappedError(err, currOp, "GetInstanceStatus", err.Error())
+	}
+
+	deployment.Status.Phase = instance.Status.Phase
+
+	if !reflect.DeepEqual(old.Status, deployment.Status) {
 		if err := c.Client().Status().Update(ctx, deployment); err != nil {
-			return lsserrors.NewWrappedError(err, currOp, "UpdateInstanceRefForDeployment", err.Error())
+			return lsserrors.NewWrappedError(err, currOp, "UpdateLandscaperDeploymentStatus", err.Error())
 		}
 	}
 

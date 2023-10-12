@@ -364,6 +364,12 @@ func (c *Controller) reconcileInstallation(ctx context.Context, instance *provis
 		Version: installation.Spec.ComponentDescriptor.Reference.Version,
 	}
 
+	if err := c.Client().Get(ctx, client.ObjectKeyFromObject(installation), installation); err != nil {
+		return fmt.Errorf("unable to get installation status: %w", err)
+	}
+
+	instance.Status.Phase = string(installation.Status.InstallationPhase)
+
 	if !reflect.DeepEqual(old.Status, instance.Status) {
 		if err := c.Client().Status().Update(ctx, instance); err != nil {
 			return fmt.Errorf("unable to update instance status: %w", err)
@@ -465,14 +471,6 @@ func (c *Controller) mutateInstallation(ctx context.Context, installation *lsv1a
 			lsinstallation.SidecarConfigImportName:             *sidecarConfigRaw,
 			lsinstallation.RotationConfigImportName:            *rotationConfigRaw,
 			lsinstallation.WebhooksHostNameImportName:          utils.StringToAnyJSON(fmt.Sprintf("%s-%s.%s", instance.Spec.TenantId, instance.Spec.ID, config.Spec.IngressDomain)),
-		},
-		Exports: lsv1alpha1.InstallationExports{
-			Data: []lsv1alpha1.DataExport{
-				{
-					Name:    lsinstallation.AdminKubeconfigExportName,
-					DataRef: lsinstallation.GetInstallationExportDataRef(instance, lsinstallation.AdminKubeconfigExportName),
-				},
-			},
 		},
 		AutomaticReconcile: &lsv1alpha1.AutomaticReconcile{
 			SucceededReconcile: &lsv1alpha1.SucceededReconcile{

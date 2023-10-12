@@ -1519,6 +1519,13 @@ func schema_pkg_apis_provisioning_v1alpha2_InstanceStatus(ref common.ReferenceCa
 							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/provisioning/v1alpha2.ObjectReference"),
 						},
 					},
+					"phase": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
+						},
+					},
 				},
 			},
 		},
@@ -1843,6 +1850,13 @@ func schema_pkg_apis_provisioning_v1alpha2_LandscaperDeploymentStatus(ref common
 						SchemaProps: spec.SchemaProps{
 							Description: "InstanceRef references the instance that is created for this LandscaperDeployment.",
 							Ref:         ref("github.com/gardener/landscaper-service/pkg/apis/provisioning/v1alpha2.ObjectReference"),
+						},
+					},
+					"phase": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
 						},
 					},
 				},

@@ -394,6 +394,10 @@
           "format": "int64",
           "default": 0
         },
+        "phase": {
+          "type": "string",
+          "default": ""
+        },
         "targetClusterRef": {
           "description": "TargetClusterRef references the Target for this Instance.",
           "$ref": "#/definitions/provisioning-v1alpha2-ObjectReference"

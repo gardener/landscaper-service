@@ -93,4 +93,7 @@ type InstanceStatus struct {
 	// InstallationRef references the Installation for this Instance.
 	// +optional
 	InstallationRef *ObjectReference `json:"installationRef"`
+
+	// +optional
+	Phase string `json:"phase"`
 }

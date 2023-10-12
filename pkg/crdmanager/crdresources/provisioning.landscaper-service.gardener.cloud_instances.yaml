@@ -372,6 +372,8 @@ spec:
                   is updated on mutation by the landscaper service controller.
                 format: int64
                 type: integer
+              phase:
+                type: string
               targetClusterRef:
                 description: TargetClusterRef references the Target for this Instance.
                 properties:
