@@ -457,7 +457,7 @@ func (c *Controller) mutateInstallation(ctx context.Context, installation *lsv1a
 					Target: instance.Status.TargetClusterRef.Name,
 				},
 				{
-					Name:   lsinstallation.DataPlaneClusterNamespace,
+					Name:   lsinstallation.DataPlaneClusterImportName,
 					Target: instance.Status.DataPlaneClusterRef.Name,
 				},
 			},

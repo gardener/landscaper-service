@@ -8,8 +8,8 @@ blueprint:
 
 imports:
   targets:
-    - name: shootCluster
-      target: shootCluster
+    - name: dataPlaneCluster
+      target: dataPlaneCluster
   data:
     - name: targetClusterNamespace
       dataRef: targetClusterNamespace
