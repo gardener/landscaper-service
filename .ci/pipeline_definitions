@@ -29,7 +29,7 @@ landscaper-service:
             image: eu.gcr.io/gardener-project/landscaper-service/landscaper-service-target-shoot-sidecar-server
     steps:
       verify:
-        image: 'golang:1.20.9'
+        image: 'golang:1.20.10'
       publish-helm-charts:
         depends:
         - verify
@@ -41,7 +41,7 @@ landscaper-service:
           depends:
             - publish
             - publish-helm-charts
-          image: 'eu.gcr.io/gardener-project/landscaper-service/integration-test:1.20.9-alpine3.18'
+          image: 'eu.gcr.io/gardener-project/landscaper-service/integration-test:1.20.10-alpine3.18'
           execute:
             - "integration_test"
           output_dir: 'integration_test'
@@ -62,7 +62,7 @@ landscaper-service:
           depends: 
           - publish
           - publish-helm-charts
-          image: 'eu.gcr.io/gardener-project/landscaper-service/integration-test:1.20.9-alpine3.18'
+          image: 'eu.gcr.io/gardener-project/landscaper-service/integration-test:1.20.10-alpine3.18'
           execute:
           - "integration_test_pr"
           output_dir: 'integration_test'
@@ -90,7 +90,7 @@ landscaper-service:
           depends:
             - publish
             - publish-helm-charts
-          image: 'eu.gcr.io/gardener-project/landscaper-service/integration-test:1.20.9-alpine3.18'
+          image: 'eu.gcr.io/gardener-project/landscaper-service/integration-test:1.20.10-alpine3.18'
           execute:
             - "integration_test"
           output_dir: 'integration_test'
