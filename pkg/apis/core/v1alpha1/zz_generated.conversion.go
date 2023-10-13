@@ -13,6 +13,7 @@ package v1alpha1
 import (
 	unsafe "unsafe"
 
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	conversion "k8s.io/apimachinery/pkg/conversion"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 
@@ -611,6 +612,7 @@ func autoConvert_v1alpha1_AvailabilityInstance_To_core_AvailabilityInstance(in *
 	}
 	out.Status = in.Status
 	out.FailedReason = in.FailedReason
+	out.FailedSince = (*v1.Time)(unsafe.Pointer(in.FailedSince))
 	return nil
 }
 
@@ -625,6 +627,7 @@ func autoConvert_core_AvailabilityInstance_To_v1alpha1_AvailabilityInstance(in *
 	}
 	out.Status = in.Status
 	out.FailedReason = in.FailedReason
+	out.FailedSince = (*v1.Time)(unsafe.Pointer(in.FailedSince))
 	return nil
 }
 

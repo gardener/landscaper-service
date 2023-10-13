@@ -84,6 +84,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	}
 
 	//clean status
+	oldInstances := availabilityCollection.Status.Instances
 	availabilityCollection.Status.Instances = []lssv1alpha1.AvailabilityInstance{}
 
 	for _, instanceRefToWatch := range availabilityCollection.Spec.InstanceRefs {
@@ -98,12 +99,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 			return reconcile.Result{}, err
 		}
 
-		availabilityInstance := lssv1alpha1.AvailabilityInstance{
-			ObjectReference: lssv1alpha1.ObjectReference{
-				Name:      instance.Name,
-				Namespace: instance.Namespace,
-			},
-		}
+		availabilityInstance := c.createAvailabilityInstance(instance, oldInstances...)
 
 		//get referred installation
 		logger.Debug("fetch referred installation")
@@ -118,8 +114,9 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 				logger.Error(err, "skipping instance monitoring")
 				continue
 			}
-			setAvailabilityInstanceStatusToFailed(&availabilityInstance, "could not load installation from installation reference")
-			availabilityCollection.Status.Instances = append(availabilityCollection.Status.Instances, availabilityInstance)
+			msg := "could not load installation from installation reference"
+			availabilityInstance.SetStatusAndFailedSince(lsv1alpha1.LsHealthCheckStatusFailed, msg, true)
+			availabilityCollection.Status.Instances = append(availabilityCollection.Status.Instances, *availabilityInstance)
 			continue
 		}
 
@@ -133,8 +130,9 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 		logger.Debug("check servcicetargetconfref existance")
 		if instance.Spec.ServiceTargetConfigRef.Name == "" || instance.Spec.ServiceTargetConfigRef.Namespace == "" {
 			logger.Info("instance does not have a ServiceTargetConfig ref")
-			setAvailabilityInstanceStatusToFailed(&availabilityInstance, "instance does not have a ServiceTargetConfigRef")
-			availabilityCollection.Status.Instances = append(availabilityCollection.Status.Instances, availabilityInstance)
+			msg := "instance does not have a ServiceTargetConfigRef"
+			availabilityInstance.SetStatusAndFailedSince(lsv1alpha1.LsHealthCheckStatusFailed, msg, true)
+			availabilityCollection.Status.Instances = append(availabilityCollection.Status.Instances, *availabilityInstance)
 			continue
 		}
 
@@ -143,16 +141,18 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 		targetClient, err := c.kubeClientExtractor.GetKubeClientFromServiceTargetConfig(ctx, instance.Spec.ServiceTargetConfigRef.Name, instance.Spec.ServiceTargetConfigRef.Namespace, c.Client())
 		if err != nil {
 			logger.Error(err, "failed creating target client")
-			setAvailabilityInstanceStatusToFailed(&availabilityInstance, "could not create k8s client from target config")
-			availabilityCollection.Status.Instances = append(availabilityCollection.Status.Instances, availabilityInstance)
+			msg := "could not create k8s client from target config"
+			availabilityInstance.SetStatusAndFailedSince(lsv1alpha1.LsHealthCheckStatusFailed, msg, true)
+			availabilityCollection.Status.Instances = append(availabilityCollection.Status.Instances, *availabilityInstance)
 			continue
 		}
 		logger.Debug("fetch target namespace from installation")
 		targetClusterNamespace, err := extractTargetClusterNamespaceFromInstallation(*installation)
 		if err != nil {
 			logger.Error(err, "failed extracting target cluster namespace")
-			setAvailabilityInstanceStatusToFailed(&availabilityInstance, "could not read target cluster namespace from installation")
-			availabilityCollection.Status.Instances = append(availabilityCollection.Status.Instances, availabilityInstance)
+			msg := "could not read target cluster namespace from installation"
+			availabilityInstance.SetStatusAndFailedSince(lsv1alpha1.LsHealthCheckStatusFailed, msg, true)
+			availabilityCollection.Status.Instances = append(availabilityCollection.Status.Instances, *availabilityInstance)
 			continue
 		}
 
@@ -163,19 +163,22 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 		if err != nil {
 			logger.Error(err, "could not load lshealthcheck from cluster")
 			if apierrors.IsNotFound(err) {
-				setAvailabilityInstanceStatusToFailed(&availabilityInstance, "lsHealthCheck not found on target")
+				msg := "lsHealthCheck not found on target"
+				availabilityInstance.SetStatusAndFailedSince(lsv1alpha1.LsHealthCheckStatusFailed, msg, true)
 				continue
 			}
-			setAvailabilityInstanceStatusToFailed(&availabilityInstance, "failed retrieving lshealthcheck cr")
-			availabilityCollection.Status.Instances = append(availabilityCollection.Status.Instances, availabilityInstance)
+			msg := "failed retrieving lshealthcheck cr"
+			availabilityInstance.SetStatusAndFailedSince(lsv1alpha1.LsHealthCheckStatusFailed, msg, true)
+			availabilityCollection.Status.Instances = append(availabilityCollection.Status.Instances, *availabilityInstance)
 			continue
 		}
 
-		transferLsHealthCheckStatusToAvailabilityInstance(&availabilityInstance, lsHealthchecks, c.Config().AvailabilityMonitoring.LSHealthCheckTimeout.Duration)
-		availabilityCollection.Status.Instances = append(availabilityCollection.Status.Instances, availabilityInstance)
+		TransferLsHealthCheckStatusToAvailabilityInstance(availabilityInstance, lsHealthchecks, c.Config().AvailabilityMonitoring.LSHealthCheckTimeout.Duration)
+		availabilityCollection.Status.Instances = append(availabilityCollection.Status.Instances, *availabilityInstance)
 		logger.Debug("healthcheck of instance completed", "health", availabilityInstance.Status)
 	}
-	availabilityCollection.Status.Self = c.getLsHealthCheckFromSelfLandscaper(ctx, c.Config().AvailabilityMonitoring.SelfLandscaperNamespace)
+	availabilityCollection.Status.Self = c.getLsHealthCheckFromSelfLandscaper(ctx,
+		c.Config().AvailabilityMonitoring.SelfLandscaperNamespace, availabilityCollection.Status.Self)
 	availabilityCollection.Status.ObservedGeneration = availabilityCollection.ObjectMeta.Generation
 	availabilityCollection.Status.LastRun = v1.NewTime(time.Now())
 
@@ -194,12 +197,15 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 }
 
-func (c *Controller) getLsHealthCheckFromSelfLandscaper(ctx context.Context, namespace string) lssv1alpha1.AvailabilityInstance {
+func (c *Controller) getLsHealthCheckFromSelfLandscaper(ctx context.Context, namespace string,
+	oldInstance lssv1alpha1.AvailabilityInstance) lssv1alpha1.AvailabilityInstance {
+
 	availabilityInstance := lssv1alpha1.AvailabilityInstance{
 		ObjectReference: lssv1alpha1.ObjectReference{
 			Name:      "self",
 			Namespace: namespace,
 		},
+		FailedSince: oldInstance.FailedSince,
 	}
 
 	//collect lshealthcheck
@@ -208,11 +214,12 @@ func (c *Controller) getLsHealthCheckFromSelfLandscaper(ctx context.Context, nam
 	if err != nil {
 		if apierrors.IsNotFound(err) {
 			c.log.Info(err.Error())
-			setAvailabilityInstanceStatusToFailed(&availabilityInstance, "lsHealthCheck not found on target")
-
+			msg := "lsHealthCheck not found on target"
+			availabilityInstance.SetStatusAndFailedSince(lsv1alpha1.LsHealthCheckStatusFailed, msg, true)
 		}
 		c.log.Info(fmt.Sprintf("could not load lshealthcheck from cluster: %s", err.Error()))
-		setAvailabilityInstanceStatusToFailed(&availabilityInstance, "failed retrieving lshealthcheck cr")
+		msg := "failed retrieving lshealthcheck cr"
+		availabilityInstance.SetStatusAndFailedSince(lsv1alpha1.LsHealthCheckStatusFailed, msg, true)
 	}
 	if len(lsHealthchecks.Items) != 1 {
 		if len(lsHealthchecks.Items) > 0 {
@@ -229,8 +236,28 @@ func (c *Controller) getLsHealthCheckFromSelfLandscaper(ctx context.Context, nam
 			c.log.Info("number of lshealthcheck instances is not equal to 1", "lshHealthCheckInstanceCount", len(lsHealthchecks.Items))
 		}
 	}
-	transferLsHealthCheckStatusToAvailabilityInstance(&availabilityInstance, lsHealthchecks, c.Config().AvailabilityMonitoring.LSHealthCheckTimeout.Duration)
+	TransferLsHealthCheckStatusToAvailabilityInstance(&availabilityInstance, lsHealthchecks, c.Config().AvailabilityMonitoring.LSHealthCheckTimeout.Duration)
 	return availabilityInstance
+}
+
+func (c *Controller) createAvailabilityInstance(instance *lssv1alpha1.Instance,
+	oldInstances ...lssv1alpha1.AvailabilityInstance) *lssv1alpha1.AvailabilityInstance {
+
+	availabilityInstance := lssv1alpha1.AvailabilityInstance{
+		ObjectReference: lssv1alpha1.ObjectReference{
+			Name:      instance.Name,
+			Namespace: instance.Namespace,
+		},
+	}
+
+	for _, next := range oldInstances {
+		if next.Name == instance.Name && next.Namespace == instance.Namespace {
+			availabilityInstance.FailedSince = next.FailedSince
+			break
+		}
+	}
+
+	return &availabilityInstance
 }
 
 func logFailedInstances(logger logging.Logger, availabilityCollection lssv1alpha1.AvailabilityCollection) {
@@ -249,31 +276,34 @@ func logFailedInstances(logger logging.Logger, availabilityCollection lssv1alpha
 	}
 }
 
-func setAvailabilityInstanceStatusToFailed(availabilityInstance *lssv1alpha1.AvailabilityInstance, failedReason string) {
-	availabilityInstance.Status = string(lsv1alpha1.LsHealthCheckStatusFailed)
-	availabilityInstance.FailedReason = failedReason
-}
-
-func transferLsHealthCheckStatusToAvailabilityInstance(availabilityInstance *lssv1alpha1.AvailabilityInstance, lsHealthChecks *lsv1alpha1.LsHealthCheckList, timeout time.Duration) {
+func TransferLsHealthCheckStatusToAvailabilityInstance(availabilityInstance *lssv1alpha1.AvailabilityInstance, lsHealthChecks *lsv1alpha1.LsHealthCheckList, timeout time.Duration) {
+	msg := ""
 	if len(lsHealthChecks.Items) != 1 {
-		setAvailabilityInstanceStatusToFailed(availabilityInstance, "number of lsHealthChecks found != 1")
+		msg = "number of lsHealthChecks found != 1"
+		availabilityInstance.SetStatusAndFailedSince(lsv1alpha1.LsHealthCheckStatusFailed, msg, true)
 		return
 	}
 
 	healthCheck := lsHealthChecks.Items[0]
 	if time.Since(healthCheck.LastUpdateTime.Time) > timeout {
 		if healthCheck.Status == lsv1alpha1.LsHealthCheckStatusOk {
-			setAvailabilityInstanceStatusToFailed(availabilityInstance, fmt.Sprintf("timeout - last update time not recent enough (timeout %s)", timeout.String()))
+			msg = fmt.Sprintf("timeout - last update time not recent enough (timeout %s)", timeout.String())
 		} else {
-			setAvailabilityInstanceStatusToFailed(availabilityInstance, fmt.Sprintf("timeout - failed recovering from failed state within time (timeout %s): %s", timeout.String(), healthCheck.Description))
+			msg = fmt.Sprintf("timeout - failed recovering from failed state within time (timeout %s): %s", timeout.String(), healthCheck.Description)
 		}
+		availabilityInstance.SetStatusAndFailedSince(lsv1alpha1.LsHealthCheckStatusFailed, msg, true)
 	} else {
 		if healthCheck.Status == lsv1alpha1.LsHealthCheckStatusOk {
-			availabilityInstance.Status = string(healthCheck.Status)
+			availabilityInstance.SetStatusAndFailedSince(lsv1alpha1.LsHealthCheckStatusOk, msg, false)
 		} else {
-			// if we are status failed but not yet in timeout, remain in Ok but put a remark in failedReason
-			availabilityInstance.Status = string(lsv1alpha1.LsHealthCheckStatusOk)
-			availabilityInstance.FailedReason = fmt.Sprintf("failed - waiting for timeout (%s) to transition to status=Failed", timeout.String())
+			if availabilityInstance.FailedSince != nil && time.Since(availabilityInstance.FailedSince.Time) > timeout {
+				msg = fmt.Sprintf("instance failed recovering from failed state within time (timeout %s): %s", timeout.String(), healthCheck.Description)
+				availabilityInstance.SetStatusAndFailedSince(lsv1alpha1.LsHealthCheckStatusFailed, msg, true)
+			} else {
+				// if we are status failed but not yet in timeout, remain in Ok but put a remark in failedReason
+				msg = fmt.Sprintf("failed - waiting for timeout (%s) to transition to status=Failed: %s", timeout.String(), healthCheck.Description)
+				availabilityInstance.SetStatusAndFailedSince(lsv1alpha1.LsHealthCheckStatusOk, msg, true)
+			}
 		}
 	}
 }

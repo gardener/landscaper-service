@@ -63,6 +63,10 @@ type AvailabilityInstance struct {
 	Status string `json:"status"`
 	// FailedReason is the reason the status is in failed.
 	FailedReason string `json:"failedReason"`
+
+	// FailedSince contains the timestamp since the object is in failed status
+	// +optional
+	FailedSince *metav1.Time `json:"failedSince,omitempty"`
 }
 
 // AvailabilityCollectionSpec contains the spec for the AvailabilityCollection.

@@ -121,9 +121,11 @@ func (in *AvailabilityCollectionStatus) DeepCopyInto(out *AvailabilityCollection
 	if in.Instances != nil {
 		in, out := &in.Instances, &out.Instances
 		*out = make([]AvailabilityInstance, len(*in))
-		copy(*out, *in)
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
 	}
-	out.Self = in.Self
+	in.Self.DeepCopyInto(&out.Self)
 	return
 }
 
@@ -141,6 +143,10 @@ func (in *AvailabilityCollectionStatus) DeepCopy() *AvailabilityCollectionStatus
 func (in *AvailabilityInstance) DeepCopyInto(out *AvailabilityInstance) {
 	*out = *in
 	out.ObjectReference = in.ObjectReference
+	if in.FailedSince != nil {
+		in, out := &in.FailedSince, &out.FailedSince
+		*out = (*in).DeepCopy()
+	}
 	return
 }
 
