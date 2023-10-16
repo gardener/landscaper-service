@@ -20,7 +20,7 @@ RUN apk add --no-cache --no-progress \
 RUN curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash && \
     ln -s "$(which helm)" /bin/helm3
 
-RUN curl -LO https://dl.k8s.io/release/v1.25.0/bin/linux/amd64/kubectl && \
+RUN curl -LO https://dl.k8s.io/release/v1.25.14/bin/linux/amd64/kubectl && \
     install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 
 RUN pip3 install --upgrade pip && \
