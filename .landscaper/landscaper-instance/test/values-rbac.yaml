@@ -1,0 +1,16 @@
+imports:
+  shootCluster:
+    metadata:
+      name: shoot-cluster
+      namespace: default
+    spec:
+      type: landscaper.gardener.cloud/kubernetes-cluster
+      config:
+        kubeconfig: |
+          apiVersion: v1
+          kind: Config
+
+  targetClusterNamespace: ls-system
+  shootClusterEndpoint: test-shoot.api.mycluster.net
+  shootConfig: {}
+  rotationConfig: {}

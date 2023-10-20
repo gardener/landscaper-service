@@ -7,3 +7,6 @@ exports:
 
   landscaperUserKubeconfigYaml: |
     {{- getOidcKubeconfig .imports.shootConfig.kubernetes.kubeAPIServer.oidcConfig.issuerURL .imports.shootConfig.kubernetes.kubeAPIServer.oidcConfig.clientID .imports.shootCluster | b64dec | nindent 4 }}
+
+  landscaperDeployerKubeconfigYaml: |
+    {{- getServiceAccountKubeconfig "landscaper-deployer" .imports.targetClusterNamespace .imports.rotationConfig.tokenExpirationSeconds .imports.shootCluster | b64dec | nindent 4 }}

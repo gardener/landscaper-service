@@ -1,0 +1,161 @@
+landscaper:
+  name: "landscaper"
+
+  verbosity: "info"
+
+  controllers:
+    # syncPeriod: 10h
+    installations:
+      workers: 30
+      # cacheSyncTimeout: 2m
+    executions:
+      workers: 30
+      # cacheSyncTimeout: 2m
+    deployItems:
+      workers: 5
+      # cacheSyncTimeout: 2m
+    componentOverwrites:
+      workers: 5
+      # cacheSyncTimeout: 2m
+    context:
+      workers: 5
+      # cacheSyncTimeout: 2m
+
+      config:
+        default:
+          disable: false
+          excludeNamespaces:
+            - kube-system
+
+  deployItemTimeouts:
+    # how long deployers may take to react on changes to deploy items
+    pickup: 60m
+    # default for how long deployers may take to process a deploy item before failing, can be overwritten via the deploy item's 'spec.timeout' field
+    progressingDefault: 10m
+
+  registryConfig:
+    allowPlainHttpRegistries: false
+    insecureSkipVerify: false
+    cache:
+      useInMemoryOverlay: false
+    secrets: {}
+
+  crdManagement:
+    deployCrd: true
+    forceUpdate: true
+
+  healthCheck:
+    name: "landscaper"
+    additionalDeployments:
+      deployments: []
+
+  # burst and max queries per second settings for k8s client used in reconciliation
+  k8sClientSettings:
+    # settings of client for host cluster; are overwritten by settings for resourceClient if host and resource cluster are identical
+    hostClient:
+      burst: 30
+      qps: 20
+
+    # settings of client for resource cluster
+    resourceClient:
+      burst: 60
+      qps: 40
+
+controller:
+  containerName: landscaper-controller
+  serviceAccountName: "landscaper-controller"
+  roleName: "landscaper-controller"
+
+  resourceCluster:
+    kubeconfig: |
+      apiVersion: v1
+      kind: Config
+      clusters: []
+      users: []
+      contexts: []
+
+  image:
+    repository: eu.gcr.io/gardener-project/landscaper/landscaper-controller
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the .Values.image.tag or chart appVersion.
+    #tag: ""
+
+  replicaCount: 1
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 100Mi
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  hpa:
+    minReplicas: 1
+    maxReplicas: 1
+    averageCpuUtilization: 80
+    averageMemoryUtilization: 80
+
+  service:
+    type: ClusterIP
+    port: 80
+
+  main:
+    containerName: landscaper-main
+
+    replicaCount: 1
+
+    resources:
+      requests:
+        cpu: 300m
+        memory: 300Mi
+
+    hpa:
+      minReplicas: 1
+      maxReplicas: 1
+      averageCpuUtilization: 80
+      averageMemoryUtilization: 80
+
+webhooksServer:
+  containerName: landscaper-webhooks
+  certificatesNamespace: ls-system
+
+  resourceCluster:
+    kubeconfig: |
+      apiVersion: v1
+      kind: Config
+      clusters: []
+      users: []
+      contexts: []
+
+  image:
+    repository: eu.gcr.io/gardener-project/landscaper/landscaper-webhooks-server
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the .Values.image.tag or the chart appVersion.
+    #tag: ""
+
+  replicaCount: 2
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 100Mi
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  hpa:
+    minReplicas: 2
+    maxReplicas: 10
+    averageCpuUtilization: 80
+    averageMemoryUtilization: 80
+
+  service:
+    type: ClusterIP
+    port: 9443
+
+  ingress:
+    host: webhooks.ingress.mydomain.org
+    className: nginx
+    dns:
+      class: garden

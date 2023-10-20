@@ -1,0 +1,60 @@
+{{/* SPDX-FileCopyrightText: 2023 SAP SE or an SAP affiliate company and Gardener contributors
+
+ SPDX-License-Identifier: Apache-2.0
+*/}}
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "landscaper.webhooks.name" . }}
+  labels:
+    {{- include "landscaper.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.webhooksServer.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "landscaper.webhooks.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/kubeconfigsecret: {{ toJson .Values.webhooksServer.resourceCluster.kubeconfig | sha256sum }}
+      labels:
+        landscaper.gardener.cloud/topology: webhook-server
+        landscaper.gardener.cloud/topology-ns: {{ .Release.Namespace }}
+        {{- include "landscaper.webhooks.selectorLabels" . | nindent 8 }}
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: {{ .Values.webhooksServer.containerName }}
+          image: "{{ include "landscaper-webhook-image" . }}"
+          imagePullPolicy: {{ .Values.webhooksServer.image.pullPolicy }}
+          args:
+          - "--kubeconfig=/app/ls/resource-cluster-kubeconfig/kubeconfig"
+          - "--webhook-url=https://{{ .Values.webhooksServer.ingress.host }}"
+          - "--cert-ns={{ .Values.webhooksServer.certificatesNamespace }}"
+          - "-v={{ .Values.landscaper.verbosity }}"
+          - "--port={{ .Values.webhooksServer.service.port }}"
+          volumeMounts:
+          - name: resource-cluster-kubeconfig
+            mountPath: /app/ls/resource-cluster-kubeconfig
+          resources:
+            {{- toYaml .Values.webhooksServer.resources | nindent 12 }}
+      volumes:
+      - name: resource-cluster-kubeconfig
+        secret:
+          secretName: {{ .Values.landscaper.name }}-webhooks-cluster-kubeconfig
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            landscaper.gardener.cloud/topology: webhook-server
+            landscaper.gardener.cloud/topology-ns: {{ .Release.Namespace }}
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            landscaper.gardener.cloud/topology: webhook-server
+            landscaper.gardener.cloud/topology-ns: {{ .Release.Namespace }}

@@ -48,6 +48,11 @@ exports:
     schema:
       type: string
 
+  - name: landscaperDeployerKubeconfigYaml
+    type: data
+    schema:
+      type: string
+
 exportExecutions:
   - name: export-execution
     file: /export-execution.yaml

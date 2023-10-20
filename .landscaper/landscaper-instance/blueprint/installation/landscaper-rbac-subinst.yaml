@@ -28,3 +28,5 @@ exports:
       dataRef: landscaperWebhooksKubeconfigYaml
     - name: landscaperUserKubeconfigYaml
       dataRef: landscaperUserKubeconfigYaml
+    - name: landscaperDeployerKubeconfigYaml
+      dataRef: landscaperDeployerKubeconfigYaml

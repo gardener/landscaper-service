@@ -1,0 +1,15 @@
+# SPDX-FileCopyrightText: 2023 SAP SE or an SAP affiliate company and Gardener contributors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+controller:
+  serviceAccountName: "landscaper-controller"
+  clusterRoleName: "landscaper.gardener.cloud:controller"
+
+webhooksServer:
+  serviceAccountName: "landscaper-webhooks"
+  clusterRoleName: "landscaper.gardener.cloud:webhooks-server"
+
+user:
+  serviceAccountName: "landscaper-user"
+  clusterRoleName: "landscaper.gardener.cloud:user"

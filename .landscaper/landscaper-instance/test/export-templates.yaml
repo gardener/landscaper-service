@@ -1,0 +1,49 @@
+installations:
+  - name: shoot
+    selector: .*/shoot-cluster
+    template: |
+      dataExports:
+        shootClusterKubeconfig: |
+          apiVersion: v1
+          kind: Config
+        shootClusterEndpoint: test-shoot.api.mycluster.net
+      targetExports:
+        shootCluster:
+          metadata:
+            name: shoot-cluster
+            namespace: default
+          spec:
+            type: landscaper.gardener.cloud/kubernetes-cluster
+            config:
+              kubeconfig: |
+                apiVersion: v1
+                kind: Config
+
+  - name: landscaper-rbac
+    selector: .*/landscaper-rbac
+    template: |
+      dataExports:
+        landscaperControllerKubeconfigYaml: |
+          apiVersion: v1
+          kind: Config
+        landscaperWebhooksKubeconfigYaml: |
+          apiVersion: v1
+          kind: Config
+        landscaperUserKubeconfigYaml: |
+          apiVersion: v1
+          kind: Config
+        landscaperDeployerKubeconfigYaml: |
+          apiVersion: v1
+          kind: Config
+      targetExports: {}
+
+  - name: sidecar-rbac
+    selector: .*/sidecar-rbac
+    template: |
+      dataExports:
+        sidecarControllerKubeconfigYaml: |
+          apiVersion: v1
+          kind: Config
+      targetExports: {}
+
+deployItems: []
