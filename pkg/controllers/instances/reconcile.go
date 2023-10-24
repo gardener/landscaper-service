@@ -430,6 +430,7 @@ func (c *Controller) mutateInstallation(ctx context.Context, installation *lsv1a
 		landscaperConfig.Landscaper.Controllers = instance.Spec.LandscaperConfiguration.Landscaper.Controllers
 		landscaperConfig.Landscaper.DeployItemTimeouts = instance.Spec.LandscaperConfiguration.Landscaper.DeployItemTimeouts
 		landscaperConfig.Landscaper.K8SClientSettings = instance.Spec.LandscaperConfiguration.Landscaper.K8SClientSettings
+		landscaperConfig.Landscaper.UseOCMLib = instance.Spec.LandscaperConfiguration.Landscaper.UseOCMLib
 	}
 
 	landscaperConfigRaw, err := landscaperConfig.ToAnyJSON()

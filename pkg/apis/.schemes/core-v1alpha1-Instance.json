@@ -286,6 +286,9 @@
         },
         "k8sClientSettings": {
           "$ref": "#/definitions/core-v1alpha1-K8SClientSettings"
+        },
+        "useOCMLib": {
+          "type": "boolean"
         }
       }
     },

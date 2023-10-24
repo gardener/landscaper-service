@@ -94,6 +94,7 @@ type Landscaper struct {
 	Controllers        *Controllers        `json:"controllers,omitempty"`
 	K8SClientSettings  *K8SClientSettings  `json:"k8sClientSettings,omitempty"`
 	DeployItemTimeouts *DeployItemTimeouts `json:"deployItemTimeouts,omitempty"`
+	UseOCMLib          bool                `json:"useOCMLib,omitempty"`
 }
 
 // Controllers specifies the config for the "main" landscaper controllers, i.e. the installation and execution controller.

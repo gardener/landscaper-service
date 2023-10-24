@@ -65,6 +65,10 @@ deployItems:
 
           deployersConfig: {}
 
+          {{- if (dig "landscaperConfig" "landscaper" "useOCMLib" false .imports) }}
+          useOCMLib: true
+          {{- end }}
+
           {{- if (dig "landscaperConfig" "landscaper" "deployItemTimeouts" false .imports) }}
           deployItemTimeouts:
           {{- toYaml .imports.landscaperConfig.landscaper.deployItemTimeouts | nindent 12 }}
@@ -256,6 +260,10 @@ deployItems:
           averageMemoryUtilization: {{ .imports.landscaperConfig.deployersConfig.helm.hpa.averageMemoryUtilization }}
           {{- end }}
         {{- end }}
+
+        {{- if (dig "landscaperConfig" "landscaper" "useOCMLib" false .imports) }}
+        useOCMLib: true
+        {{- end }}
 {{ end }}
 
 {{ if has "manifest" .imports.landscaperConfig.deployers }}
@@ -329,6 +337,10 @@ deployItems:
           averageMemoryUtilization: {{ .imports.landscaperConfig.deployersConfig.manifest.hpa.averageMemoryUtilization }}
           {{- end }}
         {{- end }}
+
+        {{- if (dig "landscaperConfig" "landscaper" "useOCMLib" false .imports) }}
+        useOCMLib: true
+        {{- end }}
 {{ end }}
 
 {{ if has "container" .imports.landscaperConfig.deployers }}
@@ -401,5 +413,9 @@ deployItems:
           {{- if (dig "landscaperConfig" "deployersConfig" "container" "hpa" "averageMemoryUtilization" false .imports) }}
           averageMemoryUtilization: {{ .imports.landscaperConfig.deployersConfig.container.hpa.averageMemoryUtilization }}
           {{- end }}
+        {{- end }}
+
+        {{- if (dig "landscaperConfig" "landscaper" "useOCMLib" false .imports) }}
+        useOCMLib: true
         {{- end }}
 {{ end }}
