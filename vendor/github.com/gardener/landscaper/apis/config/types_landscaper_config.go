@@ -53,6 +53,9 @@ type LandscaperConfiguration struct {
 type LsDeployments struct {
 	// LsController is the name of the Landscaper controller deployment.
 	LsController string
+	// LsMainController is the name of the main Landscaper controller deployment.
+	// +optional
+	LsMainController string
 	// LsController is the name of the Landscaper webhook server deployment.
 	WebHook string
 	// DeploymentsNamespace is the namespace in which the deployments are located.
@@ -162,11 +165,6 @@ type DeployItemTimeouts struct {
 	// Defaults to five minutes if not specified.
 	// +optional
 	Abort *lscore.Duration
-	// ProgressingDefault specifies how long the deployer may take to apply a deploy item by default. The value can be overwritten per deploy item in 'spec.timeout'.
-	// Allowed values are 'none' (to disable abort timeout detection) and anything that is understood by golang's time.ParseDuration method.
-	// Defaults to ten minutes if not specified.
-	// +optional
-	ProgressingDefault *lscore.Duration
 }
 
 // RegistryConfiguration contains the configuration for the used definition registry

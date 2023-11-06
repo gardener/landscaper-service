@@ -76,6 +76,7 @@ func (_ Duration) OpenAPISchemaFormat() string { return "" }
 // AnyJSON enhances the json.RawMessages with a dedicated openapi definition so that all
 // it is correctly generated
 // +k8s:openapi-gen=true
+// +kubebuilder:validation:Type:=string
 type AnyJSON struct {
 	json.RawMessage `json:",inline"`
 }
@@ -157,8 +158,6 @@ const (
 	ErrorConfigurationProblem ErrorCode = "ERR_CONFIGURATION_PROBLEM"
 	// ErrorInternalProblem indicates that the last error occurred due to a servere internal error
 	ErrorInternalProblem ErrorCode = "ERR_INTERNAL_PROBLEM"
-	// ErrorReadinessCheckTimeout indicates that objects failed the readiness check within the given time
-	ErrorReadinessCheckTimeout ErrorCode = "ERR_READINESS_CHECK_TIMEOUT"
 	// ErrorTimeout indicates that an operation timed out.
 	ErrorTimeout ErrorCode = "ERR_TIMEOUT"
 	// ErrorCyclicDependencies indicates that there are cyclic dependencies between multiple installations/deployitems.
@@ -175,7 +174,6 @@ const (
 var UnrecoverableErrorCodes = []ErrorCode{
 	ErrorConfigurationProblem,
 	ErrorInternalProblem,
-	ErrorReadinessCheckTimeout,
 	ErrorTimeout,
 	ErrorCyclicDependencies,
 }
