@@ -29,7 +29,7 @@ gcloud auth print-access-token | helm registry login -u oauth2accesstoken --pass
 Check new version on [artifacthub.io / cert-manager](https://artifacthub.io/packages/helm/cert-manager/cert-manager)
 
 ```shell
-export CERT_MANAGER_VERSION=v1.13.1
+export CERT_MANAGER_VERSION=v1.13.2
 
 ./hack/dependency-update/cert-manager.sh ${CERT_MANAGER_VERSION}
 ```
@@ -39,8 +39,8 @@ export CERT_MANAGER_VERSION=v1.13.1
 Check new version on [SAP / sap-btp-service-operator](https://github.com/SAP/sap-btp-service-operator/releases/) and [brancz / kube-rbac-proxy](https://quay.io/repository/brancz/kube-rbac-proxy?tab=tags&tag=latest)
 
 ```shell
-export SAP_BTP_OPERATOR_VERSION=v0.5.3
-export KUBE_RBAC_PROXY_VERSION=v0.14.3
+export SAP_BTP_OPERATOR_VERSION=v0.5.4
+export KUBE_RBAC_PROXY_VERSION=v0.15.0
 
 ./hack/dependency-update/sap-btp-operator.sh ${SAP_BTP_OPERATOR_VERSION} ${KUBE_RBAC_PROXY_VERSION}
 ```
@@ -50,7 +50,7 @@ export KUBE_RBAC_PROXY_VERSION=v0.14.3
 Check new version on [fluentbit.io](https://docs.fluentbit.io/manual/installation/docker#tags-and-versions)
 
 ```shell
-export FLUENTBIT_VERSION=2.1.9
+export FLUENTBIT_VERSION=2.1.10
 
 ./hack/dependency-update/fluentbit.sh ${FLUENTBIT_VERSION}
 ```
