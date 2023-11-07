@@ -475,9 +475,11 @@ func BuildLandscaperContext(ctx context.Context, kclient client.Client, registry
 				Name:      name,
 				Namespace: namespace,
 			},
-			RegistryPullSecrets: []corev1.LocalObjectReference{
-				{
-					Name: name,
+			ContextConfiguration: lsv1alpha1.ContextConfiguration{
+				RegistryPullSecrets: []corev1.LocalObjectReference{
+					{
+						Name: name,
+					},
 				},
 			},
 		}
