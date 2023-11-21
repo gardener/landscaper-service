@@ -37,10 +37,10 @@ github.com/fsnotify/fsnotify v1.6.0 h1:n+5WquG0fcWoWp6xPWfHdbskMCQaFnG6PfBrh1Ky4
 github.com/fsnotify/fsnotify v1.6.0/go.mod h1:sl3t1tCWJFWoRz9R8WJCbQihKKwmorjAbSClcnxKAGw=
 github.com/gardener/component-spec/bindings-go v0.0.66 h1:FvtnnTxXJi2ZCC/GgijUNJCcwwdlZAiEWpZTtyHviz0=
 github.com/gardener/component-spec/bindings-go v0.0.66/go.mod h1:qr7kADDXbXB0huul+ih/B43YkwyiMFYQepp/tqJ331c=
-github.com/gardener/landscaper/apis v0.84.0 h1:sPKMU6/VDQ5X6s/ptv9vBBxqKxYwTEzKD2XIO8yERjE=
-github.com/gardener/landscaper/apis v0.84.0/go.mod h1:41rCAi74zwc0WwpGMV01TBtDy+kkrYvTIhem2w5h5b8=
-github.com/gardener/landscaper/controller-utils v0.84.0 h1:KS8zkz20X+sFDxcPoXsbiMMK7z01MLYjqG1sHgBwWI8=
-github.com/gardener/landscaper/controller-utils v0.84.0/go.mod h1:7BqwpmStBxJ4ojt2j2JSe1IHmf17kqf398u49YYojgM=
+github.com/gardener/landscaper/apis v0.85.0 h1:Ekny7cLSrxbQhrq2lEBGDWw/WllbGp6+9ElcSMv64Nk=
+github.com/gardener/landscaper/apis v0.85.0/go.mod h1:41rCAi74zwc0WwpGMV01TBtDy+kkrYvTIhem2w5h5b8=
+github.com/gardener/landscaper/controller-utils v0.85.0 h1:cwuS0yJrTGqtEDGYCABEzlmR5OT0JGsmDM5KIIsUjtY=
+github.com/gardener/landscaper/controller-utils v0.85.0/go.mod h1:s89anzKPlicFUODL/0icu7l2jEAeMbnpQU5aEeiRxBM=
 github.com/ghodss/yaml v1.0.0 h1:wQHKEahhL6wmXdzwWG11gIVCkOv05bNOh+Rxn0yngAk=
 github.com/ghodss/yaml v1.0.0/go.mod h1:4dBDuWmgqj2HViK6kFavaiC9ZROes6MMH2rRYeMEF04=
 github.com/go-logr/logr v0.2.0/go.mod h1:z6/tIYblkpsD+a4lm/fGIIU9mZ+XfAiaFtq7xTgseGU=
