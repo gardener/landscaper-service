@@ -9,8 +9,6 @@ import (
 	"fmt"
 	"strings"
 
-	kutils "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
-	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 	rbacv1 "k8s.io/api/rbac/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -20,7 +18,10 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
-	coreconfig "github.com/gardener/landscaper-service/pkg/apis/config"
+	kutils "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
+
+	config "github.com/gardener/landscaper-service/pkg/apis/config/v1alpha1"
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	"github.com/gardener/landscaper-service/pkg/operation"
 )
@@ -32,7 +33,7 @@ type Controller struct {
 	ReconcileFunc func(ctx context.Context, subjectList *lssv1alpha1.SubjectList) (reconcile.Result, error)
 }
 
-func NewController(logger logging.Logger, c client.Client, scheme *runtime.Scheme, config *coreconfig.TargetShootSidecarConfiguration) (reconcile.Reconciler, error) {
+func NewController(logger logging.Logger, c client.Client, scheme *runtime.Scheme, config *config.TargetShootSidecarConfiguration) (reconcile.Reconciler, error) {
 	ctrl := &Controller{
 		log: logger,
 	}

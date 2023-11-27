@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/utils/pointer"
+	"k8s.io/utils/ptr"
 )
 
 func addDefaultingFuncs(scheme *runtime.Scheme) error {
@@ -24,10 +24,10 @@ func SetDefaults_LandscaperServiceConfiguration(obj *LandscaperServiceConfigurat
 // SetDefaults_CrdManagementConfiguration sets the defaults for the crd management configuration.
 func SetDefaults_CrdManagementConfiguration(obj *CrdManagementConfiguration) {
 	if obj.DeployCustomResourceDefinitions == nil {
-		obj.DeployCustomResourceDefinitions = pointer.Bool(true)
+		obj.DeployCustomResourceDefinitions = ptr.To(true)
 	}
 	if obj.ForceUpdate == nil {
-		obj.ForceUpdate = pointer.Bool(true)
+		obj.ForceUpdate = ptr.To(true)
 	}
 }
 
@@ -60,27 +60,27 @@ func SetDefaults_ShootConfiguration(obj *ShootConfiguration) {
 	maintenance := &obj.Maintenance
 
 	if maintenance.AutoUpdate.KubernetesVersion == nil {
-		obj.Maintenance.AutoUpdate.KubernetesVersion = pointer.Bool(false)
+		obj.Maintenance.AutoUpdate.KubernetesVersion = ptr.To(false)
 	}
 
 	if maintenance.AutoUpdate.MachineImageVersion == nil {
-		obj.Maintenance.AutoUpdate.MachineImageVersion = pointer.Bool(false)
+		obj.Maintenance.AutoUpdate.MachineImageVersion = ptr.To(false)
 	}
 	workers := &obj.Workers
 
 	if workers.Minimum == nil {
-		workers.Minimum = pointer.Int32(1)
+		workers.Minimum = ptr.To[int32](1)
 	}
 
 	if workers.Maximum == nil {
-		workers.Maximum = pointer.Int32(1)
+		workers.Maximum = ptr.To[int32](1)
 	}
 
 	if workers.MaxSurge == nil {
-		workers.MaxSurge = pointer.Int32(1)
+		workers.MaxSurge = ptr.To[int32](1)
 	}
 
 	if workers.MaxUnavailable == nil {
-		workers.MaxUnavailable = pointer.Int32(0)
+		workers.MaxUnavailable = ptr.To[int32](0)
 	}
 }

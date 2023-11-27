@@ -28,7 +28,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
-	lssconfig "github.com/gardener/landscaper-service/pkg/apis/config"
+	lssconfig "github.com/gardener/landscaper-service/pkg/apis/config/v1alpha1"
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	"github.com/gardener/landscaper-service/pkg/apis/errors"
 	lsinstallation "github.com/gardener/landscaper-service/pkg/apis/installation"

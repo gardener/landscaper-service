@@ -24,7 +24,7 @@ import (
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
 
-	coreconfig "github.com/gardener/landscaper-service/pkg/apis/config"
+	config "github.com/gardener/landscaper-service/pkg/apis/config/v1alpha1"
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	lsserrors "github.com/gardener/landscaper-service/pkg/apis/errors"
 	"github.com/gardener/landscaper-service/pkg/controllers/healthwatcher"
@@ -74,7 +74,7 @@ func defaultUniqueIdFunc() string {
 }
 
 // NewController returns a new instances controller
-func NewController(logger logging.Logger, c client.Client, scheme *runtime.Scheme, config *coreconfig.LandscaperServiceConfiguration) (reconcile.Reconciler, error) {
+func NewController(logger logging.Logger, c client.Client, scheme *runtime.Scheme, config *config.LandscaperServiceConfiguration) (reconcile.Reconciler, error) {
 	ctrl := &Controller{
 		log:                 logger,
 		UniqueIDFunc:        defaultUniqueIdFunc,

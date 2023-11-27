@@ -16,7 +16,7 @@ import (
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	v1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 
-	"github.com/gardener/landscaper-service/pkg/apis/config"
+	config "github.com/gardener/landscaper-service/pkg/apis/config/v1alpha1"
 
 	"github.com/onsi/gomega"
 	"k8s.io/apimachinery/pkg/types"

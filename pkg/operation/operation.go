@@ -8,7 +8,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	coreconfig "github.com/gardener/landscaper-service/pkg/apis/config"
+	"github.com/gardener/landscaper-service/pkg/apis/config/v1alpha1"
 )
 
 // Operation is the base type for all controller types.
@@ -18,11 +18,11 @@ type Operation struct {
 	// scheme is the controller manager scheme used for serializing and deserializing objects.
 	scheme *runtime.Scheme
 	// config is the configuration for the landscaper service controller
-	config *coreconfig.LandscaperServiceConfiguration
+	config *v1alpha1.LandscaperServiceConfiguration
 }
 
 // NewOperation creates a new Operation for the given values.
-func NewOperation(c client.Client, scheme *runtime.Scheme, config *coreconfig.LandscaperServiceConfiguration) *Operation {
+func NewOperation(c client.Client, scheme *runtime.Scheme, config *v1alpha1.LandscaperServiceConfiguration) *Operation {
 	return &Operation{
 		client: c,
 		scheme: scheme,
@@ -40,6 +40,6 @@ func (o *Operation) Scheme() *runtime.Scheme {
 	return o.scheme
 }
 
-func (o *Operation) Config() *coreconfig.LandscaperServiceConfiguration {
+func (o *Operation) Config() *v1alpha1.LandscaperServiceConfiguration {
 	return o.config
 }

@@ -1,56 +1,30 @@
 #!/bin/bash
 #
-# Copyright (c) 2021 SAP SE or an SAP affiliate company. All rights reserved. This file is licensed under the Apache Software License, v. 2 except as noted otherwise in the LICENSE file
+# Copyright (c) 2023 SAP SE or an SAP affiliate company. All rights reserved. This file is licensed under the Apache Software License, v. 2 except as noted otherwise in the LICENSE file
 #
 # SPDX-License-Identifier: Apache-2.0
+
 
 set -o errexit
 set -o nounset
 set -o pipefail
 
-rm -f ${GOPATH}/bin/deepcopy-gen
-rm -f ${GOPATH}/bin/defaulter-gen
-rm -f ${GOPATH}/bin/conversion-gen
-
-PROJECT_MOD_ROOT="github.com/gardener/landscaper-service"
-
 CURRENT_DIR=$(dirname $0)
 PROJECT_ROOT="${CURRENT_DIR}"/..
+PROJECT_MOD_ROOT="github.com/gardener/landscaper-service"
 
-chmod +x ${PROJECT_ROOT}/vendor/k8s.io/code-generator/*
+CODEGEN_PKG=${CODEGEN_PKG:-$(cd "${PROJECT_ROOT}"; ls -d -1 ./vendor/k8s.io/code-generator 2>/dev/null || echo ../code-generator)}
 
-export GOFLAGS=-mod=vendor
+source "${PROJECT_ROOT}/${CODEGEN_PKG}/kube_codegen.sh"
 
-echo "> Generating groups for Landscaper Service"
-bash "${PROJECT_ROOT}"/vendor/k8s.io/code-generator/generate-internal-groups.sh \
-  deepcopy,defaulter,conversion \
-  $PROJECT_MOD_ROOT/pkg/generated \
-  $PROJECT_MOD_ROOT/pkg/apis \
-  $PROJECT_MOD_ROOT/pkg/apis \
-  "core:v1alpha1" \
-  --go-header-file "${PROJECT_ROOT}/hack/boilerplate.go.txt"
+echo "> Generating groups for Landscaper Service Core"
+kube::codegen::gen_helpers \
+  --input-pkg-root "${PROJECT_MOD_ROOT}/pkg/apis/core" \
+  --output-base "${PROJECT_ROOT}/../../.." \
+  --boilerplate "${PROJECT_ROOT}/hack/boilerplate.go.txt"
 
-echo "> Generating groups for Config"
-bash "${PROJECT_ROOT}"/vendor/k8s.io/code-generator/generate-internal-groups.sh \
-  deepcopy,defaulter,conversion \
-  $PROJECT_MOD_ROOT/pkg/generated \
-  $PROJECT_MOD_ROOT/pkg/apis \
-  $PROJECT_MOD_ROOT/pkg/apis \
-  "config:v1alpha1" \
-  --go-header-file "${PROJECT_ROOT}/hack/boilerplate.go.txt"
-
-echo "> Generating openapi definitions"
-go install "${PROJECT_ROOT}"/vendor/k8s.io/kube-openapi/cmd/openapi-gen
-${GOPATH}/bin/openapi-gen "$@" \
-  --v 1 \
-  --logtostderr \
-  --input-dirs=github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1 \
-  --input-dirs=github.com/gardener/landscaper/apis/core/v1alpha1 \
-  --input-dirs=k8s.io/api/core/v1 \
-  --input-dirs=k8s.io/apimachinery/pkg/apis/meta/v1 \
-  --input-dirs=k8s.io/apimachinery/pkg/api/resource \
-  --input-dirs=k8s.io/apimachinery/pkg/types \
-  --input-dirs=k8s.io/apimachinery/pkg/runtime \
-  --report-filename=${PROJECT_ROOT}/pkg/apis/openapi/api_violations.report \
-  --output-package=github.com/gardener/landscaper-service/pkg/apis/openapi \
-  -h "${PROJECT_ROOT}/hack/boilerplate.go.txt"
+echo "> Generating groups for Landscaper Service Config"
+kube::codegen::gen_helpers \
+  --input-pkg-root "${PROJECT_MOD_ROOT}/pkg/apis/config" \
+  --output-base "${PROJECT_ROOT}/../../.." \
+  --boilerplate "${PROJECT_ROOT}/hack/boilerplate.go.txt"

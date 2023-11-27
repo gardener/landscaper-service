@@ -1,11 +1,10 @@
-// SPDX-FileCopyrightText: 2021 "SAP SE or an SAP affiliate company and Gardener contributors"
+// SPDX-FileCopyrightText: 2023 "SAP SE or an SAP affiliate company and Gardener contributors"
 //
 // SPDX-License-Identifier: Apache-2.0
 
 package v1alpha1
 
 import (
-	lsschema "github.com/gardener/landscaper/apis/schema"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -18,10 +17,14 @@ type LandscaperDeploymentList struct {
 	Items           []LandscaperDeployment `json:"items"`
 }
 
-// +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 // The LandscaperDeployment is created to define a deployment of the landscaper.
+// +kubebuilder:resource:singular="landscaperdeployment",path="landscaperdeployments",shortName="lsdepl",scope="Namespaced"
+// +kubebuilder:storageversion
+// +kubebuilder:subresource:status
+// +kubebuilder:printcolumn:name="Instance",type=string,JSONPath=`.status.instanceRef.name`
+// +kubebuilder:printcolumn:name="Age",type=date,JSONPath=`.metadata.creationTimestamp`
 type LandscaperDeployment struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
@@ -68,31 +71,4 @@ type LandscaperDeploymentStatus struct {
 	// InstanceRef references the instance that is created for this LandscaperDeployment.
 	// +optional
 	InstanceRef *ObjectReference `json:"instanceRef"`
-}
-
-var LandscaperDeploymentDefinition = lsschema.CustomResourceDefinition{
-	Names: lsschema.CustomResourceDefinitionNames{
-		Plural:   "landscaperdeployments",
-		Singular: "landscaperdeployment",
-		ShortNames: []string{
-			"lsdepl",
-		},
-		Kind: "LandscaperDeployment",
-	},
-	Scope:             lsschema.NamespaceScoped,
-	Storage:           true,
-	Served:            true,
-	SubresourceStatus: true,
-	AdditionalPrinterColumns: []lsschema.CustomResourceColumnDefinition{
-		{
-			Name:     "Instance",
-			Type:     "string",
-			JSONPath: ".status.instanceRef.name",
-		},
-		{
-			Name:     "Age",
-			Type:     "date",
-			JSONPath: ".metadata.creationTimestamp",
-		},
-	},
 }

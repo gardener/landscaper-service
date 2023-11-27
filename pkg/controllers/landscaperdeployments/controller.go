@@ -11,17 +11,17 @@ import (
 
 	guuid "github.com/google/uuid"
 
-	kutils "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
+	kutils "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
 
-	coreconfig "github.com/gardener/landscaper-service/pkg/apis/config"
+	config "github.com/gardener/landscaper-service/pkg/apis/config/v1alpha1"
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	lsserrors "github.com/gardener/landscaper-service/pkg/apis/errors"
 	"github.com/gardener/landscaper-service/pkg/operation"
@@ -52,7 +52,7 @@ func defaultUniqueIdFunc() string {
 }
 
 // NewController returns a new landscaperdeployments controller
-func NewController(logger logging.Logger, c client.Client, scheme *runtime.Scheme, config *coreconfig.LandscaperServiceConfiguration) (reconcile.Reconciler, error) {
+func NewController(logger logging.Logger, c client.Client, scheme *runtime.Scheme, config *config.LandscaperServiceConfiguration) (reconcile.Reconciler, error) {
 	ctrl := &Controller{
 		log:          logger,
 		UniqueIDFunc: defaultUniqueIdFunc,

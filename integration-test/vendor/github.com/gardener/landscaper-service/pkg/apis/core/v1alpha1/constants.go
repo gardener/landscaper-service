@@ -5,6 +5,11 @@
 package v1alpha1
 
 const (
+	// ServiceTargetConfigVisibleLabelName label defines whether the ServiceTargetConfig is visible for scheduling.
+	// If set to "true", any Landscaper Service deployment can be scheduled on this seed.
+	// If not set or set to "false", no new Landscaper Service deployments can be scheduled on this seed.
+	ServiceTargetConfigVisibleLabelName = "config.landscaper-service.gardener.cloud/visible"
+
 	// LandscaperServiceFinalizer is the finalizer used for landscaper-service objects.
 	LandscaperServiceFinalizer = "finalizer.landscaper-service.gardener.cloud"
 

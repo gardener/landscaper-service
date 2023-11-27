@@ -14,12 +14,12 @@ import (
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 
-	coreconfig "github.com/gardener/landscaper-service/pkg/apis/config"
+	config "github.com/gardener/landscaper-service/pkg/apis/config/v1alpha1"
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 )
 
 // AddControllerToManager adds the instances controller to the manager
-func AddControllerToManager(logger logging.Logger, mgr manager.Manager, config *coreconfig.LandscaperServiceConfiguration) error {
+func AddControllerToManager(logger logging.Logger, mgr manager.Manager, config *config.LandscaperServiceConfiguration) error {
 	log := logger.Reconciles("instance", "Instance")
 	ctrl, err := NewController(log, mgr.GetClient(), mgr.GetScheme(), config)
 	if err != nil {

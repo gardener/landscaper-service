@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2021 "SAP SE or an SAP affiliate company and Gardener contributors"
+// SPDX-FileCopyrightText: 2023 "SAP SE or an SAP affiliate company and Gardener contributors"
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -6,7 +6,6 @@ package v1alpha1
 
 import (
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
-	lsschema "github.com/gardener/landscaper/apis/schema"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -19,12 +18,17 @@ type InstanceList struct {
 	Items           []Instance `json:"items"`
 }
 
-// +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 // The Instance is created for each LandscaperDeployment.
 // The landscaper service controller selects a suitable/available ServiceTargetConfig and creates
 // an Installation.
+// +kubebuilder:resource:singular="instance",path="instances",shortName="instc",scope="Namespaced"
+// +kubebuilder:storageversion
+// +kubebuilder:subresource:status
+// +kubebuilder:printcolumn:name="ServiceTargetConfig",type=string,JSONPath=`.spec.serviceTargetConfigRef.name`
+// +kubebuilder:printcolumn:name="Installation",type=string,JSONPath=`.status.installationRef.name`
+// +kubebuilder:printcolumn:name="Age",type=date,JSONPath=`.metadata.creationTimestamp`
 type Instance struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
@@ -67,6 +71,8 @@ type InstanceSpec struct {
 // AutomaticReconcile defines the automatic reconcile configuration.
 type AutomaticReconcile struct {
 	// Interval specifies the interval after which the instance is being automatically reconciled.
+	//+kubebuilder:validation:Type=string
+	//+kubebuilder:validation:Schemaless
 	Interval lsv1alpha1.Duration `json:"interval"`
 }
 
@@ -120,36 +126,4 @@ type InstanceStatus struct {
 	// ShootNamespace is the namespace in which the shoot resource is being created.
 	// +optional
 	ShootNamespace string `json:"shootNamespace,omitempty"`
-}
-
-var InstanceDefinition = lsschema.CustomResourceDefinition{
-	Names: lsschema.CustomResourceDefinitionNames{
-		Plural:   "instances",
-		Singular: "instance",
-		ShortNames: []string{
-			"instc",
-		},
-		Kind: "Instance",
-	},
-	Scope:             lsschema.NamespaceScoped,
-	Storage:           true,
-	Served:            true,
-	SubresourceStatus: true,
-	AdditionalPrinterColumns: []lsschema.CustomResourceColumnDefinition{
-		{
-			Name:     "ServiceTargetConfig",
-			Type:     "string",
-			JSONPath: ".spec.serviceTargetConfigRef.name",
-		},
-		{
-			Name:     "Installation",
-			Type:     "string",
-			JSONPath: ".status.installationRef.name",
-		},
-		{
-			Name:     "Age",
-			Type:     "date",
-			JSONPath: ".metadata.creationTimestamp",
-		},
-	},
 }

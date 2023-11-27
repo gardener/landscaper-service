@@ -12,12 +12,12 @@ import (
 
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 
-	coreconfig "github.com/gardener/landscaper-service/pkg/apis/config"
+	config "github.com/gardener/landscaper-service/pkg/apis/config/v1alpha1"
 	"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 )
 
 // AddControllerToManager adds the AVUploader controller to the manager
-func AddControllerToManager(logger logging.Logger, mgr manager.Manager, config *coreconfig.LandscaperServiceConfiguration) error {
+func AddControllerToManager(logger logging.Logger, mgr manager.Manager, config *config.LandscaperServiceConfiguration) error {
 	log := logger.Reconciles("AVUploader", "AvailabilityCollection")
 
 	if config.AvailabilityMonitoring.AvailabilityServiceConfiguration == nil {

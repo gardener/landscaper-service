@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2021 "SAP SE or an SAP affiliate company and Gardener contributors"
+// SPDX-FileCopyrightText: 2023 "SAP SE or an SAP affiliate company and Gardener contributors"
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -6,7 +6,6 @@ package v1alpha1
 
 import (
 	"github.com/gardener/landscaper/apis/core/v1alpha1"
-	lsschema "github.com/gardener/landscaper/apis/schema"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -19,11 +18,15 @@ type AvailabilityCollectionList struct {
 	Items           []AvailabilityCollection `json:"items"`
 }
 
-// +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 // AvailabilityCollection is created/updated by the AvailabilityMonitoringRegistrationController.
 // It contains a list of references to Instances that should be monitored for availability.
+// +kubebuilder:resource:singular="availabilitycollection",path="availabilitycollections",shortName="avcol",scope="Namespaced"
+// +kubebuilder:storageversion
+// +kubebuilder:subresource:status
+// +kubebuilder:printcolumn:name="Last Run",type=date,JSONPath=`.status.lastRun`
+// +kubebuilder:printcolumn:name="Age",type=date,JSONPath=`.metadata.creationTimestamp`
 type AvailabilityCollection struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
@@ -89,32 +92,4 @@ func (r *AvailabilityInstance) SetStatusAndFailedSince(status v1alpha1.LsHealthC
 type AvailabilityCollectionSpec struct {
 	// InstanceRefs specifies all instances to monitor
 	InstanceRefs []ObjectReference `json:"instanceRefs"`
-}
-
-var AvailabilityCollectionDefinition = lsschema.CustomResourceDefinition{
-	Names: lsschema.CustomResourceDefinitionNames{
-		Plural:   "availabilitycollections",
-		Singular: "availabilitycollection",
-		ShortNames: []string{
-			"avcol",
-		},
-		Kind: "AvailabilityCollection",
-	},
-	Scope:             lsschema.NamespaceScoped,
-	Storage:           true,
-	Served:            true,
-	SubresourceStatus: true,
-	AdditionalPrinterColumns: []lsschema.CustomResourceColumnDefinition{
-
-		{
-			Name:     "Last Run",
-			Type:     "date",
-			JSONPath: ".status.lastRun",
-		},
-		{
-			Name:     "Age",
-			Type:     "date",
-			JSONPath: ".metadata.creationTimestamp",
-		},
-	},
 }

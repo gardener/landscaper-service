@@ -19,7 +19,6 @@ import (
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 	cliutil "github.com/gardener/landscapercli/pkg/util"
 
-	lsscore "github.com/gardener/landscaper-service/pkg/apis/core"
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	lssutils "github.com/gardener/landscaper-service/pkg/utils"
 	"github.com/gardener/landscaper-service/test/integration/pkg/test"
@@ -79,7 +78,7 @@ func (r *InstallLAASTestRunner) createServiceTargetConfig() error {
 			Name:      r.clusterTargets.LaasCluster.Name,
 			Namespace: r.config.LaasNamespace,
 			Labels: map[string]string{
-				lsscore.ServiceTargetConfigVisibleLabelName: "true",
+				lssv1alpha1.ServiceTargetConfigVisibleLabelName: "true",
 			},
 		},
 		Spec: lssv1alpha1.ServiceTargetConfigSpec{

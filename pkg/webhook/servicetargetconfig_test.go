@@ -14,7 +14,6 @@ import (
 
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 
-	lsscore "github.com/gardener/landscaper-service/pkg/apis/core"
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	"github.com/gardener/landscaper-service/pkg/webhook"
 	"github.com/gardener/landscaper-service/test/utils/envtest"
@@ -23,7 +22,7 @@ import (
 func createServiceTargetConfig(name, namespace string) *lssv1alpha1.ServiceTargetConfig {
 	config := &lssv1alpha1.ServiceTargetConfig{
 		TypeMeta: metav1.TypeMeta{
-			Kind:       lssv1alpha1.ServiceTargetConfigDefinition.Names.Kind,
+			Kind:       "ServiceTargetConfig",
 			APIVersion: lssv1alpha1.SchemeGroupVersion.String(),
 		},
 		ObjectMeta: metav1.ObjectMeta{
@@ -52,7 +51,7 @@ var _ = Describe("ServiceTargetConfig", func() {
 		testObj := createServiceTargetConfig("test", "lss-system")
 
 		testObj.ObjectMeta.Labels = map[string]string{
-			lsscore.ServiceTargetConfigVisibleLabelName: "true",
+			lssv1alpha1.ServiceTargetConfigVisibleLabelName: "true",
 		}
 		testObj.Spec = lssv1alpha1.ServiceTargetConfigSpec{
 			Priority: 10,
@@ -101,7 +100,7 @@ var _ = Describe("ServiceTargetConfig", func() {
 		testObj := createServiceTargetConfig("test", "lss-system")
 
 		testObj.ObjectMeta.Labels = map[string]string{
-			lsscore.ServiceTargetConfigVisibleLabelName: "abc",
+			lssv1alpha1.ServiceTargetConfigVisibleLabelName: "abc",
 		}
 		testObj.Spec = lssv1alpha1.ServiceTargetConfigSpec{
 			Priority: 10,
@@ -129,7 +128,7 @@ var _ = Describe("ServiceTargetConfig", func() {
 		testObj := createServiceTargetConfig("test", "lss-system")
 
 		testObj.ObjectMeta.Labels = map[string]string{
-			lsscore.ServiceTargetConfigVisibleLabelName: "true",
+			lssv1alpha1.ServiceTargetConfigVisibleLabelName: "true",
 		}
 		testObj.Spec = lssv1alpha1.ServiceTargetConfigSpec{
 			Priority: 10,
@@ -159,7 +158,7 @@ var _ = Describe("ServiceTargetConfig", func() {
 		testObj := createServiceTargetConfig("test", "lss-system")
 
 		testObj.ObjectMeta.Labels = map[string]string{
-			lsscore.ServiceTargetConfigVisibleLabelName: "true",
+			lssv1alpha1.ServiceTargetConfigVisibleLabelName: "true",
 		}
 		testObj.Spec = lssv1alpha1.ServiceTargetConfigSpec{
 			Priority: 10,
