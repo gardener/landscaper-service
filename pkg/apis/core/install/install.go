@@ -8,14 +8,12 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 
-	"github.com/gardener/landscaper-service/pkg/apis/core"
 	"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 )
 
 var (
 	schemeBuilder = runtime.NewSchemeBuilder(
 		v1alpha1.AddToScheme,
-		core.AddToScheme,
 		setVersionPriority,
 	)
 

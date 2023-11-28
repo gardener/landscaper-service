@@ -50,7 +50,7 @@ integration-test:
 
 .PHONY: generate-code
 generate-code:
-	@cd $(REPO_ROOT)/pkg/apis && $(REPO_ROOT)/hack/generate.sh ./... && cd $(REPO_ROOT)
+	$(REPO_ROOT)/hack/generate-code.sh ./... && $(REPO_ROOT)/hack/generate-crd.sh
 
 .PHONY: generate
 generate: generate-code format revendor

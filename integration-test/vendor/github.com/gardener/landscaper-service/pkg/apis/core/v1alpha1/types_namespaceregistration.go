@@ -1,11 +1,10 @@
-// SPDX-FileCopyrightText: 2021 "SAP SE or an SAP affiliate company and Gardener contributors"
+// SPDX-FileCopyrightText: 2023 "SAP SE or an SAP affiliate company and Gardener contributors"
 //
 // SPDX-License-Identifier: Apache-2.0
 
 package v1alpha1
 
 import (
-	lsschema "github.com/gardener/landscaper/apis/schema"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -18,9 +17,12 @@ type NamespaceRegistrationList struct {
 	Items           []NamespaceRegistration `json:"items"`
 }
 
-// +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
+// +kubebuilder:resource:singular="namespaceregistration",path="namespaceregistrations",shortName="nsreg",scope="Namespaced"
+// +kubebuilder:storageversion
+// +kubebuilder:subresource:status
+// +kubebuilder:printcolumn:name="Phase",type=string,JSONPath=`.status.phase`
 type NamespaceRegistration struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
@@ -40,26 +42,4 @@ type NamespaceRegistrationStatus struct {
 }
 
 type NamespaceRegistrationSpec struct {
-}
-
-var NamespaceRegistrationDefinition = lsschema.CustomResourceDefinition{
-	Names: lsschema.CustomResourceDefinitionNames{
-		Plural:   "namespaceregistrations",
-		Singular: "namespaceregistration",
-		ShortNames: []string{
-			"nsreg",
-		},
-		Kind: "NamespaceRegistration",
-	},
-	Scope:             lsschema.NamespaceScoped,
-	Storage:           true,
-	Served:            true,
-	SubresourceStatus: true,
-	AdditionalPrinterColumns: []lsschema.CustomResourceColumnDefinition{
-		{
-			Name:     "Phase",
-			Type:     "string",
-			JSONPath: ".status.phase",
-		},
-	},
 }

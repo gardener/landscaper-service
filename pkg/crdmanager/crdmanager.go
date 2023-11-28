@@ -7,11 +7,12 @@ package crdmanager
 import (
 	"embed"
 
-	lsconfig "github.com/gardener/landscaper/apis/config"
-	"github.com/gardener/landscaper/controller-utils/pkg/crdmanager"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 
-	"github.com/gardener/landscaper-service/pkg/apis/config"
+	lsconfig "github.com/gardener/landscaper/apis/config"
+	"github.com/gardener/landscaper/controller-utils/pkg/crdmanager"
+
+	config "github.com/gardener/landscaper-service/pkg/apis/config/v1alpha1"
 )
 
 const (

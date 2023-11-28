@@ -20,7 +20,6 @@ import (
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
 
-	lsscore "github.com/gardener/landscaper-service/pkg/apis/core"
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	lsserrors "github.com/gardener/landscaper-service/pkg/apis/errors"
 	"github.com/gardener/landscaper-service/pkg/utils"
@@ -145,7 +144,7 @@ func (c *Controller) mutateInstance(ctx context.Context, deployment *lssv1alpha1
 func (c *Controller) findServiceTargetConfig(ctx context.Context) (*lssv1alpha1.ServiceTargetConfig, error) {
 	serviceTargetConfigs := &lssv1alpha1.ServiceTargetConfigList{}
 	selectorBuilder := strings.Builder{}
-	selectorBuilder.WriteString(fmt.Sprintf("%s=true", lsscore.ServiceTargetConfigVisibleLabelName))
+	selectorBuilder.WriteString(fmt.Sprintf("%s=true", lssv1alpha1.ServiceTargetConfigVisibleLabelName))
 
 	labelSelector, _ := labels.Parse(selectorBuilder.String())
 	listOptions := client.ListOptions{

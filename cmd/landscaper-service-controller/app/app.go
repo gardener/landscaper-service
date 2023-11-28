@@ -14,6 +14,7 @@ import (
 	"github.com/spf13/cobra"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
+	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 
 	lssinstall "github.com/gardener/landscaper-service/pkg/apis/core/install"
 	"github.com/gardener/landscaper-service/pkg/controllers/avmonitorregistration"
@@ -55,14 +56,15 @@ func (o *options) run(ctx context.Context) error {
 	o.Log.Info(fmt.Sprintf("Start Landscaper Service Controller with version %q", version.Get().String()))
 
 	opts := manager.Options{
-		LeaderElection:     false,
-		Port:               9443,
-		MetricsBindAddress: "0",
-		NewClient:          utils.NewUncachedClient,
+		LeaderElection: false,
+		Metrics: metricsserver.Options{
+			BindAddress: "0",
+		},
+		NewClient: utils.NewUncachedClient,
 	}
 
 	if o.Config.Metrics != nil {
-		opts.MetricsBindAddress = fmt.Sprintf(":%d", o.Config.Metrics.Port)
+		opts.Metrics.BindAddress = fmt.Sprintf(":%d", o.Config.Metrics.Port)
 	}
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), opts)

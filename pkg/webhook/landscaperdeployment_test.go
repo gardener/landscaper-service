@@ -22,7 +22,7 @@ import (
 func createLandscaperDeployment(name, namespace string) *lssv1alpha1.LandscaperDeployment {
 	deployment := &lssv1alpha1.LandscaperDeployment{
 		TypeMeta: metav1.TypeMeta{
-			Kind:       lssv1alpha1.LandscaperDeploymentDefinition.Names.Kind,
+			Kind:       "LandscaperDeployment",
 			APIVersion: lssv1alpha1.SchemeGroupVersion.String(),
 		},
 		ObjectMeta: metav1.ObjectMeta{

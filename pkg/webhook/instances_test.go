@@ -22,7 +22,7 @@ import (
 func createInstance(name, namespace string) *lssv1alpha1.Instance {
 	instance := &lssv1alpha1.Instance{
 		TypeMeta: metav1.TypeMeta{
-			Kind:       lssv1alpha1.InstanceDefinition.Names.Kind,
+			Kind:       "Instance",
 			APIVersion: lssv1alpha1.SchemeGroupVersion.String(),
 		},
 		ObjectMeta: metav1.ObjectMeta{

@@ -1,11 +1,10 @@
-// SPDX-FileCopyrightText: 2021 "SAP SE or an SAP affiliate company and Gardener contributors"
+// SPDX-FileCopyrightText: 2023 "SAP SE or an SAP affiliate company and Gardener contributors"
 //
 // SPDX-License-Identifier: Apache-2.0
 
 package v1alpha1
 
 import (
-	lsschema "github.com/gardener/landscaper/apis/schema"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -18,9 +17,12 @@ type SubjectListList struct {
 	Items           []SubjectList `json:"items"`
 }
 
-// +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
+// +kubebuilder:resource:singular="subjectlist",path="subjectlists",shortName="sulist",scope="Namespaced"
+// +kubebuilder:storageversion
+// +kubebuilder:subresource:status
+// +kubebuilder:printcolumn:name="Age",type=date,JSONPath=`.metadata.creationTimestamp`
 type SubjectList struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
@@ -56,19 +58,4 @@ type Subject struct {
 	// the Authorizer should report an error.
 	// +optional
 	Namespace string `json:"namespace,omitempty"`
-}
-
-var SubjectListDefinition = lsschema.CustomResourceDefinition{
-	Names: lsschema.CustomResourceDefinitionNames{
-		Plural:   "subjectlists",
-		Singular: "subjectlist",
-		ShortNames: []string{
-			"sulist",
-		},
-		Kind: "SubjectList",
-	},
-	Scope:             lsschema.NamespaceScoped,
-	Storage:           true,
-	Served:            true,
-	SubresourceStatus: true,
 }

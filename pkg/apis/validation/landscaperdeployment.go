@@ -7,11 +7,11 @@ package validation
 import (
 	"fmt"
 
+	"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+
 	apivalidation "k8s.io/apimachinery/pkg/api/validation"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/validation/field"
-
-	lsscore "github.com/gardener/landscaper-service/pkg/apis/core"
 )
 
 const (
@@ -20,7 +20,7 @@ const (
 )
 
 // ValidateLandscaperDeployment validates a LandscaperDeployment
-func ValidateLandscaperDeployment(deployment *lsscore.LandscaperDeployment, oldDeployment *lsscore.LandscaperDeployment) field.ErrorList {
+func ValidateLandscaperDeployment(deployment *v1alpha1.LandscaperDeployment, oldDeployment *v1alpha1.LandscaperDeployment) field.ErrorList {
 	allErrs := field.ErrorList{}
 	allErrs = append(allErrs, validateLandscaperDeploymentObjectMeta(&deployment.ObjectMeta, field.NewPath("metadata"))...)
 	allErrs = append(allErrs, validateLandscaperDeploymentSpec(&deployment.Spec, field.NewPath("spec"))...)
@@ -36,7 +36,7 @@ func validateLandscaperDeploymentObjectMeta(objMeta *metav1.ObjectMeta, fldPath 
 	return allErrs
 }
 
-func validateLandscaperDeploymentSpec(spec *lsscore.LandscaperDeploymentSpec, fldPath *field.Path) field.ErrorList {
+func validateLandscaperDeploymentSpec(spec *v1alpha1.LandscaperDeploymentSpec, fldPath *field.Path) field.ErrorList {
 	allErrs := field.ErrorList{}
 
 	if len(spec.TenantId) != LandscaperDeploymentTenantIdLength {
@@ -54,7 +54,7 @@ func validateLandscaperDeploymentSpec(spec *lsscore.LandscaperDeploymentSpec, fl
 	return allErrs
 }
 
-func validateLandscaperDeploymentSpecUpdate(spec *lsscore.LandscaperDeploymentSpec, oldSpec *lsscore.LandscaperDeploymentSpec, fldPath *field.Path) field.ErrorList {
+func validateLandscaperDeploymentSpecUpdate(spec *v1alpha1.LandscaperDeploymentSpec, oldSpec *v1alpha1.LandscaperDeploymentSpec, fldPath *field.Path) field.ErrorList {
 	allErrs := field.ErrorList{}
 
 	if spec.TenantId != oldSpec.TenantId {

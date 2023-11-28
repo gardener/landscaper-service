@@ -14,7 +14,6 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
 
-	"github.com/gardener/landscaper-service/pkg/apis/config"
 	configinstall "github.com/gardener/landscaper-service/pkg/apis/config/install"
 	"github.com/gardener/landscaper-service/pkg/apis/config/v1alpha1"
 
@@ -27,7 +26,7 @@ type options struct {
 	Log        logging.Logger // Log is the logger instance
 	ConfigPath string         // ConfigPath is the path to the configuration file
 
-	Config *config.TargetShootSidecarConfiguration // Config is the parsed configuration
+	Config *v1alpha1.TargetShootSidecarConfiguration // Config is the parsed configuration
 }
 
 // NewOptions returns a new options instance
@@ -60,33 +59,24 @@ func (o *options) Complete(ctx context.Context) error {
 	return err
 }
 
-func (o *options) parseConfigurationFile(ctx context.Context) (*config.TargetShootSidecarConfiguration, error) {
+func (o *options) parseConfigurationFile(ctx context.Context) (*v1alpha1.TargetShootSidecarConfiguration, error) {
 	configScheme := runtime.NewScheme()
 	configinstall.Install(configScheme)
 	decoder := serializer.NewCodecFactory(configScheme).UniversalDecoder()
 
-	configv1alpha1 := &v1alpha1.TargetShootSidecarConfiguration{}
-
+	config := &v1alpha1.TargetShootSidecarConfiguration{}
 	if len(o.ConfigPath) != 0 {
 		data, err := os.ReadFile(o.ConfigPath)
 		if err != nil {
 			return nil, err
 		}
 
-		if _, _, err := decoder.Decode(data, nil, configv1alpha1); err != nil {
+		if _, _, err := decoder.Decode(data, nil, config); err != nil {
 			return nil, err
 		}
 	}
 
-	configScheme.Default(configv1alpha1)
-
-	config := &config.TargetShootSidecarConfiguration{}
-	err := configScheme.Convert(configv1alpha1, config, ctx)
-	if err != nil {
-		return nil, err
-	}
 	configScheme.Default(config)
-
 	return config, nil
 }
 

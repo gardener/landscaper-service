@@ -7,11 +7,11 @@ package validation
 import (
 	"k8s.io/apimachinery/pkg/util/validation/field"
 
-	lsscore "github.com/gardener/landscaper-service/pkg/apis/core"
+	"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 )
 
 // ValidateSecretReference validates a secret reference
-func ValidateSecretReference(ref *lsscore.SecretReference, fldPath *field.Path) field.ErrorList {
+func ValidateSecretReference(ref *v1alpha1.SecretReference, fldPath *field.Path) field.ErrorList {
 	allErrs := field.ErrorList{}
 
 	if len(ref.Key) == 0 {
@@ -23,7 +23,7 @@ func ValidateSecretReference(ref *lsscore.SecretReference, fldPath *field.Path) 
 }
 
 // ValidateObjectReference validates an object reference
-func ValidateObjectReference(ref *lsscore.ObjectReference, fldPath *field.Path) field.ErrorList {
+func ValidateObjectReference(ref *v1alpha1.ObjectReference, fldPath *field.Path) field.ErrorList {
 	allErrs := field.ErrorList{}
 
 	if len(ref.Name) == 0 {
@@ -37,7 +37,7 @@ func ValidateObjectReference(ref *lsscore.ObjectReference, fldPath *field.Path) 
 	return allErrs
 }
 
-func ValidateHighAvailabilityConfig(haConfig *lsscore.HighAvailabilityConfig, fldPath *field.Path) field.ErrorList {
+func ValidateHighAvailabilityConfig(haConfig *v1alpha1.HighAvailabilityConfig, fldPath *field.Path) field.ErrorList {
 	allErrs := field.ErrorList{}
 
 	if haConfig.ControlPlaneFailureTolerance != "zone" && haConfig.ControlPlaneFailureTolerance != "node" {
