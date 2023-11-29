@@ -66,6 +66,13 @@ type InstanceSpec struct {
 	// HighAvailabilityConfig specifies the HA configuration of the resource cluster (shoot cluster)
 	// +optional
 	HighAvailabilityConfig *HighAvailabilityConfig `json:"highAvailabilityConfig"`
+
+	// DataPlane references an externally created and maintained Kubernetes cluster,
+	// used as the data plane where Landscaper resources are stored.
+	// When DataPlane is defined, the Landscaper Service controller will no longer
+	// create its own Kubernetes cluster.
+	// +optional
+	DataPlane *DataPlane `json:"dataPlane,omitempty"`
 }
 
 // AutomaticReconcile defines the automatic reconcile configuration.
@@ -126,4 +133,8 @@ type InstanceStatus struct {
 	// ShootNamespace is the namespace in which the shoot resource is being created.
 	// +optional
 	ShootNamespace string `json:"shootNamespace,omitempty"`
+
+	// Phase represents the phase of the corresponding Landscaper Instance Installation phase.
+	// +optional
+	Phase string `json:"phase,omitempty"`
 }

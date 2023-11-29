@@ -206,4 +206,110 @@ var _ = Describe("LandscaperDeployment", func() {
 		Expect(response).ToNot(BeNil())
 		Expect(response.Allowed).To(BeFalse())
 	})
+
+	It("shall validate an external data plane", func() {
+		testObj := createLandscaperDeployment("test", "lss-system")
+		testObj.Spec = lssv1alpha1.LandscaperDeploymentSpec{
+			TenantId: "test0001",
+			Purpose:  "test",
+			LandscaperConfiguration: lssv1alpha1.LandscaperConfiguration{
+				Deployers: []string{
+					"helm",
+					"manifest",
+				},
+			},
+			DataPlane: &lssv1alpha1.DataPlane{
+				Kubeconfig: "{}",
+			},
+		}
+
+		request := CreateAdmissionRequest(testObj)
+		response := validator.Handle(ctx, request)
+		Expect(response).ToNot(BeNil())
+		Expect(response.Allowed).To(BeTrue())
+
+		testObj.Spec.DataPlane = &lssv1alpha1.DataPlane{
+			SecretRef: &lssv1alpha1.SecretReference{
+				Key: "kubeconfig",
+				ObjectReference: lssv1alpha1.ObjectReference{
+					Name:      "dataplane",
+					Namespace: "default",
+				},
+			},
+		}
+
+		request = CreateAdmissionRequest(testObj)
+		response = validator.Handle(ctx, request)
+		Expect(response).ToNot(BeNil())
+		Expect(response.Allowed).To(BeTrue())
+	})
+
+	It("shall deny an invalid external data plane", func() {
+		testObj := createLandscaperDeployment("test", "lss-system")
+		testObj.Spec = lssv1alpha1.LandscaperDeploymentSpec{
+			TenantId: "test0001",
+			Purpose:  "test",
+			LandscaperConfiguration: lssv1alpha1.LandscaperConfiguration{
+				Deployers: []string{
+					"helm",
+					"manifest",
+				},
+			},
+			DataPlane: &lssv1alpha1.DataPlane{
+				Kubeconfig: "{}",
+				SecretRef: &lssv1alpha1.SecretReference{
+					Key: "kubeconfig",
+					ObjectReference: lssv1alpha1.ObjectReference{
+						Name:      "dataplane",
+						Namespace: "default",
+					},
+				},
+			},
+		}
+
+		request := CreateAdmissionRequest(testObj)
+		response := validator.Handle(ctx, request)
+		Expect(response).ToNot(BeNil())
+		Expect(response.Allowed).To(BeFalse())
+	})
+
+	It("shall deny switching to and from external data plane", func() {
+		testObj := createLandscaperDeployment("test", "lss-system")
+		testObj.Spec = lssv1alpha1.LandscaperDeploymentSpec{
+			TenantId: "test0001",
+			Purpose:  "test",
+			LandscaperConfiguration: lssv1alpha1.LandscaperConfiguration{
+				Deployers: []string{
+					"helm",
+					"manifest",
+				},
+			},
+			DataPlane: &lssv1alpha1.DataPlane{
+				Kubeconfig: "{}",
+			},
+		}
+
+		request := CreateAdmissionRequest(testObj)
+		response := validator.Handle(ctx, request)
+		Expect(response).ToNot(BeNil())
+		Expect(response.Allowed).To(BeTrue())
+
+		oldObject := testObj.DeepCopyObject()
+		testObj.Spec.DataPlane = nil
+
+		request = CreateAdmissionRequestUpdate(testObj, oldObject)
+		response = validator.Handle(ctx, request)
+		Expect(response).ToNot(BeNil())
+		Expect(response.Allowed).To(BeFalse())
+
+		oldObject = testObj.DeepCopyObject()
+		testObj.Spec.DataPlane = &lssv1alpha1.DataPlane{
+			Kubeconfig: "{}",
+		}
+
+		request = CreateAdmissionRequestUpdate(testObj, oldObject)
+		response = validator.Handle(ctx, request)
+		Expect(response).ToNot(BeNil())
+		Expect(response.Allowed).To(BeFalse())
+	})
 })

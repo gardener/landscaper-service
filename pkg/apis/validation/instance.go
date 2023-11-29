@@ -48,8 +48,16 @@ func validateInstanceSpec(spec *v1alpha1.InstanceSpec, fldPath *field.Path) fiel
 		allErrs = append(allErrs, field.Invalid(fldPath.Child("id"), spec.TenantId, fmt.Sprintf("must be exactly of size %d", InstanceIdLength)))
 	}
 
+	if spec.DataPlane != nil && (spec.OIDCConfig != nil || spec.HighAvailabilityConfig != nil) {
+		allErrs = append(allErrs, field.Forbidden(fldPath.Child("dataPlane"), "dataPlane can't be used in combination with oidcConfig or highAvailabilityConfig"))
+	}
+
 	if spec.HighAvailabilityConfig != nil {
 		allErrs = append(allErrs, ValidateHighAvailabilityConfig(spec.HighAvailabilityConfig, fldPath.Child("highAvailabilityConfig"))...)
+	}
+
+	if spec.DataPlane != nil {
+		allErrs = append(allErrs, ValidateDataPlane(spec.DataPlane, fldPath.Child("dataPlane"))...)
 	}
 
 	return allErrs
@@ -74,6 +82,10 @@ func validateInstanceSpecUpdate(spec *v1alpha1.InstanceSpec, oldSpec *v1alpha1.I
 		if spec.HighAvailabilityConfig.ControlPlaneFailureTolerance != oldSpec.HighAvailabilityConfig.ControlPlaneFailureTolerance {
 			allErrs = append(allErrs, field.Forbidden(fldPath.Child("highAvailabilityConfig").Child("controlPlaneFailureTolerance"), "is immutable"))
 		}
+	}
+
+	if (oldSpec.DataPlane != nil && spec.DataPlane == nil) || (oldSpec.DataPlane == nil && spec.DataPlane != nil) {
+		allErrs = append(allErrs, field.Forbidden(fldPath.Child("dataPlane"), "cant switch from external data plane to internal or vice versa"))
 	}
 
 	return allErrs
