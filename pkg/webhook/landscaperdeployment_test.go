@@ -313,7 +313,7 @@ var _ = Describe("LandscaperDeployment", func() {
 		Expect(response.Allowed).To(BeFalse())
 	})
 
-	It("shall deny an inlid combination of internal and external data plane", func() {
+	It("shall deny an invalid combination of internal and external data plane", func() {
 		testObj := createLandscaperDeployment("test", "lss-system")
 		testObj.Spec = lssv1alpha1.LandscaperDeploymentSpec{
 			TenantId: "test0001",
@@ -337,7 +337,6 @@ var _ = Describe("LandscaperDeployment", func() {
 		Expect(response).ToNot(BeNil())
 		Expect(response.Allowed).To(BeFalse())
 
-		testObj = createLandscaperDeployment("test", "lss-system")
 		testObj.Spec = lssv1alpha1.LandscaperDeploymentSpec{
 			TenantId: "test0001",
 			Purpose:  "test",
