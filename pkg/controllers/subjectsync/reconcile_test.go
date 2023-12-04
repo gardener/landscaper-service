@@ -6,6 +6,7 @@ package subjectsync_test
 
 import (
 	"context"
+	"reflect"
 
 	kutil "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
@@ -155,6 +156,14 @@ var _ = Describe("Reconcile", func() {
 		Expect(updatedUserRoleBinding.Subjects[2].Kind).To(Equal("ServiceAccount"))
 		Expect(updatedUserRoleBinding.Subjects[2].Name).To(Equal("testserviceaccount"))
 		Expect(updatedUserRoleBinding.Subjects[2].Namespace).To(Equal(subjectsync.LS_USER_NAMESPACE))
+
+		clusterRole := rbacv1.ClusterRole{}
+		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: subjectsync.USER_CLUSTER_ROLE}, &clusterRole)).To(Succeed())
+
+		expectedRules := subjectsync.GetUserPolicyRules()
+
+		Expect(len(clusterRole.Rules)).To(Equal(len(expectedRules)))
+		Expect(reflect.DeepEqual(clusterRole.Rules, expectedRules)).To(BeTrue())
 	})
 
 	It("should skip unknown/erroneous subjects", func() {
