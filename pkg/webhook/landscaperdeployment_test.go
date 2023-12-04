@@ -312,4 +312,52 @@ var _ = Describe("LandscaperDeployment", func() {
 		Expect(response).ToNot(BeNil())
 		Expect(response.Allowed).To(BeFalse())
 	})
+
+	It("shall deny an inlid combination of internal and external data plane", func() {
+		testObj := createLandscaperDeployment("test", "lss-system")
+		testObj.Spec = lssv1alpha1.LandscaperDeploymentSpec{
+			TenantId: "test0001",
+			Purpose:  "test",
+			LandscaperConfiguration: lssv1alpha1.LandscaperConfiguration{
+				Deployers: []string{
+					"helm",
+					"manifest",
+				},
+			},
+			DataPlane: &lssv1alpha1.DataPlane{
+				Kubeconfig: "{}",
+			},
+			OIDCConfig: &lssv1alpha1.OIDCConfig{
+				ClientID: "test",
+			},
+		}
+
+		request := CreateAdmissionRequest(testObj)
+		response := validator.Handle(ctx, request)
+		Expect(response).ToNot(BeNil())
+		Expect(response.Allowed).To(BeFalse())
+
+		testObj = createLandscaperDeployment("test", "lss-system")
+		testObj.Spec = lssv1alpha1.LandscaperDeploymentSpec{
+			TenantId: "test0001",
+			Purpose:  "test",
+			LandscaperConfiguration: lssv1alpha1.LandscaperConfiguration{
+				Deployers: []string{
+					"helm",
+					"manifest",
+				},
+			},
+			DataPlane: &lssv1alpha1.DataPlane{
+				Kubeconfig: "{}",
+			},
+			HighAvailabilityConfig: &lssv1alpha1.HighAvailabilityConfig{
+				ControlPlaneFailureTolerance: "zone",
+			},
+		}
+
+		request = CreateAdmissionRequest(testObj)
+		response = validator.Handle(ctx, request)
+		Expect(response).ToNot(BeNil())
+		Expect(response.Allowed).To(BeFalse())
+	})
 })
