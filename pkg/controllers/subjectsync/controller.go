@@ -130,8 +130,8 @@ func (c *Controller) reconcile(ctx context.Context, subjectList *lssv1alpha1.Sub
 	return reconcile.Result{}, nil
 }
 
-func (c *Controller) createOrUpdateUserClusterRole(ctx context.Context) error {
-	rules := []rbacv1.PolicyRule{
+func GetUserPolicyRules() []rbacv1.PolicyRule {
+	return []rbacv1.PolicyRule{
 		{
 			APIGroups: []string{""},
 			Resources: []string{"namespaces"},
@@ -147,8 +147,15 @@ func (c *Controller) createOrUpdateUserClusterRole(ctx context.Context) error {
 			Resources: []string{"*"},
 			Verbs:     []string{"get", "list", "watch"},
 		},
+		{
+			APIGroups: []string{"apiextensions.k8s.io"},
+			Resources: []string{"customresourcedefinitions"},
+			Verbs:     []string{"get", "list", "watch"},
+		},
 	}
+}
 
+func (c *Controller) createOrUpdateUserClusterRole(ctx context.Context) error {
 	role := &rbacv1.ClusterRole{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: USER_CLUSTER_ROLE,
@@ -156,7 +163,7 @@ func (c *Controller) createOrUpdateUserClusterRole(ctx context.Context) error {
 	}
 
 	_, err := kutils.CreateOrUpdate(ctx, c.Client(), role, func() error {
-		role.Rules = rules
+		role.Rules = GetUserPolicyRules()
 		return nil
 	})
 	if err != nil {
