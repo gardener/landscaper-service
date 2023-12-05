@@ -7,6 +7,7 @@ package landscaperdeployments
 import (
 	"context"
 	"fmt"
+	"reflect"
 	"sort"
 	"strings"
 
@@ -28,6 +29,7 @@ import (
 // reconcile reconciles a landscaper deployment
 func (c *Controller) reconcile(ctx context.Context, deployment *lssv1alpha1.LandscaperDeployment) error {
 	currOp := "Reconcile"
+	oldDeployment := deployment.DeepCopy()
 
 	// reconcile instance
 	instance := &lssv1alpha1.Instance{}
@@ -52,9 +54,17 @@ func (c *Controller) reconcile(ctx context.Context, deployment *lssv1alpha1.Land
 			Name:      instance.GetName(),
 			Namespace: instance.GetNamespace(),
 		}
+	}
 
+	if err := c.Client().Get(ctx, client.ObjectKeyFromObject(instance), instance); err != nil {
+		return lsserrors.NewWrappedError(err, currOp, "GetInstanceStatus", err.Error())
+	}
+
+	deployment.Status.Phase = instance.Status.Phase
+
+	if !reflect.DeepEqual(oldDeployment.Status, deployment.Status) {
 		if err := c.Client().Status().Update(ctx, deployment); err != nil {
-			return lsserrors.NewWrappedError(err, currOp, "UpdateInstanceRefForDeployment", err.Error())
+			return lsserrors.NewWrappedError(err, currOp, "UpdateLandscaperDeploymentStatus", err.Error())
 		}
 	}
 
@@ -134,6 +144,7 @@ func (c *Controller) mutateInstance(ctx context.Context, deployment *lssv1alpha1
 	instance.Spec.LandscaperConfiguration = deployment.Spec.LandscaperConfiguration
 	instance.Spec.OIDCConfig = deployment.Spec.OIDCConfig
 	instance.Spec.HighAvailabilityConfig = deployment.Spec.HighAvailabilityConfig
+	instance.Spec.DataPlane = deployment.Spec.DataPlane
 
 	c.Operation.Scheme().Default(instance)
 

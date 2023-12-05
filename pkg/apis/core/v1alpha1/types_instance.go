@@ -134,7 +134,19 @@ type InstanceStatus struct {
 	// +optional
 	ShootNamespace string `json:"shootNamespace,omitempty"`
 
+	// Reference to the external data plane cluster target.
+	// +optional
+	ExternalDataPlaneClusterRef *ObjectReference `json:"dataPlaneClusterRef,omitempty"`
+
 	// Phase represents the phase of the corresponding Landscaper Instance Installation phase.
 	// +optional
 	Phase string `json:"phase,omitempty"`
+}
+
+func (ld *Instance) IsExternalDataPlane() bool {
+	return ld.Spec.DataPlane != nil
+}
+
+func (ld *Instance) IsInternalDataPlane() bool {
+	return ld.Spec.DataPlane == nil
 }

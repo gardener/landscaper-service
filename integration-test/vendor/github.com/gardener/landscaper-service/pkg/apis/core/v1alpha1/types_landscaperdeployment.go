@@ -83,3 +83,11 @@ type LandscaperDeploymentStatus struct {
 	// +optional
 	Phase string `json:"phase,omitempty"`
 }
+
+func (ld *LandscaperDeployment) IsExternalDataPlane() bool {
+	return ld.Spec.DataPlane != nil
+}
+
+func (ld *LandscaperDeployment) IsInternalDataPlane() bool {
+	return ld.Spec.DataPlane == nil
+}

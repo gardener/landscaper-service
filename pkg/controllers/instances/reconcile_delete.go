@@ -40,6 +40,7 @@ func (c *Controller) handleDelete(ctx context.Context, instance *lssv1alpha1.Ins
 		curOp                               = "Delete"
 		targetDeleted                       = true
 		gardenerServiceAccountTargetDeleted = true
+		dataPlaneClusterTargetDeleted       = true
 		installationDeleted                 = true
 		contextDeleted                      = true
 		targetClusterNamespaceDeleted       bool
@@ -84,6 +85,10 @@ func (c *Controller) handleDelete(ctx context.Context, instance *lssv1alpha1.Ins
 		}
 	}
 
+	if !contextDeleted {
+		return reconcile.Result{}, nil
+	}
+
 	if instance.Status.GardenerServiceAccountRef != nil && !instance.Status.GardenerServiceAccountRef.IsEmpty() {
 		if gardenerServiceAccountTargetDeleted, err = c.ensureDeleteGardenerServiceAccountTargetForInstance(ctx, instance); err != nil {
 			return reconcile.Result{}, lsserrors.NewWrappedError(err, curOp, "DeleteGardenerServiceAccountTarget", err.Error())
@@ -94,7 +99,13 @@ func (c *Controller) handleDelete(ctx context.Context, instance *lssv1alpha1.Ins
 		return reconcile.Result{}, nil
 	}
 
-	if !contextDeleted {
+	if instance.Status.ExternalDataPlaneClusterRef != nil && !instance.Status.ExternalDataPlaneClusterRef.IsEmpty() {
+		if dataPlaneClusterTargetDeleted, err = c.ensureDeleteDataPlaneClusterTargetForInstance(ctx, instance); err != nil {
+			return reconcile.Result{}, lsserrors.NewWrappedError(err, curOp, "DeleteDataDataPlaneClusterTarget", err.Error())
+		}
+	}
+
+	if !dataPlaneClusterTargetDeleted {
 		return reconcile.Result{}, nil
 	}
 
@@ -202,6 +213,35 @@ func (c *Controller) ensureDeleteGardenerServiceAccountTargetForInstance(ctx con
 	if target.DeletionTimestamp.IsZero() {
 		if err := c.Client().Delete(ctx, target); err != nil {
 			return false, fmt.Errorf("unable to delete gardener service account target for instance: %w", err)
+		}
+	}
+
+	return false, nil
+}
+
+// ensureDeleteTargetForInstance ensures that the target for an instance is deleted
+func (c *Controller) ensureDeleteDataPlaneClusterTargetForInstance(ctx context.Context, instance *lssv1alpha1.Instance) (bool, error) {
+	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(instance).String()},
+		lc.KeyMethod, "ensureDeleteDataPlaneClusterTargetForInstance")
+
+	logger.Info("Delete external data plane cluster target for instance", lc.KeyResource, instance.Status.ExternalDataPlaneClusterRef.NamespacedName().String())
+	target := &lsv1alpha1.Target{}
+
+	if err := c.Client().Get(ctx, instance.Status.ExternalDataPlaneClusterRef.NamespacedName(), target); err != nil {
+		if apierrors.IsNotFound(err) {
+			instance.Status.ExternalDataPlaneClusterRef = nil
+			if err := c.Client().Status().Update(ctx, instance); err != nil {
+				return false, fmt.Errorf("failed to remove external data plane cluster target reference: %w", err)
+			}
+			return true, nil
+		} else {
+			return false, fmt.Errorf("unable to get external data plane cluster target for instance: %w", err)
+		}
+	}
+
+	if target.DeletionTimestamp.IsZero() {
+		if err := c.Client().Delete(ctx, target); err != nil {
+			return false, fmt.Errorf("unable to delete external data plane cluster target for instance: %w", err)
 		}
 	}
 

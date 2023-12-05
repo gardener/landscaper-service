@@ -478,6 +478,11 @@ func (in *InstanceStatus) DeepCopyInto(out *InstanceStatus) {
 		*out = new(ObjectReference)
 		**out = **in
 	}
+	if in.ExternalDataPlaneClusterRef != nil {
+		in, out := &in.ExternalDataPlaneClusterRef, &out.ExternalDataPlaneClusterRef
+		*out = new(ObjectReference)
+		**out = **in
+	}
 	return
 }
 

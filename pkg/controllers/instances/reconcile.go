@@ -70,8 +70,16 @@ func (c *Controller) reconcile(ctx context.Context, instance *lssv1alpha1.Instan
 		return errors.NewWrappedError(err, currOp, "ReconcileContextFailed", err.Error())
 	}
 
-	if err := c.reconcileGardenerServiceAccountTarget(ctx, instance); err != nil {
-		return errors.NewWrappedError(err, currOp, "ReconcileGardenerServiceAccountTargetFailed", err.Error())
+	if instance.IsInternalDataPlane() {
+		if err := c.reconcileGardenerServiceAccountTarget(ctx, instance); err != nil {
+			return errors.NewWrappedError(err, currOp, "ReconcileGardenerServiceAccountTargetFailed", err.Error())
+		}
+	}
+
+	if instance.IsExternalDataPlane() {
+		if err := c.reconcileExternalDataPlaneClusterTarget(ctx, instance); err != nil {
+			return errors.NewWrappedError(err, currOp, "ReconcileExternalDataPlaneClusterTarget", err.Error())
+		}
 	}
 
 	if err := c.reconcileTarget(ctx, instance); err != nil {
@@ -332,6 +340,87 @@ func (c *Controller) mutateGardenerServiceAccountTarget(ctx context.Context, tar
 	return nil
 }
 
+// reconcileExternalDataPlaneClusterTarget reconciles the target for the external data plane cluster target.
+func (c *Controller) reconcileExternalDataPlaneClusterTarget(ctx context.Context, instance *lssv1alpha1.Instance) error {
+	target := &lsv1alpha1.Target{}
+	target.GenerateName = fmt.Sprintf("%s-data-plane-", instance.GetName())
+	target.Namespace = instance.GetNamespace()
+
+	if instance.Status.ExternalDataPlaneClusterRef != nil && !instance.Status.ExternalDataPlaneClusterRef.IsEmpty() {
+		target.Name = instance.Status.ExternalDataPlaneClusterRef.Name
+		target.Namespace = instance.Status.ExternalDataPlaneClusterRef.Namespace
+	}
+
+	_, err := kubernetes.CreateOrUpdate(ctx, c.Client(), target, func() error {
+		return c.mutateExternalDataPlaneClusterTarget(ctx, target, instance)
+	})
+
+	if instance.Status.ExternalDataPlaneClusterRef == nil || !instance.Status.ExternalDataPlaneClusterRef.IsObject(target) {
+		instance.Status.ExternalDataPlaneClusterRef = &lssv1alpha1.ObjectReference{
+			Name:      target.GetName(),
+			Namespace: target.GetNamespace(),
+		}
+
+		if err := c.Client().Status().Update(ctx, instance); err != nil {
+			return fmt.Errorf("unable to update data plane cluster target reference for instance: %w", err)
+		}
+	}
+
+	return err
+}
+
+// reconcileExternalDataPlaneClusterTarget creates or updates the target for the external data plane cluster.
+func (c *Controller) mutateExternalDataPlaneClusterTarget(ctx context.Context, target *lsv1alpha1.Target, instance *lssv1alpha1.Instance) error {
+	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(instance).String()},
+		lc.KeyMethod, "mutateDataPlaneClusterTarget")
+
+	if len(target.Name) > 0 {
+		logger.Info("Updating data plane cluster target", lc.KeyResource, client.ObjectKeyFromObject(target).String())
+	} else {
+		logger.Info("Creating data plane cluster target", lc.KeyResource, types.NamespacedName{Name: target.GenerateName, Namespace: target.Namespace}.String())
+	}
+
+	if err := controllerutil.SetControllerReference(instance, target, c.Scheme()); err != nil {
+		return fmt.Errorf("unable to set controller reference for target: %w", err)
+	}
+
+	var kubeconfigStr string
+
+	if len(instance.Spec.DataPlane.Kubeconfig) > 0 {
+		kubeconfigStr = instance.Spec.DataPlane.Kubeconfig
+	} else {
+		secret := &corev1.Secret{}
+		if err := c.Client().Get(ctx, instance.Spec.DataPlane.SecretRef.NamespacedName(), secret); err != nil {
+			return fmt.Errorf("unable to get kubeconfig secret for gardener service account: %w", err)
+		}
+
+		val, ok := secret.Data[instance.Spec.DataPlane.SecretRef.Key]
+		if !ok {
+			return fmt.Errorf("unable to read kubeconfig from secret: missing key %q", instance.Spec.DataPlane.SecretRef.Key)
+		}
+		kubeconfigStr = string(val)
+	}
+
+	targetConfig := targettypes.KubernetesClusterTargetConfig{
+		Kubeconfig: targettypes.ValueRef{
+			StrVal: &kubeconfigStr,
+		},
+	}
+
+	targetConfigRaw, err := json.Marshal(targetConfig)
+	if err != nil {
+		return fmt.Errorf("unable to marshal kubeconfig: %w", err)
+	}
+	targetConfigAnyJSON := lsv1alpha1.NewAnyJSON(targetConfigRaw)
+
+	target.Spec = lsv1alpha1.TargetSpec{
+		Type:          targettypes.KubernetesClusterTargetType,
+		Configuration: &targetConfigAnyJSON,
+	}
+
+	return nil
+}
+
 // reconcileInstallation reconciles the installation for an instance
 func (c *Controller) reconcileInstallation(ctx context.Context, instance *lssv1alpha1.Instance) error {
 	old := instance.DeepCopy()
@@ -359,7 +448,11 @@ func (c *Controller) reconcileInstallation(ctx context.Context, instance *lssv1a
 	}
 
 	_, err := kubernetes.CreateOrUpdate(ctx, c.Client(), installation, func() error {
-		return c.mutateInstallation(ctx, installation, instance)
+		if instance.IsInternalDataPlane() {
+			return c.mutateInstallation(ctx, installation, instance)
+		}
+
+		return c.mutateInstallationExternalDataPlane(ctx, installation, instance)
 	})
 
 	if err != nil {
@@ -377,9 +470,17 @@ func (c *Controller) reconcileInstallation(ctx context.Context, instance *lssv1a
 		Version: installation.Spec.ComponentDescriptor.Reference.Version,
 	}
 
-	if err := c.handleExports(ctx, instance, installation); err != nil {
-		return err
+	if instance.IsInternalDataPlane() {
+		if err := c.handleExports(ctx, instance, installation); err != nil {
+			return err
+		}
 	}
+
+	if err := c.Client().Get(ctx, client.ObjectKeyFromObject(installation), installation); err != nil {
+		return fmt.Errorf("unable to get installation status: %w", err)
+	}
+
+	instance.Status.Phase = string(installation.Status.InstallationPhase)
 
 	if !reflect.DeepEqual(old.Status, instance.Status) {
 		if err := c.Client().Status().Update(ctx, instance); err != nil {
@@ -503,11 +604,11 @@ func (c *Controller) mutateInstallation(ctx context.Context, installation *lsv1a
 		Imports: lsv1alpha1.InstallationImports{
 			Targets: []lsv1alpha1.TargetImport{
 				{
-					Name:   "hostingCluster",
+					Name:   lsinstallation.TargetClusterImportName,
 					Target: instance.Status.TargetRef.Name,
 				},
 				{
-					Name:   "gardenerServiceAccount",
+					Name:   lsinstallation.GardenerServiceAccountImportName,
 					Target: instance.Status.GardenerServiceAccountRef.Name,
 				},
 			},
@@ -584,6 +685,122 @@ func (c *Controller) mutateInstallation(ctx context.Context, installation *lsv1a
 		}
 
 		installation.Spec.ImportDataMappings[lsinstallation.AuditLogServiceImportName] = lsv1alpha1.NewAnyJSON(auditLogServiceRaw)
+	}
+
+	if !InstallationSpecDeepEquals(oldInstallationSpec, installation.Spec.DeepCopy()) {
+		// set reconcile annotation to start/update the installation
+		logger.Info("Setting reconcile operation annotation")
+		if installation.Annotations == nil {
+			installation.Annotations = make(map[string]string)
+		}
+		installation.Annotations[lsv1alpha1.OperationAnnotation] = string(lsv1alpha1.ReconcileOperation)
+	}
+
+	return nil
+}
+
+// mutateInstallation creates or updates the installation for an instance.
+func (c *Controller) mutateInstallationExternalDataPlane(ctx context.Context, installation *lsv1alpha1.Installation, instance *lssv1alpha1.Instance) error {
+	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(instance).String()},
+		lc.KeyMethod, "mutateInstallationExternalDataPlane")
+
+	if len(installation.Name) > 0 {
+		logger.Info("Updating installation", lc.KeyResource, client.ObjectKeyFromObject(installation).String())
+	} else {
+		logger.Info("Creating installation", lc.KeyResource, types.NamespacedName{Name: installation.GenerateName, Namespace: installation.Namespace}.String())
+	}
+
+	// create a copy of the current installation spec for deciding whether a reconcile-annotation has to be set.
+	oldInstallationSpec := installation.Spec.DeepCopy()
+
+	if err := controllerutil.SetControllerReference(instance, installation, c.Scheme()); err != nil {
+		return fmt.Errorf("unable to set owner reference for installation: %w", err)
+	}
+
+	config := &lssv1alpha1.ServiceTargetConfig{}
+	if err := c.Client().Get(ctx, instance.Spec.ServiceTargetConfigRef.NamespacedName(), config); err != nil {
+		return fmt.Errorf("unable to get service target config for instance: %w", err)
+	}
+
+	registryConfig := lsinstallation.NewRegistryConfig()
+	registryConfigRaw, err := registryConfig.ToAnyJSON()
+	if err != nil {
+		return fmt.Errorf("unable to marshal registry config: %w", err)
+	}
+
+	landscaperConfig := lsinstallation.NewLandscaperConfig()
+	landscaperConfig.Resources = instance.Spec.LandscaperConfiguration.Resources
+	landscaperConfig.ResourcesMain = instance.Spec.LandscaperConfiguration.ResourcesMain
+	landscaperConfig.HPAMain = instance.Spec.LandscaperConfiguration.HPAMain
+	landscaperConfig.Deployers = instance.Spec.LandscaperConfiguration.Deployers
+	landscaperConfig.DeployersConfig = instance.Spec.LandscaperConfiguration.DeployersConfig
+	landscaperConfig.Landscaper.Verbosity = logging.INFO.String()
+	if instance.Spec.LandscaperConfiguration.Landscaper != nil {
+		landscaperConfig.Landscaper.Controllers = instance.Spec.LandscaperConfiguration.Landscaper.Controllers
+		landscaperConfig.Landscaper.DeployItemTimeouts = instance.Spec.LandscaperConfiguration.Landscaper.DeployItemTimeouts
+		landscaperConfig.Landscaper.K8SClientSettings = instance.Spec.LandscaperConfiguration.Landscaper.K8SClientSettings
+		landscaperConfig.Landscaper.UseOCMLib = instance.Spec.LandscaperConfiguration.Landscaper.UseOCMLib
+	}
+
+	landscaperConfigRaw, err := landscaperConfig.ToAnyJSON()
+	if err != nil {
+		return fmt.Errorf("unable to marshal landscaper config: %w", err)
+	}
+
+	sidecarConfig := lsinstallation.NewSidecarConfig()
+	sidecarConfigRaw, err := sidecarConfig.ToAnyJSON()
+	if err != nil {
+		return fmt.Errorf("unable to marshal sidecar config: %w", err)
+	}
+
+	rotationConfig := lsinstallation.NewRotationConfig(tokenExpirationSeconds, adminKubeconfigExpirationSeconds)
+	rotationConfigRaw, err := rotationConfig.ToAnyJSON()
+	if err != nil {
+		return fmt.Errorf("unable to marshal rotation config: %w", err)
+	}
+
+	installation.Spec = lsv1alpha1.InstallationSpec{
+		Context: instance.Status.ContextRef.Name,
+		ComponentDescriptor: &lsv1alpha1.ComponentDescriptorDefinition{
+			Reference: &lsv1alpha1.ComponentDescriptorReference{
+				ComponentName: c.Operation.Config().LandscaperServiceComponent.Name,
+				Version:       c.Operation.Config().LandscaperServiceComponent.Version,
+			},
+		},
+		Blueprint: lsv1alpha1.BlueprintDefinition{
+			Reference: &lsv1alpha1.RemoteBlueprintReference{
+				ResourceName: "installation-blueprint-ext-dataplane",
+			},
+		},
+		Imports: lsv1alpha1.InstallationImports{
+			Targets: []lsv1alpha1.TargetImport{
+				{
+					Name:   lsinstallation.TargetClusterImportName,
+					Target: instance.Status.TargetRef.Name,
+				},
+				{
+					Name:   lsinstallation.DataPlaneClusterImportName,
+					Target: instance.Status.ExternalDataPlaneClusterRef.Name,
+				},
+			},
+		},
+		ImportDataMappings: map[string]lsv1alpha1.AnyJSON{
+			lsinstallation.HostingClusterNamespaceImportName:   utils.StringToAnyJSON(fmt.Sprintf("%s-%s", instance.Spec.TenantId, instance.Spec.ID)),
+			lsinstallation.DataPlaneClusterNamespaceImportName: utils.StringToAnyJSON(lsinstallation.DataPlaneClusterNamespace),
+			lsinstallation.RegistryConfigImportName:            *registryConfigRaw,
+			lsinstallation.LandscaperConfigImportName:          *landscaperConfigRaw,
+			lsinstallation.SidecarConfigImportName:             *sidecarConfigRaw,
+			lsinstallation.RotationConfigImportName:            *rotationConfigRaw,
+			lsinstallation.WebhooksHostNameImportName:          utils.StringToAnyJSON(fmt.Sprintf("%s-%s.%s", instance.Spec.TenantId, instance.Spec.ID, config.Spec.IngressDomain)),
+		},
+		AutomaticReconcile: &lsv1alpha1.AutomaticReconcile{
+			SucceededReconcile: &lsv1alpha1.SucceededReconcile{
+				Interval: &lsv1alpha1.Duration{Duration: time.Duration(automaticReconcileSeconds) * time.Second},
+			},
+			FailedReconcile: &lsv1alpha1.FailedReconcile{
+				Interval: &lsv1alpha1.Duration{Duration: time.Duration(failedReconcileSeconds) * time.Second},
+			},
+		},
 	}
 
 	if !InstallationSpecDeepEquals(oldInstallationSpec, installation.Spec.DeepCopy()) {
