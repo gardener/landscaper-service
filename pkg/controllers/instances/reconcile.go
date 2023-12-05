@@ -424,13 +424,16 @@ func (c *Controller) mutateExternalDataPlaneClusterTarget(ctx context.Context, t
 // reconcileInstallation reconciles the installation for an instance
 func (c *Controller) reconcileInstallation(ctx context.Context, instance *lssv1alpha1.Instance) error {
 	old := instance.DeepCopy()
-	if err := c.handleShootName(ctx, instance); err != nil {
-		return err
-	}
 
-	if !reflect.DeepEqual(old.Status, instance.Status) {
-		if err := c.Client().Status().Update(ctx, instance); err != nil {
-			return fmt.Errorf("unable to update instance status: %w", err)
+	if instance.IsInternalDataPlane() {
+		if err := c.handleShootName(ctx, instance); err != nil {
+			return err
+		}
+
+		if !reflect.DeepEqual(old.Status, instance.Status) {
+			if err := c.Client().Status().Update(ctx, instance); err != nil {
+				return fmt.Errorf("unable to update instance status: %w", err)
+			}
 		}
 	}
 

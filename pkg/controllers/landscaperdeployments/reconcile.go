@@ -62,6 +62,12 @@ func (c *Controller) reconcile(ctx context.Context, deployment *lssv1alpha1.Land
 
 	deployment.Status.Phase = instance.Status.Phase
 
+	if deployment.IsInternalDataPlane() {
+		deployment.Status.DataPlaneType = lssv1alpha1.LandscaperDeploymentDataPlaneTypeInternal
+	} else {
+		deployment.Status.DataPlaneType = lssv1alpha1.LandscaperDeploymentDataPlaneTypeExternal
+	}
+
 	if !reflect.DeepEqual(oldDeployment.Status, deployment.Status) {
 		if err := c.Client().Status().Update(ctx, deployment); err != nil {
 			return lsserrors.NewWrappedError(err, currOp, "UpdateLandscaperDeploymentStatus", err.Error())

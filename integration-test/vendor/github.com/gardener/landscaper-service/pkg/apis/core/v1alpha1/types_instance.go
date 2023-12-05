@@ -28,6 +28,7 @@ type InstanceList struct {
 // +kubebuilder:subresource:status
 // +kubebuilder:printcolumn:name="ServiceTargetConfig",type=string,JSONPath=`.spec.serviceTargetConfigRef.name`
 // +kubebuilder:printcolumn:name="Installation",type=string,JSONPath=`.status.installationRef.name`
+// +kubebuilder:printcolumn:name="Phase",type=string,JSONPath=`.status.phase`
 // +kubebuilder:printcolumn:name="Age",type=date,JSONPath=`.metadata.creationTimestamp`
 type Instance struct {
 	metav1.TypeMeta   `json:",inline"`

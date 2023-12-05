@@ -17,8 +17,14 @@ spec:
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
+    - jsonPath: .status.type
+      name: DataPlaneType
+      type: string
     - jsonPath: .status.instanceRef.name
       name: Instance
+      type: string
+    - jsonPath: .status.phase
+      name: Phase
       type: string
     - jsonPath: .metadata.creationTimestamp
       name: Age
@@ -354,6 +360,10 @@ spec:
               phase:
                 description: Phase represents the phase of the corresponding Landscaper
                   Instance Installation phase.
+                type: string
+              type:
+                description: DataPlaneType shows whether this deployment has an internal
+                  or external data plane cluster.
                 type: string
             type: object
         required:

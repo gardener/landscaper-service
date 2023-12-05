@@ -8,6 +8,11 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+const (
+	LandscaperDeploymentDataPlaneTypeExternal = "External"
+	LandscaperDeploymentDataPlaneTypeInternal = "Internal"
+)
+
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 // LandscaperDeploymentList contains a list of LandscaperDeployment
@@ -23,7 +28,9 @@ type LandscaperDeploymentList struct {
 // +kubebuilder:resource:singular="landscaperdeployment",path="landscaperdeployments",shortName="lsdepl",scope="Namespaced"
 // +kubebuilder:storageversion
 // +kubebuilder:subresource:status
+// +kubebuilder:printcolumn:name="DataPlaneType",type=string,JSONPath=`.status.type`
 // +kubebuilder:printcolumn:name="Instance",type=string,JSONPath=`.status.instanceRef.name`
+// +kubebuilder:printcolumn:name="Phase",type=string,JSONPath=`.status.phase`
 // +kubebuilder:printcolumn:name="Age",type=date,JSONPath=`.metadata.creationTimestamp`
 type LandscaperDeployment struct {
 	metav1.TypeMeta   `json:",inline"`
@@ -82,6 +89,10 @@ type LandscaperDeploymentStatus struct {
 	// Phase represents the phase of the corresponding Landscaper Instance Installation phase.
 	// +optional
 	Phase string `json:"phase,omitempty"`
+
+	// DataPlaneType shows whether this deployment has an internal or external data plane cluster.
+	// +optional
+	DataPlaneType string `json:"type,omitempty"`
 }
 
 func (ld *LandscaperDeployment) IsExternalDataPlane() bool {
