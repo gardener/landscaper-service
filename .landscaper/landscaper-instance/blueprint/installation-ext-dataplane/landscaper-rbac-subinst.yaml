@@ -9,14 +9,15 @@ blueprint:
 imports:
   targets:
     - name: shootCluster
-      target: shootCluster
+      target: dataPlaneCluster
   data:
     - name: targetClusterNamespace
-      dataRef: targetClusterNamespace
-    - name: shootConfig
-      dataRef: shootConfig
+      dataRef: dataPlaneClusterNamespace
     - name: rotationConfig
       dataRef: rotationConfig
+
+importDataMappings:
+  shootConfig: {}
 
 exports:
   data:
@@ -24,5 +25,3 @@ exports:
       dataRef: landscaperControllerKubeconfigYaml
     - name: landscaperWebhooksKubeconfigYaml
       dataRef: landscaperWebhooksKubeconfigYaml
-    - name: landscaperUserKubeconfigYaml
-      dataRef: landscaperUserKubeconfigYaml

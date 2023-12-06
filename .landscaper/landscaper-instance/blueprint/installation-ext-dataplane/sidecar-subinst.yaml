@@ -1,0 +1,19 @@
+apiVersion: landscaper.gardener.cloud/v1alpha1
+kind: InstallationTemplate
+
+name: sidecar-server
+
+blueprint:
+  ref: cd://resources/sidecar-blueprint
+
+imports:
+  targets:
+    - name: hostingCluster
+      target: hostingCluster
+  data:
+    - name: hostingClusterNamespace
+      dataRef: hostingClusterNamespace
+    - name: landscaperControllerKubeconfigYaml
+      dataRef: sidecarControllerKubeconfigYaml
+    - name: sidecarConfig
+      dataRef: sidecarConfig

@@ -1,0 +1,75 @@
+apiVersion: landscaper.gardener.cloud/v1alpha1
+kind: Blueprint
+
+imports:
+   # The "hostingCluster" specifies the target Kubernetes cluster into which the landscaper service will be installed.
+  - name: hostingCluster
+    required: true
+    targetType: landscaper.gardener.cloud/kubernetes-cluster
+
+  - name: hostingClusterNamespace
+    required: true
+    type: data
+    schema:
+      description: |
+        The "hostingClusterNamespace" is the namespace in the hosting cluster into which the landscaper service is getting installed.
+        Only one landscaper server per namespace can be installed.
+      type: string
+
+  - name: dataPlaneCluster
+    required: true
+    targetType: landscaper.gardener.cloud/kubernetes-cluster
+
+  - name: dataPlaneClusterNamespace
+    required: true
+    type: data
+    schema:
+      description: |
+        The "dataPlaneClusterNamespace" is the namespace in the data plane cluster into which the landscaper system resources are getting installed.
+      type: string
+
+  - name: registryConfig
+    type: data
+    schema:
+      description: |
+        The landscaper registry configuration.
+      $ref: "cd://resources/registry-config-definition"
+
+  - name: landscaperConfig
+    type: data
+    schema:
+      description: |
+        The landscaper deployment configuration.
+      $ref: "cd://resources/landscaper-config-definition"
+
+  - name: webhooksHostName
+    required: true
+    type: data
+    schema:
+      description: |
+        The host name which is used to create the landscaper webhooks ingress.
+      type: string
+
+  - name: sidecarConfig
+    type: data
+    schema:
+      description: |
+        The configuration for the sidecar server containing the namespace registration and subject sync controller.
+      $ref: "cd://resources/sidecar-config-definition"
+
+  - name: rotationConfig
+    type: data
+    schema:
+      description: |
+        The configuration for the rotation of credentials.
+      $ref: "cd://resources/rotation-config-definition"
+
+exports: []
+
+exportExecutions: []
+
+subinstallations:
+  - file: /landscaper-rbac-subinst.yaml
+  - file: /landscaper-deployment-subinst.yaml
+  - file: /sidecar-subinst.yaml
+  - file: /sidecar-rbac-subinst.yaml

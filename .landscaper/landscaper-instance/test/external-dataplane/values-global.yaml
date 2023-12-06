@@ -1,0 +1,139 @@
+imports:
+  hostingCluster:
+    metadata:
+      name: hosting-cluster
+      namespace: default
+    spec:
+      type: landscaper.gardener.cloud/kubernetes-cluster
+      config:
+        kubeconfig: |
+          apiVersion: v1
+          kind: Config
+
+  dataPlaneCluster:
+    metadata:
+      name: hosting-cluster
+      namespace: default
+    spec:
+      type: landscaper.gardener.cloud/kubernetes-cluster
+      config:
+        kubeconfig: |
+          apiVersion: v1
+          kind: Config
+
+  hostingClusterNamespace: tenant-test-instance-1
+  dataPlaneClusterNamespace: ls-system
+  registryConfig:
+    cache:
+      useInMemoryOverlay: false
+    allowPlainHttpRegistries: false
+    insecureSkipVerify: false
+
+  landscaperConfig:
+    landscaper:
+      verbosity: debug
+      replicas: 2
+      controllers:
+        installations:
+          workers: 10
+        executions:
+          workers: 5
+      deployItemTimeouts:
+        pickup: 1h
+        progressingDefault: 20m
+      k8sClientSettings:
+        hostClient:
+          burst: 10
+          qps: 20
+        resourceClient:
+          burst: 10
+          qps: 20
+
+    webhooksServer:
+      servicePort: 9999
+      replicas: 3
+
+    resources:
+      requests:
+        cpu: 200m
+        memory: 300Mi
+    resourcesMain:
+      requests:
+        cpu: 500m
+        memory: 600Mi
+
+    hpaMain:
+      maxReplicas: 5
+      averageMemoryUtilization: 70
+      averageCpuUtilization: 70
+
+    deployers:
+      - helm
+      - manifest
+      - container
+
+    deployersConfig:
+      helm:
+        deployer:
+          controller:
+            workers: 33
+          k8sClientSettings:
+            hostClient:
+              burst: 10
+              qps: 20
+            resourceClient:
+              burst: 10
+              qps: 20
+        resources:
+          requests:
+            cpu: 300m
+            memory: 300Mi
+        hpa:
+          maxReplicas: 10
+          averageMemoryUtilization: 70
+          averageCpuUtilization: 70
+      manifest:
+        deployer:
+          controller:
+            workers: 33
+          k8sClientSettings:
+            hostClient:
+              burst: 10
+              qps: 20
+            resourceClient:
+              burst: 10
+              qps: 20
+        resources:
+          requests:
+            cpu: 300m
+            memory: 300Mi
+        hpa:
+          maxReplicas: 10
+          averageMemoryUtilization: 70
+          averageCpuUtilization: 70
+      container:
+        deployer:
+          controller:
+            workers: 33
+          k8sClientSettings:
+            hostClient:
+              burst: 10
+              qps: 20
+            resourceClient:
+              burst: 10
+              qps: 20
+        resources:
+          requests:
+            cpu: 300m
+            memory: 300Mi
+        hpa:
+          maxReplicas: 10
+          averageMemoryUtilization: 70
+          averageCpuUtilization: 70
+
+  sidecarConfig:
+    verbosity: info
+  rotationConfig:
+    tokenExpirationSeconds: 3600
+    adminKubeconfigExpirationSeconds: 3601
+  webhooksHostName: test-shoot.api.mycluster.net
