@@ -7,8 +7,9 @@ package landscaperdeployments_test
 import (
 	"context"
 	"fmt"
-	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	"time"
+
+	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 
 	"github.com/gardener/landscaper-service/pkg/utils"
 
