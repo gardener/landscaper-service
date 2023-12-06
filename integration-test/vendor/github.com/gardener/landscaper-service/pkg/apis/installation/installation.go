@@ -82,6 +82,11 @@ const (
 	UserKubeconfigExportName = "landscaperUserKubeconfig"
 	// AdminKubeconfigExportName is the name of the admin kubeconfig export.
 	AdminKubeconfigExportName = "landscaperAdminKubeconfig"
+
+	// LandscaperInstanceBlueprint is the name of the landscaper-instance blueprint
+	LandscaperInstanceBlueprint = "installation-blueprint"
+	// LandscaperInstanceBlueprintExternalDataPlane is the name of the landscaper-instance blueprint with external data plane cluster.
+	LandscaperInstanceBlueprintExternalDataPlane = "installation-blueprint-ext-dataplane"
 )
 
 // CacheConfig specifies the landscaper registry cache configuration.

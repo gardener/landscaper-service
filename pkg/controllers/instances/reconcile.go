@@ -601,7 +601,7 @@ func (c *Controller) mutateInstallation(ctx context.Context, installation *lsv1a
 		},
 		Blueprint: lsv1alpha1.BlueprintDefinition{
 			Reference: &lsv1alpha1.RemoteBlueprintReference{
-				ResourceName: "installation-blueprint",
+				ResourceName: lsinstallation.LandscaperInstanceBlueprint,
 			},
 		},
 		Imports: lsv1alpha1.InstallationImports{
@@ -772,7 +772,7 @@ func (c *Controller) mutateInstallationExternalDataPlane(ctx context.Context, in
 		},
 		Blueprint: lsv1alpha1.BlueprintDefinition{
 			Reference: &lsv1alpha1.RemoteBlueprintReference{
-				ResourceName: "installation-blueprint-ext-dataplane",
+				ResourceName: lsinstallation.LandscaperInstanceBlueprintExternalDataPlane,
 			},
 		},
 		Imports: lsv1alpha1.InstallationImports{

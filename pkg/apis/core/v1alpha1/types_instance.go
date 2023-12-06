@@ -137,7 +137,7 @@ type InstanceStatus struct {
 
 	// Reference to the external data plane cluster target.
 	// +optional
-	ExternalDataPlaneClusterRef *ObjectReference `json:"dataPlaneClusterRef,omitempty"`
+	ExternalDataPlaneClusterRef *ObjectReference `json:"externalDataPlaneClusterRef,omitempty"`
 
 	// Phase represents the phase of the corresponding Landscaper Instance Installation phase.
 	// +optional

@@ -84,7 +84,7 @@ var _ = Describe("Reconcile", func() {
 		Expect(instance.Status.ObservedGeneration).To(Equal(int64(1)))
 	})
 
-	It("should create a context, target and an installation and handle the data exports", func() {
+	It("should create a context, target and an installation and handle the data exports (internal data plane)", func() {
 		var err error
 		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test2")
 		Expect(err).ToNot(HaveOccurred())
@@ -114,6 +114,8 @@ var _ = Describe("Reconcile", func() {
 		Expect(installation.Spec.Context).To(ContainSubstring("test-"))
 		Expect(installation.Spec.ComponentDescriptor.Reference.Version).To(Equal(op.Config().LandscaperServiceComponent.Version))
 		Expect(installation.Spec.ComponentDescriptor.Reference.ComponentName).To(Equal(op.Config().LandscaperServiceComponent.Name))
+		Expect(installation.Spec.Blueprint.Reference.ResourceName).To(Equal(lsinstallation.LandscaperInstanceBlueprint))
+
 		Expect(installation.Spec.ImportDataMappings[lsinstallation.HostingClusterNamespaceImportName]).To(Equal(utils.StringToAnyJSON("12345-abcdef")))
 		Expect(installation.Spec.ImportDataMappings[lsinstallation.TargetClusterNamespaceImportName]).To(Equal(utils.StringToAnyJSON(lsinstallation.TargetClusterNamespace)))
 		Expect(installation.Spec.ImportDataMappings[lsinstallation.WebhooksHostNameImportName]).To(Equal(utils.StringToAnyJSON("12345-abcdef.ingress.mycluster.external")))
@@ -198,6 +200,52 @@ var _ = Describe("Reconcile", func() {
 		Expect(instance.Status.ClusterEndpoint).To(Equal(clusterEndpoint))
 		Expect(instance.Status.UserKubeconfig).To(Equal(userKubeConfig))
 		Expect(instance.Status.AdminKubeconfig).To(Equal(adminKubeConfig))
+	})
+
+	It("should create a context, target and an installation (external data plane)", func() {
+		var err error
+		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test7")
+		Expect(err).ToNot(HaveOccurred())
+
+		instance := state.GetInstance("test")
+
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
+
+		Expect(instance.Status.TargetRef).ToNot(BeNil())
+		Expect(instance.Status.InstallationRef).ToNot(BeNil())
+
+		context := &lsv1alpha1.Context{}
+		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: instance.Status.ContextRef.Name, Namespace: instance.Status.ContextRef.Namespace}, context)).To(Succeed())
+		Expect(context.RepositoryContext).ToNot(BeNil())
+		Expect(context.RepositoryContext.Type).To(Equal("ociRegistry"))
+
+		target := &lsv1alpha1.Target{}
+		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: instance.Status.TargetRef.Name, Namespace: instance.Status.TargetRef.Namespace}, target)).To(Succeed())
+		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: instance.Status.ExternalDataPlaneClusterRef.Name, Namespace: instance.Status.ExternalDataPlaneClusterRef.Namespace}, target)).To(Succeed())
+
+		installation := &lsv1alpha1.Installation{}
+		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: instance.Status.InstallationRef.Name, Namespace: instance.Status.InstallationRef.Namespace}, installation)).To(Succeed())
+		Expect(installation.Spec.Context).To(ContainSubstring("test-"))
+		Expect(installation.Spec.ComponentDescriptor.Reference.Version).To(Equal(op.Config().LandscaperServiceComponent.Version))
+		Expect(installation.Spec.ComponentDescriptor.Reference.ComponentName).To(Equal(op.Config().LandscaperServiceComponent.Name))
+		Expect(installation.Spec.Blueprint.Reference.ResourceName).To(Equal(lsinstallation.LandscaperInstanceBlueprintExternalDataPlane))
+
+		Expect(installation.Spec.ImportDataMappings[lsinstallation.HostingClusterNamespaceImportName]).To(Equal(utils.StringToAnyJSON("12345-abcdef")))
+		Expect(installation.Spec.ImportDataMappings[lsinstallation.DataPlaneClusterNamespaceImportName]).To(Equal(utils.StringToAnyJSON(lsinstallation.DataPlaneClusterNamespace)))
+		Expect(installation.Spec.ImportDataMappings[lsinstallation.WebhooksHostNameImportName]).To(Equal(utils.StringToAnyJSON("12345-abcdef.ingress.mycluster.external")))
+
+		Expect(installation.Annotations).ToNot(BeNil())
+		Expect(installation.Annotations).To(HaveKey(lsv1alpha1.OperationAnnotation))
+		Expect(installation.Annotations[lsv1alpha1.OperationAnnotation]).To(Equal(string(lsv1alpha1.ReconcileOperation)))
+
+		landscaperConfigRaw := installation.Spec.ImportDataMappings[lsinstallation.LandscaperConfigImportName]
+		Expect(landscaperConfigRaw).ToNot(BeNil())
+		landscaperConfig := &lsinstallation.LandscaperConfig{}
+		Expect(json.Unmarshal(landscaperConfigRaw.RawMessage, landscaperConfig)).To(Succeed())
+		Expect(landscaperConfig.Deployers).To(ContainElements("helm", "container", "manifest"))
 	})
 
 	It("should create registry pull secrets for the context", func() {
@@ -494,5 +542,31 @@ var _ = Describe("Reconcile", func() {
 		Expect(err).ToNot(HaveOccurred())
 		Expect(result.Requeue).To(BeTrue())
 		Expect(result.RequeueAfter).To(Equal(instancescontroller.AutomaticReconcileDefaultDuration))
+	})
+
+	It("should set the status phase correctly", func() {
+		var err error
+		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test1")
+		Expect(err).ToNot(HaveOccurred())
+
+		instance := state.GetInstance("test")
+
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
+
+		Expect(instance.Status.InstallationRef).ToNot(BeNil())
+
+		installation := &lsv1alpha1.Installation{}
+		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: instance.Status.InstallationRef.Name, Namespace: instance.Status.InstallationRef.Namespace}, installation)).To(Succeed())
+
+		installation.Status.InstallationPhase = lsv1alpha1.InstallationPhase(lsv1alpha1.PhaseStringSucceeded)
+		Expect(testenv.Client.Status().Update(ctx, installation))
+
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
+
+		Expect(instance.Status.Phase).To(Equal(lsv1alpha1.PhaseStringSucceeded))
 	})
 })
