@@ -97,7 +97,7 @@ type InstanceStatus struct {
 
 	// LandscaperServiceComponent define the landscaper server component that is used for this instance.
 	// +optional
-	LandscaperServiceComponent *LandscaperServiceComponent `json:"landscaperServiceComponent"`
+	LandscaperServiceComponent *LandscaperServiceComponent `json:"landscaperServiceComponent,omitempty"`
 
 	// ContextRef references the landscaper context for this Instance.
 	// +optional
@@ -109,7 +109,7 @@ type InstanceStatus struct {
 
 	// GardenerServiceAccountRef references the Target for the Gardener service account.
 	// +optional
-	GardenerServiceAccountRef *ObjectReference `json:"gardenerServiceAccountRef"`
+	GardenerServiceAccountRef *ObjectReference `json:"gardenerServiceAccountRef,omitempty"`
 
 	// InstallationRef references the Installation for this Instance.
 	// +optional

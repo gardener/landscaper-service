@@ -28,7 +28,7 @@ type LandscaperDeploymentList struct {
 // +kubebuilder:resource:singular="landscaperdeployment",path="landscaperdeployments",shortName="lsdepl",scope="Namespaced"
 // +kubebuilder:storageversion
 // +kubebuilder:subresource:status
-// +kubebuilder:printcolumn:name="DataPlaneType",type=string,JSONPath=`.status.type`
+// +kubebuilder:printcolumn:name="DataPlaneType",type=string,JSONPath=`.status.dataPlaneType`
 // +kubebuilder:printcolumn:name="Instance",type=string,JSONPath=`.status.instanceRef.name`
 // +kubebuilder:printcolumn:name="Phase",type=string,JSONPath=`.status.phase`
 // +kubebuilder:printcolumn:name="Age",type=date,JSONPath=`.metadata.creationTimestamp`
@@ -92,7 +92,7 @@ type LandscaperDeploymentStatus struct {
 
 	// DataPlaneType shows whether this deployment has an internal or external data plane cluster.
 	// +optional
-	DataPlaneType string `json:"type,omitempty"`
+	DataPlaneType string `json:"dataPlaneType,omitempty"`
 }
 
 func (ld *LandscaperDeployment) IsExternalDataPlane() bool {

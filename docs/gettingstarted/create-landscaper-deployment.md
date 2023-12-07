@@ -42,17 +42,18 @@ After the LandscaperDeployment has been created, the landscaper controller selec
 ```sh
 kubectl -n laas-user get landscaperdeployments.landscaper-service.gardener.cloud test
 
-NAME   INSTANCE     AGE
-test   test-8qh5w   13m
+NAME   DATAPLANETYPE   INSTANCE         PHASE       AGE
+test   Internal        test-8qh5w       Succeeded   13m
 ```
 
+The LandscaperDeployment has a `status.phase` field, mirroring the phase of the corresponding installation.
 The Instance will show the selected ServiceTargetConfig as well as the Installation that has been automatically created by the landscaper service controller.
 
 ```sh
 kubectl -n laas-user get instances.landscaper-service.gardener.cloud test-8qh5w
 
-NAME         SERVICETARGETCONFIG   INSTALLATION       AGE
-test-8qh5w   default               test-8qh5w-hmzrp   15m
+NAME         SERVICETARGETCONFIG   INSTALLATION        PHASE       AGE
+test-8qh5w   default               test-8qh5w-hmzrp    Succeeded   15m
 ```
 
 The installation will automatically start several sub-installations. Once all installations are in phase `Succeeded`, the Landscaper has been deployed successfully.
@@ -121,3 +122,59 @@ kubectl -n laas-user get instances.landscaper-service.gardener.cloud test-8qh5w 
 ```
 
 These kubeconfig files can be used to authenticate at the deployed Landscaper instance.
+
+# Create a Landscaper Deployment with an external data plane
+
+By default, a LandscaperDeployment will create a Gardener Kubernetes Shoot cluster internally which servers the Landscaper user as the API endpoint for creating Landscaper resources.
+It is also possible to create a Kubernetes Cluster externally (external data plane) and provide it to the LandscaperDeployment during its creation as a reference.
+When such a reference is provided, an internal Gardener Shoot cluster will no longer be created. Instead, the external data plane will be used as an API endpoint for creating Landscaper resources.
+
+An external data plane reference can either be provided as an inline kubeconfig:
+
+```yaml
+apiVersion: landscaper-service.gardener.cloud/v1alpha1
+kind: LandscaperDeployment
+metadata:
+  name: test
+spec:
+  tenantId: "tenant-1"
+  purpose: "test"
+  landscaperConfiguration:
+    deployers:
+      - helm
+      - manifest
+      - container
+
+  dataPlane:
+    kubeconfig: |
+      apiVersion: v1
+      kind: Config
+      ...
+```
+
+Or as a Kubernetes secret reference:
+
+```yaml
+apiVersion: landscaper-service.gardener.cloud/v1alpha1
+kind: LandscaperDeployment
+metadata:
+  name: test
+spec:
+  tenantId: "tenant-1"
+  purpose: "test"
+  landscaperConfiguration:
+    deployers:
+      - helm
+      - manifest
+      - container
+
+  dataPlane:
+    secretRef:
+      name: dataplane
+      namespace: test
+      key: kubeconfig
+```
+
+Once a LandscaperDeployment is created with either an internal data plane or an external data plane, it can't be changed.
+When a LandscaperDeployment is created with an external data plane, the corresponding instance will no longer contain an
+admin- and user kubeconfig in its status field. All user access must be handled by the creator of the external data plane.

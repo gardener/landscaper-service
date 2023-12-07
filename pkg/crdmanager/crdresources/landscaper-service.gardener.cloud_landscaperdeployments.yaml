@@ -17,7 +17,7 @@ spec:
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
-    - jsonPath: .status.type
+    - jsonPath: .status.dataPlaneType
       name: DataPlaneType
       type: string
     - jsonPath: .status.instanceRef.name
@@ -307,6 +307,10 @@ spec:
           status:
             description: Status contains the status of the LandscaperDeployment.
             properties:
+              dataPlaneType:
+                description: DataPlaneType shows whether this deployment has an internal
+                  or external data plane cluster.
+                type: string
               instanceRef:
                 description: InstanceRef references the instance that is created for
                   this LandscaperDeployment.
@@ -360,10 +364,6 @@ spec:
               phase:
                 description: Phase represents the phase of the corresponding Landscaper
                   Instance Installation phase.
-                type: string
-              type:
-                description: DataPlaneType shows whether this deployment has an internal
-                  or external data plane cluster.
                 type: string
             type: object
         required:
