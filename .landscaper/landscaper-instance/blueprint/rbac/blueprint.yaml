@@ -12,12 +12,6 @@ imports:
     schema:
       type: string
 
-  - name: shootClusterEndpoint
-    required: true
-    type: data
-    schema:
-      type: string
-
   - name: shootConfig
     type: data
     schema:

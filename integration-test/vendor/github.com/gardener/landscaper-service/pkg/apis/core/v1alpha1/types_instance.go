@@ -28,6 +28,7 @@ type InstanceList struct {
 // +kubebuilder:subresource:status
 // +kubebuilder:printcolumn:name="ServiceTargetConfig",type=string,JSONPath=`.spec.serviceTargetConfigRef.name`
 // +kubebuilder:printcolumn:name="Installation",type=string,JSONPath=`.status.installationRef.name`
+// +kubebuilder:printcolumn:name="Phase",type=string,JSONPath=`.status.phase`
 // +kubebuilder:printcolumn:name="Age",type=date,JSONPath=`.metadata.creationTimestamp`
 type Instance struct {
 	metav1.TypeMeta   `json:",inline"`
@@ -66,6 +67,13 @@ type InstanceSpec struct {
 	// HighAvailabilityConfig specifies the HA configuration of the resource cluster (shoot cluster)
 	// +optional
 	HighAvailabilityConfig *HighAvailabilityConfig `json:"highAvailabilityConfig"`
+
+	// DataPlane references an externally created and maintained Kubernetes cluster,
+	// used as the data plane where Landscaper resources are stored.
+	// When DataPlane is defined, the Landscaper Service controller will no longer
+	// create its own Kubernetes cluster.
+	// +optional
+	DataPlane *DataPlane `json:"dataPlane,omitempty"`
 }
 
 // AutomaticReconcile defines the automatic reconcile configuration.
@@ -89,7 +97,7 @@ type InstanceStatus struct {
 
 	// LandscaperServiceComponent define the landscaper server component that is used for this instance.
 	// +optional
-	LandscaperServiceComponent *LandscaperServiceComponent `json:"landscaperServiceComponent"`
+	LandscaperServiceComponent *LandscaperServiceComponent `json:"landscaperServiceComponent,omitempty"`
 
 	// ContextRef references the landscaper context for this Instance.
 	// +optional
@@ -101,7 +109,7 @@ type InstanceStatus struct {
 
 	// GardenerServiceAccountRef references the Target for the Gardener service account.
 	// +optional
-	GardenerServiceAccountRef *ObjectReference `json:"gardenerServiceAccountRef"`
+	GardenerServiceAccountRef *ObjectReference `json:"gardenerServiceAccountRef,omitempty"`
 
 	// InstallationRef references the Installation for this Instance.
 	// +optional
@@ -126,4 +134,20 @@ type InstanceStatus struct {
 	// ShootNamespace is the namespace in which the shoot resource is being created.
 	// +optional
 	ShootNamespace string `json:"shootNamespace,omitempty"`
+
+	// Reference to the external data plane cluster target.
+	// +optional
+	ExternalDataPlaneClusterRef *ObjectReference `json:"externalDataPlaneClusterRef,omitempty"`
+
+	// Phase represents the phase of the corresponding Landscaper Instance Installation phase.
+	// +optional
+	Phase string `json:"phase,omitempty"`
+}
+
+func (ld *Instance) IsExternalDataPlane() bool {
+	return ld.Spec.DataPlane != nil
+}
+
+func (ld *Instance) IsInternalDataPlane() bool {
+	return ld.Spec.DataPlane == nil
 }

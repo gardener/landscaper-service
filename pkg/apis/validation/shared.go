@@ -46,3 +46,21 @@ func ValidateHighAvailabilityConfig(haConfig *v1alpha1.HighAvailabilityConfig, f
 
 	return allErrs
 }
+
+func ValidateDataPlane(dataPlane *v1alpha1.DataPlane, fldPath *field.Path) field.ErrorList {
+	allErrs := field.ErrorList{}
+
+	if dataPlane.SecretRef == nil && len(dataPlane.Kubeconfig) == 0 {
+		allErrs = append(allErrs, field.Forbidden(fldPath, "either secretRef or kubeconfig must be specified"))
+	}
+
+	if dataPlane.SecretRef != nil && len(dataPlane.Kubeconfig) > 0 {
+		allErrs = append(allErrs, field.Forbidden(fldPath, "secretRef or kubeconfig must not be specified at the same time"))
+	}
+
+	if dataPlane.SecretRef != nil {
+		allErrs = append(allErrs, ValidateSecretReference(dataPlane.SecretRef, fldPath.Child("secretRef"))...)
+	}
+
+	return allErrs
+}

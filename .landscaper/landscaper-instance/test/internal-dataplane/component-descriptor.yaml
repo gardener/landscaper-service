@@ -1,0 +1,13 @@
+component:
+  componentReferences: []
+  name: github.com/gardener/landscaper-service/landscaper-instance
+  provider: internal
+  repositoryContexts:
+  - baseUrl: eu.gcr.io/gardener-project/development
+    componentNameMapping: urlPath
+    type: ociRegistry
+  resources: []
+  sources: []
+  version: v0.1.0
+meta:
+  schemaVersion: v2

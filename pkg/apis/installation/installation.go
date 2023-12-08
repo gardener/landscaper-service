@@ -62,9 +62,19 @@ const (
 	AuditPolicyImportName = "auditPolicy"
 	// AuditLogServiceImportName is the import for the audit log service settings.
 	AuditLogServiceImportName = "auditLogService"
+	// TargetClusterImportName is the import for the target cluster Landscaper target.
+	TargetClusterImportName = "hostingCluster"
+	// GardenerServiceAccountImportName is the import for the gardener service account target.
+	GardenerServiceAccountImportName = "gardenerServiceAccount"
+	// DataPlaneClusterImportName is the import for the external data plane cluster target.
+	DataPlaneClusterImportName = "dataPlaneCluster"
+	// DataPlaneClusterNamespaceImportName is the import for the data plane cluster namespace.
+	DataPlaneClusterNamespaceImportName = "dataPlaneClusterNamespace"
 
 	// TargetClusterNamespace is the target cluster namespace used for landscaper internals.
 	TargetClusterNamespace = "ls-system"
+	// DataPlaneClusterNamespace is the data plane cluster namespace used for landscaper internals.
+	DataPlaneClusterNamespace = "ls-system"
 
 	// ClusterEndpointExportName is the name of the cluster endpoint export.
 	ClusterEndpointExportName = "landscaperClusterEndpoint"
@@ -72,6 +82,11 @@ const (
 	UserKubeconfigExportName = "landscaperUserKubeconfig"
 	// AdminKubeconfigExportName is the name of the admin kubeconfig export.
 	AdminKubeconfigExportName = "landscaperAdminKubeconfig"
+
+	// LandscaperInstanceBlueprint is the name of the landscaper-instance blueprint
+	LandscaperInstanceBlueprint = "installation-blueprint"
+	// LandscaperInstanceBlueprintExternalDataPlane is the name of the landscaper-instance blueprint with external data plane cluster.
+	LandscaperInstanceBlueprintExternalDataPlane = "installation-blueprint-ext-dataplane"
 )
 
 // CacheConfig specifies the landscaper registry cache configuration.

@@ -178,3 +178,13 @@ type HighAvailabilityConfig struct {
 	// Allowed values are: node, zone
 	ControlPlaneFailureTolerance string `json:"controlPlaneFailureTolerance"`
 }
+
+// DataPlane references an externally create data plane Kubernetes cluster
+type DataPlane struct {
+	// SecretRef references a secret containing the Kubernetes config
+	// +optional
+	SecretRef *SecretReference `json:"secretRef"`
+	// Kubeconfig contains the content of the Kubernetes config
+	// +optional
+	Kubeconfig string `json:"kubeconfig"`
+}

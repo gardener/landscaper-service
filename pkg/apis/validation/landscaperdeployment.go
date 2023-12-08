@@ -47,8 +47,16 @@ func validateLandscaperDeploymentSpec(spec *v1alpha1.LandscaperDeploymentSpec, f
 		allErrs = append(allErrs, field.Required(fldPath.Child("purpose"), "purpose may not be empty"))
 	}
 
+	if spec.DataPlane != nil && (spec.OIDCConfig != nil || spec.HighAvailabilityConfig != nil) {
+		allErrs = append(allErrs, field.Forbidden(fldPath.Child("dataPlane"), "dataPlane can't be used in combination with oidcConfig or highAvailabilityConfig"))
+	}
+
 	if spec.HighAvailabilityConfig != nil {
 		allErrs = append(allErrs, ValidateHighAvailabilityConfig(spec.HighAvailabilityConfig, fldPath.Child("highAvailabilityConfig"))...)
+	}
+
+	if spec.DataPlane != nil {
+		allErrs = append(allErrs, ValidateDataPlane(spec.DataPlane, fldPath.Child("dataPlane"))...)
 	}
 
 	return allErrs
@@ -65,6 +73,10 @@ func validateLandscaperDeploymentSpecUpdate(spec *v1alpha1.LandscaperDeploymentS
 		if spec.HighAvailabilityConfig.ControlPlaneFailureTolerance != oldSpec.HighAvailabilityConfig.ControlPlaneFailureTolerance {
 			allErrs = append(allErrs, field.Forbidden(fldPath.Child("highAvailabilityConfig").Child("controlPlaneFailureTolerance"), "is immutable"))
 		}
+	}
+
+	if (oldSpec.DataPlane != nil && spec.DataPlane == nil) || (oldSpec.DataPlane == nil && spec.DataPlane != nil) {
+		allErrs = append(allErrs, field.Forbidden(fldPath.Child("dataPlane"), "cant switch from external data plane to internal or vice versa"))
 	}
 
 	return allErrs

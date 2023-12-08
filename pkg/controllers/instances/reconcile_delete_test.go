@@ -101,7 +101,7 @@ var _ = Describe("Delete", func() {
 		Expect(config.Status.InstanceRefs).To(HaveLen(1))
 	})
 
-	It("should remove the associated context, target and installation", func() {
+	It("should remove the associated context, target and installation  (internal data plane)", func() {
 		var err error
 		state, err = testenv.InitResources(ctx, "./testdata/delete/test3")
 		Expect(err).ToNot(HaveOccurred())
@@ -130,6 +130,72 @@ var _ = Describe("Delete", func() {
 		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, instance, 5*time.Second)).To(Succeed())
 		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, target, 5*time.Second)).To(Succeed())
 		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, gardenerSa, 5*time.Second)).To(Succeed())
+		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, installation, 5*time.Second)).To(Succeed())
+		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, context, 5*time.Second)).To(Succeed())
+	})
+
+	It("should remove the associated context, target and installation  (internal data plane)", func() {
+		var err error
+		state, err = testenv.InitResources(ctx, "./testdata/delete/test3")
+		Expect(err).ToNot(HaveOccurred())
+
+		instance := state.GetInstance("test")
+		target := state.GetTarget("test")
+		gardenerSa := state.GetTarget("test-gardener-sa")
+		installation := state.GetInstallation("test")
+		context := state.GetContext("test")
+
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
+		Expect(kutil.HasFinalizer(instance, lssv1alpha1.LandscaperServiceFinalizer)).To(BeTrue())
+
+		Expect(testenv.Client.Delete(ctx, instance)).To(Succeed())
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		// installation
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		// target
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		// gardener service account
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		// context
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+
+		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, instance, 5*time.Second)).To(Succeed())
+		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, target, 5*time.Second)).To(Succeed())
+		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, gardenerSa, 5*time.Second)).To(Succeed())
+		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, installation, 5*time.Second)).To(Succeed())
+		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, context, 5*time.Second)).To(Succeed())
+	})
+
+	It("should remove the associated context, target and installation (external data plane)", func() {
+		var err error
+		state, err = testenv.InitResources(ctx, "./testdata/delete/test6")
+		Expect(err).ToNot(HaveOccurred())
+
+		instance := state.GetInstance("test")
+		target := state.GetTarget("test")
+		extDataPlane := state.GetTarget("test-external-dataplane")
+		installation := state.GetInstallation("test")
+		context := state.GetContext("test")
+
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(instance), instance)).To(Succeed())
+		Expect(kutil.HasFinalizer(instance, lssv1alpha1.LandscaperServiceFinalizer)).To(BeTrue())
+
+		Expect(testenv.Client.Delete(ctx, instance)).To(Succeed())
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		// installation
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		// target
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		// external data plane target
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+		// context
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
+
+		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, instance, 5*time.Second)).To(Succeed())
+		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, target, 5*time.Second)).To(Succeed())
+		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, extDataPlane, 5*time.Second)).To(Succeed())
 		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, installation, 5*time.Second)).To(Succeed())
 		Expect(testenv.WaitForObjectToBeDeleted(ctx, testenv.Client, context, 5*time.Second)).To(Succeed())
 	})

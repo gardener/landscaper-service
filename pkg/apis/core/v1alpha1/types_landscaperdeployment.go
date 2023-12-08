@@ -8,6 +8,11 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+const (
+	LandscaperDeploymentDataPlaneTypeExternal = "External"
+	LandscaperDeploymentDataPlaneTypeInternal = "Internal"
+)
+
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 // LandscaperDeploymentList contains a list of LandscaperDeployment
@@ -23,7 +28,9 @@ type LandscaperDeploymentList struct {
 // +kubebuilder:resource:singular="landscaperdeployment",path="landscaperdeployments",shortName="lsdepl",scope="Namespaced"
 // +kubebuilder:storageversion
 // +kubebuilder:subresource:status
+// +kubebuilder:printcolumn:name="DataPlaneType",type=string,JSONPath=`.status.dataPlaneType`
 // +kubebuilder:printcolumn:name="Instance",type=string,JSONPath=`.status.instanceRef.name`
+// +kubebuilder:printcolumn:name="Phase",type=string,JSONPath=`.status.phase`
 // +kubebuilder:printcolumn:name="Age",type=date,JSONPath=`.metadata.creationTimestamp`
 type LandscaperDeployment struct {
 	metav1.TypeMeta   `json:",inline"`
@@ -54,7 +61,14 @@ type LandscaperDeploymentSpec struct {
 
 	// HighAvailabilityConfig specifies the HA configuration of the resource cluster (shoot cluster)
 	// +optional
-	HighAvailabilityConfig *HighAvailabilityConfig `json:"highAvailabilityConfig"`
+	HighAvailabilityConfig *HighAvailabilityConfig `json:"highAvailabilityConfig,omitempty"`
+
+	// DataPlane references an externally created and maintained Kubernetes cluster,
+	// used as the data plane where Landscaper resources are stored.
+	// When DataPlane is defined, the Landscaper Service controller will no longer
+	// create its own Kubernetes cluster.
+	// +optional
+	DataPlane *DataPlane `json:"dataPlane,omitempty"`
 }
 
 // LandscaperDeploymentStatus contains the status of a LandscaperDeployment.
@@ -71,4 +85,20 @@ type LandscaperDeploymentStatus struct {
 	// InstanceRef references the instance that is created for this LandscaperDeployment.
 	// +optional
 	InstanceRef *ObjectReference `json:"instanceRef"`
+
+	// Phase represents the phase of the corresponding Landscaper Instance Installation phase.
+	// +optional
+	Phase string `json:"phase,omitempty"`
+
+	// DataPlaneType shows whether this deployment has an internal or external data plane cluster.
+	// +optional
+	DataPlaneType string `json:"dataPlaneType,omitempty"`
+}
+
+func (ld *LandscaperDeployment) IsExternalDataPlane() bool {
+	return ld.Spec.DataPlane != nil
+}
+
+func (ld *LandscaperDeployment) IsInternalDataPlane() bool {
+	return ld.Spec.DataPlane == nil
 }

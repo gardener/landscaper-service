@@ -1,0 +1,38 @@
+# SPDX-FileCopyrightText: 2023 "SAP SE or an SAP affiliate company and Gardener contributors"
+#
+# SPDX-License-Identifier: Apache-2.0
+
+apiVersion: landscaper-service.gardener.cloud/v1alpha1
+kind: Instance
+metadata:
+  name: "test"
+  namespace: {{ .Namespace }}
+spec:
+  purpose: "test"
+  landscaperConfiguration:
+    deployers:
+      - helm
+      - manifest
+      - container
+  serviceTargetConfigRef:
+    name: default
+    namespace: {{ .Namespace }}
+  dataPlane:
+    kubeconfig: dummy
+
+status:
+    installationRef:
+      name: test
+      namespace: {{ .Namespace }}
+
+    targetRef:
+      name: test
+      namespace: {{ .Namespace }}
+
+    externalDataPlaneClusterRef:
+      name: test-external-dataplane
+      namespace: {{ .Namespace }}
+
+    contextRef:
+      name: test
+      namespace: {{ .Namespace }}

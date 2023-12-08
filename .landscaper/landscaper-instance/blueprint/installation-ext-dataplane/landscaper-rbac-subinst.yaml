@@ -1,0 +1,27 @@
+apiVersion: landscaper.gardener.cloud/v1alpha1
+kind: InstallationTemplate
+
+name: landscaper-rbac
+
+blueprint:
+  ref: cd://resources/rbac-blueprint
+
+imports:
+  targets:
+    - name: shootCluster
+      target: dataPlaneCluster
+  data:
+    - name: targetClusterNamespace
+      dataRef: dataPlaneClusterNamespace
+    - name: rotationConfig
+      dataRef: rotationConfig
+
+importDataMappings:
+  shootConfig: {}
+
+exports:
+  data:
+    - name: landscaperControllerKubeconfigYaml
+      dataRef: landscaperControllerKubeconfigYaml
+    - name: landscaperWebhooksKubeconfigYaml
+      dataRef: landscaperWebhooksKubeconfigYaml

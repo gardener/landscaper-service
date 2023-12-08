@@ -32,11 +32,17 @@ spec:
     issuerURL: <OIDC token issuer URL>
     groupsClaim: groups
     usernameClaim: email
-
+    
+  highAvailabilityConfig:
+    controlPlaneFailureTolerance: "zone"
+      
 status:
   instanceRef:
     name: test
     namespace: my-namespace
+
+  phase: Succeeded
+  dataPlaneType: Internal
 ```
 
 ## TenantId
@@ -59,6 +65,45 @@ With the optional field OIDC config you specify that the Landscaper resource clu
 (the Gardener shoot cluster on which the user creates Installations, Targets etc,) gets this OIDC configuration such
 that user access could be provided via OIDC.
 
+## High Availability Config
+
+With this optional field the high availability mode of the Landscaper resource cluster of a Landscaper instance is configured.
+Allowed values: `node`, `zone`.
+For more details please check [this documentation](https://gardener.cloud/docs/gardener/high-availability/#shoot-clusters)
+
+## DataPlane
+
+The LandscaperDeployment can be created with an external data plane reference.
+The reference can be either specified as an inline configuration or a Kubernetes secret reference.
+This field can't be combined with `spec.oidcConfig` and `spec.highAvailabilityConfig`.
+For more details please check [this documentation](../gettingstarted/create-landscaper-deployment.md#create-a-landscaper-deployment-with-an-external-data-plane).
+
+```yaml
+spec:
+  dataPlane:
+    kubeconfig: |
+      apiVersion: v1
+      kind: Config
+      ...
+```
+
+```yaml
+spec:
+  dataPlane:
+    secretRef:
+      name: dataplane
+      namespace: test
+      key: kubeconfig
+```
+
 ## Instance Reference
 
 The `status.instanceRef` field will be set by the landscaper service controller when the Instance for the LandscaperDeployment has been created.
+
+## Phase
+
+The `status.phase` field mirrors the phase of the corresponding Landscaper Installation.
+
+## DataPlaneType
+
+The `status.dataPlaneType` shows the user whether an internal resource Shoot cluster is used (_Internal_) or an external data plane is used (_External_).

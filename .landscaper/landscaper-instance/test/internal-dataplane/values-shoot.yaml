@@ -1,0 +1,64 @@
+imports:
+  gardenerServiceAccount:
+    metadata:
+      name: hosting-cluster
+      namespace: default
+    spec:
+      type: landscaper.gardener.cloud/kubernetes-cluster
+      config:
+        kubeconfig: |
+          apiVersion: v1
+          kind: Config
+
+  name: test-shoot
+  namespace: laasds
+  secretBindingName: myprovider-secret
+  labels:
+    landscaper-service.gardener.cloud/instanceName: instance1
+  shootConfig:
+    {
+      "provider": {
+        "type": "gcp",
+        "zone": "europe-west1-c"
+      },
+      "region": "europe-west1",
+      "workers": {
+        "machine": {
+          "type": "n1-standard-2",
+          "image": {
+            "name": "gardenlinux",
+            "version": "934.10.0"
+          }
+        },
+        "volume": {
+          "type": "pd-standard",
+          "size": "50Gi"
+        },
+        "minimum": 1,
+        "maximum": 1,
+        "maxSurge": 1,
+        "maxUnavailable": 0
+      },
+      "kubernetes": {
+        "version": "1.25"
+      },
+      "maintenance": {
+        "timeWindow": {
+          "begin": "050000+0200",
+          "end": "060000+0200"
+        },
+        "autoUpdate": {
+          "kubernetesVersion": false,
+          "machineImageVersion": false
+        }
+      }
+    }
+  auditPolicy: { }
+  auditLogService:
+    tenantId: audit-tenant
+    url: api.auditlog.service
+    user: audit-user
+    password: audit-pw
+  rotationConfig:
+    tokenExpirationSeconds: 3600
+    adminKubeconfigExpirationSeconds: 3601

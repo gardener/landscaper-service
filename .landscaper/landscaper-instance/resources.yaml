@@ -59,6 +59,16 @@ input:
   compress: true
 ...
 ---
+type: blueprint
+name: installation-blueprint-ext-dataplane
+relation: local
+input:
+  type: dir
+  path: ./blueprint/installation-ext-dataplane
+  mediaType: application/vnd.gardener.landscaper.blueprint.layer.v1.tar+gzip
+  compress: true
+...
+---
 type: helm.io/chart
 name: ls-service-target-shoot-sidecar-chart
 relation: local

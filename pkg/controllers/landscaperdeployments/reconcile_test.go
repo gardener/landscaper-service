@@ -9,6 +9,8 @@ import (
 	"fmt"
 	"time"
 
+	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
+
 	"github.com/gardener/landscaper-service/pkg/utils"
 
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
@@ -382,5 +384,31 @@ var _ = Describe("Reconcile", func() {
 		err = testenv.Client.Get(ctx, types.NamespacedName{Name: deployment.Status.InstanceRef.Name, Namespace: deployment.Status.InstanceRef.Namespace}, instance)
 		Expect(err).ToNot(HaveOccurred())
 		Expect(utils.HasOperationAnnotation(instance, lssv1alpha1.LandscaperServiceOperationIgnore)).To(BeFalse())
+	})
+
+	It("should set the status phase correctly", func() {
+		var err error
+		state, err = testenv.InitResources(ctx, "./testdata/reconcile/test2")
+		Expect(err).ToNot(HaveOccurred())
+
+		deployment := state.GetDeployment("test")
+
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(deployment))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(deployment), deployment)).To(Succeed())
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(deployment))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(deployment), deployment)).To(Succeed())
+
+		Expect(deployment.Status.InstanceRef).ToNot(BeNil())
+
+		instance := &lssv1alpha1.Instance{}
+		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: deployment.Status.InstanceRef.Name, Namespace: deployment.Status.InstanceRef.Namespace}, instance)).To(Succeed())
+
+		instance.Status.Phase = lsv1alpha1.PhaseStringSucceeded
+		Expect(testenv.Client.Status().Update(ctx, instance))
+
+		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(deployment))
+		Expect(testenv.Client.Get(ctx, kutil.ObjectKeyFromObject(deployment), deployment)).To(Succeed())
+
+		Expect(deployment.Status.Phase).To(Equal(lsv1alpha1.PhaseStringSucceeded))
 	})
 })

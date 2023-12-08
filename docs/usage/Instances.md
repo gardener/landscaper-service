@@ -39,6 +39,10 @@ status:
     name: test
     namespace: my-namespace
     
+  gardenerServiceAccountRef:
+    name: gardener-sa
+    namespace: my-namespace
+    
   contextRef:
     name: test
     namespace: my-namespace
@@ -52,6 +56,8 @@ status:
   adminKubeconfig: "a3ViZWNvbmZpZyBjb250ZW50 ..."
   shootName: "a1b2c3d5"
   shootNamespace: "laas"
+
+  phase: "Succeeded"
 ```
 
 ## TenantId
@@ -83,6 +89,14 @@ The `status.installationRef` field references the Installation that has been cre
 
 The `status.targetRef` field references the Target that has been created by the landscaper service controller for this Instance.
 The target contains the kubeconfig that has been copied from the selected ServiceTargetConfig [secret reference](ServiceTargetConfigs.md#secret-reference).
+
+##  Gardener Service Account Reference
+
+The `status.gardenerServiceAccountRef` field reference the Target that contains the Gardener service account which is used to access Shoot resources.
+
+## External Data Plane Cluster Reference
+
+The `status.externalDataPlaneClusterRef` field references the Target that contains the access to the external data plane when configured.
 
 ## Context Reference
 
@@ -117,3 +131,7 @@ The `status.shootName` field contains the name of the corresponding shoot resour
 ## Shoot Namespace
 
 The `status.shootNamespace` is the namespace in which the shoot resource is created.
+
+## Phase
+
+The `status.phase` field mirrors the phase of the corresponding Landscaper Installation.

@@ -17,8 +17,14 @@ spec:
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
+    - jsonPath: .status.dataPlaneType
+      name: DataPlaneType
+      type: string
     - jsonPath: .status.instanceRef.name
       name: Instance
+      type: string
+    - jsonPath: .status.phase
+      name: Phase
       type: string
     - jsonPath: .metadata.creationTimestamp
       name: Age
@@ -44,6 +50,34 @@ spec:
           spec:
             description: Spec contains the specification for the LandscaperDeployment
             properties:
+              dataPlane:
+                description: DataPlane references an externally created and maintained
+                  Kubernetes cluster, used as the data plane where Landscaper resources
+                  are stored. When DataPlane is defined, the Landscaper Service controller
+                  will no longer create its own Kubernetes cluster.
+                properties:
+                  kubeconfig:
+                    description: Kubeconfig contains the content of the Kubernetes
+                      config
+                    type: string
+                  secretRef:
+                    description: SecretRef references a secret containing the Kubernetes
+                      config
+                    properties:
+                      key:
+                        description: Key is the name of the key in the secret that
+                          holds the data.
+                        type: string
+                      name:
+                        description: Name is the name of the kubernetes object.
+                        type: string
+                      namespace:
+                        description: Namespace is the namespace of kubernetes object.
+                        type: string
+                    required:
+                    - name
+                    type: object
+                type: object
               highAvailabilityConfig:
                 description: HighAvailabilityConfig specifies the HA configuration
                   of the resource cluster (shoot cluster)
@@ -273,6 +307,10 @@ spec:
           status:
             description: Status contains the status of the LandscaperDeployment.
             properties:
+              dataPlaneType:
+                description: DataPlaneType shows whether this deployment has an internal
+                  or external data plane cluster.
+                type: string
               instanceRef:
                 description: InstanceRef references the instance that is created for
                   this LandscaperDeployment.
@@ -323,6 +361,10 @@ spec:
                   controller.
                 format: int64
                 type: integer
+              phase:
+                description: Phase represents the phase of the corresponding Landscaper
+                  Instance Installation phase.
+                type: string
             type: object
         required:
         - spec
