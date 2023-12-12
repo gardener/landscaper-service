@@ -9,7 +9,7 @@ When onboarding large customers this scheduling algorithm is too limited. For la
 instead of evenly distribute the load across all target clusters.
 
 Therefore, an advanced scheduling configuration/algorithm is needed. 
-In this proposal there are two approaches tu such a configuration. A more complex one which offers a high amount of flexibility in terms of possible configurations
+In this proposal there are two approaches for such a configuration. A more complex one which offers a high amount of flexibility in terms of possible configurations
 and a simpler one, easier to read by humans and easier to implement.
 
 ## Configuring the LAAS Controller
