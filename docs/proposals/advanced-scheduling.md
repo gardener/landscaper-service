@@ -70,7 +70,7 @@ rules:
   serviceTargetConfig:
     name: dev-target-06
     namespace: laas-system
-  pattern:
+  selector:
     - not:
       - label:
         name: cost-center
