@@ -5,8 +5,8 @@ When scheduling a new Landscaper deployment, the Landscaper Service Controller l
 The priority noted of each ServiceTargetConfig is divided by the number of already deployed Landscaper deployments + 1.
 All ServiceTargetConfigs are the sorted in descending order of the computation result. The ServiceTargetConfig with the highest number is selected.
 
-When onboarding large customers this scheduling algorithm is too limited. For large customers the service operator would like to distribute the load of to a defined set of target clusters
-instead of evenly distribute the load evenly across all target clusters.
+When onboarding large customers this scheduling algorithm is too limited. For large customers the service operator would like to distribute the load to a defined set of target clusters
+instead of evenly distribute the load across all target clusters.
 
 Therefore, an advanced scheduling configuration/algorithm is needed. 
 In this proposal there are two approaches tu such a configuration. A more complex one which offers a high amount of flexibility in terms of possible configurations
