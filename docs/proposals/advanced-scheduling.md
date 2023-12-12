@@ -104,3 +104,33 @@ rules:
       - name: dev-target-03
         namespace: laas-system
 ```
+
+## Restrict Scheduling on Service Targets
+
+Service Target configs can be labelled wit a scheduling policy `config.landscaper-service.gardener.cloud/schedulingPolicy`.
+If the label value is set to `all`, all LandscaperDeployments can be scheduled on this target even if it hasn't been explicitly selected
+by a Scheduling rule.
+If the label value is set to `restricted`, LandscaperDeployments can only be scheduled on this target if it has been selected explicitly
+by a Scheduling rule.
+
+The default value is `all`.
+
+```yaml
+apiVersion: landscaper-service.gardener.cloud/v1alpha1
+kind: ServiceTargetConfig
+
+metadata:
+  name: dev-target-10
+  labels:
+    config.landscaper-service.gardener.cloud/visible: "true"
+    config.landscaper-service.gardener.cloud/schedulingPolicy: "all|resctricted"  
+spec:
+  priority: 10
+
+  ingressDomain: ingress.mydomain.net
+
+  secretRef:
+    name: dev-target-10
+    namespace: laas-system
+    key: kubeconfig
+```
