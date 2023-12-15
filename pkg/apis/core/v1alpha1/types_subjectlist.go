@@ -45,6 +45,9 @@ type SubjectListStatus struct {
 type SubjectListSpec struct {
 	//Subject contains a reference to the object or user identities a role binding applies to.
 	Subjects []Subject `json:"subjects"`
+	//ViewerSubjects contains a reference to the object or user identities a role binding applies to.
+	// + optional
+	ViewerSubjects []Subject `json:"viewerSubjects,omitempty"`
 }
 
 // Subject is a User, Group or ServiceAccount(with namespace). Similar to rbac.Subject struct but does not depend on it to prevent future k8s version from breaking this logic.

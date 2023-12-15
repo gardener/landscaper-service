@@ -160,7 +160,7 @@ var _ = Describe("Reconcile", func() {
 		clusterRole := rbacv1.ClusterRole{}
 		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: subjectsync.USER_CLUSTER_ROLE}, &clusterRole)).To(Succeed())
 
-		expectedRules := subjectsync.GetUserPolicyRules()
+		expectedRules := subjectsync.GetUserClusterRoleDefinition().PolicyRules()
 
 		Expect(len(clusterRole.Rules)).To(Equal(len(expectedRules)))
 		Expect(reflect.DeepEqual(clusterRole.Rules, expectedRules)).To(BeTrue())

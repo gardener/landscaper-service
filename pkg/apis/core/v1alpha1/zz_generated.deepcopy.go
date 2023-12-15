@@ -1124,6 +1124,11 @@ func (in *SubjectListSpec) DeepCopyInto(out *SubjectListSpec) {
 		*out = make([]Subject, len(*in))
 		copy(*out, *in)
 	}
+	if in.ViewerSubjects != nil {
+		in, out := &in.ViewerSubjects, &out.ViewerSubjects
+		*out = make([]Subject, len(*in))
+		copy(*out, *in)
+	}
 	return
 }
 
