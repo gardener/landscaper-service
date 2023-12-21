@@ -39,7 +39,7 @@ export CERT_MANAGER_VERSION=v1.13.3
 Check new version on [SAP / sap-btp-service-operator](https://github.com/SAP/sap-btp-service-operator/releases/) and [brancz / kube-rbac-proxy](https://quay.io/repository/brancz/kube-rbac-proxy?tab=tags&tag=latest)
 
 ```shell
-export SAP_BTP_OPERATOR_VERSION=v0.5.6
+export SAP_BTP_OPERATOR_VERSION=v0.5.7
 export KUBE_RBAC_PROXY_VERSION=v0.15.0
 
 ./hack/dependency-update/sap-btp-operator.sh ${SAP_BTP_OPERATOR_VERSION} ${KUBE_RBAC_PROXY_VERSION}

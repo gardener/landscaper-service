@@ -12,10 +12,10 @@ input:
 type: helm.io/chart
 name: sap-btp-service-operator-chart
 relation: external
-version: v0.5.6
+version: v0.5.7
 access:
   type: ociRegistry
-  imageReference: eu.gcr.io/gardener-project/landscaper-service/charts/sap-btp-operator@sha256:4b8959c6a6c5ee1a3fb7c777e44b80fe161b19c70bc86f7f5aa7a426c6d76cab
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/charts/sap-btp-operator@sha256:dbd5bc474f84005f63d45121084c76ecb792feb85b77429eb33dec75f583a264
 ...
 ---
 type: ociImage
@@ -29,9 +29,9 @@ access:
 ---
 type: ociImage
 name: sap-btp-service-operator-controller
-version: v0.5.6
+version: v0.5.7
 relation: external
 access:
   type: ociRegistry
-  imageReference: eu.gcr.io/gardener-project/landscaper-service/sap-btp-service-operator-controller@sha256:b57d7e454d9586114b9dc1e4e127c995381511434878e4238b4c7eadd246d4b0
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/sap-btp-service-operator-controller@sha256:ba097230b8ba7b5cd55863619a68b247e6c5f950f94f5bbc8f698ad0d28c51f4
 ...
