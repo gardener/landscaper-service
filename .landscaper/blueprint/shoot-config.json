@@ -9,7 +9,7 @@
       "type": "n1-standard-2",
       "image": {
         "name": "gardenlinux",
-        "version": "934.10.0"
+        "version": "1312.1.0"
       }
     },
     "volume": {
