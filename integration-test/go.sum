@@ -959,10 +959,10 @@ github.com/gardener/image-vector v0.10.0 h1:Ysg3hxfiGUG/doajiZ0nQuUaJYwfO5BZCOci
 github.com/gardener/image-vector v0.10.0/go.mod h1:32SHGcbmmueeK9VkawsFcEbsoENXQPIuuYiFBUP+vMQ=
 github.com/gardener/landscaper v0.52.0 h1:jIaVtyGjS1OIoDdOXOYnF91hZA0q2YFC4h8LBfOSYbw=
 github.com/gardener/landscaper v0.52.0/go.mod h1:zQdeb1pC75ou9MVSos19MG1MSel5t9u11UWQO1SXK68=
-github.com/gardener/landscaper/apis v0.90.0 h1:HcTEHztb7HkHEeSAI9hhjF5DvsJ1nvVNYq4HnuaPBXM=
-github.com/gardener/landscaper/apis v0.90.0/go.mod h1:Ia81ecQXswGB5KuSRTuBfEoMER0fQYYoxLGtsgliK/c=
-github.com/gardener/landscaper/controller-utils v0.90.0 h1:KLJKZcUx+AhG0nCxzyYopoi8e73OdlBgV+xmtvLp7no=
-github.com/gardener/landscaper/controller-utils v0.90.0/go.mod h1:ozrPaAnGr1q5FFkM2lnX94opbnicM/BLrtmy4pg0zgE=
+github.com/gardener/landscaper/apis v0.91.0 h1:Eh2Nsf2vJlRMiQkXt47ymPoDXPaecGg1P73s26Eq/Ws=
+github.com/gardener/landscaper/apis v0.91.0/go.mod h1:Ia81ecQXswGB5KuSRTuBfEoMER0fQYYoxLGtsgliK/c=
+github.com/gardener/landscaper/controller-utils v0.91.0 h1:d4J9+gACMyG9tcllCRAG7NrQ6kiyzaQgyQrlinuWsQY=
+github.com/gardener/landscaper/controller-utils v0.91.0/go.mod h1:yS2UKxAV7h/PmClBo42Nht1c3MYvcM3F3EHJow9mzk8=
 github.com/gardener/landscapercli v0.21.0 h1:FbIVNMUUQod74uVbh79TiHLDNxbuE1LET8ukfvL8w1Y=
 github.com/gardener/landscapercli v0.21.0/go.mod h1:tZzrKBf8wfMHDZVk6qwO7tymrbC7OWIOAnanotv+ANU=
 github.com/getsentry/raven-go v0.2.0/go.mod h1:KungGk8q33+aIAZUIVWZDr2OfAEBsO49PX4NzFV5kcQ=
