@@ -28,6 +28,24 @@ func CreateSubjectsForSubjectList(ctx context.Context, subjectList *lssv1alpha1.
 	return subjects
 }
 
+// CreateViewerSubjectsForSubjectList converts the viewer subjects of the SubjectList into rbac subjects.
+func CreateViewerSubjectsForSubjectList(ctx context.Context, subjectList *lssv1alpha1.SubjectList) []rbacv1.Subject {
+	logger, _ := logging.FromContextOrNew(ctx, nil)
+
+	subjects := []rbacv1.Subject{}
+
+	for _, subject := range subjectList.Spec.ViewerSubjects {
+		rbacSubject, err := createSubjectForSubjectListEntry(subject)
+		if err != nil {
+			logger.Error(err, "could not create rbac.Subject from SubjectList.spec.viewerSubject")
+			continue
+		}
+		subjects = append(subjects, *rbacSubject)
+	}
+
+	return subjects
+}
+
 // createSubjectForSubjectListEntry converts a single subject of the SubjectList custom resource into an rbac subject.
 func createSubjectForSubjectListEntry(subjectListEntry lssv1alpha1.Subject) (*rbacv1.Subject, error) {
 	switch subjectListEntry.Kind {

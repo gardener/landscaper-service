@@ -10,8 +10,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gardener/landscaper/apis/core/v1alpha1"
+	kutils "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 	corev1 "k8s.io/api/core/v1"
-	rbacv1 "k8s.io/api/rbac/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -19,10 +21,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
-
-	"github.com/gardener/landscaper/apis/core/v1alpha1"
-	kutils "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
-	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 
 	config "github.com/gardener/landscaper-service/pkg/apis/config/v1alpha1"
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
@@ -210,34 +208,22 @@ func (c *Controller) removeResourcesAndNamespace(ctx context.Context, namespaceR
 func (c *Controller) removeAccessDataAndNamespace(ctx context.Context, namespaceRegistration *lssv1alpha1.NamespaceRegistration,
 	namespace *corev1.Namespace) (reconcile.Result, error) {
 
-	logger, ctx := logging.FromContextOrNew(ctx, nil)
-
-	// delete role binding
-	roleBinding := &rbacv1.RoleBinding{}
-	if err := c.Client().Get(ctx, types.NamespacedName{Name: subjectsync.USER_ROLE_BINDING_IN_NAMESPACE, Namespace: namespaceRegistration.GetName()}, roleBinding); err != nil {
-		if apierrors.IsNotFound(err) {
-			logger.Info("rolebinding in namespace not found")
-		} else {
-			return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseDeleting, "failed loading rolebinding", err)
-		}
-	} else {
-		if err := c.Client().Delete(ctx, roleBinding); err != nil {
-			return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseDeleting, "failed deleting rolebinding", err)
-		}
+	// delete admin rolebinding and role
+	userRoleDef := subjectsync.GetUserRoleDefinition(namespaceRegistration.Name)
+	if err := userRoleDef.DeleteRoleBinding(ctx, c.Client()); err != nil {
+		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseDeleting, "error during deletion of admin rolebinding", err)
+	}
+	if err := userRoleDef.DeleteRole(ctx, c.Client()); err != nil {
+		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseDeleting, "error during deletion of admin role", err)
 	}
 
-	//delete role
-	role := &rbacv1.Role{}
-	if err := c.Client().Get(ctx, types.NamespacedName{Name: subjectsync.USER_ROLE_IN_NAMESPACE, Namespace: namespaceRegistration.GetName()}, role); err != nil {
-		if apierrors.IsNotFound(err) {
-			logger.Info("role in namespace not found")
-		} else {
-			return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseDeleting, "failed loading role", err)
-		}
-	} else {
-		if err := c.Client().Delete(ctx, role); err != nil {
-			return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseDeleting, "failed deleting role", err)
-		}
+	// delete viewer rolebinding and role
+	viewerRoleDef := subjectsync.GetViewerRoleDefinition(namespaceRegistration.Name)
+	if err := viewerRoleDef.DeleteRoleBinding(ctx, c.Client()); err != nil {
+		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseDeleting, "error during deletion of viewer rolebinding", err)
+	}
+	if err := viewerRoleDef.DeleteRole(ctx, c.Client()); err != nil {
+		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseDeleting, "error during deletion of viewer role", err)
 	}
 
 	// delete namespace
@@ -281,12 +267,34 @@ func (c *Controller) reconcile(ctx context.Context, namespaceRegistration *lssv1
 		}
 	}
 
-	if err := c.createRoleIfNotExistOrUpdate(ctx, namespaceRegistration); err != nil {
-		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseCreating, "failed creating role", err)
+	// load subjectList
+	subjectList := &lssv1alpha1.SubjectList{}
+	if err := c.Client().Get(ctx, types.NamespacedName{Name: subjectsync.SUBJECT_LIST_NAME, Namespace: subjectsync.LS_USER_NAMESPACE}, subjectList); err != nil {
+		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseCreating, "failed loading subjectlist", err)
 	}
 
-	if err := c.createRoleBindingIfNotExistOrUpdate(ctx, namespaceRegistration); err != nil {
-		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseCreating, "failed creating rolebinding", err)
+	// create/update user role and binding for the registered namespace
+	subjects := subjectsync.CreateSubjectsForSubjectList(ctx, subjectList)
+	userRoleDef := subjectsync.GetUserRoleDefinition(namespaceRegistration.Name)
+
+	if err := userRoleDef.CreateOrUpdateRole(ctx, c.Client()); err != nil {
+		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseCreating, "failed creating admin role", err)
+	}
+
+	if err := userRoleDef.CreateOrUpdateRoleBinding(ctx, c.Client(), subjects); err != nil {
+		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseCreating, "failed creating admin rolebinding", err)
+	}
+
+	// create/update viewer role and binding for the registered namespace
+	viewerSubjects := subjectsync.CreateViewerSubjectsForSubjectList(ctx, subjectList)
+	viewerRoleDef := subjectsync.GetViewerRoleDefinition(namespaceRegistration.Name)
+
+	if err := viewerRoleDef.CreateOrUpdateRole(ctx, c.Client()); err != nil {
+		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseCreating, "failed creating viewer role", err)
+	}
+
+	if err := viewerRoleDef.CreateOrUpdateRoleBinding(ctx, c.Client(), viewerSubjects); err != nil {
+		return c.logErrorUpdateAndRetry(ctx, namespaceRegistration, PhaseCreating, "failed creating viewer rolebinding", err)
 	}
 
 	c.updateStatus(namespaceRegistration, PhaseCompleted, nil)
@@ -295,79 +303,6 @@ func (c *Controller) reconcile(ctx context.Context, namespaceRegistration *lssv1
 		return reconcile.Result{RequeueAfter: requeueAfterDuration}, nil
 	}
 	return reconcile.Result{}, nil
-}
-
-func (c *Controller) createRoleIfNotExistOrUpdate(ctx context.Context, namespaceRegistration *lssv1alpha1.NamespaceRegistration) error {
-	logger, ctx := logging.FromContextOrNew(ctx, nil)
-
-	rules := []rbacv1.PolicyRule{
-		{
-			APIGroups: []string{"landscaper.gardener.cloud"},
-			Resources: []string{"*"},
-			Verbs:     []string{"*"},
-		},
-		{
-			APIGroups: []string{""},
-			Resources: []string{"secrets", "configmaps"},
-			Verbs:     []string{"*"},
-		},
-	}
-
-	role := &rbacv1.Role{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      subjectsync.USER_ROLE_IN_NAMESPACE,
-			Namespace: namespaceRegistration.Name,
-		},
-	}
-
-	_, err := kutils.CreateOrUpdate(ctx, c.Client(), role, func() error {
-		role.Rules = rules
-		return nil
-	})
-	if err != nil {
-		logger.Error(err, "failed ensuring user role")
-		return fmt.Errorf("failed ensuring user role %s: %w", role.Name, err)
-	}
-
-	return nil
-}
-
-func (c *Controller) createRoleBindingIfNotExistOrUpdate(ctx context.Context, namespaceRegistration *lssv1alpha1.NamespaceRegistration) error {
-	logger, ctx := logging.FromContextOrNew(ctx, nil)
-
-	// load subjectList from CR
-	subjectList := &lssv1alpha1.SubjectList{}
-	if err := c.Client().Get(ctx, types.NamespacedName{Name: subjectsync.SUBJECT_LIST_NAME, Namespace: subjectsync.LS_USER_NAMESPACE}, subjectList); err != nil {
-		logger.Error(err, "failed loading subjectlist cr")
-		return fmt.Errorf("failed loading subjectlist %w", err)
-	}
-
-	// convert subjects of the SubjectList custom resource into rbac subjects
-	subjects := subjectsync.CreateSubjectsForSubjectList(ctx, subjectList)
-
-	//create role binding
-	roleBinding := &rbacv1.RoleBinding{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      subjectsync.USER_ROLE_BINDING_IN_NAMESPACE,
-			Namespace: namespaceRegistration.Name,
-		},
-	}
-
-	_, err := kutils.CreateOrUpdate(ctx, c.Client(), roleBinding, func() error {
-		roleBinding.RoleRef = rbacv1.RoleRef{
-			APIGroup: "rbac.authorization.k8s.io",
-			Kind:     "Role",
-			Name:     subjectsync.USER_ROLE_IN_NAMESPACE,
-		}
-		roleBinding.Subjects = subjects
-		return nil
-	})
-	if err != nil {
-		logger.Error(err, "failed ensuring user role binding")
-		return fmt.Errorf("failed ensuring role binding %s: %w", roleBinding.Name, err)
-	}
-
-	return nil
 }
 
 func (c *Controller) triggerDeletionOfInstallations(ctx context.Context, namespaceRegistration *lssv1alpha1.NamespaceRegistration, installations []v1alpha1.Installation) error {

@@ -33,13 +33,16 @@ var _ = Describe("Reconcile", func() {
 		userNamespace   = subjectsync.CUSTOM_NS_PREFIX + "user1"
 	)
 	var (
-		op    *operation.TargetShootSidecarOperation
-		ctrl  reconcile.Reconciler
-		ctx   context.Context
-		state = envtest.NewState(lsUserNamespace)
+		op            *operation.TargetShootSidecarOperation
+		ctrl          reconcile.Reconciler
+		ctx           context.Context
+		state         = envtest.NewState(lsUserNamespace)
+		viewerRoleDef *subjectsync.RoleDefinition
 	)
 
 	SetupNamespacesRolesAndBindings := func() {
+		ctx = logging.NewContextWithDiscard(ctx)
+
 		// set up namespaces
 		if err := testenv.Client.Create(ctx, &corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: lsUserNamespace}}); err != nil {
 			if !apierrors.IsAlreadyExists(err) {
@@ -92,6 +95,9 @@ var _ = Describe("Reconcile", func() {
 		}
 		Expect(testenv.Client.Create(ctx, &userRole)).To(Succeed())
 		Expect(testenv.Client.Create(ctx, &userRoleBinding)).To(Succeed())
+
+		viewerRoleDef = subjectsync.GetViewerRoleDefinition(userNamespace)
+		Expect(viewerRoleDef.CreateOrUpdateRoleBinding(ctx, testenv.Client, nil)).To(Succeed())
 	}
 
 	CleanupRolesAndBindings := func() {
@@ -104,6 +110,8 @@ var _ = Describe("Reconcile", func() {
 		Expect(testenv.Client.Delete(ctx, role)).To(Succeed())
 		role = &rbacv1.Role{ObjectMeta: metav1.ObjectMeta{Namespace: userNamespace, Name: subjectsync.USER_ROLE_IN_NAMESPACE}}
 		Expect(testenv.Client.Delete(ctx, role)).To(Succeed())
+
+		Expect(viewerRoleDef.DeleteRoleBinding(ctx, testenv.Client)).To(Succeed())
 	}
 
 	BeforeEach(func() {
@@ -159,11 +167,26 @@ var _ = Describe("Reconcile", func() {
 
 		clusterRole := rbacv1.ClusterRole{}
 		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: subjectsync.USER_CLUSTER_ROLE}, &clusterRole)).To(Succeed())
-
-		expectedRules := subjectsync.GetUserPolicyRules()
-
+		expectedRules := subjectsync.GetUserClusterRoleDefinition().PolicyRules()
 		Expect(len(clusterRole.Rules)).To(Equal(len(expectedRules)))
 		Expect(reflect.DeepEqual(clusterRole.Rules, expectedRules)).To(BeTrue())
+
+		viewerRoleBinding := rbacv1.RoleBinding{}
+		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: subjectsync.VIEWER_ROLE_BINDING_IN_NAMESPACE, Namespace: userNamespace}, &viewerRoleBinding)).To(Succeed())
+		Expect(len(viewerRoleBinding.Subjects)).To(Equal(3))
+		Expect(viewerRoleBinding.Subjects[0].Kind).To(Equal("User"))
+		Expect(viewerRoleBinding.Subjects[0].Name).To(Equal("testvieweruser"))
+		Expect(viewerRoleBinding.Subjects[1].Kind).To(Equal("Group"))
+		Expect(viewerRoleBinding.Subjects[1].Name).To(Equal("testviewergroup"))
+		Expect(viewerRoleBinding.Subjects[2].Kind).To(Equal("ServiceAccount"))
+		Expect(viewerRoleBinding.Subjects[2].Name).To(Equal("testviewerserviceaccount"))
+		Expect(viewerRoleBinding.Subjects[2].Namespace).To(Equal(subjectsync.LS_USER_NAMESPACE))
+
+		viewerClusterRole := rbacv1.ClusterRole{}
+		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: subjectsync.VIEWER_CLUSTER_ROLE}, &viewerClusterRole)).To(Succeed())
+		expectedViewerRules := subjectsync.GetViewerClusterRoleDefinition().PolicyRules()
+		Expect(len(viewerClusterRole.Rules)).To(Equal(len(expectedViewerRules)))
+		Expect(reflect.DeepEqual(viewerClusterRole.Rules, expectedViewerRules)).To(BeTrue())
 	})
 
 	It("should skip unknown/erroneous subjects", func() {
@@ -231,6 +254,7 @@ var _ = Describe("Reconcile", func() {
 
 		//delete group
 		subjectlist.Spec.Subjects = append(subjectlist.Spec.Subjects[:1], subjectlist.Spec.Subjects[2:]...)
+		subjectlist.Spec.ViewerSubjects = append(subjectlist.Spec.ViewerSubjects[:1], subjectlist.Spec.ViewerSubjects[2:]...)
 		Expect(testenv.Client.Update(ctx, subjectlist)).To(Succeed())
 		//reconcile for finalizer
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(subjectlist))
@@ -255,8 +279,18 @@ var _ = Describe("Reconcile", func() {
 		Expect(updatedUserRoleBinding.Subjects[1].Name).To(Equal("testserviceaccount"))
 		Expect(updatedUserRoleBinding.Subjects[1].Namespace).To(Equal(subjectsync.LS_USER_NAMESPACE))
 
+		viewerRoleBinding := rbacv1.RoleBinding{}
+		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: subjectsync.VIEWER_ROLE_BINDING_IN_NAMESPACE, Namespace: userNamespace}, &viewerRoleBinding)).To(Succeed())
+		Expect(len(viewerRoleBinding.Subjects)).To(Equal(2))
+		Expect(viewerRoleBinding.Subjects[0].Kind).To(Equal("User"))
+		Expect(viewerRoleBinding.Subjects[0].Name).To(Equal("testvieweruser"))
+		Expect(viewerRoleBinding.Subjects[1].Kind).To(Equal("ServiceAccount"))
+		Expect(viewerRoleBinding.Subjects[1].Name).To(Equal("testviewerserviceaccount"))
+		Expect(viewerRoleBinding.Subjects[1].Namespace).To(Equal(subjectsync.LS_USER_NAMESPACE))
+
 		//delete user
 		subjectlist.Spec.Subjects = subjectlist.Spec.Subjects[1:]
+		subjectlist.Spec.ViewerSubjects = subjectlist.Spec.ViewerSubjects[1:]
 		Expect(testenv.Client.Update(ctx, subjectlist)).To(Succeed())
 		//reconcile for finalizer
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(subjectlist))
@@ -277,8 +311,15 @@ var _ = Describe("Reconcile", func() {
 		Expect(updatedUserRoleBinding.Subjects[0].Name).To(Equal("testserviceaccount"))
 		Expect(updatedUserRoleBinding.Subjects[0].Namespace).To(Equal(subjectsync.LS_USER_NAMESPACE))
 
+		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: subjectsync.VIEWER_ROLE_BINDING_IN_NAMESPACE, Namespace: userNamespace}, &viewerRoleBinding)).To(Succeed())
+		Expect(len(viewerRoleBinding.Subjects)).To(Equal(1))
+		Expect(viewerRoleBinding.Subjects[0].Kind).To(Equal("ServiceAccount"))
+		Expect(viewerRoleBinding.Subjects[0].Name).To(Equal("testviewerserviceaccount"))
+		Expect(viewerRoleBinding.Subjects[0].Namespace).To(Equal(subjectsync.LS_USER_NAMESPACE))
+
 		//delete service account
 		subjectlist.Spec.Subjects = []v1alpha1.Subject{}
+		subjectlist.Spec.ViewerSubjects = []v1alpha1.Subject{}
 		Expect(testenv.Client.Update(ctx, subjectlist)).To(Succeed())
 		//reconcile for finalizer
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(subjectlist))
@@ -292,6 +333,9 @@ var _ = Describe("Reconcile", func() {
 
 		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: subjectsync.USER_ROLE_BINDING_IN_NAMESPACE, Namespace: userNamespace}, &updatedUserRoleBinding)).To(Succeed())
 		Expect(len(updatedUserRoleBinding.Subjects)).To(Equal(0))
+
+		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: subjectsync.VIEWER_ROLE_BINDING_IN_NAMESPACE, Namespace: userNamespace}, &viewerRoleBinding)).To(Succeed())
+		Expect(len(viewerRoleBinding.Subjects)).To(Equal(0))
 	})
 
 	It("should update entries on modify", func() {
@@ -338,6 +382,14 @@ var _ = Describe("Reconcile", func() {
 		subjectlist.Spec.Subjects[2].Name = "testserviceaccountmodified"
 		subjectlist.Spec.Subjects[2].Namespace = "ls-user-mod"
 
+		subjectlist.Spec.ViewerSubjects[0].Kind = "Group"
+		subjectlist.Spec.ViewerSubjects[0].Name = "testviewergroupMODIFIED"
+		subjectlist.Spec.ViewerSubjects[1].Kind = "User"
+		subjectlist.Spec.ViewerSubjects[1].Name = "testvieweruserMODIFIED"
+		subjectlist.Spec.ViewerSubjects[2].Kind = "ServiceAccount"
+		subjectlist.Spec.ViewerSubjects[2].Name = "testserviceaccountmodified"
+		subjectlist.Spec.ViewerSubjects[2].Namespace = "ls-user-mod"
+
 		Expect(testenv.Client.Update(ctx, subjectlist)).To(Succeed())
 
 		//reconcile for finalizer
@@ -367,6 +419,16 @@ var _ = Describe("Reconcile", func() {
 		Expect(updatedUserRoleBinding.Subjects[2].Name).To(Equal("testserviceaccountmodified"))
 		Expect(updatedUserRoleBinding.Subjects[2].Namespace).To(Equal("ls-user-mod"))
 
+		viewerRoleBinding := rbacv1.RoleBinding{}
+		Expect(testenv.Client.Get(ctx, types.NamespacedName{Name: subjectsync.VIEWER_ROLE_BINDING_IN_NAMESPACE, Namespace: userNamespace}, &viewerRoleBinding)).To(Succeed())
+		Expect(len(viewerRoleBinding.Subjects)).To(Equal(3))
+		Expect(viewerRoleBinding.Subjects[0].Kind).To(Equal("Group"))
+		Expect(viewerRoleBinding.Subjects[0].Name).To(Equal("testviewergroupMODIFIED"))
+		Expect(viewerRoleBinding.Subjects[1].Kind).To(Equal("User"))
+		Expect(viewerRoleBinding.Subjects[1].Name).To(Equal("testvieweruserMODIFIED"))
+		Expect(viewerRoleBinding.Subjects[2].Kind).To(Equal("ServiceAccount"))
+		Expect(viewerRoleBinding.Subjects[2].Name).To(Equal("testserviceaccountmodified"))
+		Expect(viewerRoleBinding.Subjects[2].Namespace).To(Equal("ls-user-mod"))
 	})
 
 	It("should empty role bindings subjects if subjectlist is emptied", func() {

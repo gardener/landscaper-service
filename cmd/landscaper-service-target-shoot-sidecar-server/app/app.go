@@ -9,20 +9,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/spf13/cobra"
-
 	lsinstall "github.com/gardener/landscaper/apis/core/install"
-	"github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
-
-	lssinstall "github.com/gardener/landscaper-service/pkg/apis/core/install"
-	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
-	"github.com/gardener/landscaper-service/pkg/controllers/namespaceregistration"
-	"github.com/gardener/landscaper-service/pkg/controllers/subjectsync"
-	"github.com/gardener/landscaper-service/pkg/crdmanager"
-	"github.com/gardener/landscaper-service/pkg/utils"
-	"github.com/gardener/landscaper-service/pkg/version"
-
+	"github.com/spf13/cobra"
 	corev1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -34,6 +23,14 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
+
+	lssinstall "github.com/gardener/landscaper-service/pkg/apis/core/install"
+	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	"github.com/gardener/landscaper-service/pkg/controllers/namespaceregistration"
+	"github.com/gardener/landscaper-service/pkg/controllers/subjectsync"
+	"github.com/gardener/landscaper-service/pkg/crdmanager"
+	"github.com/gardener/landscaper-service/pkg/utils"
+	"github.com/gardener/landscaper-service/pkg/version"
 )
 
 // NewResourceClusterControllerCommand creates a new command for the landscaper service controller
@@ -96,10 +93,13 @@ func (o *options) run(ctx context.Context) error {
 	if err := createLsUserNamespaceIfNotExist(ctx, initClient); err != nil {
 		return fmt.Errorf("failed creating initial required namespace: %w", err)
 	}
-	if err := createOrUpdateLsUserRole(ctx, initClient); err != nil {
+
+	lsUserRoleDef := subjectsync.GetLsUserRoleDefinition()
+
+	if err := lsUserRoleDef.CreateOrUpdateRole(ctx, initClient); err != nil {
 		return fmt.Errorf("failed creating initial required role: %w", err)
 	}
-	if err := createLsUserRolebindingIfNotExist(ctx, initClient); err != nil {
+	if err := lsUserRoleDef.CreateRoleBindingWithoutSubjectsIfNotExist(ctx, initClient); err != nil {
 		return fmt.Errorf("failed creating initial required rolebinding: %w", err)
 	}
 	if err := createSubjectsListIfNotExist(ctx, initClient); err != nil {
@@ -159,77 +159,6 @@ func createLsUserNamespaceIfNotExist(ctx context.Context, c client.Client) error
 	}
 	if err := c.Create(ctx, namespace); err != nil && !apierrors.IsAlreadyExists(err) {
 		return fmt.Errorf("failed creating namespace %s:  %w", namespace.Name, err)
-	}
-	return nil
-}
-
-func createOrUpdateLsUserRole(ctx context.Context, c client.Client) error {
-	rules := []rbacv1.PolicyRule{
-		{
-			APIGroups:     []string{"landscaper-service.gardener.cloud"},
-			Resources:     []string{"subjectlists"},
-			ResourceNames: []string{subjectsync.SUBJECT_LIST_NAME},
-			Verbs:         []string{"get", "update", "patch", "list", "watch"},
-		},
-		{
-			APIGroups:     []string{"landscaper-service.gardener.cloud"},
-			Resources:     []string{"subjectlists/status"},
-			ResourceNames: []string{subjectsync.SUBJECT_LIST_NAME},
-			Verbs:         []string{"get", "list", "watch"},
-		},
-		{
-			APIGroups: []string{"landscaper-service.gardener.cloud"},
-			Resources: []string{"namespaceregistrations"},
-			Verbs:     []string{"*"},
-		},
-		{
-			APIGroups: []string{"landscaper-service.gardener.cloud"},
-			Resources: []string{"namespaceregistrations/status"},
-			Verbs:     []string{"get", "list", "watch"},
-		},
-		{
-			APIGroups: []string{""},
-			Resources: []string{"serviceaccounts"},
-			Verbs:     []string{"*"},
-		},
-		{
-			APIGroups: []string{""},
-			Resources: []string{"serviceaccounts/token"},
-			Verbs:     []string{"create"},
-		},
-	}
-
-	role := &rbacv1.Role{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      subjectsync.LS_USER_ROLE_IN_NAMESPACE,
-			Namespace: subjectsync.LS_USER_NAMESPACE,
-		},
-	}
-
-	_, err := kubernetes.CreateOrUpdate(ctx, c, role, func() error {
-		role.Rules = rules
-		return nil
-	})
-	if err != nil {
-		return fmt.Errorf("failed ensuring role %s: %w", role.Name, err)
-	}
-	return nil
-}
-
-func createLsUserRolebindingIfNotExist(ctx context.Context, c client.Client) error {
-	roleBinding := &rbacv1.RoleBinding{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      subjectsync.LS_USER_ROLE_BINDING_IN_NAMESPACE,
-			Namespace: subjectsync.LS_USER_NAMESPACE,
-		},
-		RoleRef: rbacv1.RoleRef{
-			APIGroup: "rbac.authorization.k8s.io",
-			Kind:     "Role",
-			Name:     subjectsync.LS_USER_ROLE_IN_NAMESPACE,
-		},
-	}
-	if err := c.Create(ctx, roleBinding); err != nil && !apierrors.IsAlreadyExists(err) {
-		return fmt.Errorf("failed creating rolebinding %s:  %w", roleBinding.Name, err)
 	}
 	return nil
 }

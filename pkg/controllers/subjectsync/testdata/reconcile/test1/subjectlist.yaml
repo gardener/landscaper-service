@@ -12,3 +12,11 @@ spec:
   - kind: ServiceAccount
     name: "testserviceaccount"
     namespace: ls-user
+  viewerSubjects:
+  - kind: User
+    name: "testvieweruser"
+  - kind: Group
+    name: "testviewergroup"
+  - kind: ServiceAccount
+    name: "testviewerserviceaccount"
+    namespace: ls-user
