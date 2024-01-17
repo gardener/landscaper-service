@@ -8,4 +8,4 @@ description: Helm chart for target-shoot sidecar server
 
 type: application
 version: v0.1.0
-appVersion: v0.87.0
+appVersion: v0.75.0
