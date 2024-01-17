@@ -10,6 +10,7 @@ import (
 	"k8s.io/client-go/tools/record"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
+	"github.com/gardener/landscaper/pkg/components/model"
 	"github.com/gardener/landscaper/pkg/utils/read_write_layer"
 )
 
@@ -24,7 +25,7 @@ type Operation struct {
 	client            client.Client
 	scheme            *runtime.Scheme
 	eventRecorder     record.EventRecorder
-	componentRegistry ctf.ComponentResolver
+	componentRegistry model.RegistryAccess
 }
 
 // NewOperation creates a new internal installation Operation object.
@@ -42,6 +43,7 @@ func (o *Operation) Copy() *Operation {
 	return &Operation{
 		client:            o.client,
 		scheme:            o.scheme,
+		eventRecorder:     o.eventRecorder,
 		componentRegistry: o.componentRegistry,
 	}
 }
@@ -65,13 +67,13 @@ func (o *Operation) EventRecorder() record.EventRecorder {
 	return o.eventRecorder
 }
 
-// ComponentsRegistry returns a component blueprintsRegistry instance
-func (o *Operation) ComponentsRegistry() ctf.ComponentResolver {
+// ComponentsRegistry returns a component registry
+func (o *Operation) ComponentsRegistry() model.RegistryAccess {
 	return o.componentRegistry
 }
 
 // SetComponentsRegistry injects a component blueprintsRegistry into the operation
-func (o *Operation) SetComponentsRegistry(c ctf.ComponentResolver) *Operation {
-	o.componentRegistry = c
+func (o *Operation) SetComponentsRegistry(registry model.RegistryAccess) *Operation {
+	o.componentRegistry = registry
 	return o
 }

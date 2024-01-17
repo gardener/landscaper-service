@@ -6,24 +6,22 @@ package jsonschema
 
 import (
 	"bytes"
-	"compress/gzip"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"net/url"
 	"path/filepath"
 	"strings"
 
-	cdv2 "github.com/gardener/component-spec/bindings-go/apis/v2"
-	"github.com/gardener/component-spec/bindings-go/ctf"
+	"github.com/gardener/landscaper/pkg/components/model/types"
+
 	"github.com/mandelsoft/vfs/pkg/vfs"
 	"github.com/xeipuuv/gojsonschema"
 	"k8s.io/apimachinery/pkg/util/validation/field"
 
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
-	"github.com/gardener/landscaper/apis/mediatype"
+	"github.com/gardener/landscaper/pkg/components/model"
 	"github.com/gardener/landscaper/pkg/landscaper/registry/components/cdutils"
 )
 
@@ -34,13 +32,13 @@ type ReferenceContext struct {
 	LocalTypes map[string]lsv1alpha1.JSONSchemaDefinition
 	// BlueprintFs is the virtual filesystem that is used to resolve "blueprint" refs
 	BlueprintFs vfs.FileSystem
-	// ComponentDescriptor contains the current blueprint's component descriptor.
-	ComponentDescriptor *cdv2.ComponentDescriptor
-	// ComponentResolver is a object that can resolve component descriptors.
-	ComponentResolver ctf.ComponentResolver
+	// ComponentVersion contains the current blueprint's component descriptor.
+	ComponentVersion model.ComponentVersion
+	// RegistryAccess is an object that can resolve component descriptors.
+	RegistryAccess model.RegistryAccess
 	// RepositoryContext can be used to overwrite the effective repository context of the component descriptor.
 	// If not set, the effective repository context of the ComponentDescriptor will be used.
-	RepositoryContext *cdv2.UnstructuredTypedObject
+	RepositoryContext *types.UnstructuredTypedObject
 }
 
 type ReferenceResolver struct {
@@ -139,9 +137,9 @@ func (rr *ReferenceResolver) resolveReference(s string, currentPath *field.Path,
 	if err != nil {
 		return nil, fmt.Errorf("invalid url: %w", err)
 	}
-	refID := absoluteRef(rr.ComponentDescriptor, s)
+	refID := absoluteRef(rr.ComponentVersion, s)
 	if alreadyResolved.contains(refID) {
-		return nil, fmt.Errorf("cyclic references detected: reference %q from component %s:%s is part of a cycle", s, rr.ComponentDescriptor.Name, rr.ComponentDescriptor.Version)
+		return nil, fmt.Errorf("cyclic references detected: reference %q from component %s:%s is part of a cycle", s, rr.ComponentVersion.GetName(), rr.ComponentVersion.GetVersion())
 	}
 	alreadyResolved.add(refID)
 	switch uri.Scheme {
@@ -200,10 +198,10 @@ func (rr *ReferenceResolver) handleBlueprintReference(uri *url.URL, currentPath 
 }
 
 func (rr *ReferenceResolver) handleComponentDescriptorReference(uri *url.URL, currentPath *field.Path, alreadyResolved stringSet) (interface{}, error) {
-	if rr.ComponentDescriptor == nil {
+	if rr.ComponentVersion == nil {
 		return nil, errors.New("no component descriptor defined to resolve the ref")
 	}
-	if rr.ComponentResolver == nil {
+	if rr.RegistryAccess == nil {
 		return nil, errors.New("no component reference resolver defined to resolve the ref")
 	}
 	cdUri, err := cdutils.ParseURI(uri.String())
@@ -212,64 +210,35 @@ func (rr *ReferenceResolver) handleComponentDescriptorReference(uri *url.URL, cu
 	}
 	repositoryContext := rr.RepositoryContext
 	if repositoryContext == nil {
-		repositoryContext = rr.ComponentDescriptor.GetEffectiveRepositoryContext()
+		repositoryContext = rr.ComponentVersion.GetRepositoryContext()
 	}
-	cd, res, err := cdUri.GetResource(rr.ComponentDescriptor, rr.ComponentResolver, repositoryContext)
+	cd, resource, err := cdUri.GetResource(rr.ComponentVersion, repositoryContext)
 	if err != nil {
 		return nil, err
 	}
 
-	// get the blob resolver for the specific component
 	ctx := context.Background()
 	defer ctx.Done()
-	repositoryContext = rr.RepositoryContext
-	if repositoryContext == nil {
-		repositoryContext = cd.GetEffectiveRepositoryContext()
-	}
-	_, blobResolver, err := rr.ComponentResolver.ResolveWithBlobResolver(ctx, repositoryContext, cd.GetName(), cd.GetVersion())
-	if err != nil {
-		return nil, fmt.Errorf("unable to fetch component descriptor %s:%s for %q: %w", cd.GetName(), cd.GetVersion(), uri.String(), err)
-	}
 
-	var JSONSchemaBuf bytes.Buffer
-	info, err := blobResolver.Resolve(ctx, res, &JSONSchemaBuf)
+	resourceContent, err := resource.GetTypedContent(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("unable to fetch jsonschema for '%s': %w", uri.String(), err)
 	}
-
-	mt, err := mediatype.Parse(info.MediaType)
-	if err != nil {
-		return nil, fmt.Errorf("unable to parse media type %q: %w", info.MediaType, err)
+	result, ok := resourceContent.Resource.([]byte)
+	if !ok {
+		return nil, fmt.Errorf("received resource of type %T but expected type []byte", result)
 	}
-	if mt.Type != mediatype.JSONSchemaArtifactsMediaTypeV1 {
-		return nil, fmt.Errorf("unknown media type %s expected %s", info.MediaType, mediatype.JSONSchemaArtifactsMediaTypeV1)
-	}
-
-	result := JSONSchemaBuf.Bytes()
-
-	if mt.IsCompressed(mediatype.GZipCompression) {
-		var decompJSONSchemaBuf bytes.Buffer
-		r, err := gzip.NewReader(&JSONSchemaBuf)
-		if err != nil {
-			return nil, fmt.Errorf("unable to decompress jsonschema: %w", err)
-		}
-		if _, err := io.Copy(&decompJSONSchemaBuf, r); err != nil {
-			return nil, fmt.Errorf("unable to decompress jsonschema: %w", err)
-		}
-		result = decompJSONSchemaBuf.Bytes()
-	}
-
 	data, err := decodeJSON(result)
 	if err != nil {
 		return nil, fmt.Errorf("error unmarshalling json into go struct: %w", err)
 	}
 
 	resolved, err := NewReferenceResolver(&ReferenceContext{
-		LocalTypes:          nil,
-		BlueprintFs:         nil,
-		ComponentDescriptor: cd,
-		ComponentResolver:   rr.ComponentResolver,
-		RepositoryContext:   rr.RepositoryContext,
+		LocalTypes:        nil,
+		BlueprintFs:       nil,
+		ComponentVersion:  cd,
+		RegistryAccess:    rr.RegistryAccess,
+		RepositoryContext: rr.RepositoryContext,
 	}).resolve(data, currentPath, alreadyResolved)
 	if err != nil {
 		return nil, err
@@ -327,11 +296,11 @@ func (s stringSet) add(key string) {
 
 // absoluteRef prefixes a given refstring with name and version of the component descriptor where it came from
 // this transforms the relative references into an absolute identifier
-func absoluteRef(cd *cdv2.ComponentDescriptor, ref string) string {
+func absoluteRef(cd model.ComponentVersion, ref string) string {
 	if cd == nil {
 		return ref
 	}
-	return fmt.Sprintf("%s:%s::%s", cd.Name, cd.Version, ref)
+	return fmt.Sprintf("%s:%s::%s", cd.GetName(), cd.GetVersion(), ref)
 }
 
 func newStringSet(old stringSet) stringSet {
