@@ -11,6 +11,7 @@ SPDX-License-Identifier: Apache-2.0
 package v1alpha1
 
 import (
+	corev1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	v1 "k8s.io/api/core/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 )
@@ -237,6 +238,11 @@ func (in *LandscaperServiceConfiguration) DeepCopyInto(out *LandscaperServiceCon
 	if in.AuditLogConfig != nil {
 		in, out := &in.AuditLogConfig, &out.AuditLogConfig
 		*out = new(AuditLogConfiguration)
+		**out = **in
+	}
+	if in.Scheduling != nil {
+		in, out := &in.Scheduling, &out.Scheduling
+		*out = new(corev1alpha1.ObjectReference)
 		**out = **in
 	}
 	return

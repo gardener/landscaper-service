@@ -169,3 +169,7 @@ auditLogConfig:
     key: policy
 {{- end }}
 {{- end }}
+
+scheduling:
+  name: scheduling
+  namespace: {{ .Release.Namespace }}

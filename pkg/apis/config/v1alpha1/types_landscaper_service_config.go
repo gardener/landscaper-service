@@ -39,6 +39,11 @@ type LandscaperServiceConfiguration struct {
 	// AuditLogConfig is the audit log configuration for the created shoots.
 	// +optional
 	AuditLogConfig *AuditLogConfiguration `json:"auditLogConfig"`
+
+	// Scheduling specifies a reference to a Scheduling resource,
+	// which defines rules how ServiceTargetConfigs are assigned to LandscaperDeployments.
+	// +optional
+	Scheduling *v1alpha1.ObjectReference `json:"scheduling,omitempty"`
 }
 
 // AvailabilityMonitoringConfiguration is the configuration for the availability monitoring of the provisioned landscaper

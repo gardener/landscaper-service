@@ -46,6 +46,9 @@ type ServiceTargetConfigSpec struct {
 	// when scheduling new landscaper service installations.
 	Priority int64 `json:"priority"`
 
+	// A restricted ServiceTargetConfig can only be selected according to scheduling rules.
+	Restricted bool `json:"restricted,omitempty"`
+
 	// SecretRef references the secret that contains the kubeconfig of the target cluster.
 	SecretRef SecretReference `json:"secretRef"`
 

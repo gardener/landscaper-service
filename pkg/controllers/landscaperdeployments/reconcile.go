@@ -8,21 +8,21 @@ import (
 	"context"
 	"fmt"
 	"reflect"
-	"sort"
 	"strings"
 
+	"github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
+	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/sets"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
-	"github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
-	"github.com/gardener/landscaper/controller-utils/pkg/logging"
-	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
-
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	lsserrors "github.com/gardener/landscaper-service/pkg/apis/errors"
+	lssscheduling "github.com/gardener/landscaper-service/pkg/controllers/landscaperdeployments/scheduling"
 	"github.com/gardener/landscaper-service/pkg/utils"
 )
 
@@ -120,7 +120,10 @@ func (c *Controller) mutateInstance(ctx context.Context, deployment *lssv1alpha1
 
 	if len(instance.Spec.ServiceTargetConfigRef.Name) == 0 {
 		// try to find a service target configuration that can be used for this landscaper deployment
-		serviceTargetConf, err := c.findServiceTargetConfig(ctx)
+		var serviceTargetConf *lssv1alpha1.ServiceTargetConfig
+		var err error
+
+		serviceTargetConf, err = c.findServiceTargetConfigByScheduling(ctx, deployment)
 		if err != nil {
 			return err
 		}
@@ -157,9 +160,33 @@ func (c *Controller) mutateInstance(ctx context.Context, deployment *lssv1alpha1
 	return nil
 }
 
-// findServiceTargetConfig tries to find a service target configuration that applies to the deployment requirements and has capacity available.
-func (c *Controller) findServiceTargetConfig(ctx context.Context) (*lssv1alpha1.ServiceTargetConfig, error) {
-	serviceTargetConfigs := &lssv1alpha1.ServiceTargetConfigList{}
+func (c *Controller) findServiceTargetConfigByScheduling(ctx context.Context, deployment *lssv1alpha1.LandscaperDeployment) (*lssv1alpha1.ServiceTargetConfig, error) {
+	log, ctx := logging.FromContextOrNew(ctx, nil)
+
+	serviceTargetConfigs, err := c.getVisibleServiceTargetConfigs(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	scheduling, err := c.getSchedulingResource(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	// determine a matching service target config
+	winner, err := lssscheduling.FindServiceTargetConfig(scheduling, deployment, serviceTargetConfigs)
+	if err != nil {
+		log.Error(err, "unable to find service target config")
+		return nil, fmt.Errorf("unable to find service target config: %w", err)
+	}
+
+	return winner, nil
+}
+
+func (c *Controller) getVisibleServiceTargetConfigs(ctx context.Context) ([]lssv1alpha1.ServiceTargetConfig, error) {
+	log, ctx := logging.FromContextOrNew(ctx, nil)
+
+	serviceTargetConfigList := &lssv1alpha1.ServiceTargetConfigList{}
 	selectorBuilder := strings.Builder{}
 	selectorBuilder.WriteString(fmt.Sprintf("%s=true", lssv1alpha1.ServiceTargetConfigVisibleLabelName))
 
@@ -168,34 +195,39 @@ func (c *Controller) findServiceTargetConfig(ctx context.Context) (*lssv1alpha1.
 		LabelSelector: labelSelector,
 	}
 
-	if err := c.Client().List(ctx, serviceTargetConfigs, &listOptions); err != nil {
+	if err := c.Client().List(ctx, serviceTargetConfigList, &listOptions); err != nil {
+		log.Error(err, "unable to list service target configs")
 		return nil, fmt.Errorf("unable to list service target configs: %w", err)
 	}
 
-	SortServiceTargetConfigs(serviceTargetConfigs)
-
-	if len(serviceTargetConfigs.Items) == 0 {
-		err := fmt.Errorf("no service target with remaining capacity available")
-		return nil, err
-	}
-
-	return &serviceTargetConfigs.Items[0], nil
+	return serviceTargetConfigList.Items, nil
 }
 
-// SortServiceTargetConfigs sorts all configs by priority and usage.
-func SortServiceTargetConfigs(configs *lssv1alpha1.ServiceTargetConfigList) {
-	if len(configs.Items) == 0 {
-		return
+// getSchedulingResource returns the TargetScheduling resource from the core cluster.
+// Returns nil if scheduling is not configured or the scheduling resource does not exist.
+func (c *Controller) getSchedulingResource(ctx context.Context) (*lssv1alpha1.TargetScheduling, error) {
+	log, ctx := logging.FromContextOrNew(ctx, nil)
+
+	schedulingConfig := c.Config().Scheduling
+	if schedulingConfig == nil {
+		log.Info("no scheduling configured")
+		return nil, nil
 	}
 
-	// sort the configurations by priority and capacity
-	sort.SliceStable(configs.Items, func(i, j int) bool {
-		l := &configs.Items[i]
-		r := &configs.Items[j]
+	schedulingKey := client.ObjectKey{
+		Namespace: c.Config().Scheduling.Namespace,
+		Name:      c.Config().Scheduling.Name,
+	}
+	scheduling := &lssv1alpha1.TargetScheduling{}
+	if err := c.Client().Get(ctx, schedulingKey, scheduling); err != nil {
+		if apierrors.IsNotFound(err) {
+			log.Info("no scheduling resource configured")
+			return nil, nil
+		}
 
-		lPrio := l.Spec.Priority / int64(len(l.Status.InstanceRefs)+1)
-		rPrio := r.Spec.Priority / int64(len(r.Status.InstanceRefs)+1)
+		log.Error(err, "unable to get scheduling object", lc.KeyResource, schedulingKey.String())
+		return nil, fmt.Errorf("unable to get scheduling object %s: %w", schedulingKey.String(), err)
+	}
 
-		return lPrio > rPrio
-	})
+	return scheduling, nil
 }

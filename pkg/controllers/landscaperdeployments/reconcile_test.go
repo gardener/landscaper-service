@@ -10,170 +10,20 @@ import (
 	"time"
 
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
-
-	"github.com/gardener/landscaper-service/pkg/utils"
-
+	kutil "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
-
-	lsserrors "github.com/gardener/landscaper-service/pkg/apis/errors"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	kutil "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
+	lsserrors "github.com/gardener/landscaper-service/pkg/apis/errors"
 	deploymentscontroller "github.com/gardener/landscaper-service/pkg/controllers/landscaperdeployments"
 	"github.com/gardener/landscaper-service/pkg/operation"
+	"github.com/gardener/landscaper-service/pkg/utils"
 	testutils "github.com/gardener/landscaper-service/test/utils"
 	"github.com/gardener/landscaper-service/test/utils/envtest"
 )
-
-var _ = Describe("SortServiceTargetConfigs", func() {
-	It("should sort descending by priority", func() {
-		configs := &lssv1alpha1.ServiceTargetConfigList{
-			Items: []lssv1alpha1.ServiceTargetConfig{
-				{
-					Spec: lssv1alpha1.ServiceTargetConfigSpec{
-						Priority: 20,
-					},
-				},
-				{
-					Spec: lssv1alpha1.ServiceTargetConfigSpec{
-						Priority: 10,
-					},
-				},
-				{
-					Spec: lssv1alpha1.ServiceTargetConfigSpec{
-						Priority: 30,
-					},
-				},
-			},
-		}
-
-		deploymentscontroller.SortServiceTargetConfigs(configs)
-		Expect(configs.Items).To(HaveLen(3))
-		Expect(configs.Items[0].Spec.Priority).To(Equal(int64(30)))
-		Expect(configs.Items[1].Spec.Priority).To(Equal(int64(20)))
-		Expect(configs.Items[2].Spec.Priority).To(Equal(int64(10)))
-	})
-
-	It("should sort ascending by usage", func() {
-		configs := &lssv1alpha1.ServiceTargetConfigList{
-			Items: []lssv1alpha1.ServiceTargetConfig{
-				{
-					ObjectMeta: metav1.ObjectMeta{
-						Name: "first",
-					},
-					Spec: lssv1alpha1.ServiceTargetConfigSpec{
-						Priority: 10,
-					},
-					Status: lssv1alpha1.ServiceTargetConfigStatus{
-						InstanceRefs: []lssv1alpha1.ObjectReference{
-							{
-								Name:      "foo",
-								Namespace: "bar",
-							},
-						},
-					},
-				},
-				{
-					ObjectMeta: metav1.ObjectMeta{
-						Name: "second",
-					},
-					Spec: lssv1alpha1.ServiceTargetConfigSpec{
-						Priority: 10,
-					},
-				},
-				{
-					ObjectMeta: metav1.ObjectMeta{
-						Name: "third",
-					},
-					Spec: lssv1alpha1.ServiceTargetConfigSpec{
-						Priority: 10,
-					},
-					Status: lssv1alpha1.ServiceTargetConfigStatus{
-						InstanceRefs: []lssv1alpha1.ObjectReference{
-							{
-								Name:      "foo",
-								Namespace: "bar",
-							},
-							{
-								Name:      "foo",
-								Namespace: "bar",
-							},
-						},
-					},
-				},
-			},
-		}
-
-		deploymentscontroller.SortServiceTargetConfigs(configs)
-		Expect(configs.Items).To(HaveLen(3))
-		Expect(configs.Items[0].GetName()).To(Equal("second"))
-		Expect(configs.Items[1].GetName()).To(Equal("first"))
-		Expect(configs.Items[2].GetName()).To(Equal("third"))
-	})
-
-	It("should sort by priority and usage", func() {
-		configs := &lssv1alpha1.ServiceTargetConfigList{
-			Items: []lssv1alpha1.ServiceTargetConfig{
-				{
-					ObjectMeta: metav1.ObjectMeta{
-						Name: "first",
-					},
-					Spec: lssv1alpha1.ServiceTargetConfigSpec{
-						Priority: 30,
-					},
-					Status: lssv1alpha1.ServiceTargetConfigStatus{
-						InstanceRefs: []lssv1alpha1.ObjectReference{
-							{
-								Name:      "foo",
-								Namespace: "bar",
-							},
-						},
-					},
-				},
-				{
-					ObjectMeta: metav1.ObjectMeta{
-						Name: "second",
-					},
-					Spec: lssv1alpha1.ServiceTargetConfigSpec{
-						Priority: 20,
-					},
-				},
-				{
-					ObjectMeta: metav1.ObjectMeta{
-						Name: "third",
-					},
-					Spec: lssv1alpha1.ServiceTargetConfigSpec{
-						Priority: 40,
-					},
-					Status: lssv1alpha1.ServiceTargetConfigStatus{
-						InstanceRefs: []lssv1alpha1.ObjectReference{
-							{
-								Name:      "foo",
-								Namespace: "bar",
-							},
-							{
-								Name:      "foo",
-								Namespace: "bar",
-							},
-						},
-					},
-				},
-			},
-		}
-
-		deploymentscontroller.SortServiceTargetConfigs(configs)
-		Expect(configs.Items).To(HaveLen(3))
-		Expect(configs.Items[0].GetName()).To(Equal("second"))
-		Expect(configs.Items[1].GetName()).To(Equal("first"))
-		Expect(configs.Items[2].GetName()).To(Equal("third"))
-	})
-})
 
 var _ = Describe("Reconcile", func() {
 	var (

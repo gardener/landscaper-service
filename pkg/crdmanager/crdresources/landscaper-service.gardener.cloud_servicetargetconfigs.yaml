@@ -57,6 +57,10 @@ spec:
                   when scheduling new landscaper service installations.
                 format: int64
                 type: integer
+              restricted:
+                description: A restricted ServiceTargetConfig can only be selected
+                  according to scheduling rules.
+                type: boolean
               secretRef:
                 description: SecretRef references the secret that contains the kubeconfig
                   of the target cluster.
