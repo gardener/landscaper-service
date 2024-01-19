@@ -50,7 +50,7 @@ export KUBE_RBAC_PROXY_VERSION=v0.15.0
 Check new version on [fluentbit.io](https://docs.fluentbit.io/manual/installation/docker#tags-and-versions)
 
 ```shell
-export FLUENTBIT_VERSION=2.2.1
+export FLUENTBIT_VERSION=2.2.2
 
 ./hack/dependency-update/fluentbit.sh ${FLUENTBIT_VERSION}
 ```
