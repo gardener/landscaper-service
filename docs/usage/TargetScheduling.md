@@ -101,8 +101,7 @@ Of these rules, we restrict ourselves to those with the highest priority. (It mi
 rules can have the same priority.) Finally, we choose one of the ServiceTargetConfigs from these rules. This is done
 according to the same ranking as in the default scheduling.
 
-It can happen that no rule applies, or that none of the ServiceTargetConfigs in the found rules exist.
-In this case, we fall back to the default scheduling algorithm.
+It can happen that no rule applies. In this case, we fall back to the default scheduling algorithm.
 
 
 ### Terms
