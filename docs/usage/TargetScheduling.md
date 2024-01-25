@@ -60,7 +60,7 @@ scheduling:
 
 The spec of the TargetScheduling resource has a list of rules. Each rule has:
 
-- a priority,  
+- a priority, which must be an integer &ge; 0,  
 - a list of ServiceTargetConfigs,  
 - and a [selector](#selectors-matching-landscaperdeployments),
   which is a list of [terms](#terms-matching-landscaperdeployments).  
