@@ -48,6 +48,8 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 		&NamespaceRegistrationList{},
 		&SubjectList{},
 		&SubjectListList{},
+		&TargetScheduling{},
+		&TargetSchedulingList{},
 	)
 
 	metav1.AddToGroupVersion(scheme, SchemeGroupVersion)

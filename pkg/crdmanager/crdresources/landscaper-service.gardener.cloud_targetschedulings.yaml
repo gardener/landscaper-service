@@ -1,0 +1,95 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.13.0
+  name: targetschedulings.landscaper-service.gardener.cloud
+spec:
+  group: landscaper-service.gardener.cloud
+  names:
+    kind: TargetScheduling
+    listKind: TargetSchedulingList
+    plural: targetschedulings
+    shortNames:
+    - ts
+    singular: targetscheduling
+  scope: Namespaced
+  versions:
+  - name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: TargetScheduling defines the rules according to which a LandscaperDeployment
+          is assigned a ServiceTargetConfig.
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: Spec contains the specification for the Scheduling
+            properties:
+              rules:
+                items:
+                  properties:
+                    priority:
+                      description: The Priority of this SchedulingRule. SchedulingRules
+                        with a higher priority number will be preferred over SchedulingRules
+                        with a lower priority number.
+                      format: int64
+                      type: integer
+                    selector:
+                      items:
+                        properties:
+                          and:
+                            x-kubernetes-preserve-unknown-fields: true
+                          matchLabel:
+                            properties:
+                              name:
+                                type: string
+                              value:
+                                type: string
+                            type: object
+                          matchTenant:
+                            properties:
+                              id:
+                                type: string
+                            type: object
+                          not:
+                            x-kubernetes-preserve-unknown-fields: true
+                          or:
+                            x-kubernetes-preserve-unknown-fields: true
+                        type: object
+                      type: array
+                    serviceTargetConfigs:
+                      items:
+                        description: ObjectReference is the reference to a kubernetes
+                          object.
+                        properties:
+                          name:
+                            description: Name is the name of the kubernetes object.
+                            type: string
+                          namespace:
+                            description: Namespace is the namespace of kubernetes
+                              object.
+                            type: string
+                        required:
+                        - name
+                        type: object
+                      type: array
+                  type: object
+                type: array
+            type: object
+        required:
+        - spec
+        type: object
+    served: true
+    storage: true

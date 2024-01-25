@@ -8,11 +8,9 @@ import (
 	"fmt"
 	"strconv"
 
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
-	"sigs.k8s.io/controller-runtime/pkg/client"
-
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 )
@@ -97,10 +95,33 @@ func HasLabel(obj metav1.Object, lab string) bool {
 	return ok
 }
 
+func HasLabelWithValue(obj metav1.Object, name string, value string) bool {
+	labels := obj.GetLabels()
+	if len(labels) == 0 {
+		return false
+	}
+
+	actualValue, ok := labels[name]
+	if !ok {
+		return false
+	}
+
+	return actualValue == value
+}
+
 // HasDeleteWithoutUninstallAnnotation returns true only if the given object
 // has the 'landscaper.gardener.cloud/delete-without-uninstall' annotation
 // and its value is 'true'.
 func HasDeleteWithoutUninstallAnnotation(obj metav1.Object) bool {
 	v, ok := obj.GetAnnotations()[lsv1alpha1.DeleteWithoutUninstallAnnotation]
 	return ok && v == "true"
+}
+
+// GetMapValues returns a slice with the values of the given map.
+func GetMapValues[E comparable, F any](m map[E]F) []F {
+	values := make([]F, 0)
+	for _, v := range m {
+		values = append(values, v)
+	}
+	return values
 }
