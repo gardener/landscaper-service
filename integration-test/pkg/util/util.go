@@ -46,8 +46,8 @@ func GetLandscaperVersion(repoRootDir string) (string, error) {
 
 	var landscaperVersion string
 
-	compReferencesFile := path.Join(repoRootDir, ".landscaper", "landscaper-instance", "component-references.yaml")
-	raw, err := os.ReadFile(compReferencesFile)
+	ocmSettingFile := path.Join(repoRootDir, ".landscaper", "ocm-settings.yaml")
+	raw, err := os.ReadFile(ocmSettingFile)
 	if err != nil {
 		return "", err
 	}
@@ -55,20 +55,13 @@ func GetLandscaperVersion(repoRootDir string) (string, error) {
 	r := bytes.NewReader(raw)
 	dec := yaml.NewYAMLOrJSONDecoder(r, 1024)
 
-	var componentReferences map[string]interface{}
-	for dec.Decode(&componentReferences) == nil {
-		name, ok := componentReferences["name"]
+	var ocmSettings map[string]interface{}
+	for dec.Decode(&ocmSettings) == nil {
+		landscaperVersionValue, ok := ocmSettings["LANDSCAPER_VERSION"]
 		if !ok {
 			continue
 		}
-		if name != "landscaper" {
-			continue
-		}
-		version, ok := componentReferences["version"]
-		if !ok {
-			continue
-		}
-		landscaperVersion = version.(string)
+		landscaperVersion = landscaperVersionValue.(string)
 		break
 	}
 
