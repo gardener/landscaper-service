@@ -29,9 +29,6 @@ deployItems:
         {{ $landscaperInstanceComponentVersion := $landscaperInstanceComponent.component.version }}
 
         {{ $repositoryContext := getRepositoryContext .cd }}
-        {{ $repositoryContextType := $repositoryContext.type }}
-        {{ $repositoryContextBaseUrl := $repositoryContext.baseUrl }}
-        {{ $repositoryContextSubPath := $repositoryContext.subPath }}
 
         controller:
           containerName: landscaper-service-controller
@@ -92,9 +89,7 @@ deployItems:
             version: {{ $landscaperInstanceComponentVersion }}
 
             repositoryContext:
-              type: {{ $repositoryContextType }}
-              baseUrl: {{ $repositoryContextBaseUrl }}
-              subPath: {{ $repositoryContextSubPath }}
+{{ toYaml $repositoryContext | indent 14 }}
 
 {{- if .imports.registryPullSecrets }}
             registryPullSecrets:
