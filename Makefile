@@ -73,7 +73,7 @@ docker-images:
 
 .PHONY: component
 component:
-	@$(REPO_ROOT)/hack/generate-cd.sh $(EFFECTIVE_VERSION)
+	@$(REPO_ROOT)/hack/generate-cd.sh $(REGISTRY)
 
 .PHONY: build-resources
 build-resources: docker-images component
