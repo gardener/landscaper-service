@@ -21,11 +21,8 @@ else
 fi
 
 GARDENER_CLUSTER="laas-integration-test-service-account"
-# LAAS_REPOSITORY="eu.gcr.io/sap-se-gcr-k8s-private/cnudie/gardener/development"
-LAAS_REPOSITORY="eu.gcr.io/gardener-project/development"
+LAAS_REPOSITORY="europe-docker.pkg.dev/sap-gcp-cp-k8s-stable-hub/landscaper"
 LAAS_VERSION="$(${PROJECT_ROOT}/hack/get-version.sh)"
-REPO_AUTH_URL="https://eu.gcr.io"
-REPO_CTX_BASE_URL="eu.gcr.io/sap-se-gcr-k8s-private"
 FULL_INTEGRATION_TEST_PATH="$(realpath $INTEGRATION_TEST_PATH)"
 
 export PROJECT_ROOT

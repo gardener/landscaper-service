@@ -136,10 +136,6 @@ func run() error {
 		return err
 	}
 
-	if err := util.BuildLandscaperContext(ctx, clusterClients.TestCluster, config.RegistryPullSecrets, "laas", config.LaasNamespace); err != nil {
-		return fmt.Errorf("cannot build landscaper context: %w", err)
-	}
-
 	return runTestSuite(ctx, clusterClients, clusterTargets, config)
 }
 

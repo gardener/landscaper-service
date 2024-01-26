@@ -44,7 +44,6 @@ type TestConfig struct {
 	GardenerServiceAccountKubeconfig string
 	GardenerProject                  string
 	ShootSecretBindingName           string
-	RegistryPullSecrets              string
 	MaxRetries                       int
 	SleepTime                        time.Duration
 	LaasComponent                    string
@@ -63,7 +62,6 @@ func ParseConfig() *TestConfig {
 		testClusterKubeconfig,
 		hostingClusterKubeconfig,
 		gardenerServiceAccountKubeconfig,
-		registryPullSecrets,
 		laasComponent, laasVersion, LaasRepository,
 		landscaperNamespace, laasNamespace,
 		testNamespace string
@@ -74,7 +72,6 @@ func ParseConfig() *TestConfig {
 	flag.StringVar(&testClusterKubeconfig, "kubeconfig", "", "path to the kubeconfig of the cluster")
 	flag.StringVar(&hostingClusterKubeconfig, "hosting-kubeconfig", "", "path to the kubeconfig of the hosting cluster")
 	flag.StringVar(&gardenerServiceAccountKubeconfig, "gardener-service-account-kubeconfig", "", "path to the kubeconfig of the hosting cluster")
-	flag.StringVar(&registryPullSecrets, "registry-secrets", "", "registry pull secrets")
 	flag.IntVar(&maxRetries, "max-retries", 10, "max retries (every 10s) for all waiting operations")
 	flag.StringVar(&laasVersion, "laas-version", "", "landscaper as a service version")
 	flag.StringVar(&LaasRepository, "laas-repository", "", "landscaper as a service repository url")
@@ -95,7 +92,6 @@ func ParseConfig() *TestConfig {
 		GardenerServiceAccountKubeconfig: gardenerServiceAccountKubeconfig,
 		GardenerProject:                  "",
 		ShootSecretBindingName:           "",
-		RegistryPullSecrets:              registryPullSecrets,
 		MaxRetries:                       maxRetries,
 		SleepTime:                        10 * time.Second,
 		LaasComponent:                    laasComponent,
@@ -116,9 +112,6 @@ func VerifyConfig(config *TestConfig) error {
 	}
 	if len(config.GardenerServiceAccountKubeconfig) == 0 {
 		errorList = append(errorList, fmt.Errorf("flag \"gardener-service-account-kubeconfig\" may not be empty"))
-	}
-	if len(config.RegistryPullSecrets) == 0 {
-		errorList = append(errorList, fmt.Errorf("flag \"registry-secrets\" may not be empty"))
 	}
 	if len(config.LaasVersion) == 0 {
 		errorList = append(errorList, fmt.Errorf("flag \"laas-version\" may not be empty"))
