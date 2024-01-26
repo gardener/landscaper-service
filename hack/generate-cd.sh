@@ -38,7 +38,7 @@ ocm add componentversions --create --file ${COMPONENT_ARCHIVE_PATH} ${SOURCE_PAT
      SHOOT_SIDECAR_RBAC_CHART_PATH=${SHOOT_SIDECAR_RBAC_CHART_PATH}
 
 echo "> Transfer Component version ${EFFECTIVE_VERSION} to ${PROVIDER}"
-ocm  transfer ctf --copy-resources --recursive --overwrite ${COMPONENT_ARCHIVE_PATH} ${PROVIDER}
+ocm ${OCM_CONFIG} transfer ctf --copy-resources --recursive --overwrite --lookup ${PROVIDER} ${COMPONENT_ARCHIVE_PATH} ${PROVIDER}
 
 echo "> Remote Component Version Landscaper Service"
 ocm get componentversion --repo OCIRegistry::${PROVIDER} "github.com/gardener/landscaper-service:${EFFECTIVE_VERSION}" -o yaml
