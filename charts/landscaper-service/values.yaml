@@ -20,7 +20,8 @@ landscaperservice:
     # the repository context for the landscaper service component
     repositoryContext:
       type: ociRegistry
-      baseUrl: "eu.gcr.io/gardener-project/development"
+      baseUrl: "europe-docker.pkg.dev"
+      subPath: "sap-gcp-cp-k8s-stable-hub/landscaper"
 
     # optional list of secret references { name, namespace }
     # secrets need to be in the docker credentials format: see https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
