@@ -36,9 +36,6 @@ func SortServiceTargetConfigs(configs []*lssv1alpha1.ServiceTargetConfig) {
 		l := configs[i]
 		r := configs[j]
 
-		lPrio := l.Spec.Priority / int64(len(l.Status.InstanceRefs)+1)
-		rPrio := r.Spec.Priority / int64(len(r.Status.InstanceRefs)+1)
-
-		return lPrio > rPrio
+		return l.Spec.Priority*int64(len(r.Status.InstanceRefs)+1) > r.Spec.Priority*int64(len(l.Status.InstanceRefs)+1)
 	})
 }
