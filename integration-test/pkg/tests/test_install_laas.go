@@ -186,7 +186,7 @@ func (r *InstallLAASTestRunner) createInstallation() error {
 			},
 		},
 		Spec: lsv1alpha1.InstallationSpec{
-			Context: "default",
+			Context: "laas",
 			ComponentDescriptor: &lsv1alpha1.ComponentDescriptorDefinition{
 				Reference: &lsv1alpha1.ComponentDescriptorReference{
 					RepositoryContext: cdv2.NewUnstructuredType(cdv2.OCIRegistryType, map[string]interface{}{
