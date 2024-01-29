@@ -35,6 +35,11 @@ func defaultWebhookedResources() map[string]webhook.WebhookedResourceDefinition 
 			APIVersions:  []string{"v1alpha1"},
 			ResourceName: "servicetargetconfigs",
 		},
+		"targetschedulings": {
+			APIGroup:     core.GroupName,
+			APIVersions:  []string{"v1alpha1"},
+			ResourceName: "targetschedulings",
+		},
 	}
 }
 

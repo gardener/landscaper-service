@@ -33,7 +33,7 @@ func createInstance(name, namespace string) *lssv1alpha1.Instance {
 	return instance
 }
 
-var _ = Describe("LandscaperDeployment", func() {
+var _ = Describe("Instance", func() {
 	var (
 		validator webhook.GenericValidator
 		ctx       context.Context

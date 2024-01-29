@@ -25,6 +25,7 @@ const (
 	LandscaperDeploymentsResourceType = "landscaperdeployments"
 	InstancesResourceType             = "instances"
 	ServiceTargetConfigsResourceType  = "servicetargetconfigs"
+	TargetSchedulingsResourceType     = "targetschedulings"
 )
 
 // ValidatorFromResourceType is a helper method that gets a resource type and returns the fitting validator
@@ -37,6 +38,8 @@ func ValidatorFromResourceType(log logging.Logger, kubeClient client.Client, sch
 		val = &InstanceValidator{abstrVal}
 	} else if resource == ServiceTargetConfigsResourceType {
 		val = &ServiceTargetConfigValidator{abstrVal}
+	} else if resource == TargetSchedulingsResourceType {
+		val = &TargetSchedulingValidator{abstrVal}
 	} else {
 		return nil, fmt.Errorf("unable to find validator for resource type %q", resource)
 	}
@@ -134,4 +137,22 @@ func (sv *ServiceTargetConfigValidator) Handle(_ context.Context, req admission.
 	}
 
 	return admission.Allowed("ServiceTargetConfig is valid")
+}
+
+// TARGET SCHEDULING
+
+type TargetSchedulingValidator struct{ abstractValidator }
+
+// Handle handles a request to the webhook
+func (sv *TargetSchedulingValidator) Handle(_ context.Context, req admission.Request) admission.Response {
+	scheduling := &lssv1alpha1.TargetScheduling{}
+	if _, _, err := sv.decoder.Decode(req.Object.Raw, nil, scheduling); err != nil {
+		return admission.Errored(http.StatusBadRequest, err)
+	}
+
+	if errs := validation.ValidateTargetScheduling(scheduling); len(errs) > 0 {
+		return admission.Denied(errs.ToAggregate().Error())
+	}
+
+	return admission.Allowed("TargetScheduling is valid")
 }

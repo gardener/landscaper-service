@@ -6,8 +6,8 @@ toolchain go1.21.5
 
 require (
 	github.com/gardener/component-spec/bindings-go v0.0.66
-	github.com/gardener/landscaper/apis v0.92.0
-	github.com/gardener/landscaper/controller-utils v0.92.0
+	github.com/gardener/landscaper/apis v0.93.0
+	github.com/gardener/landscaper/controller-utils v0.93.0
 	github.com/go-logr/logr v1.3.0
 	github.com/google/uuid v1.3.1
 	github.com/onsi/ginkgo v1.16.5
