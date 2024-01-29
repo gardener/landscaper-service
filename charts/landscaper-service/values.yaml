@@ -63,7 +63,7 @@ controller:
 
   replicaCount: 1
   image:
-    repository: eu.gcr.io/gardener-project/landscaper-service/landscaper-service-controller
+    repository: europe-docker.pkg.dev/sap-gcp-cp-k8s-stable-hub/landscaper/github.com/gardener/landscaper-service/images/landscaper-service-controller
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the .Values.image.tag or chart appVersion.
     #tag: ""
@@ -74,7 +74,7 @@ webhooksServer:
 
   replicaCount: 1
   image:
-    repository: eu.gcr.io/gardener-project/landscaper-service/landscaper-service-webhooks-server
+    repository: europe-docker.pkg.dev/sap-gcp-cp-k8s-stable-hub/landscaper/github.com/gardener/landscaper-service/images/landscaper-service-webhooks-server
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the .Values.image.tag or the chart appVersion.
     #tag: ""
