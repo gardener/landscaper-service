@@ -28,7 +28,7 @@ deployItems:
             {{ $sapBTPServiceOperatorImage := parseOCIRef $sapBTPServiceOperatorResource.access.imageReference }}
             {{ $sapBTPServiceOperatorSha := splitList ":" (index $sapBTPServiceOperatorImage 1) }}
             repository: {{ index $sapBTPServiceOperatorImage 0 }}
-            sha: {{ index $sapBTPServiceOperatorSha 1 }}
+            tag: {{ index $sapBTPServiceOperatorSha 1 }}
 
           rbacProxy:
             image:
@@ -36,4 +36,4 @@ deployItems:
               {{ $rbacProxyImage := parseOCIRef $rbacProxyResource.access.imageReference }}
               {{ $rbacProxySha := splitList ":" (index $rbacProxyImage 1) }}
               repository: {{ index $rbacProxyImage 0 }}
-              sha: {{ index $rbacProxySha 1 }}
+              tag: {{ index $rbacProxySha 1 }}

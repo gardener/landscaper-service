@@ -22,32 +22,32 @@ deployItems:
           {{ $certManagerControllerResource := getResource .cd "name" "cert-manager-controller" }}
           {{ $certManagerControllerImage := parseOCIRef $certManagerControllerResource.access.imageReference }}
           repository: {{ index $certManagerControllerImage 0 }}
-          digest: {{ index $certManagerControllerImage 1 }}
+          tag: {{ index $certManagerControllerImage 1 }}
 
         webhook:
           image:
             {{ $certManagerWebhookResource := getResource .cd "name" "cert-manager-webhook" }}
             {{ $certManagerWebhookImage := parseOCIRef $certManagerWebhookResource.access.imageReference }}
             repository: {{ index $certManagerWebhookImage 0 }}
-            digest: {{ index $certManagerWebhookImage 1 }}
+            tag: {{ index $certManagerWebhookImage 1 }}
 
         cainjector:
           image:
             {{ $certManagerCAInjectorResource := getResource .cd "name" "cert-manager-cainjector" }}
             {{ $certManagerCAInjectorImage := parseOCIRef $certManagerCAInjectorResource.access.imageReference }}
             repository: {{ index $certManagerCAInjectorImage 0 }}
-            digest: {{ index $certManagerCAInjectorImage 1 }}
+            tag: {{ index $certManagerCAInjectorImage 1 }}
 
         startupapicheck:
           image:
             {{ $certManagerCTLResource := getResource .cd "name" "cert-manager-ctl" }}
             {{ $certManagerCTLImage := parseOCIRef $certManagerCTLResource.access.imageReference }}
             repository: {{ index $certManagerCTLImage 0 }}
-            digest: {{ index $certManagerCTLImage 1 }}
+            tag: {{ index $certManagerCTLImage 1 }}
 
         acmesolver:
           image:
             {{ $certManagerACMESolverResource := getResource .cd "name" "cert-manager-acmesolver" }}
             {{ $certManagerACMESolverImage := parseOCIRef $certManagerACMESolverResource.access.imageReference }}
             repository: {{ index $certManagerACMESolverImage 0 }}
-            digest: {{ index $certManagerACMESolverImage 1 }}
+            tag: {{ index $certManagerACMESolverImage 1 }}
