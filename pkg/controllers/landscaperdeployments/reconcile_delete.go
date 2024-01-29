@@ -8,12 +8,11 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/gardener/landscaper/controller-utils/pkg/logging"
+	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
-
-	"github.com/gardener/landscaper/controller-utils/pkg/logging"
-	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
 
 	lssv1alpha1 "github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 	lsserrors "github.com/gardener/landscaper-service/pkg/apis/errors"
@@ -27,13 +26,9 @@ func (c *Controller) handleDelete(ctx context.Context, deployment *lssv1alpha1.L
 		removeFinalizer bool
 	)
 
-	if deployment.Status.InstanceRef != nil && !deployment.Status.InstanceRef.IsEmpty() {
-		removeFinalizer, err = c.ensureDeleteInstanceForDeployment(ctx, deployment)
-		if err != nil {
-			return err
-		}
-	} else {
-		removeFinalizer = true
+	removeFinalizer, err = c.ensureDeleteInstanceForDeployment(ctx, deployment)
+	if err != nil {
+		return err
 	}
 
 	if removeFinalizer {
@@ -51,10 +46,19 @@ func (c *Controller) ensureDeleteInstanceForDeployment(ctx context.Context, depl
 	logger, ctx := logging.FromContextOrNew(ctx, []interface{}{lc.KeyReconciledResource, client.ObjectKeyFromObject(deployment).String()},
 		lc.KeyMethod, "ensureDeleteInstanceForDeployment")
 
-	logger.Info("Delete instance for landscaper deployment", lc.KeyResource, deployment.Status.InstanceRef.NamespacedName().String())
-	instance := &lssv1alpha1.Instance{}
+	instanceRef, err := c.getInstanceRef(ctx, deployment)
+	if err != nil {
+		return false, err
+	}
 
-	if err := c.Client().Get(ctx, deployment.Status.InstanceRef.NamespacedName(), instance); err != nil {
+	if instanceRef == nil {
+		logger.Info("Landscaper deployment has no instance")
+		return true, nil
+	}
+
+	logger.Info("Delete instance for landscaper deployment", lc.KeyResource, instanceRef.NamespacedName().String())
+	instance := &lssv1alpha1.Instance{}
+	if err := c.Client().Get(ctx, instanceRef.NamespacedName(), instance); err != nil {
 		if apierrors.IsNotFound(err) {
 			deployment.Status.InstanceRef = nil
 			if err := c.Client().Status().Update(ctx, deployment); err != nil {
