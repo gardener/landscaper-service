@@ -15,14 +15,14 @@ relation: external
 version: 4.9.1
 access:
   type: ociRegistry
-  imageReference: eu.gcr.io/gardener-project/landscaper-service/charts/ingress-nginx@sha256:5fcc7c11bfdea4838a9fb9658d4f9f77dfa996599007275781eb433982b44f5b
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/charts/ingress-nginx@sha256:968c1413ffbcd538036d67340d6adfbfc3b509504472aef2a3cf88ddb8ad1b10
 ...
 ---
 type: ociImage
 name: ingress-nginx-controller
-version: v1.9.5
+version: v1.9.6
 relation: external
 access:
   type: ociRegistry
-  imageReference: eu.gcr.io/gardener-project/landscaper-service/ingress-nginx/controller@sha256:bdc54c3e73dcec374857456559ae5757e8920174483882b9e8ff1a9052f96a35
+  imageReference: eu.gcr.io/gardener-project/landscaper-service/ingress-nginx/controller@sha256:aedc9ff2572625821c0ec82acf3b9a6a39c8190f9517f5c5790d1ebb5ad418dd
 ...
