@@ -12,26 +12,9 @@ landscaper-service:
         inject_effective_version: true
       component_descriptor:
         ocm_repository: landscaper
-      publish:
-        dockerimages:
-          landscaper-service-controller:
-            registry: 'gcr-readwrite'
-            target: 'landscaper-service-controller'
-            image: eu.gcr.io/gardener-project/landscaper-service/landscaper-service-controller
-          landscaper-service-webhooks-server:
-            registry: 'gcr-readwrite'
-            target: 'landscaper-service-webhooks-server'
-            image: eu.gcr.io/gardener-project/landscaper-service/landscaper-service-webhooks-server
-          landscaper-service-target-shoot-sidecar-server:
-            registry: 'gcr-readwrite'
-            target: 'landscaper-service-target-shoot-sidecar-server'
-            image: eu.gcr.io/gardener-project/landscaper-service/landscaper-service-target-shoot-sidecar-server
     steps:
       verify:
         image: 'golang:1.21.5'
-      publish-helm-charts:
-        depends:
-        - verify
       ocm_build_and_publish:
         privilege_mode: privileged
         trait_depends:
@@ -45,11 +28,8 @@ landscaper-service:
     head-update:
       steps:
         run_integration_test:
-          trait_depends:
-            - publish
           depends:
             - ocm_build_and_publish
-            - publish-helm-charts
           image: 'eu.gcr.io/gardener-project/landscaper-service/integration-test:1.21.5-alpine3.18'
           execute:
             - "integration_test"
@@ -68,11 +48,8 @@ landscaper-service:
     pull-request:
       steps:
         run_integration_test:
-          trait_depends:
-            - publish
           depends:
             - ocm_build_and_publish
-            - publish-helm-charts
           image: 'eu.gcr.io/gardener-project/landscaper-service/integration-test:1.21.5-alpine3.18'
           execute:
           - "integration_test_pr"
@@ -98,11 +75,8 @@ landscaper-service:
           suppress_parallel_execution: true
       steps:
         run_integration_test:
-          trait_depends:
-            - publish
           depends:
             - ocm_build_and_publish
-            - publish-helm-charts
           image: 'eu.gcr.io/gardener-project/landscaper-service/integration-test:1.21.5-alpine3.18'
           execute:
             - "integration_test"
