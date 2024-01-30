@@ -18,7 +18,7 @@ controller:
 
   replicaCount: 1
   image:
-    repository: eu.gcr.io/gardener-project/landscaper-service/landscaper-service-target-shoot-sidecar-server
+    repository: europe-docker.pkg.dev/sap-gcp-cp-k8s-stable-hub/landscaper/github.com/gardener/landscaper-service/images/landscaper-service-target-shoot-sidecar-server
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the .Values.image.tag or chart appVersion.
     #tag: ""

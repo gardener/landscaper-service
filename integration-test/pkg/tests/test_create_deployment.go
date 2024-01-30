@@ -77,6 +77,9 @@ func (r *CreateDeploymentRunner) createDeployment() error {
 					"helm",
 					"manifest",
 				},
+				Landscaper: &lssv1alpha1.Landscaper{
+					UseOCMLib: true,
+				},
 			},
 			HighAvailabilityConfig: &lssv1alpha1.HighAvailabilityConfig{
 				ControlPlaneFailureTolerance: "node",

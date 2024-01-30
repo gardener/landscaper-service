@@ -1,0 +1,339 @@
+components:
+  - name: github.com/gardener/landscaper-service
+    version: ${VERSION}
+    provider:
+      name: ${PROVIDER}
+    sources:
+      - name: main
+        type: git
+        version: ${VERSION}
+        access:
+          type: github
+          commit: ${COMMIT_SHA}
+          ref: refs/tags/${VERSION}
+          repoUrl: github.com/gardener/landscaper-service
+    componentReferences:
+      - name: landscaper-instance
+        componentName: github.com/gardener/landscaper-service/landscaper-instance
+        version: ${VERSION}
+      - name: ingress-controller
+        componentName: github.com/gardener/landscaper-service/ingress-controller
+        version: ${VERSION}
+      - name: logging-stack
+        componentName: github.com/gardener/landscaper-service/logging-stack
+        version: ${VERSION}
+    resources:
+      - name: landscaper-service-blueprint
+        type: landscaper.gardener.cloud/blueprint
+        input:
+          type: dir
+          path: ./blueprint
+          compress: true
+          mediaType: application/vnd.gardener.landscaper.blueprint.layer.v1.tar+gzip
+      - name: landscaper-service-chart
+        type: helm.io/chart
+        input:
+          type: helm
+          path: ${LANDSCAPER_SERVICE_CHART_PATH}
+          repository: charts/landscaper-service
+      - name: landscaper-service-controller
+        type: ociImage
+        input:
+          type: docker
+          path: landscaper-service-controller:${VERSION}
+          repository: images/landscaper-service-controller
+      - name: landscaper-service-webhooks-server
+        type: ociImage
+        input:
+          type: docker
+          path: landscaper-service-webhooks-server:${VERSION}
+          repository: images/landscaper-service-webhooks-server
+      - name: landscaper-service-target-shoot-sidecar-server
+        type: ociImage
+        input:
+          type: docker
+          path: landscaper-service-target-shoot-sidecar-server:${VERSION}
+          repository: images/landscaper-service-target-shoot-sidecar-server
+
+  - name: github.com/gardener/landscaper-service/landscaper-instance
+    version: ${VERSION}
+    provider:
+      name: ${PROVIDER}
+    sources:
+      - name: main
+        type: git
+        version: ${VERSION}
+        access:
+          type: github
+          commit: ${COMMIT_SHA}
+          ref: refs/tags/${VERSION}
+          repoUrl: github.com/gardener/landscaper-service
+    componentReferences:
+      - name: landscaper
+        componentName: github.com/gardener/landscaper
+        version: ${LANDSCAPER_VERSION}
+    resources:
+      - name: rbac-blueprint
+        type: landscaper.gardener.cloud/blueprint
+        input:
+          type: dir
+          path: ./landscaper-instance/blueprint/rbac
+          compress: true
+          mediaType: application/vnd.gardener.landscaper.blueprint.layer.v1.tar+gzip
+      - name: landscaper-blueprint
+        type: landscaper.gardener.cloud/blueprint
+        input:
+          type: dir
+          path: ./landscaper-instance/blueprint/landscaper
+          compress: true
+          mediaType: application/vnd.gardener.landscaper.blueprint.layer.v1.tar+gzip
+      - name: shoot-blueprint
+        type: landscaper.gardener.cloud/blueprint
+        input:
+          type: dir
+          path: ./landscaper-instance/blueprint/shoot
+          compress: true
+          mediaType: application/vnd.gardener.landscaper.blueprint.layer.v1.tar+gzip
+      - name: sidecar-blueprint
+        type: landscaper.gardener.cloud/blueprint
+        input:
+          type: dir
+          path: ./landscaper-instance/blueprint/ls-service-target-shoot-sidecar-server
+          compress: true
+          mediaType: application/vnd.gardener.landscaper.blueprint.layer.v1.tar+gzip
+      - name: sidecar-rbac-blueprint
+        type: landscaper.gardener.cloud/blueprint
+        input:
+          type: dir
+          path: ./landscaper-instance/blueprint/sidecar-rbac
+          compress: true
+          mediaType: application/vnd.gardener.landscaper.blueprint.layer.v1.tar+gzip
+      - name: installation-blueprint
+        type: landscaper.gardener.cloud/blueprint
+        input:
+          type: dir
+          path: ./landscaper-instance/blueprint/installation
+          compress: true
+          mediaType: application/vnd.gardener.landscaper.blueprint.layer.v1.tar+gzip
+      - name: installation-blueprint-ext-dataplane
+        type: landscaper.gardener.cloud/blueprint
+        input:
+          type: dir
+          path: ./landscaper-instance/blueprint/installation-ext-dataplane
+          compress: true
+          mediaType: application/vnd.gardener.landscaper.blueprint.layer.v1.tar+gzip
+      - name: ls-service-target-shoot-sidecar-chart
+        type: helm.io/chart
+        input:
+          type: helm
+          path: ${SHOOT_SIDECAR_CHART_PATH}
+          repository: charts/shoot-sidecar
+      - name: sidecar-rbac-chart
+        type: helm.io/chart
+        input:
+          type: helm
+          path: ${SHOOT_SIDECAR_RBAC_CHART_PATH}
+          repository: charts/shoot-sidecar-rbac
+      - name: ls-service-target-shoot-sidecar-image
+        type: ociImage
+        input:
+          type: docker
+          path: landscaper-service-target-shoot-sidecar-server:${VERSION}
+          repository: images/landscaper-service-target-shoot-sidecar-server
+      - name: registry-config-definition
+        type: landscaper.gardener.cloud/jsonschema
+        input:
+          type: file
+          path: ./landscaper-instance/definition/registry-configuration.json
+          compress: true
+          mediaType: application/vnd.gardener.landscaper.jsonschema.layer.v1.json
+      - name: landscaper-config-definition
+        type: landscaper.gardener.cloud/jsonschema
+        input:
+          type: file
+          path: ./landscaper-instance/definition/landscaper-configuration.json
+          compress: true
+          mediaType: application/vnd.gardener.landscaper.jsonschema.layer.v1.json
+      - name: shoot-config-definition
+        type: landscaper.gardener.cloud/jsonschema
+        input:
+          type: file
+          path: ./landscaper-instance/definition/shoot-configuration.json
+          compress: true
+          mediaType: application/vnd.gardener.landscaper.jsonschema.layer.v1.json
+      - name: sidecar-config-definition
+        type: landscaper.gardener.cloud/jsonschema
+        input:
+          type: file
+          path: ./landscaper-instance/definition/sidecar-configuration.json
+          compress: true
+          mediaType: application/vnd.gardener.landscaper.jsonschema.layer.v1.json
+      - name: rotation-config-definition
+        type: landscaper.gardener.cloud/jsonschema
+        input:
+          type: file
+          path: ./landscaper-instance/definition/rotation-configuration.json
+          compress: true
+          mediaType: application/vnd.gardener.landscaper.jsonschema.layer.v1.json
+
+  - name: github.com/gardener/landscaper-service/ingress-controller
+    version: ${VERSION}
+    provider:
+      name: ${PROVIDER}
+    sources:
+      - name: main
+        type: git
+        version: ${VERSION}
+        access:
+          type: github
+          commit: ${COMMIT_SHA}
+          ref: refs/tags/${VERSION}
+          repoUrl: github.com/gardener/landscaper-service
+    resources:
+      - name: ingress-controller-blueprint
+        type: landscaper.gardener.cloud/blueprint
+        input:
+          type: dir
+          path: ./ingress-controller/blueprint
+          compress: true
+          mediaType: application/vnd.gardener.landscaper.blueprint.layer.v1.tar+gzip
+      - name: ingress-nginx-chart
+        type: helm.io/chart
+        version: ${INGRESS_NGINX_CHART_VERSION}
+        input:
+          type: helm
+          helmRepository: https://kubernetes.github.io/ingress-nginx
+          path: ingress-nginx
+          version: ${INGRESS_NGINX_CHART_VERSION}
+          repository: charts/ingress-nginx
+      - name: ingress-nginx-controller
+        type: ociImage
+        version: ${INGRESS_NGINX_IMAGE_VERSION}
+        input:
+          type: ociArtifact
+          path: registry.k8s.io/ingress-nginx/controller:${INGRESS_NGINX_IMAGE_VERSION}
+          repository: images/ingress-nginx
+
+  - name: github.com/gardener/landscaper-service/logging-stack
+    version: ${VERSION}
+    provider:
+      name: ${PROVIDER}
+    sources:
+      - name: main
+        type: git
+        version: ${VERSION}
+        access:
+          type: github
+          commit: ${COMMIT_SHA}
+          ref: refs/tags/${VERSION}
+          repoUrl: github.com/gardener/landscaper-service
+    resources:
+      - name: installation-blueprint
+        type: landscaper.gardener.cloud/blueprint
+        input:
+          type: dir
+          path: ./logging-stack/blueprint/installation
+          compress: true
+          mediaType: application/vnd.gardener.landscaper.blueprint.layer.v1.tar+gzip
+      - name: service-provisioning-blueprint
+        type: landscaper.gardener.cloud/blueprint
+        input:
+          type: dir
+          path: ./logging-stack/blueprint/service-provisioning
+          compress: true
+          mediaType: application/vnd.gardener.landscaper.blueprint.layer.v1.tar+gzip
+      - name: cert-manager-blueprint
+        type: landscaper.gardener.cloud/blueprint
+        input:
+          type: dir
+          path: ./logging-stack/blueprint/cert-manager
+          compress: true
+          mediaType: application/vnd.gardener.landscaper.blueprint.layer.v1.tar+gzip
+      - name: sap-btp-service-operator-blueprint
+        type: landscaper.gardener.cloud/blueprint
+        input:
+          type: dir
+          path: ./logging-stack/blueprint/sap-btp-service-operator
+          compress: true
+          mediaType: application/vnd.gardener.landscaper.blueprint.layer.v1.tar+gzip
+      - name: fluentbit-blueprint
+        type: landscaper.gardener.cloud/blueprint
+        input:
+          type: dir
+          path: ./logging-stack/blueprint/fluentbit
+          compress: true
+          mediaType: application/vnd.gardener.landscaper.blueprint.layer.v1.tar+gzip
+      - name: cert-manager-chart
+        type: helm.io/chart
+        version: ${CERT_MANAGER_VERSION}
+        input:
+          type: helm
+          helmRepository: https://charts.jetstack.io
+          path: cert-manager
+          version: ${CERT_MANAGER_VERSION}
+          repository: charts/cert-manager
+      - name: cert-manager-cainjector
+        type: ociImage
+        version: ${CERT_MANAGER_VERSION}
+        input:
+          type: ociArtifact
+          path: quay.io/jetstack/cert-manager-cainjector:${CERT_MANAGER_VERSION}
+          repository: images/cert-manager/cert-manager-cainjector
+      - name: cert-manager-controller
+        type: ociImage
+        version: ${CERT_MANAGER_VERSION}
+        input:
+          type: ociArtifact
+          path: quay.io/jetstack/cert-manager-controller:${CERT_MANAGER_VERSION}
+          repository: images/cert-manager/cert-manager-controller
+      - name: cert-manager-ctl
+        type: ociImage
+        version: ${CERT_MANAGER_VERSION}
+        input:
+          type: ociArtifact
+          path: quay.io/jetstack/cert-manager-ctl:${CERT_MANAGER_VERSION}
+          repository: images/cert-manager/cert-manager-ctl
+      - name: cert-manager-webhook
+        type: ociImage
+        version: ${CERT_MANAGER_VERSION}
+        input:
+          type: ociArtifact
+          path: quay.io/jetstack/cert-manager-webhook:${CERT_MANAGER_VERSION}
+          repository: images/cert-manager/cert-manager-webhook
+      - name: cert-manager-acmesolver
+        type: ociImage
+        version: ${CERT_MANAGER_VERSION}
+        input:
+          type: ociArtifact
+          path: quay.io/jetstack/cert-manager-acmesolver:${CERT_MANAGER_VERSION}
+          repository: images/cert-manager/cert-manager-acmesolver
+      - name: sap-btp-service-operator-chart
+        type: helm.io/chart
+        version: ${SAP_BTP_OPERATOR_VERSION}
+        input:
+          type: helm
+          helmRepository: https://sap.github.io/sap-btp-service-operator
+          path: sap-btp-operator
+          version: ${SAP_BTP_OPERATOR_VERSION}
+          repository: charts/sap-btp-service-operator
+      - name: kube-rbac-proxy
+        type: ociImage
+        version: ${KUBE_RBAC_PROXY_VERSION}
+        input:
+          type: ociArtifact
+          path: quay.io/brancz/kube-rbac-proxy:${KUBE_RBAC_PROXY_VERSION}
+          repository: images/sap-btp-service-operator/kube-rbac-proxy
+      - name: sap-btp-service-operator-controller
+        type: ociImage
+        version: ${SAP_BTP_OPERATOR_VERSION}
+        input:
+          type: ociArtifact
+          path: ghcr.io/sap/sap-btp-service-operator/controller:${SAP_BTP_OPERATOR_VERSION}
+          repository: images/sap-btp-service-operator/controller
+      - name: fluent-bit
+        type: ociImage
+        version: ${FLUENTBIT_VERSION}
+        input:
+          type: ociArtifact
+          path: cr.fluentbit.io/fluent/fluent-bit:${FLUENTBIT_VERSION}
+          repository: images/fluent/fluent-bit

@@ -106,18 +106,6 @@ func (r *InstallLAASTestRunner) createServiceTargetConfig() error {
 func (r *InstallLAASTestRunner) createInstallation() error {
 	logger, _ := logging.FromContextOrNew(r.ctx, nil)
 
-	registryPullSecrets := []lssv1alpha1.ObjectReference{
-		{
-			Name:      "laas",
-			Namespace: r.config.LaasNamespace,
-		},
-	}
-
-	registryPullSecretsRaw, err := json.Marshal(registryPullSecrets)
-	if err != nil {
-		return fmt.Errorf("failed to marshal registry pull secrets: %w", err)
-	}
-
 	availabilityMonitoring := map[string]interface{}{
 		"selfLandscaperNamespace": r.config.LandscaperNamespace,
 		"periodicCheckInterval":   "1m",
@@ -224,7 +212,6 @@ func (r *InstallLAASTestRunner) createInstallation() error {
 			ImportDataMappings: map[string]lsv1alpha1.AnyJSON{
 				"namespace":              lssutils.StringToAnyJSON(r.config.LaasNamespace),
 				"verbosity":              lssutils.StringToAnyJSON(logging.DEBUG.String()),
-				"registryPullSecrets":    lsv1alpha1.NewAnyJSON(registryPullSecretsRaw),
 				"availabilityMonitoring": lsv1alpha1.NewAnyJSON(availabilityMonitoringRaw),
 				"AVSConfiguration":       lsv1alpha1.NewAnyJSON(avsConfigurationRaw),
 				"gardenerConfiguration":  lsv1alpha1.NewAnyJSON(gardenerConfigurationRaw),

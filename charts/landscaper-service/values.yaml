@@ -20,7 +20,8 @@ landscaperservice:
     # the repository context for the landscaper service component
     repositoryContext:
       type: ociRegistry
-      baseUrl: "eu.gcr.io/gardener-project/development"
+      baseUrl: "europe-docker.pkg.dev"
+      subPath: "sap-gcp-cp-k8s-stable-hub/landscaper"
 
     # optional list of secret references { name, namespace }
     # secrets need to be in the docker credentials format: see https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
@@ -62,7 +63,7 @@ controller:
 
   replicaCount: 1
   image:
-    repository: eu.gcr.io/gardener-project/landscaper-service/landscaper-service-controller
+    repository: europe-docker.pkg.dev/sap-gcp-cp-k8s-stable-hub/landscaper/github.com/gardener/landscaper-service/images/landscaper-service-controller
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the .Values.image.tag or chart appVersion.
     #tag: ""
@@ -73,7 +74,7 @@ webhooksServer:
 
   replicaCount: 1
   image:
-    repository: eu.gcr.io/gardener-project/landscaper-service/landscaper-service-webhooks-server
+    repository: europe-docker.pkg.dev/sap-gcp-cp-k8s-stable-hub/landscaper/github.com/gardener/landscaper-service/images/landscaper-service-webhooks-server
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the .Values.image.tag or the chart appVersion.
     #tag: ""

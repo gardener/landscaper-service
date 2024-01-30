@@ -136,7 +136,7 @@ func run() error {
 		return err
 	}
 
-	if err := util.BuildLandscaperContext(ctx, clusterClients.TestCluster, config.RegistryPullSecrets, "laas", config.LaasNamespace); err != nil {
+	if err := util.BuildLandscaperContext(ctx, clusterClients.TestCluster, "laas", config.LaasNamespace); err != nil {
 		return fmt.Errorf("cannot build landscaper context: %w", err)
 	}
 
@@ -255,6 +255,7 @@ func buildLandscaperValues(namespace string) ([]byte, error) {
 landscaper:
   landscaper:
     verbosity: debug
+    useOCMLib: true
     registryConfig: # contains optional oci secrets
       allowPlainHttpRegistries: true
       secrets: {}

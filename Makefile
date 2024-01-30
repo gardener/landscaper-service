@@ -4,12 +4,12 @@
 
 REPO_ROOT                                      := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 VERSION                                        := $(shell cat $(REPO_ROOT)/VERSION)
-EFFECTIVE_VERSION                              := $(VERSION)-$(shell git rev-parse HEAD)
+EFFECTIVE_VERSION                              := $(shell $(REPO_ROOT)/hack/get-version.sh)
 
-REGISTRY                                       := eu.gcr.io/gardener-project/landscaper-service
-LANDSCAPER_SERVICE_CONTROLLER_IMAGE_REPOSITORY         := $(REGISTRY)/landscaper-service-controller
-LANDSCAPER_SERVICE_WEBHOOKS_SERVER_IMAGE_REPOSITORY    := $(REGISTRY)/landscaper-service-webhooks-server
-LANDSCAPER_SERVICE_TARGET_SHOOT_SIDECAR_SERVER_IMAGE_REPOSITORY    := $(REGISTRY)/landscaper-service-target-shoot-sidecar-server
+REGISTRY                                       := europe-docker.pkg.dev/sap-gcp-cp-k8s-stable-hub/landscaper
+
+DOCKER_BUILDER_NAME := "laas-multiarch"
+DOCKER_PLATFORM     := "linux/amd64"
 
 .PHONY: install-requirements
 install-requirements:
@@ -65,34 +65,18 @@ install:
 
 .PHONY: docker-images
 docker-images:
+	@$(REPO_ROOT)/hack/prepare-docker-builder.sh
 	@echo "Building docker images for version $(EFFECTIVE_VERSION)"
-	@docker build --build-arg EFFECTIVE_VERSION=$(EFFECTIVE_VERSION) -t $(LANDSCAPER_SERVICE_CONTROLLER_IMAGE_REPOSITORY):$(EFFECTIVE_VERSION) -f Dockerfile --target landscaper-service-controller .
-	@docker build --build-arg EFFECTIVE_VERSION=$(EFFECTIVE_VERSION) -t $(LANDSCAPER_SERVICE_WEBHOOKS_SERVER_IMAGE_REPOSITORY):$(EFFECTIVE_VERSION) -f Dockerfile --target landscaper-service-webhooks-server .
-	@docker build --build-arg EFFECTIVE_VERSION=$(EFFECTIVE_VERSION) -t $(LANDSCAPER_SERVICE_TARGET_SHOOT_SIDECAR_SERVER_IMAGE_REPOSITORY):$(EFFECTIVE_VERSION) -f Dockerfile --target landscaper-service-target-shoot-sidecar-server .
+	@docker buildx build --builder $(DOCKER_BUILDER_NAME) --load --build-arg EFFECTIVE_VERSION=$(EFFECTIVE_VERSION) --platform $(DOCKER_PLATFORM) -t landscaper-service-controller:$(EFFECTIVE_VERSION) -f Dockerfile --target landscaper-service-controller .
+	@docker buildx build --builder $(DOCKER_BUILDER_NAME) --load --build-arg EFFECTIVE_VERSION=$(EFFECTIVE_VERSION) --platform $(DOCKER_PLATFORM) -t landscaper-service-webhooks-server:$(EFFECTIVE_VERSION) -f Dockerfile --target landscaper-service-webhooks-server .
+	@docker buildx build --builder $(DOCKER_BUILDER_NAME) --load --build-arg EFFECTIVE_VERSION=$(EFFECTIVE_VERSION) --platform $(DOCKER_PLATFORM) -t landscaper-service-target-shoot-sidecar-server:$(EFFECTIVE_VERSION) -f Dockerfile --target landscaper-service-target-shoot-sidecar-server .
 
-.PHONY: docker-push
-docker-push:
-	@echo "Pushing docker images for version $(EFFECTIVE_VERSION) to registry $(REGISTRY)"
-	@if ! docker images $(LANDSCAPER_SERVICE_CONTROLLER_IMAGE_REPOSITORY) | awk '{ print $$2 }' | grep -q -F $(EFFECTIVE_VERSION); then echo "$(LANDSCAPER_SERVICE_CONTROLLER_IMAGE_REPOSITORY) version $(EFFECTIVE_VERSION) is not yet built. Please run 'make docker-images'"; false; fi
-	@if ! docker images $(LANDSCAPER_SERVICE_WEBHOOKS_SERVER_IMAGE_REPOSITORY) | awk '{ print $$2 }' | grep -q -F $(EFFECTIVE_VERSION); then echo "$(LANDSCAPER_SERVICE_WEBHOOKS_SERVER_IMAGE_REPOSITORY) version $(EFFECTIVE_VERSION) is not yet built. Please run 'make docker-images'"; false; fi
-	@if ! docker images $(LANDSCAPER_SERVICE_TARGET_SHOOT_SIDECAR_SERVER_IMAGE_REPOSITORY) | awk '{ print $$2 }' | grep -q -F $(EFFECTIVE_VERSION); then echo "$(LANDSCAPER_SERVICE_TARGET_SHOOT_SIDECAR_SERVER_IMAGE_REPOSITORY) version $(EFFECTIVE_VERSION) is not yet built. Please run 'make docker-images'"; false; fi
-	@docker push $(LANDSCAPER_SERVICE_CONTROLLER_IMAGE_REPOSITORY):$(EFFECTIVE_VERSION)
-	@docker push $(LANDSCAPER_SERVICE_WEBHOOKS_SERVER_IMAGE_REPOSITORY):$(EFFECTIVE_VERSION)
-	@docker push $(LANDSCAPER_SERVICE_TARGET_SHOOT_SIDECAR_SERVER_IMAGE_REPOSITORY):$(EFFECTIVE_VERSION)
-
-.PHONY: docker-all
-docker-all: docker-images docker-push
-
-.PHONY: cnudie
-cnudie:
-	@$(REPO_ROOT)/hack/generate-cd.sh
-
-.PHONY: helm-charts
-helm-charts:
-	@$(REPO_ROOT)/.ci/publish-helm-charts
+.PHONY: component
+component:
+	@$(REPO_ROOT)/hack/generate-cd.sh $(REGISTRY)
 
 .PHONY: build-resources
-build-resources: docker-all helm-charts cnudie
+build-resources: docker-images component
 
 .PHONY: build-int-test-image
 build-int-test-image:

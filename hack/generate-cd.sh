@@ -1,62 +1,47 @@
 #!/bin/bash
-
-# SPDX-FileCopyrightText: 2021 "SAP SE or an SAP affiliate company and Gardener contributors"
+#
+# Copyright (c) 2024 SAP SE or an SAP affiliate company. All rights reserved. This file is licensed under the Apache Software License, v. 2 except as noted otherwise in the LICENSE file
 #
 # SPDX-License-Identifier: Apache-2.0
 
 set -e
 
-SOURCE_PATH="$(dirname $0)/.."
-oci_images=$@
-REPO_CTX="eu.gcr.io/sap-gcp-cp-k8s-stable-hub/landscaper"
-CA_PATH="$(mktemp -d)"
-BASE_DEFINITION_PATH="${CA_PATH}/component-descriptor.yaml"
-
-if [[ $EFFECTIVE_VERSION == "" ]]; then
-  EFFECTIVE_VERSION="$(${SOURCE_PATH}/hack/get-version.sh)"
-fi
-
-if ! which component-cli 1>/dev/null; then
-  echo -n "component-cli is required to generate the component descriptors"
-  echo -n "Trying to installing it..."
-  curl -L https://github.com/gardener/component-cli/releases/download/$(curl -s https://api.github.com/repos/gardener/component-cli/releases/latest | jq -r '.tag_name')/componentcli-$(go env GOOS)-$(go env GOARCH).gz | gzip -d > $(go env GOPATH)/bin/component-cli
-  chmod +x $(go env GOPATH)/bin/component-cli
-
-  if ! which component-cli 1>/dev/null; then
-    echo -n "component-cli was successfully installed but the binary cannot be found"
-    echo -n "Try adding the \$GOPATH/bin to your \$PATH..."
-    exit 1
-  fi
-fi
-if ! which jq 1>/dev/null; then
-  echo -n "jq canot be found"
+if [ -z $1 ]; then
+  echo "provider argument is required"
   exit 1
 fi
 
-echo "> Generate Component Descriptor ${EFFECTIVE_VERSION}"
-echo "> Creating base definition"
-component-cli ca create "${CA_PATH}" \
-    --component-name=github.com/gardener/landscaper-service \
-    --component-version=${EFFECTIVE_VERSION} \
-    --repo-ctx=${REPO_CTX}
+SOURCE_PATH="$(realpath $(dirname $0)/..)"
+EFFECTIVE_VERSION="$(${SOURCE_PATH}/hack/get-version.sh)"
 
-# add oci images
-#for image in "${oci_images[@]}"
-#do
-#  echo "Adding ${image} to component descriptor"
-#  cat <<EOF | component-cli ca resources add "${CA_PATH}" -
-#name: ${image}
-#version: 'v0.0.1'
-#type: 'ociImage'
-#relation: 'external'
-#access:
-#  type: 'ociRegistry'
-#  imageReference: ${image}
-#EOF
-#done
+echo -n "> Updating helm chart version"
+${SOURCE_PATH}/hack/update-helm-chart-version.sh ${EFFECTIVE_VERSION}
 
-echo "> Creating ctf"
-CTF_PATH=./gen/ctf.tar
-mkdir -p ./gen
-[ -e $CTF_PATH ] && rm ${CTF_PATH}
-CTF_PATH=${CTF_PATH} BASE_DEFINITION_PATH=${BASE_DEFINITION_PATH} CURRENT_COMPONENT_REPOSITORY=${REPO_CTX} bash $SOURCE_PATH/.ci/component_descriptor
+echo "> Create Component Version ${EFFECTIVE_VERSION}"
+
+PROVIDER=$1
+TMP_PATH="$(mktemp -d)"
+COMPONENT_ARCHIVE_PATH="${TMP_PATH}/ctf"
+COMMIT_SHA=$(git rev-parse HEAD)
+
+LANDSCAPER_SERVICE_CHART_PATH="${SOURCE_PATH}/charts/landscaper-service"
+SHOOT_SIDECAR_CHART_PATH="${SOURCE_PATH}/charts/landscaper-service-target-shoot-sidecar-server"
+SHOOT_SIDECAR_RBAC_CHART_PATH="${SOURCE_PATH}/charts/sidecar-rbac"
+
+ocm add componentversions --create --file ${COMPONENT_ARCHIVE_PATH} ${SOURCE_PATH}/.landscaper/components.yaml \
+  --settings ${SOURCE_PATH}/.landscaper/ocm-settings.yaml \
+  -- VERSION=${EFFECTIVE_VERSION} \
+     COMMIT_SHA=${COMMIT_SHA} \
+     PROVIDER=${PROVIDER} \
+     LANDSCAPER_SERVICE_CHART_PATH=${LANDSCAPER_SERVICE_CHART_PATH} \
+     SHOOT_SIDECAR_CHART_PATH=${SHOOT_SIDECAR_CHART_PATH} \
+     SHOOT_SIDECAR_RBAC_CHART_PATH=${SHOOT_SIDECAR_RBAC_CHART_PATH}
+
+echo "> Transfer Component version ${EFFECTIVE_VERSION} to ${PROVIDER}"
+ocm ${OCM_CONFIG} transfer ctf --copy-resources --recursive --overwrite --lookup ${PROVIDER} ${COMPONENT_ARCHIVE_PATH} ${PROVIDER}
+
+echo "> Remote Component Version Landscaper Service"
+ocm get componentversion --repo OCIRegistry::${PROVIDER} "github.com/gardener/landscaper-service:${EFFECTIVE_VERSION}" -o yaml
+
+echo "> Remote Component Version Landscaper Instance"
+ocm get componentversion --repo OCIRegistry::${PROVIDER} "github.com/gardener/landscaper-service/landscaper-instance:${EFFECTIVE_VERSION}" -o yaml

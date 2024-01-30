@@ -46,8 +46,8 @@ func GetLandscaperVersion(repoRootDir string) (string, error) {
 
 	var landscaperVersion string
 
-	compReferencesFile := path.Join(repoRootDir, ".landscaper", "landscaper-instance", "component-references.yaml")
-	raw, err := os.ReadFile(compReferencesFile)
+	ocmSettingFile := path.Join(repoRootDir, ".landscaper", "ocm-settings.yaml")
+	raw, err := os.ReadFile(ocmSettingFile)
 	if err != nil {
 		return "", err
 	}
@@ -55,20 +55,13 @@ func GetLandscaperVersion(repoRootDir string) (string, error) {
 	r := bytes.NewReader(raw)
 	dec := yaml.NewYAMLOrJSONDecoder(r, 1024)
 
-	var componentReferences map[string]interface{}
-	for dec.Decode(&componentReferences) == nil {
-		name, ok := componentReferences["name"]
+	var ocmSettings map[string]interface{}
+	for dec.Decode(&ocmSettings) == nil {
+		landscaperVersionValue, ok := ocmSettings["LANDSCAPER_VERSION"]
 		if !ok {
 			continue
 		}
-		if name != "landscaper" {
-			continue
-		}
-		version, ok := componentReferences["version"]
-		if !ok {
-			continue
-		}
-		landscaperVersion = version.(string)
+		landscaperVersion = landscaperVersionValue.(string)
 		break
 	}
 
@@ -448,39 +441,12 @@ func BuildKubernetesClusterTarget(ctx context.Context, kclient client.Client, ku
 }
 
 // BuildLandscaperContext builds a landscaper context containing the given registry pull secrets in the given namespace.
-func BuildLandscaperContext(ctx context.Context, kclient client.Client, registryPullSecretsFile, name string, namespaces ...string) error {
-	registryPullSecrets, err := os.ReadFile(registryPullSecretsFile)
-	if err != nil {
-		return fmt.Errorf("failed to read registry pull secret: %w", err)
-	}
-
+func BuildLandscaperContext(ctx context.Context, kclient client.Client, name string, namespaces ...string) error {
 	for _, namespace := range namespaces {
-		secret := &corev1.Secret{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      name,
-				Namespace: namespace,
-			},
-			StringData: map[string]string{
-				corev1.DockerConfigJsonKey: string(registryPullSecrets),
-			},
-			Type: corev1.SecretTypeDockerConfigJson,
-		}
-
-		if err := kclient.Create(ctx, secret); err != nil {
-			return fmt.Errorf("failed to create dockerconfigjson secret: %w", err)
-		}
-
 		landscaperContext := &lsv1alpha1.Context{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      name,
 				Namespace: namespace,
-			},
-			ContextConfiguration: lsv1alpha1.ContextConfiguration{
-				RegistryPullSecrets: []corev1.LocalObjectReference{
-					{
-						Name: name,
-					},
-				},
 			},
 		}
 
