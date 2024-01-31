@@ -14,6 +14,7 @@ import (
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 	lc "github.com/gardener/landscaper/controller-utils/pkg/logging/constants"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/sets"
@@ -35,12 +36,17 @@ func (c *Controller) reconcile(ctx context.Context, deployment *lssv1alpha1.Land
 	instance := &lssv1alpha1.Instance{}
 	instance.GenerateName = fmt.Sprintf("%s-", deployment.GetName())
 	instance.Namespace = deployment.GetNamespace()
-	if deployment.Status.InstanceRef != nil && !deployment.Status.InstanceRef.IsEmpty() {
-		instance.Name = deployment.Status.InstanceRef.Name
-		instance.Namespace = deployment.Status.InstanceRef.Namespace
+
+	instanceRef, err := c.getInstanceRef(ctx, deployment)
+	if err != nil {
+		return err
+	}
+	if instanceRef != nil {
+		instance.Name = instanceRef.Name
+		instance.Namespace = instanceRef.Namespace
 	}
 
-	_, err := kubernetes.CreateOrUpdate(ctx, c.Client(), instance, func() error {
+	_, err = kubernetes.CreateOrUpdate(ctx, c.Client(), instance, func() error {
 		return c.mutateInstance(ctx, deployment, instance)
 	})
 
@@ -80,7 +86,7 @@ func (c *Controller) reconcile(ctx context.Context, deployment *lssv1alpha1.Land
 		return lsserrors.NewWrappedError(err, currOp, "GetServiceTargetConfig", err.Error())
 	}
 
-	instanceRef := &lssv1alpha1.ObjectReference{
+	instanceRef = &lssv1alpha1.ObjectReference{
 		Name:      instance.GetName(),
 		Namespace: instance.GetNamespace(),
 	}
@@ -230,4 +236,60 @@ func (c *Controller) getSchedulingResource(ctx context.Context) (*lssv1alpha1.Ta
 	}
 
 	return scheduling, nil
+}
+
+// getInstanceRef returns a reference to the instance owned by the deployment, or nil if there is no such instance.
+func (c *Controller) getInstanceRef(ctx context.Context, deployment *lssv1alpha1.LandscaperDeployment) (*lssv1alpha1.ObjectReference, error) {
+	if deployment.Status.InstanceRef != nil && !deployment.Status.InstanceRef.IsEmpty() {
+		return deployment.Status.InstanceRef, nil
+	}
+
+	// Re-check on cluster, because it can happen that after the creation of an instance,
+	// its reference could not be written to the deployment status.
+	instanceRef, err := c.getInstanceRefFromCluster(ctx, deployment)
+	if err != nil {
+		return nil, err
+	}
+
+	if instanceRef != nil {
+		deployment.Status.InstanceRef = instanceRef
+		if err := c.Client().Status().Update(ctx, deployment); err != nil {
+			return nil, fmt.Errorf("unable to update landscaper deployment status with instance reference: %w", err)
+		}
+	}
+
+	return instanceRef, nil
+}
+
+func (c *Controller) getInstanceRefFromCluster(ctx context.Context, deployment *lssv1alpha1.LandscaperDeployment) (*lssv1alpha1.ObjectReference, error) {
+	// list instance metadata (deployment and instance have the same namespace, as always for owner and dependent)
+	instanceMetadataList := &metav1.PartialObjectMetadataList{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: lssv1alpha1.SchemeGroupVersion.String(),
+			Kind:       "Instance",
+		},
+	}
+
+	if err := c.Client().List(ctx, instanceMetadataList, client.InNamespace(deployment.Namespace)); err != nil {
+		return nil, fmt.Errorf("unable to list instances in namespace %s: %w", deployment.Namespace, err)
+	}
+
+	// search instance with the given deployment as owner
+	for i := range instanceMetadataList.Items {
+		instanceMeta := &instanceMetadataList.Items[i]
+		ownerRefs := instanceMeta.GetOwnerReferences()
+		for _, ownerRef := range ownerRefs {
+			if ownerRef.Name == deployment.Name &&
+				ownerRef.Kind == "LandscaperDeployment" &&
+				ownerRef.APIVersion == lssv1alpha1.SchemeGroupVersion.String() {
+
+				return &lssv1alpha1.ObjectReference{
+					Name:      instanceMeta.Name,
+					Namespace: instanceMeta.Namespace,
+				}, nil
+			}
+		}
+	}
+
+	return nil, nil
 }
