@@ -96,6 +96,9 @@
           "properties": {
             "oidcConfig": {
               "type": "object"
+            },
+            "encryptionConfig": {
+              "type": "object"
             }
           }
         }

@@ -4,6 +4,8 @@
 
 package v1alpha1
 
+import "github.com/gardener/landscaper/apis/core/v1alpha1"
+
 // ShootConfiguration holds the configuration of a gardener shoot cluster.
 type ShootConfiguration struct {
 	// Provider is the shoot provider configuration.
@@ -82,7 +84,8 @@ type ShootKubernetesConfig struct {
 
 // KubeAPIServerConfig is the configuration for the KubeAPIServer
 type KubeAPIServerConfig struct {
-	OIDCConfig OIDCConfig `json:"oidcConfig,omitempty"`
+	OIDCConfig       OIDCConfig       `json:"oidcConfig,omitempty"`
+	EncryptionConfig v1alpha1.AnyJSON `json:"encryptionConfig,omitempty"`
 }
 
 // OIDCConfig defines the OIDC configuration
