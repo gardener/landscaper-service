@@ -23,8 +23,7 @@ deployItems:
             {{ $controllerImageResource := getResource .cd "name" "ingress-nginx-controller" }}
             {{ $controllerImage := parseOCIRef $controllerImageResource.access.imageReference }}
             repository: {{ index $controllerImage 0 }}
-            tag: {{ $controllerImageResource.version }}
-            digest: {{ index $controllerImage 1 }}
+            tag: {{ index $controllerImage 1 }}
 
           ingressClass: nginx
           watchIngressWithoutClass: true
