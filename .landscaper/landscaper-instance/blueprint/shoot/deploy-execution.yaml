@@ -156,6 +156,10 @@ deployItems:
                       configMapRef:
                         name: {{ .imports.name }}-audit-policy
                   {{ end }}
+                  {{ if ((.imports.shootConfig.kubernetes.kubeAPIServer).encryptionConfig) }}
+                  encryptionConfig:
+{{ toYaml .imports.shootConfig.kubernetes.kubeAPIServer.encryptionConfig | indent 20 }}
+                  {{ end }}
               purpose: production
               maintenance:
                 timeWindow:
