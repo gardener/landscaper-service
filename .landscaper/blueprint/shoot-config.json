@@ -22,18 +22,7 @@
     "maxUnavailable": 0
   },
   "kubernetes": {
-    "version": "1.26",
-    "kubeAPIServer": {
-      "encryptionConfig": {
-        "resources": [
-          "installations.landscaper.gardener.cloud",
-          "executions.landscaper.gardener.cloud",
-          "deployitems.landscaper.gardener.cloud",
-          "targets.landscaper.gardener.cloud",
-          "dataobjects.landscaper.gardener.cloud"
-        ]
-      }
-    }
+    "version": "1.26"
   },
   "maintenance": {
     "timeWindow": {
