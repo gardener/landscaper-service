@@ -80,4 +80,4 @@ build-resources: docker-images component
 
 .PHONY: build-int-test-image
 build-int-test-image:
-	@docker buildx build --platform linux/amd64 integration-test/docker -t eu.gcr.io/gardener-project/landscaper-service/integration-test:1.21.5-alpine3.18 --push
+	@docker buildx build --platform linux/amd64 integration-test/docker -t europe-docker.pkg.dev/sap-gcp-cp-k8s-stable-hub/landscaper/integration-test:1.21.5-alpine3.18 --push
