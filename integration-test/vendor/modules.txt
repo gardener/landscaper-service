@@ -1,3 +1,6 @@
+# github.com/Masterminds/semver/v3 v3.2.1
+## explicit; go 1.18
+github.com/Masterminds/semver/v3
 # github.com/beorn7/perks v1.0.1
 ## explicit; go 1.11
 github.com/beorn7/perks/quantile
@@ -7,8 +10,19 @@ github.com/cespare/xxhash/v2
 # github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc
 ## explicit
 github.com/davecgh/go-spew/spew
-# github.com/distribution/reference v0.5.0
-## explicit; go 1.20
+# github.com/docker/cli v24.0.7+incompatible
+## explicit
+github.com/docker/cli/cli/config
+github.com/docker/cli/cli/config/configfile
+github.com/docker/cli/cli/config/credentials
+github.com/docker/cli/cli/config/types
+# github.com/docker/docker v24.0.7+incompatible
+## explicit
+github.com/docker/docker/pkg/homedir
+# github.com/docker/docker-credential-helpers v0.8.0
+## explicit; go 1.19
+github.com/docker/docker-credential-helpers/client
+github.com/docker/docker-credential-helpers/credentials
 # github.com/emicklei/go-restful/v3 v3.11.0
 ## explicit; go 1.13
 github.com/emicklei/go-restful/v3
@@ -32,7 +46,7 @@ github.com/gardener/component-spec/bindings-go/apis/v2/validation
 github.com/gardener/component-spec/bindings-go/codec
 github.com/gardener/component-spec/bindings-go/ctf
 github.com/gardener/component-spec/bindings-go/utils/selector
-# github.com/gardener/landscaper v0.93.0 => github.com/gardener/landscaper v0.92.0
+# github.com/gardener/landscaper v0.93.0 => github.com/gardener/landscaper v0.98.0
 ## explicit; go 1.21
 github.com/gardener/landscaper/pkg/api
 github.com/gardener/landscaper/pkg/components/model
@@ -53,7 +67,7 @@ github.com/gardener/landscaper-service/pkg/apis/core
 github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1
 github.com/gardener/landscaper-service/pkg/apis/installation
 github.com/gardener/landscaper-service/pkg/utils
-# github.com/gardener/landscaper/apis v0.96.0
+# github.com/gardener/landscaper/apis v0.98.0
 ## explicit; go 1.21
 github.com/gardener/landscaper/apis/config
 github.com/gardener/landscaper/apis/config/install
@@ -75,7 +89,7 @@ github.com/gardener/landscaper/apis/errors
 github.com/gardener/landscaper/apis/mediatype
 github.com/gardener/landscaper/apis/schema
 github.com/gardener/landscaper/apis/utils
-# github.com/gardener/landscaper/controller-utils v0.96.0
+# github.com/gardener/landscaper/controller-utils v0.98.0
 ## explicit; go 1.21
 github.com/gardener/landscaper/controller-utils/pkg/kubernetes
 github.com/gardener/landscaper/controller-utils/pkg/landscaper
@@ -95,6 +109,7 @@ github.com/ghodss/yaml
 # github.com/go-logr/logr v1.3.0
 ## explicit; go 1.18
 github.com/go-logr/logr
+github.com/go-logr/logr/slogr
 # github.com/go-logr/zapr v1.2.4
 ## explicit; go 1.16
 github.com/go-logr/zapr
@@ -139,6 +154,22 @@ github.com/google/gofuzz/bytesource
 # github.com/google/uuid v1.4.0
 ## explicit
 github.com/google/uuid
+# github.com/hashicorp/go-cleanhttp v0.5.2
+## explicit; go 1.13
+github.com/hashicorp/go-cleanhttp
+# github.com/hashicorp/go-retryablehttp v0.7.4
+## explicit; go 1.13
+github.com/hashicorp/go-retryablehttp
+# github.com/hashicorp/go-rootcerts v1.0.2
+## explicit; go 1.12
+github.com/hashicorp/go-rootcerts
+# github.com/hashicorp/go-secure-stdlib/strutil v0.1.2
+## explicit; go 1.16
+github.com/hashicorp/go-secure-stdlib/strutil
+# github.com/hashicorp/vault-client-go v0.4.2
+## explicit; go 1.21
+github.com/hashicorp/vault-client-go
+github.com/hashicorp/vault-client-go/schema
 # github.com/imdario/mergo v0.3.16
 ## explicit; go 1.13
 github.com/imdario/mergo
@@ -151,6 +182,19 @@ github.com/josharian/intern
 # github.com/json-iterator/go v1.1.12
 ## explicit; go 1.12
 github.com/json-iterator/go
+# github.com/klauspost/compress v1.17.2
+## explicit; go 1.18
+github.com/klauspost/compress
+github.com/klauspost/compress/flate
+github.com/klauspost/compress/fse
+github.com/klauspost/compress/huff0
+github.com/klauspost/compress/internal/cpuinfo
+github.com/klauspost/compress/internal/snapref
+github.com/klauspost/compress/zstd
+github.com/klauspost/compress/zstd/internal/xxhash
+# github.com/klauspost/pgzip v1.2.6
+## explicit
+github.com/klauspost/pgzip
 # github.com/mailru/easyjson v0.7.7
 ## explicit; go 1.12
 github.com/mailru/easyjson/buffer
@@ -159,6 +203,24 @@ github.com/mailru/easyjson/jwriter
 # github.com/mandelsoft/filepath v0.0.0-20230412200429-36b1eb66bd27
 ## explicit; go 1.19
 github.com/mandelsoft/filepath/pkg/filepath
+# github.com/mandelsoft/logging v0.0.0-20230905123808-7042ee3aae45
+## explicit; go 1.18
+github.com/mandelsoft/logging
+github.com/mandelsoft/logging/config
+github.com/mandelsoft/logging/contract
+github.com/mandelsoft/logging/logrusfmt
+github.com/mandelsoft/logging/logrusl/adapter
+github.com/mandelsoft/logging/logrusr
+github.com/mandelsoft/logging/scheme
+# github.com/mandelsoft/spiff v1.7.0-beta-5
+## explicit; go 1.18
+github.com/mandelsoft/spiff/debug
+github.com/mandelsoft/spiff/dynaml
+github.com/mandelsoft/spiff/dynaml/crypt
+github.com/mandelsoft/spiff/dynaml/x509
+github.com/mandelsoft/spiff/features
+github.com/mandelsoft/spiff/legacy/candiedyaml
+github.com/mandelsoft/spiff/yaml
 # github.com/mandelsoft/vfs v0.4.0
 ## explicit; go 1.19
 github.com/mandelsoft/vfs/pkg/memoryfs
@@ -168,9 +230,18 @@ github.com/mandelsoft/vfs/pkg/readonlyfs
 github.com/mandelsoft/vfs/pkg/utils
 github.com/mandelsoft/vfs/pkg/vfs
 github.com/mandelsoft/vfs/pkg/yamlfs
+# github.com/marstr/guid v1.1.0
+## explicit
+github.com/marstr/guid
+# github.com/mattn/go-isatty v0.0.20
+## explicit; go 1.15
+github.com/mattn/go-isatty
 # github.com/matttproud/golang_protobuf_extensions/v2 v2.0.0
 ## explicit; go 1.19
 github.com/matttproud/golang_protobuf_extensions/v2/pbutil
+# github.com/mitchellh/go-homedir v1.1.0
+## explicit
+github.com/mitchellh/go-homedir
 # github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd
 ## explicit
 github.com/modern-go/concurrent
@@ -180,6 +251,67 @@ github.com/modern-go/reflect2
 # github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822
 ## explicit
 github.com/munnerz/goautoneg
+# github.com/open-component-model/ocm v0.6.0
+## explicit; go 1.21
+github.com/open-component-model/ocm/pkg/blobaccess
+github.com/open-component-model/ocm/pkg/blobaccess/bpi
+github.com/open-component-model/ocm/pkg/blobaccess/internal
+github.com/open-component-model/ocm/pkg/common
+github.com/open-component-model/ocm/pkg/common/accessio
+github.com/open-component-model/ocm/pkg/common/compression
+github.com/open-component-model/ocm/pkg/contexts/config
+github.com/open-component-model/ocm/pkg/contexts/config/config
+github.com/open-component-model/ocm/pkg/contexts/config/cpi
+github.com/open-component-model/ocm/pkg/contexts/config/internal
+github.com/open-component-model/ocm/pkg/contexts/credentials
+github.com/open-component-model/ocm/pkg/contexts/credentials/builtin
+github.com/open-component-model/ocm/pkg/contexts/credentials/builtin/github
+github.com/open-component-model/ocm/pkg/contexts/credentials/builtin/github/identity
+github.com/open-component-model/ocm/pkg/contexts/credentials/builtin/oci/identity
+github.com/open-component-model/ocm/pkg/contexts/credentials/config
+github.com/open-component-model/ocm/pkg/contexts/credentials/cpi
+github.com/open-component-model/ocm/pkg/contexts/credentials/identity/hostpath
+github.com/open-component-model/ocm/pkg/contexts/credentials/internal
+github.com/open-component-model/ocm/pkg/contexts/credentials/repositories
+github.com/open-component-model/ocm/pkg/contexts/credentials/repositories/aliases
+github.com/open-component-model/ocm/pkg/contexts/credentials/repositories/directcreds
+github.com/open-component-model/ocm/pkg/contexts/credentials/repositories/dockerconfig
+github.com/open-component-model/ocm/pkg/contexts/credentials/repositories/gardenerconfig
+github.com/open-component-model/ocm/pkg/contexts/credentials/repositories/gardenerconfig/cpi
+github.com/open-component-model/ocm/pkg/contexts/credentials/repositories/gardenerconfig/handler/container_registry
+github.com/open-component-model/ocm/pkg/contexts/credentials/repositories/gardenerconfig/identity
+github.com/open-component-model/ocm/pkg/contexts/credentials/repositories/memory
+github.com/open-component-model/ocm/pkg/contexts/credentials/repositories/memory/config
+github.com/open-component-model/ocm/pkg/contexts/credentials/repositories/vault
+github.com/open-component-model/ocm/pkg/contexts/credentials/repositories/vault/identity
+github.com/open-component-model/ocm/pkg/contexts/datacontext
+github.com/open-component-model/ocm/pkg/contexts/datacontext/action/api
+github.com/open-component-model/ocm/pkg/contexts/datacontext/action/handlers
+github.com/open-component-model/ocm/pkg/contexts/datacontext/attrs/vfsattr
+github.com/open-component-model/ocm/pkg/contexts/datacontext/config
+github.com/open-component-model/ocm/pkg/contexts/datacontext/config/attrs
+github.com/open-component-model/ocm/pkg/contexts/datacontext/config/logging
+github.com/open-component-model/ocm/pkg/contexts/ocm/compdesc/equivalent
+github.com/open-component-model/ocm/pkg/contexts/ocm/compdesc/meta/v1
+github.com/open-component-model/ocm/pkg/encrypt
+github.com/open-component-model/ocm/pkg/errors
+github.com/open-component-model/ocm/pkg/exception
+github.com/open-component-model/ocm/pkg/finalizer
+github.com/open-component-model/ocm/pkg/generics
+github.com/open-component-model/ocm/pkg/iotools
+github.com/open-component-model/ocm/pkg/listformat
+github.com/open-component-model/ocm/pkg/logging
+github.com/open-component-model/ocm/pkg/mime
+github.com/open-component-model/ocm/pkg/optionutils
+github.com/open-component-model/ocm/pkg/refmgmt
+github.com/open-component-model/ocm/pkg/registrations
+github.com/open-component-model/ocm/pkg/runtime
+github.com/open-component-model/ocm/pkg/runtime/descriptivetype
+github.com/open-component-model/ocm/pkg/semverutils
+github.com/open-component-model/ocm/pkg/signing
+github.com/open-component-model/ocm/pkg/signing/signutils
+github.com/open-component-model/ocm/pkg/utils
+github.com/open-component-model/ocm/pkg/utils/tarutils
 # github.com/opencontainers/go-digest v1.0.0
 ## explicit; go 1.13
 github.com/opencontainers/go-digest
@@ -209,12 +341,33 @@ github.com/prometheus/common/model
 github.com/prometheus/procfs
 github.com/prometheus/procfs/internal/fs
 github.com/prometheus/procfs/internal/util
+# github.com/ryanuber/go-glob v1.0.0
+## explicit
+github.com/ryanuber/go-glob
+# github.com/sirupsen/logrus v1.9.3
+## explicit; go 1.13
+github.com/sirupsen/logrus
 # github.com/spf13/cobra v1.8.0
 ## explicit; go 1.15
 github.com/spf13/cobra
 # github.com/spf13/pflag v1.0.5
 ## explicit; go 1.12
 github.com/spf13/pflag
+# github.com/tonglil/buflogr v1.0.1
+## explicit; go 1.17
+github.com/tonglil/buflogr
+# github.com/ulikunitz/xz v0.5.11
+## explicit; go 1.12
+github.com/ulikunitz/xz
+github.com/ulikunitz/xz/internal/hash
+github.com/ulikunitz/xz/internal/xlog
+github.com/ulikunitz/xz/lzma
+# github.com/valyala/bytebufferpool v1.0.0
+## explicit
+github.com/valyala/bytebufferpool
+# github.com/valyala/fasttemplate v1.2.2
+## explicit; go 1.12
+github.com/valyala/fasttemplate
 # github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb
 ## explicit
 github.com/xeipuuv/gojsonpointer
@@ -238,9 +391,23 @@ go.uber.org/zap/internal/exit
 go.uber.org/zap/internal/pool
 go.uber.org/zap/internal/stacktrace
 go.uber.org/zap/zapcore
+# golang.org/x/crypto v0.17.0
+## explicit; go 1.18
+golang.org/x/crypto/bcrypt
+golang.org/x/crypto/blowfish
+golang.org/x/crypto/chacha20
+golang.org/x/crypto/curve25519
+golang.org/x/crypto/curve25519/internal/field
+golang.org/x/crypto/internal/alias
+golang.org/x/crypto/internal/poly1305
+golang.org/x/crypto/md4
+golang.org/x/crypto/ssh
+golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
 # golang.org/x/exp v0.0.0-20231006140011-7918f672742d
 ## explicit; go 1.20
+golang.org/x/exp/constraints
 golang.org/x/exp/maps
+golang.org/x/exp/slices
 # golang.org/x/net v0.17.0 => golang.org/x/net v0.7.0
 ## explicit; go 1.17
 golang.org/x/net/http/httpguts
@@ -253,6 +420,8 @@ golang.org/x/oauth2
 golang.org/x/oauth2/internal
 # golang.org/x/sys v0.15.0
 ## explicit; go 1.18
+golang.org/x/sys/cpu
+golang.org/x/sys/execabs
 golang.org/x/sys/plan9
 golang.org/x/sys/unix
 golang.org/x/sys/windows
@@ -320,7 +489,7 @@ gopkg.in/yaml.v2
 # gopkg.in/yaml.v3 v3.0.1
 ## explicit
 gopkg.in/yaml.v3
-# k8s.io/api v0.28.4
+# k8s.io/api v0.29.0 => k8s.io/api v0.28.4
 ## explicit; go 1.20
 k8s.io/api/admission/v1
 k8s.io/api/admission/v1beta1
@@ -376,7 +545,7 @@ k8s.io/api/scheduling/v1beta1
 k8s.io/api/storage/v1
 k8s.io/api/storage/v1alpha1
 k8s.io/api/storage/v1beta1
-# k8s.io/apimachinery v0.28.4
+# k8s.io/apimachinery v0.29.0 => k8s.io/apimachinery v0.28.4
 ## explicit; go 1.20
 k8s.io/apimachinery/pkg/api/equality
 k8s.io/apimachinery/pkg/api/errors
@@ -427,7 +596,7 @@ k8s.io/apimachinery/pkg/version
 k8s.io/apimachinery/pkg/watch
 k8s.io/apimachinery/third_party/forked/golang/json
 k8s.io/apimachinery/third_party/forked/golang/reflect
-# k8s.io/client-go v0.28.4
+# k8s.io/client-go v0.29.0 => k8s.io/client-go v0.28.4
 ## explicit; go 1.20
 k8s.io/client-go/applyconfigurations/admissionregistration/v1
 k8s.io/client-go/applyconfigurations/admissionregistration/v1alpha1
@@ -566,11 +735,11 @@ k8s.io/client-go/util/homedir
 k8s.io/client-go/util/jsonpath
 k8s.io/client-go/util/keyutil
 k8s.io/client-go/util/workqueue
-# k8s.io/component-base v0.28.3
-## explicit; go 1.20
+# k8s.io/component-base v0.29.0
+## explicit; go 1.21
 k8s.io/component-base/config
 k8s.io/component-base/config/v1alpha1
-# k8s.io/klog/v2 v2.100.1
+# k8s.io/klog/v2 v2.110.1
 ## explicit; go 1.13
 k8s.io/klog/v2
 k8s.io/klog/v2/internal/buffer
@@ -578,6 +747,7 @@ k8s.io/klog/v2/internal/clock
 k8s.io/klog/v2/internal/dbg
 k8s.io/klog/v2/internal/serialize
 k8s.io/klog/v2/internal/severity
+k8s.io/klog/v2/internal/sloghandler
 # k8s.io/kube-openapi v0.0.0-20231010175941-2dd684a91f00
 ## explicit; go 1.19
 k8s.io/kube-openapi/pkg/cached
@@ -642,7 +812,7 @@ sigs.k8s.io/controller-runtime/pkg/webhook/internal/metrics
 ## explicit; go 1.18
 sigs.k8s.io/json
 sigs.k8s.io/json/internal/golang/encoding/json
-# sigs.k8s.io/structured-merge-diff/v4 v4.3.0
+# sigs.k8s.io/structured-merge-diff/v4 v4.4.1
 ## explicit; go 1.13
 sigs.k8s.io/structured-merge-diff/v4/fieldpath
 sigs.k8s.io/structured-merge-diff/v4/merge
@@ -655,6 +825,9 @@ sigs.k8s.io/yaml
 sigs.k8s.io/yaml/goyaml.v2
 # github.com/containerd/containerd => github.com/containerd/containerd v1.6.26
 # github.com/gardener/component-cli v0.40.0 => github.com/gardener/component-cli v0.44.0
-# github.com/gardener/landscaper => github.com/gardener/landscaper v0.92.0
+# github.com/gardener/landscaper => github.com/gardener/landscaper v0.98.0
 # github.com/gardener/landscaper-service => ../
 # golang.org/x/net => golang.org/x/net v0.7.0
+# k8s.io/api => k8s.io/api v0.28.4
+# k8s.io/apimachinery => k8s.io/apimachinery v0.28.4
+# k8s.io/client-go => k8s.io/client-go v0.28.4
