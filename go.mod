@@ -6,8 +6,8 @@ toolchain go1.21.5
 
 require (
 	github.com/gardener/component-spec/bindings-go v0.0.66
-	github.com/gardener/landscaper/apis v0.96.0
-	github.com/gardener/landscaper/controller-utils v0.96.0
+	github.com/gardener/landscaper/apis v0.98.0
+	github.com/gardener/landscaper/controller-utils v0.98.0
 	github.com/go-logr/logr v1.3.0
 	github.com/google/uuid v1.3.1
 	github.com/onsi/ginkgo v1.16.5
@@ -22,6 +22,11 @@ require (
 	k8s.io/utils v0.0.0-20231121161247-cf03d44ff3cf
 	sigs.k8s.io/controller-runtime v0.16.3
 	sigs.k8s.io/controller-tools v0.13.0
+)
+
+replace (
+	github.com/emicklei/go-restful v2.9.5+incompatible => github.com/emicklei/go-restful v2.16.0+incompatible
+	golang.org/x/net => golang.org/x/net v0.7.0
 )
 
 require (
@@ -90,9 +95,4 @@ require (
 	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.2.3 // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect
-)
-
-replace (
-	github.com/emicklei/go-restful v2.9.5+incompatible => github.com/emicklei/go-restful v2.16.0+incompatible
-	golang.org/x/net => golang.org/x/net v0.7.0
 )

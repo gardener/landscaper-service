@@ -12,7 +12,7 @@ import (
 	"strconv"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/utils/pointer"
+	"k8s.io/utils/ptr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/yaml"
 
@@ -36,13 +36,15 @@ type DataObject struct {
 // Metadata describes the metadata of a data object.
 // This metadata is also represented as annotations/labels at the object.
 type Metadata struct {
-	Namespace  string
-	Context    string
-	SourceType lsv1alpha1.DataObjectSourceType
-	Source     string
-	Key        string
-	Hash       string
-	Index      *int
+	Namespace    string
+	Context      string
+	SourceType   lsv1alpha1.DataObjectSourceType
+	Source       string
+	Key          string
+	Hash         string
+	Index        *int
+	TargetMapKey *string
+	JobID        string
 }
 
 // generateHash returns the internal data generation function for dataobjects or targets.
@@ -90,8 +92,14 @@ func GetMetadataFromObject(objAcc metav1.Object, data []byte) Metadata {
 		if rawIndex, ok := labels[lsv1alpha1.DataObjectIndexLabel]; ok {
 			index, err := strconv.Atoi(rawIndex)
 			if err == nil {
-				meta.Index = pointer.Int(index)
+				meta.Index = ptr.To[int](index)
 			}
+		}
+		if targetMapKey, ok := labels[lsv1alpha1.DataObjectTargetMapKeyLabel]; ok {
+			meta.TargetMapKey = &targetMapKey
+		}
+		if jobID, ok := labels[lsv1alpha1.DataObjectJobIDLabel]; ok {
+			meta.JobID = jobID
 		}
 	}
 	if hash, ok := objAcc.GetAnnotations()[lsv1alpha1.DataObjectHashAnnotation]; ok {
@@ -134,6 +142,16 @@ func SetMetadataFromObject(objAcc metav1.Object, meta Metadata) {
 	} else {
 		delete(labels, lsv1alpha1.DataObjectIndexLabel)
 	}
+	if meta.TargetMapKey != nil {
+		labels[lsv1alpha1.DataObjectTargetMapKeyLabel] = fmt.Sprint(*meta.TargetMapKey)
+	} else {
+		delete(labels, lsv1alpha1.DataObjectTargetMapKeyLabel)
+	}
+	if len(meta.JobID) != 0 {
+		labels[lsv1alpha1.DataObjectJobIDLabel] = meta.JobID
+	} else {
+		delete(labels, lsv1alpha1.DataObjectJobIDLabel)
+	}
 
 	objAcc.SetLabels(labels)
 
@@ -167,6 +185,11 @@ func (do *DataObject) SetContext(ctx string) *DataObject {
 // SetNamespace sets the namespace for the given data object.
 func (do *DataObject) SetNamespace(ns string) *DataObject {
 	do.Metadata.Namespace = ns
+	return do
+}
+
+func (do *DataObject) SetJobID(jobID string) *DataObject {
+	do.Metadata.JobID = jobID
 	return do
 }
 
