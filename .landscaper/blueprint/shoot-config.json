@@ -30,7 +30,8 @@
           "executions.landscaper.gardener.cloud",
           "deployitems.landscaper.gardener.cloud",
           "targets.landscaper.gardener.cloud",
-          "dataobjects.landscaper.gardener.cloud"
+          "dataobjects.landscaper.gardener.cloud",
+          "contexts.landscaper.gardener.cloud"
         ]
       }
     }
