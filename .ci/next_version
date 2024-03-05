@@ -9,7 +9,7 @@ set -o nounset
 set -o pipefail
 
 apk add --no-cache git make musl-dev curl gcompat
-GO_VERSION=1.21.5
+GO_VERSION=1.21.7
 curl -LO https://golang.org/dl/go${GO_VERSION}.linux-amd64.tar.gz
 tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz
 export PATH=$PATH:/usr/local/go/bin
