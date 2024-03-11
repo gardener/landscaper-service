@@ -26,4 +26,5 @@ To update it's dependencies check new versions for
 - [brancz / kube-rbac-proxy](https://quay.io/repository/brancz/kube-rbac-proxy?tab=tags&tag=latest)
 - [fluentbit.io](https://docs.fluentbit.io/manual/installation/docker#tags-and-versions)
 
-and adapt versions in file [logging-stack/settings.yaml](https://github.tools.sap/ocm-reuse/logging-stack/settings.yaml)
+and adapt versions in file [logging-stack/settings.yaml](https://github.tools.sap/ocm-reuse/logging-stack/blob/main/logging-stack/settings.yaml)
+
