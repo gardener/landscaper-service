@@ -24,7 +24,7 @@ github.com/fsnotify/fsnotify
 ## explicit; go 1.18
 github.com/gardener/component-spec/bindings-go/apis/v2
 github.com/gardener/component-spec/bindings-go/utils/selector
-# github.com/gardener/landscaper/apis v0.98.0
+# github.com/gardener/landscaper/apis v0.99.0
 ## explicit; go 1.21
 github.com/gardener/landscaper/apis/config
 github.com/gardener/landscaper/apis/core
@@ -34,7 +34,7 @@ github.com/gardener/landscaper/apis/core/v1alpha1/helper
 github.com/gardener/landscaper/apis/core/v1alpha1/targettypes
 github.com/gardener/landscaper/apis/schema
 github.com/gardener/landscaper/apis/utils
-# github.com/gardener/landscaper/controller-utils v0.98.0
+# github.com/gardener/landscaper/controller-utils v0.99.0
 ## explicit; go 1.21
 github.com/gardener/landscaper/controller-utils/pkg/crdmanager
 github.com/gardener/landscaper/controller-utils/pkg/errors
@@ -710,7 +710,7 @@ k8s.io/kube-openapi/pkg/spec3
 k8s.io/kube-openapi/pkg/util/proto
 k8s.io/kube-openapi/pkg/util/sets
 k8s.io/kube-openapi/pkg/validation/spec
-# k8s.io/utils v0.0.0-20231121161247-cf03d44ff3cf
+# k8s.io/utils v0.0.0-20240102154912-e7106e64919e
 ## explicit; go 1.18
 k8s.io/utils/buffer
 k8s.io/utils/clock
