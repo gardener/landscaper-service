@@ -263,21 +263,6 @@ landscaper:
     - container
     - helm
     - manifest
-    deployersConfig:
-      Deployers:
-        container:
-          deployer:
-            verbosityLevel: debug
-        helm:
-          deployer:
-            verbosityLevel: debug
-        manifest:
-          deployer:
-            verbosityLevel: debug
-    deployerManagement:
-      namespace: {{ .Namespace }}
-      agent:
-        namespace: {{ .Namespace }}
 `
 
 	t, err := template.New("valuesTemplate").Parse(valuesTemplate)
