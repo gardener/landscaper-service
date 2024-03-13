@@ -9,7 +9,7 @@ require (
 	github.com/gardener/landscaper-service v0.0.0-00010101000000-000000000000
 	github.com/gardener/landscaper/apis v0.99.0
 	github.com/gardener/landscaper/controller-utils v0.99.0
-	github.com/gardener/landscapercli v0.33.0
+	github.com/gardener/landscapercli v0.34.0
 	k8s.io/api v0.29.2
 	k8s.io/apimachinery v0.29.2
 	k8s.io/client-go v0.29.2
@@ -22,9 +22,9 @@ replace (
 	github.com/gardener/landscaper => github.com/gardener/landscaper v0.99.0
 	github.com/gardener/landscaper-service => ../
 	golang.org/x/net => golang.org/x/net v0.7.0
-	k8s.io/api => k8s.io/api v0.28.4
-	k8s.io/apimachinery => k8s.io/apimachinery v0.28.4
-	k8s.io/client-go => k8s.io/client-go v0.28.4
+	k8s.io/api => k8s.io/api v0.29.2
+	k8s.io/apimachinery => k8s.io/apimachinery v0.29.2
+	k8s.io/client-go => k8s.io/client-go v0.29.2
 )
 
 require (
@@ -39,7 +39,7 @@ require (
 	github.com/evanphx/json-patch/v5 v5.6.0 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/gardener/component-cli v0.55.0 // indirect
-	github.com/gardener/landscaper v0.98.0 // indirect
+	github.com/gardener/landscaper v0.99.0 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/go-logr/logr v1.4.1 // indirect
 	github.com/go-logr/zapr v1.2.4 // indirect
