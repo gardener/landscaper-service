@@ -13,7 +13,7 @@ GO_VERSION=1.21.7
 curl -LO https://golang.org/dl/go${GO_VERSION}.linux-amd64.tar.gz
 tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz
 export PATH=$PATH:/usr/local/go/bin
-mkdir -p /lib64 && ln -s /lib/libc.musl-x86_64.so.1 /lib64/ld-linux-x86-64.so.2
+mkdir -p /lib64 && ln -f -s /lib/libc.musl-x86_64.so.1 /lib64/ld-linux-x86-64.so.2
 
 SOURCE_DIR="$(dirname $0)/.."
 
