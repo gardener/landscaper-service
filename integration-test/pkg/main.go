@@ -263,17 +263,7 @@ landscaper:
     - container
     - helm
     - manifest
-    deployersConfig:
-      Deployers:
-        container:
-          deployer:
-            verbosityLevel: debug
-        helm:
-          deployer:
-            verbosityLevel: debug
-        manifest:
-          deployer:
-            verbosityLevel: debug
+    deployersConfig: {}
     deployerManagement:
       namespace: {{ .Namespace }}
       agent:
