@@ -16,13 +16,7 @@ require (
 	sigs.k8s.io/controller-runtime v0.17.2
 )
 
-replace (
-	github.com/containerd/containerd => github.com/containerd/containerd v1.6.26
-	github.com/gardener/component-cli v0.40.0 => github.com/gardener/component-cli v0.44.0
-	github.com/gardener/landscaper => github.com/gardener/landscaper v0.99.0
-	github.com/gardener/landscaper-service => ../
-	golang.org/x/net => golang.org/x/net v0.7.0
-)
+replace github.com/gardener/landscaper-service => ../
 
 require (
 	github.com/Masterminds/semver/v3 v3.2.1 // indirect
