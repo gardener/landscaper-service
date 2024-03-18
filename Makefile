@@ -8,76 +8,120 @@ EFFECTIVE_VERSION                              := $(shell $(REPO_ROOT)/hack/get-
 
 REGISTRY                                       := europe-docker.pkg.dev/sap-gcp-cp-k8s-stable-hub/landscaper
 
-DOCKER_BUILDER_NAME := "laas-multiarch"
-DOCKER_PLATFORM     := "linux/amd64"
+CODE_DIRS := $(REPO_ROOT)/cmd/... $(REPO_ROOT)/pkg/... $(REPO_ROOT)/test/... $(REPO_ROOT)/integration-test/...
 
-.PHONY: install-requirements
-install-requirements:
-	@go install sigs.k8s.io/controller-runtime/tools/setup-envtest@latest
-	@$(REPO_ROOT)/hack/install-requirements.sh
+##@ General
+
+.PHONY: help
+help: ## Display this help.
+	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
+
+
+##@ Development
 
 .PHONY: revendor
-revendor:
+revendor: ## Runs 'go mod tidy' for all go modules in this repo.
 	@$(REPO_ROOT)/hack/revendor.sh
-	@cd $(REPO_ROOT)/integration-test && $(REPO_ROOT)/hack/revendor.sh
 
 .PHONY: format
-format:
-	@$(REPO_ROOT)/hack/format.sh $(REPO_ROOT)/pkg $(REPO_ROOT)/cmd $(REPO_ROOT)/hack $(REPO_ROOT)/test $(REPO_ROOT)/integration-test/pkg
+format: goimports ## Runs the formatter.
+	@@FORMATTER=$(FORMATTER) $(REPO_ROOT)/hack/format.sh $(CODE_DIRS)
 
 .PHONY: check
-check: revendor check-fast
-
-.PHONY: check-fast
-check-fast:
-	@$(REPO_ROOT)/hack/check.sh --golangci-lint-config=./.golangci.yaml $(REPO_ROOT)/cmd/... $(REPO_ROOT)/pkg/... $(REPO_ROOT)/hack/... $(REPO_ROOT)/test/...
-	@cd $(REPO_ROOT)/integration-test && $(REPO_ROOT)/hack/check.sh --golangci-lint-config=$(REPO_ROOT)/.golangci.yaml ./pkg/...
+check: golangci-lint goimports ## Runs linter, 'go vet', and checks if the formatter has been run.
+	@LINTER=$(LINTER) FORMATTER=$(FORMATTER) $(REPO_ROOT)/hack/check.sh --golangci-lint-config="$(REPO_ROOT)/.golangci.yaml" $(CODE_DIRS)
 
 .PHONY: verify
-verify: check
-
-.PHONY: setup-testenv
-setup-testenv:
-	@$(REPO_ROOT)/hack/setup-testenv.sh
-
-.PHONY: test
-test: setup-testenv
-	@$(REPO_ROOT)/hack/test.sh
-
-.PHONY: integration-test
-integration-test:
-	@cd $(REPO_ROOT)/integration-test && go run ./pkg --kubeconfig $(KUBECONFIG) --laas-version $(EFFECTIVE_VERSION) --laas-repository $(REGISTRY) --provider-type $(CLUSTER_PROVIDER_TYPE)
+verify: check ## Alias for 'make check'.
 
 .PHONY: generate-code
-generate-code:
-	$(REPO_ROOT)/hack/generate-code.sh ./... && $(REPO_ROOT)/hack/generate-crd.sh
+generate-code: code-gen controller-gen ## Runs code generation (deepcopy/conversion/defaulter functions, CRDs).
+	@CODE_GEN_SCRIPT=$(CODE_GEN_SCRIPT) CONTROLLER_GEN=$(CONTROLLER_GEN) $(REPO_ROOT)/hack/generate-code.sh
 
-.PHONY: generate
-generate: generate-code format revendor
+.PHONY: generate # Runs code and docs generation and the formatter.
+generate: generate-code format
 
-#################################################################
-# Rules related to binary build, docker image build and release #
-#################################################################
 
-.PHONY: install
-install:
-	@EFFECTIVE_VERSION=$(EFFECTIVE_VERSION) ./hack/install.sh
+##@ Build
 
+PLATFORMS ?= linux/arm64,linux/amd64
+
+.PHONY: build
+build: ## Build binaries for all os/arch combinations specified in PLATFORMS.
+	@PLATFORMS=$(PLATFORMS) COMPONENT=landscaper-service-controller $(REPO_ROOT)/hack/build.sh
+	@PLATFORMS=$(PLATFORMS) COMPONENT=landscaper-service-webhooks-server $(REPO_ROOT)/hack/build.sh
+	@PLATFORMS=$(PLATFORMS) COMPONENT=landscaper-service-target-shoot-sidecar-server $(REPO_ROOT)/hack/build.sh
+	
 .PHONY: docker-images
-docker-images:
-	@$(REPO_ROOT)/hack/prepare-docker-builder.sh
-	@echo "Building docker images for version $(EFFECTIVE_VERSION)"
-	@docker buildx build --builder $(DOCKER_BUILDER_NAME) --load --build-arg EFFECTIVE_VERSION=$(EFFECTIVE_VERSION) --platform $(DOCKER_PLATFORM) -t landscaper-service-controller:$(EFFECTIVE_VERSION) -f Dockerfile --target landscaper-service-controller .
-	@docker buildx build --builder $(DOCKER_BUILDER_NAME) --load --build-arg EFFECTIVE_VERSION=$(EFFECTIVE_VERSION) --platform $(DOCKER_PLATFORM) -t landscaper-service-webhooks-server:$(EFFECTIVE_VERSION) -f Dockerfile --target landscaper-service-webhooks-server .
-	@docker buildx build --builder $(DOCKER_BUILDER_NAME) --load --build-arg EFFECTIVE_VERSION=$(EFFECTIVE_VERSION) --platform $(DOCKER_PLATFORM) -t landscaper-service-target-shoot-sidecar-server:$(EFFECTIVE_VERSION) -f Dockerfile --target landscaper-service-target-shoot-sidecar-server .
+docker-images: build ## Builds images for all controllers locally. The images are suffixed with -$OS-$ARCH
+	@PLATFORMS=$(PLATFORMS) $(REPO_ROOT)/hack/docker-build-multi.sh
 
 .PHONY: component
-component:
-	@$(REPO_ROOT)/hack/generate-cd.sh $(REGISTRY)
+component: ocm ## Builds and pushes the Component Descriptor. Also pushes the images and combines them into multi-platform images. Requires the docker images to have been built before.
+	@OCM=$(OCM) $(REPO_ROOT)/hack/generate-cd.sh $(REGISTRY)
 
-.PHONY: build-resources
+.PHONY: build-resources ## Wrapper for 'make docker-images component'.
 build-resources: docker-images component
 
 .PHONY: build-int-test-image
 build-int-test-image:
+	- docker buildx create --name project-v3-builder
+	docker buildx use project-v3-builder
 	@docker buildx build --platform linux/amd64 integration-test/docker -t europe-docker.pkg.dev/sap-gcp-cp-k8s-stable-hub/landscaper/integration-test:1.21.7-alpine3.18 --push
+	- docker buildx rm project-v3-builder
+
+
+##@ Build Dependencies
+
+## Location to install dependencies to
+LOCALBIN ?= $(REPO_ROOT)/bin
+
+## Tool Binaries
+CODE_GEN_SCRIPT ?= $(LOCALBIN)/kube_codegen.sh
+CONTROLLER_GEN ?= $(LOCALBIN)/controller-gen
+FORMATTER ?= $(LOCALBIN)/goimports
+LINTER ?= $(LOCALBIN)/golangci-lint
+OCM ?= $(LOCALBIN)/ocm
+
+## Tool Versions
+CODE_GEN_VERSION ?= $(shell  $(REPO_ROOT)/hack/extract-module-version.sh k8s.io/code-generator)
+CONTROLLER_TOOLS_VERSION ?= v0.13.0
+FORMATTER_VERSION ?= v0.16.0
+LINTER_VERSION ?= 1.55.2
+OCM_VERSION ?= 0.8.0
+
+.PHONY: localbin
+localbin: ## Creates the local bin folder, if it doesn't exist. Not meant to be called manually, used as requirement for the other tool commands.
+	@test -d $(LOCALBIN) || mkdir -p $(LOCALBIN)
+
+.PHONY: code-gen
+code-gen: localbin ## Download the code-gen script locally.
+	@test -s $(CODE_GEN_SCRIPT) && test -s $(LOCALBIN)/kube_codegen_version && cat $(LOCALBIN)/kube_codegen_version | grep -q $(CODE_GEN_VERSION) || \
+	( echo "Downloading code generator script $(CODE_GEN_VERSION) ..."; \
+	curl -sfL "https://raw.githubusercontent.com/kubernetes/code-generator/$(CODE_GEN_VERSION)/kube_codegen.sh" --output "$(CODE_GEN_SCRIPT)" && chmod +x "$(CODE_GEN_SCRIPT)" && \
+	echo $(CODE_GEN_VERSION) > $(LOCALBIN)/kube_codegen_version )
+
+.PHONY: controller-gen
+controller-gen: localbin ## Download controller-gen locally if necessary. If wrong version is installed, it will be overwritten.
+	@test -s $(CONTROLLER_GEN) && $(CONTROLLER_GEN) --version | grep -q $(CONTROLLER_TOOLS_VERSION) || \
+	( echo "Installing controller-gen $(CONTROLLER_TOOLS_VERSION) ..."; \
+	GOBIN=$(LOCALBIN) go install sigs.k8s.io/controller-tools/cmd/controller-gen@$(CONTROLLER_TOOLS_VERSION) )
+
+.PHONY: goimports
+goimports: localbin ## Download goimports locally if necessary. If wrong version is installed, it will be overwritten.
+	@test -s $(FORMATTER) && test -s $(LOCALBIN)/goimports_version && cat $(LOCALBIN)/goimports_version | grep -q $(FORMATTER_VERSION) || \
+	( echo "Installing goimports $(FORMATTER_VERSION) ..."; \
+	GOBIN=$(LOCALBIN) go install golang.org/x/tools/cmd/goimports@$(FORMATTER_VERSION) && \
+	echo $(FORMATTER_VERSION) > $(LOCALBIN)/goimports_version )
+
+.PHONY: golangci-lint
+golangci-lint: localbin ## Download golangci-lint locally if necessary. If wrong version is installed, it will be overwritten.
+	@test -s $(LINTER) && $(LINTER) --version | grep -q $(LINTER_VERSION) || \
+	( echo "Installing golangci-lint $(LINTER_VERSION) ..."; \
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(LOCALBIN) v$(LINTER_VERSION) )
+
+.PHONY: ocm
+ocm: localbin ## Install OCM CLI if necessary.
+	@test -s $(OCM) && $(OCM) --version | grep -q $(OCM_VERSION) || \
+	( echo "Installing OCM tooling $(OCM_VERSION) ..."; \
+	curl -sSfL https://ocm.software/install.sh | OCM_VERSION=$(OCM_VERSION) bash -s $(LOCALBIN) )
