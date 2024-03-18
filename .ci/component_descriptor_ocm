@@ -10,7 +10,11 @@ set -o pipefail
 
 SOURCE_PATH="$(dirname $0)/.."
 REPOSITORY_CONTEXT="europe-docker.pkg.dev/sap-gcp-cp-k8s-stable-hub/landscaper"
+source "$SOURCE_PATH/.ci/ensure-go"
 "$SOURCE_PATH/.ci/ensure-make"
+
+apk add --no-cache git musl-dev curl
+mkdir /lib64 && ln -s /lib/libc.musl-x86_64.so.1 /lib64/ld-linux-x86-64.so.2
 
 # start docker daemon
 launch-dockerd.sh
