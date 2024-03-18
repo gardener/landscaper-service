@@ -140,8 +140,10 @@ components:
       - name: ls-service-target-shoot-sidecar-image
         type: ociImage
         input:
-          type: docker
-          path: landscaper-service-target-shoot-sidecar-server:${VERSION}
+          type: dockermulti
+          variants:
+          - landscaper-service-target-shoot-sidecar-server:${VERSION}-linux-amd64
+          - landscaper-service-target-shoot-sidecar-server:${VERSION}-linux-arm64
           repository: images/landscaper-service-target-shoot-sidecar-server
       - name: registry-config-definition
         type: landscaper.gardener.cloud/jsonschema
