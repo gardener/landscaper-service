@@ -4,11 +4,22 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-set -e
+set -euo pipefail
 
-CURRENT_DIR=$(dirname $0)
-PROJECT_ROOT="${CURRENT_DIR}"/..
+PROJECT_ROOT="$(realpath $(dirname $0)/..)"
 
-GO111MODULE=on go mod tidy
-GO111MODULE=on go mod vendor
-GO111MODULE=on go mod tidy
+function revendor() {
+  go mod tidy
+}
+
+echo "Revendor integration-test module ..."
+(
+  cd "$PROJECT_ROOT/integration-test"
+  revendor
+)
+
+echo "Revendor root module ..."
+(
+  cd "$PROJECT_ROOT"
+  revendor
+)

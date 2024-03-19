@@ -36,20 +36,26 @@ components:
       - name: landscaper-service-controller
         type: ociImage
         input:
-          type: docker
-          path: landscaper-service-controller:${VERSION}
+          type: dockermulti
+          variants:
+          - landscaper-service-controller:${VERSION}-linux-amd64
+          - landscaper-service-controller:${VERSION}-linux-arm64
           repository: images/landscaper-service-controller
       - name: landscaper-service-webhooks-server
         type: ociImage
         input:
-          type: docker
-          path: landscaper-service-webhooks-server:${VERSION}
+          type: dockermulti
+          variants:
+          - landscaper-service-webhooks-server:${VERSION}-linux-amd64
+          - landscaper-service-webhooks-server:${VERSION}-linux-arm64
           repository: images/landscaper-service-webhooks-server
       - name: landscaper-service-target-shoot-sidecar-server
         type: ociImage
         input:
-          type: docker
-          path: landscaper-service-target-shoot-sidecar-server:${VERSION}
+          type: dockermulti
+          variants:
+          - landscaper-service-target-shoot-sidecar-server:${VERSION}-linux-amd64
+          - landscaper-service-target-shoot-sidecar-server:${VERSION}-linux-arm64
           repository: images/landscaper-service-target-shoot-sidecar-server
 
   - name: github.com/gardener/landscaper-service/landscaper-instance
@@ -134,8 +140,10 @@ components:
       - name: ls-service-target-shoot-sidecar-image
         type: ociImage
         input:
-          type: docker
-          path: landscaper-service-target-shoot-sidecar-server:${VERSION}
+          type: dockermulti
+          variants:
+          - landscaper-service-target-shoot-sidecar-server:${VERSION}-linux-amd64
+          - landscaper-service-target-shoot-sidecar-server:${VERSION}-linux-arm64
           repository: images/landscaper-service-target-shoot-sidecar-server
       - name: registry-config-definition
         type: landscaper.gardener.cloud/jsonschema

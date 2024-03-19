@@ -24,4 +24,5 @@ for chart in $CHARTLIST; do
     echo "Updating chart ${chart} with version ${EFFECTIVE_VERSION}"
     sed -i -e "s/^appVersion:.*/appVersion: ${EFFECTIVE_VERSION}/" $chart
     sed -i -e "s/version:.*/version: ${EFFECTIVE_VERSION}/" $chart
+    rm -f "$chart-e" # remove backup file created by sed on macos
 done

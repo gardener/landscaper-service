@@ -10,17 +10,11 @@ set -o pipefail
 
 SOURCE_PATH="$(dirname $0)/.."
 REPOSITORY_CONTEXT="europe-docker.pkg.dev/sap-gcp-cp-k8s-stable-hub/landscaper"
+source "$SOURCE_PATH/.ci/ensure-go"
+"$SOURCE_PATH/.ci/ensure-make"
 
-# install make
-if ! which make 1>/dev/null; then
-  echo "> Installing make ..."
-  apk add make 1>/dev/null
-fi
-
-# install ocm cli
-if ! which ocm 1>/dev/null; then
-  curl -s https://ocm.software/install.sh | bash
-fi
+apk add --no-cache git musl-dev curl
+mkdir /lib64 && ln -s /lib/libc.musl-x86_64.so.1 /lib64/ld-linux-x86-64.so.2
 
 # start docker daemon
 launch-dockerd.sh

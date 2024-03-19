@@ -35,6 +35,12 @@ landscaper-service:
           execute:
             - "integration_test"
           output_dir: 'integration_test'
+        format:
+          publish_to:
+          - source
+          depends:
+          - verify
+          - run_integration_test
       traits:
         draft_release: ~
         scheduling:
@@ -69,7 +75,6 @@ landscaper-service:
         release:
           nextversion: 'bump_minor'
           release_callback: '.ci/release'
-          next_version_callback: '.ci/next_version'
           git_tags:
           - ref_template: 'refs/tags/{VERSION}'
         scheduling:
@@ -91,3 +96,9 @@ landscaper-service:
             - release
           depends:
             - run_integration_test
+        format:
+          publish_to:
+          - source
+          depends:
+          - verify
+          - run_integration_test

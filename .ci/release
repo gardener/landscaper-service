@@ -4,18 +4,15 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-set -o errexit
-set -o nounset
-set -o pipefail
+set -euo pipefail
 
-apk add --no-cache git make musl-dev curl gcompat
-GO_VERSION=1.21.7
-curl -LO https://golang.org/dl/go${GO_VERSION}.linux-amd64.tar.gz
-tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz
-export PATH=$PATH:/usr/local/go/bin
-mkdir -p /lib64 && ln -f -s /lib/libc.musl-x86_64.so.1 /lib64/ld-linux-x86-64.so.2
+SOURCE_DIR="$(realpath $(dirname $0)/..)"
 
-SOURCE_DIR="$(dirname $0)/.."
+source "$SOURCE_DIR/.ci/ensure-go"
+"$SOURCE_DIR/.ci/ensure-make"
+
+apk add --no-cache git musl-dev curl
+mkdir /lib64 && ln -s /lib/libc.musl-x86_64.so.1 /lib64/ld-linux-x86-64.so.2
 
 cd $SOURCE_DIR
 make revendor
