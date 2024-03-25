@@ -236,10 +236,10 @@ github.com/gardener/component-spec/bindings-go v0.0.98 h1:noougWGxAQHr3ipqA2vbZ3
 github.com/gardener/component-spec/bindings-go v0.0.98/go.mod h1:qr7kADDXbXB0huul+ih/B43YkwyiMFYQepp/tqJ331c=
 github.com/gardener/landscaper v0.100.0 h1:3j/+j209D+hLIiWo6qJG5jy4Es9GEpDLn+QvxjKAcII=
 github.com/gardener/landscaper v0.100.0/go.mod h1:ytFCyN7msSz13ek3xSDbgKGSskEv3PAyGMzGwiA+UKk=
-github.com/gardener/landscaper/apis v0.100.0 h1:7hHE9yDYAKurkzinYZVqKcsCxz0Bv6NGszT3QAx+yUs=
-github.com/gardener/landscaper/apis v0.100.0/go.mod h1:jQDuNngvw92o7uMorxND8LVyuzX2+jiraVADdFQElsg=
-github.com/gardener/landscaper/controller-utils v0.100.0 h1:XCrhFtCgRy+AQ422ZJe6CiuJaGY8tDPy6csA5wvfQcM=
-github.com/gardener/landscaper/controller-utils v0.100.0/go.mod h1:Eg/zxI2RaIVZvB4/zFeq7iDI9wHW1fCTUMXSUUBMDjU=
+github.com/gardener/landscaper/apis v0.101.0 h1:dj3byzGBmEFEedMUQA1xUG0hAOuFF7tI20qCCuTG3oU=
+github.com/gardener/landscaper/apis v0.101.0/go.mod h1:6AAy65NqOo9uha7s3z2VqaAMAuVDGo85mRZyS+qFmfk=
+github.com/gardener/landscaper/controller-utils v0.101.0 h1:r69dFSX2EXwHJW0VrP3awRZ06mooRjbeHCYSTILlpxA=
+github.com/gardener/landscaper/controller-utils v0.101.0/go.mod h1:AfpddrHtLyFNdUxDilYK42jxO9Y0vSjEcbIgWy5YVM4=
 github.com/gardener/landscapercli v0.34.0 h1:KoEI0Y5FgRPT/s+ySIFShUZQDmQFciIB6kHZDAMQQB0=
 github.com/gardener/landscapercli v0.34.0/go.mod h1:PHlZnUAEQcLRFAP5Dt7Vb+EE8I32wPS8B/zyY8oRxNs=
 github.com/ghodss/yaml v1.0.0 h1:wQHKEahhL6wmXdzwWG11gIVCkOv05bNOh+Rxn0yngAk=
@@ -456,8 +456,8 @@ github.com/oleiade/reflections v1.0.1 h1:D1XO3LVEYroYskEsoSiGItp9RUxG6jWnCVvrqH0
 github.com/oleiade/reflections v1.0.1/go.mod h1:rdFxbxq4QXVZWj0F+e9jqjDkc7dbp97vkRixKo2JR60=
 github.com/onsi/ginkgo v1.16.5 h1:8xi0RTUf59SOSfEtZMvwTvXYMzG4gV23XVHOZiXNtnE=
 github.com/onsi/ginkgo v1.16.5/go.mod h1:+E8gABHa3K6zRBolWtd+ROzc/U5bkGt0FwiG042wbpU=
-github.com/onsi/ginkgo/v2 v2.15.0 h1:79HwNRBAZHOEwrczrgSOPy+eFTTlIGELKy5as+ClttY=
-github.com/onsi/ginkgo/v2 v2.15.0/go.mod h1:HlxMHtYF57y6Dpf+mc5529KKmSq9h2FpCF+/ZkwUxKM=
+github.com/onsi/ginkgo/v2 v2.17.1 h1:V++EzdbhI4ZV4ev0UTIj0PzhzOcReJFyJaLjtSF55M8=
+github.com/onsi/ginkgo/v2 v2.17.1/go.mod h1:llBI3WDLL9Z6taip6f33H76YcWtJv+7R3HigUjbIBOs=
 github.com/onsi/gomega v1.32.0 h1:JRYU78fJ1LPxlckP6Txi/EYqJvjtMrDC04/MM5XRHPk=
 github.com/onsi/gomega v1.32.0/go.mod h1:a4x4gW6Pz2yK1MAmvluYme5lvYTn61afQ2ETw/8n4Lg=
 github.com/open-component-model/ocm v0.8.0 h1:6yZ7VX3pYp4NRIjp9mWt0xZmFjNJBn1nJZxsHNSaKJY=
