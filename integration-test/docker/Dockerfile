@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-FROM golang:1.21.7-alpine3.18
+FROM golang:1.21.8-alpine3.19
 
 RUN apk add --no-cache --no-progress \
     bash \
@@ -23,5 +23,5 @@ RUN curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 |
 RUN curl -LO https://dl.k8s.io/release/v1.25.14/bin/linux/amd64/kubectl && \
     install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 
-RUN pip3 install --upgrade pip && \
-    pip3 install gardener-cicd-libs
+RUN pip3 install --upgrade pip --break-system-packages && \
+    pip3 install gardener-cicd-libs --break-system-packages
