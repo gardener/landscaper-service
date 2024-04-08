@@ -23,7 +23,7 @@ require (
 	sigs.k8s.io/controller-runtime v0.17.2
 )
 
-replace github.com/imdario/mergo => dario.cat/mergo v0.3.16
+replace github.com/imdario/mergo => dario.cat/mergo v1.0.0
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
