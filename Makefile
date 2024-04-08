@@ -122,7 +122,7 @@ goimports: localbin ## Download goimports locally if necessary. If wrong version
 golangci-lint: localbin ## Download golangci-lint locally if necessary. If wrong version is installed, it will be overwritten.
 	@test -s $(LINTER) && $(LINTER) --version | grep -q $(LINTER_VERSION) || \
 	( echo "Installing golangci-lint $(LINTER_VERSION) ..."; \
-	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(LOCALBIN) v$(LINTER_VERSION) )
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(LOCALBIN) $(LINTER_VERSION) )
 
 .PHONY: ocm
 ocm: localbin ## Install OCM CLI if necessary.
