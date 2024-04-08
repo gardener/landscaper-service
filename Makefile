@@ -85,10 +85,14 @@ OCM ?= $(LOCALBIN)/ocm
 
 ## Tool Versions
 CODE_GEN_VERSION ?= $(shell  $(REPO_ROOT)/hack/extract-module-version.sh k8s.io/code-generator)
+# renovate: datasource=github-releases depName=kubernetes-sigs/controller-tools
 CONTROLLER_TOOLS_VERSION ?= v0.13.0
+# renovate: datasource=github-tags depName=golang/tools
 FORMATTER_VERSION ?= v0.16.0
-LINTER_VERSION ?= 1.55.2
-OCM_VERSION ?= 0.8.0
+# renovate: datasource=github-releases depName=golangci/golangci-lint
+LINTER_VERSION ?= v1.57.2
+# renovate: datasource=github-releases depName=open-component-model/ocm
+OCM_VERSION ?= v0.8.0
 
 .PHONY: localbin
 localbin: ## Creates the local bin folder, if it doesn't exist. Not meant to be called manually, used as requirement for the other tool commands.
@@ -118,7 +122,7 @@ goimports: localbin ## Download goimports locally if necessary. If wrong version
 golangci-lint: localbin ## Download golangci-lint locally if necessary. If wrong version is installed, it will be overwritten.
 	@test -s $(LINTER) && $(LINTER) --version | grep -q $(LINTER_VERSION) || \
 	( echo "Installing golangci-lint $(LINTER_VERSION) ..."; \
-	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(LOCALBIN) v$(LINTER_VERSION) )
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(LOCALBIN) $(LINTER_VERSION) )
 
 .PHONY: ocm
 ocm: localbin ## Install OCM CLI if necessary.
