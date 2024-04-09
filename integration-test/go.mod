@@ -7,8 +7,8 @@ toolchain go1.21.9
 require (
 	github.com/gardener/component-spec/bindings-go v0.0.98
 	github.com/gardener/landscaper-service v0.98.0
-	github.com/gardener/landscaper/apis v0.102.0
-	github.com/gardener/landscaper/controller-utils v0.102.0
+	github.com/gardener/landscaper/apis v0.103.0
+	github.com/gardener/landscaper/controller-utils v0.103.0
 	github.com/gardener/landscapercli v0.34.0
 	k8s.io/api v0.29.3
 	k8s.io/apimachinery v0.29.3
@@ -26,7 +26,7 @@ require (
 	github.com/Microsoft/hcsshim v0.12.2 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
-	github.com/containerd/containerd v1.7.14 // indirect
+	github.com/containerd/containerd v1.7.15 // indirect
 	github.com/containerd/log v0.1.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/distribution/reference v0.6.0 // indirect
@@ -41,7 +41,7 @@ require (
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/gardener/component-cli v0.55.0 // indirect
-	github.com/gardener/landscaper v0.102.0 // indirect
+	github.com/gardener/landscaper v0.103.0 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/go-logr/logr v1.4.1 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
