@@ -7,13 +7,13 @@ toolchain go1.21.9
 require (
 	github.com/gardener/component-spec/bindings-go v0.0.98
 	github.com/gardener/landscaper-service v0.98.0
-	github.com/gardener/landscaper/apis v0.102.0
-	github.com/gardener/landscaper/controller-utils v0.102.0
+	github.com/gardener/landscaper/apis v0.103.0
+	github.com/gardener/landscaper/controller-utils v0.103.0
 	github.com/gardener/landscapercli v0.34.0
 	k8s.io/api v0.29.3
 	k8s.io/apimachinery v0.29.3
 	k8s.io/client-go v0.29.3
-	sigs.k8s.io/controller-runtime v0.17.2
+	sigs.k8s.io/controller-runtime v0.17.3
 )
 
 replace github.com/gardener/landscaper-service => ../

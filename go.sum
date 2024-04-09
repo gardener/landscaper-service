@@ -21,8 +21,12 @@ github.com/gardener/component-spec/bindings-go v0.0.98 h1:noougWGxAQHr3ipqA2vbZ3
 github.com/gardener/component-spec/bindings-go v0.0.98/go.mod h1:qr7kADDXbXB0huul+ih/B43YkwyiMFYQepp/tqJ331c=
 github.com/gardener/landscaper/apis v0.102.0 h1:ItDPgq1YuoUpvcOxy6KG84PXLUTFTbzcDV0xdrDmJgE=
 github.com/gardener/landscaper/apis v0.102.0/go.mod h1:ytbO4FxGlf/Cc+1ZD6h+IafJtkiuyegJBVn4sWJahz0=
+github.com/gardener/landscaper/apis v0.103.0 h1:lIVcjAYYHRuEeFCYWTUI92NHol983kkCwXtyqDQ54kY=
+github.com/gardener/landscaper/apis v0.103.0/go.mod h1:joMAj6AXihbi/X0reign4AnVkfOiA3wnlO9GTUb0Mio=
 github.com/gardener/landscaper/controller-utils v0.102.0 h1:T//4yjB+1f/UASsHXRkL3zsWa+2NTqblF3qR4B8nIn0=
 github.com/gardener/landscaper/controller-utils v0.102.0/go.mod h1:LwsLRrqzsZe6Dm4D5IGRHnYnPC0FMA1t4YPqQZvWc7o=
+github.com/gardener/landscaper/controller-utils v0.103.0 h1:2U8w16b+UUKG1dICttr39NmI8nVTA+niV7JdcR0UAdM=
+github.com/gardener/landscaper/controller-utils v0.103.0/go.mod h1:xpTvq5SLeG3wlb7sBjyWsi+vLB4+v3STzLwWSB9YlG8=
 github.com/ghodss/yaml v1.0.0 h1:wQHKEahhL6wmXdzwWG11gIVCkOv05bNOh+Rxn0yngAk=
 github.com/ghodss/yaml v1.0.0/go.mod h1:4dBDuWmgqj2HViK6kFavaiC9ZROes6MMH2rRYeMEF04=
 github.com/go-logr/logr v0.2.0/go.mod h1:z6/tIYblkpsD+a4lm/fGIIU9mZ+XfAiaFtq7xTgseGU=
@@ -259,6 +263,8 @@ k8s.io/utils v0.0.0-20240310230437-4693a0247e57 h1:gbqbevonBh57eILzModw6mrkbwM0g
 k8s.io/utils v0.0.0-20240310230437-4693a0247e57/go.mod h1:OLgZIPagt7ERELqWJFomSt595RzquPNLL48iOWgYOg0=
 sigs.k8s.io/controller-runtime v0.17.2 h1:FwHwD1CTUemg0pW2otk7/U5/i5m2ymzvOXdbeGOUvw0=
 sigs.k8s.io/controller-runtime v0.17.2/go.mod h1:+MngTvIQQQhfXtwfdGw/UOQ/aIaqsYywfCINOtwMO/s=
+sigs.k8s.io/controller-runtime v0.17.3 h1:65QmN7r3FWgTxDMz9fvGnO1kbf2nu+acg9p2R9oYYYk=
+sigs.k8s.io/controller-runtime v0.17.3/go.mod h1:N0jpP5Lo7lMTF9aL56Z/B2oWBJjey6StQM0jRbKQXtY=
 sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd h1:EDPBXCAspyGV4jQlpZSudPeMmr1bNJefnuqLsRAsHZo=
 sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd/go.mod h1:B8JuhiUyNFVKdsE8h686QcCxMaH6HrOAZj4vswFpcB0=
 sigs.k8s.io/structured-merge-diff/v4 v4.4.1 h1:150L+0vs/8DA78h1u02ooW1/fFq/Lwr+sGiqlzvrtq4=
