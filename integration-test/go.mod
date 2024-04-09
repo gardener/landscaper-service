@@ -16,10 +16,9 @@ require (
 	sigs.k8s.io/controller-runtime v0.17.2
 )
 
-replace (
-	github.com/gardener/landscaper-service => ../
-	github.com/imdario/mergo => dario.cat/mergo v0.3.16
-)
+replace github.com/gardener/landscaper-service => ../
+
+exclude github.com/imdario/mergo v1.0.0
 
 require (
 	github.com/AdaLogics/go-fuzz-headers v0.0.0-20230811130428-ced1acdcaa24 // indirect
@@ -63,7 +62,7 @@ require (
 	github.com/hashicorp/go-rootcerts v1.0.2 // indirect
 	github.com/hashicorp/go-secure-stdlib/strutil v0.1.2 // indirect
 	github.com/hashicorp/vault-client-go v0.4.3 // indirect
-	github.com/imdario/mergo v1.0.0 // indirect
+	github.com/imdario/mergo v0.3.16 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
