@@ -236,6 +236,8 @@ github.com/gardener/landscaper v0.102.0 h1:FswpgtxUUNnssUCf05G60p6r33Bmxf5MGtfcy
 github.com/gardener/landscaper v0.102.0/go.mod h1:mev2sFMqaE5Uiy91uAYGofn0V27e7PXqc+Q6wGdL6bI=
 github.com/gardener/landscaper/apis v0.102.0 h1:ItDPgq1YuoUpvcOxy6KG84PXLUTFTbzcDV0xdrDmJgE=
 github.com/gardener/landscaper/apis v0.102.0/go.mod h1:ytbO4FxGlf/Cc+1ZD6h+IafJtkiuyegJBVn4sWJahz0=
+github.com/gardener/landscaper/apis v0.103.0 h1:lIVcjAYYHRuEeFCYWTUI92NHol983kkCwXtyqDQ54kY=
+github.com/gardener/landscaper/apis v0.103.0/go.mod h1:joMAj6AXihbi/X0reign4AnVkfOiA3wnlO9GTUb0Mio=
 github.com/gardener/landscaper/controller-utils v0.102.0 h1:T//4yjB+1f/UASsHXRkL3zsWa+2NTqblF3qR4B8nIn0=
 github.com/gardener/landscaper/controller-utils v0.102.0/go.mod h1:LwsLRrqzsZe6Dm4D5IGRHnYnPC0FMA1t4YPqQZvWc7o=
 github.com/gardener/landscapercli v0.34.0 h1:KoEI0Y5FgRPT/s+ySIFShUZQDmQFciIB6kHZDAMQQB0=
