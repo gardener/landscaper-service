@@ -18,7 +18,7 @@ echo "check if integration tests should be started"
   if git show -s --format=%s | grep run-int-tests; then
     echo "'run-int-tests' in commit message, integration tests should be started"
     ${PROJECT_ROOT}/hack/integration-test.sh pull-request
-  elif git branch --show-current | grep "renovate/"; then
+  elif git branch --show-current | grep -E "renovate/|dependabot/"; then
     echo "Dependency update from renovate, integration tests should be started"
     ${PROJECT_ROOT}/hack/integration-test.sh pull-request
   else
