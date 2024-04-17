@@ -2,7 +2,7 @@ module github.com/gardener/landscaper-service/test/integration
 
 go 1.21
 
-toolchain go1.21.9
+toolchain go1.22.2
 
 require (
 	github.com/gardener/component-spec/bindings-go v0.0.98
@@ -10,9 +10,9 @@ require (
 	github.com/gardener/landscaper/apis v0.103.0
 	github.com/gardener/landscaper/controller-utils v0.103.0
 	github.com/gardener/landscapercli v0.34.0
-	k8s.io/api v0.29.3
-	k8s.io/apimachinery v0.29.3
-	k8s.io/client-go v0.29.3
+	k8s.io/api v0.29.4
+	k8s.io/apimachinery v0.29.4
+	k8s.io/client-go v0.29.4
 	sigs.k8s.io/controller-runtime v0.17.3
 )
 
