@@ -1,8 +1,8 @@
 module github.com/gardener/landscaper-service
 
-go 1.21
+go 1.22.0
 
-toolchain go1.21.5
+toolchain go1.22.2
 
 require (
 	github.com/gardener/component-spec/bindings-go v0.0.98
@@ -11,7 +11,6 @@ require (
 	github.com/go-logr/logr v1.4.1
 	github.com/google/uuid v1.6.0
 	github.com/onsi/ginkgo v1.16.5
-	github.com/onsi/ginkgo/v2 v2.17.1
 	github.com/onsi/gomega v1.32.0
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.8.0

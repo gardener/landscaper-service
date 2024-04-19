@@ -1,8 +1,8 @@
 module github.com/gardener/landscaper-service/test/integration
 
-go 1.21
+go 1.22.0
 
-toolchain go1.21.9
+toolchain go1.22.2
 
 require (
 	github.com/gardener/component-spec/bindings-go v0.0.98
