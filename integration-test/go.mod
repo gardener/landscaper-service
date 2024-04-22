@@ -10,9 +10,9 @@ require (
 	github.com/gardener/landscaper/apis v0.103.0
 	github.com/gardener/landscaper/controller-utils v0.103.0
 	github.com/gardener/landscapercli v0.34.0
-	k8s.io/api v0.30.0
-	k8s.io/apimachinery v0.30.0
-	k8s.io/client-go v0.30.0
+	k8s.io/api v0.29.4
+	k8s.io/apimachinery v0.29.4
+	k8s.io/client-go v0.29.4
 	sigs.k8s.io/controller-runtime v0.17.3
 )
 
@@ -32,7 +32,7 @@ require (
 	github.com/distribution/reference v0.6.0 // indirect
 	github.com/docker/cli v26.0.0+incompatible // indirect
 	github.com/docker/distribution v2.8.3+incompatible // indirect
-	github.com/docker/docker v26.0.0+incompatible // indirect
+	github.com/docker/docker v26.0.2+incompatible // indirect
 	github.com/docker/docker-credential-helpers v0.8.1 // indirect
 	github.com/docker/go-connections v0.5.0 // indirect
 	github.com/docker/go-metrics v0.0.1 // indirect
