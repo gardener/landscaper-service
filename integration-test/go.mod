@@ -7,8 +7,8 @@ toolchain go1.22.2
 require (
 	github.com/gardener/component-spec/bindings-go v0.0.98
 	github.com/gardener/landscaper-service v0.98.0
-	github.com/gardener/landscaper/apis v0.103.0
-	github.com/gardener/landscaper/controller-utils v0.103.0
+	github.com/gardener/landscaper/apis v0.104.0
+	github.com/gardener/landscaper/controller-utils v0.104.0
 	github.com/gardener/landscapercli v0.34.0
 	k8s.io/api v0.29.4
 	k8s.io/apimachinery v0.29.4
@@ -41,7 +41,7 @@ require (
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/gardener/component-cli v0.55.0 // indirect
-	github.com/gardener/landscaper v0.103.0 // indirect
+	github.com/gardener/landscaper v0.104.0 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/go-logr/logr v1.4.1 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
@@ -124,8 +124,8 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	helm.sh/helm/v3 v3.14.3 // indirect
-	k8s.io/apiextensions-apiserver v0.29.3 // indirect
-	k8s.io/component-base v0.29.3 // indirect
+	k8s.io/apiextensions-apiserver v0.29.4 // indirect
+	k8s.io/component-base v0.29.4 // indirect
 	k8s.io/klog/v2 v2.120.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20240403164606-bc84c2ddaf99 // indirect
 	k8s.io/utils v0.0.0-20240423183400-0849a56e8f22 // indirect
