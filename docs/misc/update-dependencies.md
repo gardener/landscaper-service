@@ -27,4 +27,3 @@ To update it's dependencies check new versions for
 - [fluentbit.io](https://docs.fluentbit.io/manual/installation/docker#tags-and-versions)
 
 and adapt versions in file [logging-stack/settings.yaml](https://github.tools.sap/ocm-reuse/logging-stack/blob/main/logging-stack/settings.yaml)
-
