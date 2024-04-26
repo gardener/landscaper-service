@@ -3,7 +3,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.13.0
+    controller-gen.kubebuilder.io/version: v0.15.0
   name: servicetargetconfigs.landscaper-service.gardener.cloud
 spec:
   group: landscaper-service.gardener.cloud
@@ -33,14 +33,19 @@ spec:
           for a Kubernetes cluster, that can host Landscaper Service deployments.
         properties:
           apiVersion:
-            description: 'APIVersion defines the versioned schema of this representation
-              of an object. Servers should convert recognized schemas to the latest
-              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
             type: string
           kind:
-            description: 'Kind is a string value representing the REST resource this
-              object represents. Servers may infer this from the endpoint the client
-              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
             type: string
           metadata:
             type: object
@@ -52,8 +57,9 @@ spec:
                   target cluster.
                 type: string
               priority:
-                description: The Priority of this ServiceTargetConfig. SeedConfigs
-                  with a higher priority number will be preferred over lower numbers
+                description: |-
+                  The Priority of this ServiceTargetConfig.
+                  SeedConfigs with a higher priority number will be preferred over lower numbers
                   when scheduling new landscaper service installations.
                 format: int64
                 type: integer
@@ -103,10 +109,9 @@ spec:
                   type: object
                 type: array
               observedGeneration:
-                description: ObservedGeneration is the most recent generation observed
-                  for this ServiceTargetConfig. It corresponds to the ServiceTargetConfig
-                  generation, which is updated on mutation by the landscaper service
-                  controller.
+                description: |-
+                  ObservedGeneration is the most recent generation observed for this ServiceTargetConfig.
+                  It corresponds to the ServiceTargetConfig generation, which is updated on mutation by the landscaper service controller.
                 format: int64
                 type: integer
             type: object

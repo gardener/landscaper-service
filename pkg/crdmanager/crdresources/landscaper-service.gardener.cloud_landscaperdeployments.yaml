@@ -3,7 +3,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.13.0
+    controller-gen.kubebuilder.io/version: v0.15.0
   name: landscaperdeployments.landscaper-service.gardener.cloud
 spec:
   group: landscaper-service.gardener.cloud
@@ -36,14 +36,19 @@ spec:
           the landscaper.
         properties:
           apiVersion:
-            description: 'APIVersion defines the versioned schema of this representation
-              of an object. Servers should convert recognized schemas to the latest
-              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
             type: string
           kind:
-            description: 'Kind is a string value representing the REST resource this
-              object represents. Servers may infer this from the endpoint the client
-              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
             type: string
           metadata:
             type: object
@@ -51,10 +56,11 @@ spec:
             description: Spec contains the specification for the LandscaperDeployment
             properties:
               dataPlane:
-                description: DataPlane references an externally created and maintained
-                  Kubernetes cluster, used as the data plane where Landscaper resources
-                  are stored. When DataPlane is defined, the Landscaper Service controller
-                  will no longer create its own Kubernetes cluster.
+                description: |-
+                  DataPlane references an externally created and maintained Kubernetes cluster,
+                  used as the data plane where Landscaper resources are stored.
+                  When DataPlane is defined, the Landscaper Service controller will no longer
+                  create its own Kubernetes cluster.
                 properties:
                   kubeconfig:
                     description: Kubeconfig contains the content of the Kubernetes
@@ -83,9 +89,9 @@ spec:
                   of the resource cluster (shoot cluster)
                 properties:
                   controlPlaneFailureTolerance:
-                    description: 'ControlPlaneFailureTolerance specifies the Kubernetes
-                      control plane failure tolerance mode. Allowed values are: node,
-                      zone'
+                    description: |-
+                      ControlPlaneFailureTolerance specifies the Kubernetes control plane failure tolerance mode.
+                      Allowed values are: node, zone
                     type: string
                 required:
                 - controlPlaneFailureTolerance
@@ -252,8 +258,8 @@ spec:
                         type: boolean
                     type: object
                   resources:
-                    description: Resources configures the resources of the "central"
-                      landscaper pod, i.e. the pod responsible for crds creation,
+                    description: |-
+                      Resources configures the resources of the "central" landscaper pod, i.e. the pod responsible for crds creation,
                       deployer management, context controller.
                     properties:
                       requests:
@@ -355,10 +361,9 @@ spec:
                 - reason
                 type: object
               observedGeneration:
-                description: ObservedGeneration is the most recent generation observed
-                  for this LandscaperDeployment. It corresponds to the LandscaperDeployment
-                  generation, which is updated on mutation by the landscaper service
-                  controller.
+                description: |-
+                  ObservedGeneration is the most recent generation observed for this LandscaperDeployment.
+                  It corresponds to the LandscaperDeployment generation, which is updated on mutation by the landscaper service controller.
                 format: int64
                 type: integer
               phase:
