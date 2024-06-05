@@ -7,8 +7,8 @@ toolchain go1.22.3
 require (
 	github.com/gardener/component-spec/bindings-go v0.0.98
 	github.com/gardener/landscaper-service v0.98.0
-	github.com/gardener/landscaper/apis v0.105.0
-	github.com/gardener/landscaper/controller-utils v0.105.0
+	github.com/gardener/landscaper/apis v0.106.0
+	github.com/gardener/landscaper/controller-utils v0.106.0
 	github.com/gardener/landscapercli v0.34.0
 	k8s.io/api v0.29.4
 	k8s.io/apimachinery v0.29.4
