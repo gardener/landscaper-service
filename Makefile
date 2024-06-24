@@ -67,7 +67,7 @@ build-resources: docker-images component
 build-int-test-image:
 	- docker buildx create --name project-v3-builder
 	docker buildx use project-v3-builder
-	@docker buildx build --platform linux/amd64 integration-test/docker -t europe-docker.pkg.dev/sap-gcp-cp-k8s-stable-hub/landscaper/integration-test:1.22.2-alpine3.19 --push
+	@docker buildx build --platform linux/amd64 integration-test/docker -t europe-docker.pkg.dev/sap-gcp-cp-k8s-stable-hub/landscaper/integration-test:1.22.4-alpine3.19 --push
 	- docker buildx rm project-v3-builder
 
 
