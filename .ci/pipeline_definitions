@@ -14,7 +14,7 @@ landscaper-service:
         ocm_repository: landscaper
     steps:
       verify:
-        image: 'golang:1.22.2'
+        image: 'golang:1.22.4'
       ocm_build_and_publish:
         image: europe-docker.pkg.dev/gardener-project/releases/cicd/job-image:1.2360.0
         privilege_mode: privileged
@@ -31,7 +31,7 @@ landscaper-service:
         run_integration_test:
           depends:
             - ocm_build_and_publish
-          image: 'europe-docker.pkg.dev/sap-gcp-cp-k8s-stable-hub/landscaper/integration-test:1.22.2-alpine3.19'
+          image: 'europe-docker.pkg.dev/sap-gcp-cp-k8s-stable-hub/landscaper/integration-test:1.22.4-alpine3.19'
           execute:
             - "integration_test"
           output_dir: 'integration_test'
@@ -57,7 +57,7 @@ landscaper-service:
         run_integration_test:
           depends:
             - ocm_build_and_publish
-          image: 'europe-docker.pkg.dev/sap-gcp-cp-k8s-stable-hub/landscaper/integration-test:1.22.2-alpine3.19'
+          image: 'europe-docker.pkg.dev/sap-gcp-cp-k8s-stable-hub/landscaper/integration-test:1.22.4-alpine3.19'
           execute:
           - "integration_test_pr"
           output_dir: 'integration_test'
@@ -83,7 +83,7 @@ landscaper-service:
         run_integration_test:
           depends:
             - ocm_build_and_publish
-          image: 'europe-docker.pkg.dev/sap-gcp-cp-k8s-stable-hub/landscaper/integration-test:1.22.2-alpine3.19'
+          image: 'europe-docker.pkg.dev/sap-gcp-cp-k8s-stable-hub/landscaper/integration-test:1.22.4-alpine3.19'
           execute:
             - "integration_test"
           output_dir: 'integration_test'
