@@ -1,17 +1,14 @@
 module github.com/gardener/landscaper-service
 
-go 1.22.0
-
-toolchain go1.22.4
+go 1.22.4
 
 require (
 	github.com/gardener/component-spec/bindings-go v0.0.98
-	github.com/gardener/landscaper/apis v0.107.0
-	github.com/gardener/landscaper/controller-utils v0.107.0
+	github.com/gardener/landscaper/apis v0.108.0
+	github.com/gardener/landscaper/controller-utils v0.108.0
 	github.com/go-logr/logr v1.4.2
 	github.com/google/uuid v1.6.0
-	github.com/onsi/ginkgo/v2 v2.19.0
-	github.com/onsi/ginkgo/v2 v2.19.0
+	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.33.1
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.8.0
@@ -53,6 +50,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/nxadm/tail v1.4.11 // indirect
+	github.com/onsi/ginkgo/v2 v2.19.0 // indirect
 	github.com/prometheus/client_golang v1.19.0 // indirect
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/common v0.52.2 // indirect
