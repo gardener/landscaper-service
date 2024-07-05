@@ -8,5 +8,5 @@ description: Sidecar RBAC objects
 
 type: application
 
-version: v0.102.0
-appVersion: v0.102.0
+version: v0.102.1
+appVersion: v0.102.1
