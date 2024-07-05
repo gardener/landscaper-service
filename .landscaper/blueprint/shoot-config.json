@@ -1,7 +1,12 @@
 {
   "provider": {
     "type": "gcp",
-    "zone": "europe-west1-c"
+    "zone": "europe-west1-c",
+    "workersSettings": {
+      "sshAccess": {
+        "enabled": false
+      }
+    }
   },
   "region": "europe-west1",
   "workers": {
