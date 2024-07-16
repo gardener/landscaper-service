@@ -1,7 +1,12 @@
 {
   "provider": {
     "type": "gcp",
-    "zone": "europe-west1-c"
+    "zone": "europe-west1-c",
+    "workersSettings": {
+      "sshAccess": {
+        "enabled": false
+      }
+    }
   },
   "region": "europe-west1",
   "workers": {
@@ -9,7 +14,7 @@
       "type": "n1-standard-2",
       "image": {
         "name": "gardenlinux",
-        "version": "1312.3.0"
+        "version": "1312.7.0"
       }
     },
     "volume": {
