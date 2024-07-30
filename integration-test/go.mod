@@ -5,8 +5,8 @@ go 1.22.4
 require (
 	github.com/gardener/component-spec/bindings-go v0.0.98
 	github.com/gardener/landscaper-service v0.98.0
-	github.com/gardener/landscaper/apis v0.109.0
-	github.com/gardener/landscaper/controller-utils v0.109.0
+	github.com/gardener/landscaper/apis v0.110.0
+	github.com/gardener/landscaper/controller-utils v0.110.0
 	github.com/gardener/landscapercli v0.34.0
 	k8s.io/api v0.30.3
 	k8s.io/apimachinery v0.30.3
@@ -124,7 +124,7 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	helm.sh/helm/v3 v3.15.1 // indirect
-	k8s.io/apiextensions-apiserver v0.30.2 // indirect
+	k8s.io/apiextensions-apiserver v0.30.3 // indirect
 	k8s.io/klog/v2 v2.120.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20240709000822-3c01b740850f // indirect
 	k8s.io/utils v0.0.0-20240711033017-18e509b52bc8 // indirect
