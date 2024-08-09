@@ -94,6 +94,12 @@ imports:
     schema:
       type: object
 
+  - name: shootConfigurationUseMergeOverwrite
+    required: false
+    type: data
+    schema:
+      type: boolean
+
 deployExecutions:
   - name: deploy-execution
     file: /deploy-execution.yaml
