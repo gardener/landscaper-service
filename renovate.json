@@ -19,18 +19,31 @@
   "packageRules": [
     {
       "description": "Combine landscaper-service updates in a single PR",
-      "matchManagers": ["gomod"],
-      "matchSourceUrls": ["https://github.com/gardener/landscaper-service"]
+      "matchManagers": [
+        "gomod"
+      ],
+      "matchSourceUrls": [
+        "https://github.com/gardener/landscaper-service"
+      ]
     },
     {
-      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "pin",
+        "digest"
+      ],
       "rebaseWhen": "auto"
     },
     {
       "description": "Update landscaper manually or add customManager for",
-      "matchPackagePatterns": ["github.com/gardener/landscaper"],
-      "matchManagers": ["gomod"],
-      "enabled": false
+      "matchManagers": [
+        "gomod"
+      ],
+      "enabled": false,
+      "matchPackageNames": [
+        "/github.com/gardener/landscaper/"
+      ]
     }
   ],
   "customManagers": [
