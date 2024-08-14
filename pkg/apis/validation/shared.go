@@ -75,7 +75,7 @@ func ValidateLandscaperConfiguration(landscaperConfiguration *v1alpha1.Landscape
 	if len(landscaperConfiguration.Deployers) != 0 {
 		for _, deployer := range landscaperConfiguration.Deployers {
 			if !slices.Contains(supportedDeployers, deployer) {
-				allErrs = append(allErrs, field.NotSupported(fldPath, deployer, supportedDeployers))
+				allErrs = append(allErrs, field.NotSupported(fldPath.Child("deployers"), deployer, supportedDeployers))
 			}
 		}
 	}
