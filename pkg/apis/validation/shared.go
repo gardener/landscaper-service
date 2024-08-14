@@ -5,6 +5,8 @@
 package validation
 
 import (
+	"slices"
+
 	"k8s.io/apimachinery/pkg/util/validation/field"
 
 	"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
@@ -60,6 +62,22 @@ func ValidateDataPlane(dataPlane *v1alpha1.DataPlane, fldPath *field.Path) field
 
 	if dataPlane.SecretRef != nil {
 		allErrs = append(allErrs, ValidateSecretReference(dataPlane.SecretRef, fldPath.Child("secretRef"))...)
+	}
+
+	return allErrs
+}
+
+var supportedDeployers = []string{"helm", "manifest", "container"}
+
+func ValidateLandscaperConfiguration(landscaperConfiguration *v1alpha1.LandscaperConfiguration, fldPath *field.Path) field.ErrorList {
+	allErrs := field.ErrorList{}
+
+	if len(landscaperConfiguration.Deployers) != 0 {
+		for _, deployer := range landscaperConfiguration.Deployers {
+			if !slices.Contains(supportedDeployers, deployer) {
+				allErrs = append(allErrs, field.NotSupported(fldPath, deployer, supportedDeployers))
+			}
+		}
 	}
 
 	return allErrs

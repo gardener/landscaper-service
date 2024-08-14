@@ -7,11 +7,11 @@ package validation
 import (
 	"fmt"
 
-	"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
-
 	apivalidation "k8s.io/apimachinery/pkg/api/validation"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/validation/field"
+
+	"github.com/gardener/landscaper-service/pkg/apis/core/v1alpha1"
 )
 
 const (
@@ -58,6 +58,8 @@ func validateLandscaperDeploymentSpec(spec *v1alpha1.LandscaperDeploymentSpec, f
 	if spec.DataPlane != nil {
 		allErrs = append(allErrs, ValidateDataPlane(spec.DataPlane, fldPath.Child("dataPlane"))...)
 	}
+
+	allErrs = append(allErrs, ValidateLandscaperConfiguration(&spec.LandscaperConfiguration, fldPath.Child("landscaperConfiguration"))...)
 
 	return allErrs
 }
