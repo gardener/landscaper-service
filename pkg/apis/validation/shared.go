@@ -67,7 +67,7 @@ func ValidateDataPlane(dataPlane *v1alpha1.DataPlane, fldPath *field.Path) field
 	return allErrs
 }
 
-var supportedDeployers = []string{"helm", "manifest", "container"}
+var supportedDeployers = []string{"helm", "manifest", "container", "mock"}
 
 func ValidateLandscaperConfiguration(landscaperConfiguration *v1alpha1.LandscaperConfiguration, fldPath *field.Path) field.ErrorList {
 	allErrs := field.ErrorList{}
