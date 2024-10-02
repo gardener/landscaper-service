@@ -12,6 +12,7 @@ To update these dependencies check new versions for
 
 - [landscaper](https://github.com/gardener/landscaper/releases)
 - [ingress-nginx helm chart & image](https://github.com/kubernetes/ingress-nginx/releases)
+**Obacht! Keep the minor and patch version of chart and image in sync, as the chart always refer to image with the same minor and patch version.**
 
 and adapt versions in file [ocm-settings](../../.landscaper/ocm-settings.yaml)
 
@@ -27,3 +28,5 @@ To update it's dependencies check new versions for
 - [fluentbit.io](https://docs.fluentbit.io/manual/installation/docker#tags-and-versions)
 
 and adapt versions in file [logging-stack/settings.yaml](https://github.tools.sap/ocm-reuse/logging-stack/blob/main/logging-stack/settings.yaml)
+
+## SDOL-005
