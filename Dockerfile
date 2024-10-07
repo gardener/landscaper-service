@@ -6,7 +6,7 @@
 FROM gcr.io/distroless/static-debian11:nonroot AS base
 
 #### Landscaper Service controller ####
-FROM base as landscaper-service-controller
+FROM base AS landscaper-service-controller
 
 ARG TARGETOS
 ARG TARGETARCH
@@ -19,7 +19,7 @@ WORKDIR /
 ENTRYPOINT ["/landscaper-service-controller"]
 
 #### Landscaper Service webhooks server ####
-FROM base as landscaper-service-webhooks-server
+FROM base AS landscaper-service-webhooks-server
 
 ARG TARGETOS
 ARG TARGETARCH
@@ -32,7 +32,7 @@ WORKDIR /
 ENTRYPOINT ["/landscaper-service-webhooks-server"]
 
 #### Landscaper Target-shoot Sidecar server ####
-FROM base as landscaper-service-target-shoot-sidecar-server
+FROM base AS landscaper-service-target-shoot-sidecar-server
 
 ARG TARGETOS
 ARG TARGETARCH

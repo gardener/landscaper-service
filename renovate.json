@@ -48,6 +48,16 @@
   ],
   "customManagers": [
     {
+      "description": "Match in ocm-settings.yaml",
+      "customType": "regex",
+      "fileMatch": [
+        ".landscaper/ocm-settings.yaml"
+      ],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>[a-z-.]+?) depName=(?<depName>[^\\s]+?)(?: (lookupName|packageName)=(?<packageName>[^\\s]+?))?(?: versioning=(?<versioning>[^\\s]+?))?(?: extractVersion=(?<extractVersion>[^\\s]+?))?(?: registryUrl=(?<registryUrl>[^\\s]+?))?\\s(?:ENV |ARG )?.+?_VERSION ?(?:\\?=|=|: )? ?(?<currentValue>.+?)\"?\\s"
+      ]
+    },
+    {
       "description": "Match in Makefile",
       "customType": "regex",
       "fileMatch": [
