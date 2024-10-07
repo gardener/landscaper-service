@@ -67,7 +67,7 @@ build-resources: docker-images component
 build-int-test-image:
 	- docker buildx create --name project-v3-builder
 	docker buildx use project-v3-builder
-	@docker buildx build --platform linux/amd64 integration-test/docker -t europe-docker.pkg.dev/sap-gcp-cp-k8s-stable-hub/landscaper/integration-test:1.22.4-alpine3.19 --push
+	@docker buildx build --platform linux/amd64 integration-test/docker -t europe-docker.pkg.dev/sap-gcp-cp-k8s-stable-hub/landscaper/integration-test:1.22.7-alpine3.19 --push
 	- docker buildx rm project-v3-builder
 
 
@@ -92,7 +92,7 @@ FORMATTER_VERSION ?= v0.25.0
 # renovate: datasource=github-releases depName=golangci/golangci-lint
 LINTER_VERSION ?= v1.61.0
 # renovate: datasource=github-releases depName=open-component-model/ocm
-OCM_VERSION ?= v0.13.0
+OCM_VERSION ?= v0.15.0
 
 .PHONY: localbin
 localbin: ## Creates the local bin folder, if it doesn't exist. Not meant to be called manually, used as requirement for the other tool commands.
