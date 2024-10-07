@@ -6,7 +6,7 @@ package landscaperdeployments_test
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"time"
 
 	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
@@ -179,7 +179,7 @@ var _ = Describe("Reconcile", func() {
 		deployment := state.GetDeployment("test")
 
 		ctrl.ReconcileFunc = func(ctx context.Context, deployment *lssv1alpha1.LandscaperDeployment) error {
-			return lsserrors.NewWrappedError(fmt.Errorf(reason), operation, reason, message)
+			return lsserrors.NewWrappedError(errors.New(reason), operation, reason, message)
 		}
 
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(deployment))

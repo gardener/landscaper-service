@@ -7,6 +7,7 @@ package instances_test
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"reflect"
 	"time"
@@ -409,7 +410,7 @@ var _ = Describe("Reconcile", func() {
 		instance := state.GetInstance("test")
 
 		ctrl.ReconcileFunc = func(ctx context.Context, deployment *lssv1alpha1.Instance) error {
-			return lsserrors.NewWrappedError(fmt.Errorf(reason), operation, reason, message)
+			return lsserrors.NewWrappedError(errors.New(reason), operation, reason, message)
 		}
 
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))

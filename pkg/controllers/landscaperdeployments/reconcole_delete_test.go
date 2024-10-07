@@ -6,7 +6,7 @@ package landscaperdeployments_test
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"time"
 
 	lsserrors "github.com/gardener/landscaper-service/pkg/apis/errors"
@@ -103,7 +103,7 @@ var _ = Describe("Delete", func() {
 		deployment := state.GetDeployment("test")
 
 		ctrl.HandleDeleteFunc = func(ctx context.Context, deployment *lssv1alpha1.LandscaperDeployment) error {
-			return lsserrors.NewWrappedError(fmt.Errorf(reason), operation, reason, message)
+			return lsserrors.NewWrappedError(errors.New(reason), operation, reason, message)
 		}
 
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(deployment))

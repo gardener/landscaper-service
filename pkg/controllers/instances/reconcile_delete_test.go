@@ -6,6 +6,7 @@ package instances_test
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -236,7 +237,7 @@ var _ = Describe("Delete", func() {
 		instance := state.GetInstance("test")
 
 		ctrl.HandleDeleteFunc = func(ctx context.Context, deployment *lssv1alpha1.Instance) (reconcile.Result, error) {
-			return reconcile.Result{}, lsserrors.NewWrappedError(fmt.Errorf(reason), operation, reason, message)
+			return reconcile.Result{}, lsserrors.NewWrappedError(errors.New(reason), operation, reason, message)
 		}
 
 		testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(instance))
