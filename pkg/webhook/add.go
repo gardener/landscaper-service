@@ -143,7 +143,7 @@ func DeleteValidatingWebhookConfiguration(ctx context.Context, kubeClient client
 func RegisterWebhooks(ctx context.Context, webhookServer ctrlwebhook.Server, client client.Client, scheme *runtime.Scheme, o Options) error {
 	logger, _ := logging.FromContextOrNew(ctx, []interface{}{lc.KeyMethod, "RegisterWebhooks"})
 
-	if o.WebhookedResources == nil || len(o.WebhookedResources) == 0 {
+	if len(o.WebhookedResources) == 0 {
 		return nil
 	}
 
