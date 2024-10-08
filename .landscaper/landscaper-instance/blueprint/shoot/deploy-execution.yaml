@@ -83,6 +83,7 @@ deployItems:
               annotations:
                 shoot.gardener.cloud/cleanup-extended-apis-finalize-grace-period-seconds: '30'
                 gardener.cloud/operation: reconcile
+                authentication.gardener.cloud/issuer: managed
             {{ if .imports.labels }}
               labels:
 {{ toYaml .imports.labels | indent 16 }}
