@@ -14,7 +14,7 @@
       "type": "n1-standard-2",
       "image": {
         "name": "gardenlinux",
-        "version": "1312.7.0"
+        "version": "1443.10.0"
       }
     },
     "volume": {
@@ -27,7 +27,7 @@
     "maxUnavailable": 0
   },
   "kubernetes": {
-    "version": "1.28",
+    "version": "1.29",
     "kubeAPIServer": {
       "encryptionConfig": {
         "resources": [
