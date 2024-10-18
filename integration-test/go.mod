@@ -5,8 +5,8 @@ go 1.22.7
 require (
 	github.com/gardener/component-spec/bindings-go v0.0.98
 	github.com/gardener/landscaper-service v0.98.0
-	github.com/gardener/landscaper/apis v0.116.0
-	github.com/gardener/landscaper/controller-utils v0.116.0
+	github.com/gardener/landscaper/apis v0.117.0
+	github.com/gardener/landscaper/controller-utils v0.117.0
 	github.com/gardener/landscapercli v0.34.0
 	k8s.io/api v0.30.3
 	k8s.io/apimachinery v0.30.3
@@ -127,7 +127,7 @@ require (
 	k8s.io/apiextensions-apiserver v0.30.3 // indirect
 	k8s.io/klog/v2 v2.130.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20240730131305-7a9a4e85957e // indirect
-	k8s.io/utils v0.0.0-20240711033017-18e509b52bc8 // indirect
+	k8s.io/utils v0.0.0-20240921022957-49e7df575cb6 // indirect
 	oras.land/oras-go v1.2.5 // indirect
 	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.4.1 // indirect
