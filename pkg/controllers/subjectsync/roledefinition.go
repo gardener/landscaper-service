@@ -81,6 +81,11 @@ func GetUserRoleDefinition(namespace string) *RoleDefinition {
 				Resources: []string{"secrets", "configmaps"},
 				Verbs:     []string{"*"},
 			},
+			{
+				APIGroups: []string{""},
+				Resources: []string{"serviceaccounts"},
+				Verbs:     []string{"*"},
+			},
 		},
 	}
 }
