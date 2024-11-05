@@ -1,5 +1,5 @@
 # renovate: datasource=github-releases depName=gardener/landscaper
-LANDSCAPER_VERSION: v0.118.0
+LANDSCAPER_VERSION: v0.119.0
 
 # ingress controller
 # renovate: datasource=github-releases depName=kubernetes/ingress-nginx
