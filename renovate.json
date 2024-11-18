@@ -11,6 +11,7 @@
   "timezone": "Europe/Berlin",
   "extends": [
     "config:best-practices",
+    "group:allNonMajor",
     "group:kubernetes",
     "group:goOpenapi",
     "security:openssf-scorecard",
@@ -34,16 +35,6 @@
         "digest"
       ],
       "rebaseWhen": "auto"
-    },
-    {
-      "description": "Update landscaper manually or add customManager for",
-      "matchManagers": [
-        "gomod"
-      ],
-      "enabled": false,
-      "matchPackageNames": [
-        "/github.com/gardener/landscaper/"
-      ]
     }
   ],
   "customManagers": [
