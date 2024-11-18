@@ -18,6 +18,15 @@
   ],
   "packageRules": [
     {
+      "description": "Combine landscaper updates in a single PR",
+      "matchManagers": [
+        "gomod"
+      ],
+      "matchSourceUrls": [
+        "https://github.com/gardener/landscaper"
+      ]
+    },
+    {
       "description": "Combine landscaper-service updates in a single PR",
       "matchManagers": [
         "gomod"
