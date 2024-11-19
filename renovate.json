@@ -7,7 +7,7 @@
     "every weekday"
   ],
   "prHourlyLimit": 1,
-  "prConcurrentLimit": 2,
+  "prConcurrentLimit": 0,
   "timezone": "Europe/Berlin",
   "extends": [
     "config:best-practices",
@@ -29,13 +29,19 @@
       ]
     },
     {
-      "description": "Combine landscaper-service updates in a single PR",
-      "matchManagers": [
-        "gomod"
+      "description": "Combine all patch updates in GO in a single PR",
+      "groupName": "all patch dependencies",
+      "groupSlug": "all-patch",
+      "matchPackageNames": [
+        "*"
       ],
-      "matchSourceUrls": [
-        "https://github.com/gardener/landscaper-service"
-      ]
+      "matchDatasources": [
+        "go"
+      ],
+      "matchUpdateTypes": [
+        "patch"
+      ],
+      "rebaseWhen": "auto"
     },
     {
       "matchUpdateTypes": [
@@ -59,7 +65,7 @@
       ]
     },
     {
-      "description": "Match in Makefile",
+      "description": "Match in Makefile and Dockerfile",
       "customType": "regex",
       "fileMatch": [
         "(^|/|\\.)([Dd]ocker|[Cc]ontainer)file$",
