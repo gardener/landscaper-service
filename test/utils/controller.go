@@ -76,7 +76,7 @@ func DefaultControllerConfiguration() *config.LandscaperServiceConfiguration {
 	}
 	repositoryContext, err := json.Marshal(map[string]interface{}{
 		"type":    "ociRegistry",
-		"baseUrl": "eu.gcr.io/gardener-project/development",
+		"baseUrl": "eu.gcr.io/sap-gcp-cp-k8s-stable-hub/development",
 	})
 
 	gomega.Expect(err).ToNot(gomega.HaveOccurred())

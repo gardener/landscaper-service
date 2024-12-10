@@ -3,7 +3,7 @@ component:
   name: github.com/gardener/landscaper-service/landscaper-instance
   provider: internal
   repositoryContexts:
-  - baseUrl: eu.gcr.io/gardener-project/development
+  - baseUrl: eu.gcr.io/sap-gcp-cp-k8s-stable-hub/development
     componentNameMapping: urlPath
     type: ociRegistry
   resources: []

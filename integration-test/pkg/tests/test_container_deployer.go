@@ -31,7 +31,7 @@ const (
 	containerTestInstallationName  = "container-test"
 	containerTestComponentName     = "github.com/gardener/landscaper-examples/container-deployer/container-1"
 	containerTestComponentVersion  = "v0.1.0"
-	containerTestRepositoryContext = "eu.gcr.io/gardener-project/landscaper/examples"
+	containerTestRepositoryContext = "europe-docker.pkg.dev/sap-gcp-cp-k8s-stable-hub/landscaper-examples/examples"
 	containerTestConfigmapName     = "test-configmap"
 )
 

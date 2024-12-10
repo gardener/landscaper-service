@@ -31,7 +31,7 @@ const (
 	manifestTestInstallationName  = "manifest-test"
 	manifestTestComponentName     = "github.com/gardener/landscaper-examples/manifest-deployer/create-configmap"
 	manifestTestComponentVersion  = "v0.1.0"
-	manifestTestRepositoryContext = "eu.gcr.io/gardener-project/landscaper/examples"
+	manifestTestRepositoryContext = "europe-docker.pkg.dev/sap-gcp-cp-k8s-stable-hub/landscaper-examples/examples"
 	manifestTestConfigmapName     = "test-configmap"
 )
 
