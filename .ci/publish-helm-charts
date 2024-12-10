@@ -9,7 +9,7 @@ set -o nounset
 set -o pipefail
 
 SOURCE_PATH="$(dirname $0)/.."
-CHART_REPO="eu.gcr.io/gardener-project/landscaper-service/charts/"
+CHART_REPO="europe-docker.pkg.dev/sap-gcp-cp-k8s-stable-hub/landscaper-service/charts/"
 
 ${SOURCE_PATH}/hack/update-helm-chart-version.sh
 

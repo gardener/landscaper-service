@@ -32,7 +32,7 @@ const (
 	helmTestInstallationName  = "helm-test"
 	helmTestComponentName     = "github.com/gardener/landscaper-examples/helm-deployer/helm-chart-1"
 	helmTestComponentVersion  = "v0.1.0"
-	helmTestRepositoryContext = "eu.gcr.io/gardener-project/landscaper/examples"
+	helmTestRepositoryContext = "europe-docker.pkg.dev/sap-gcp-cp-k8s-stable-hub/landscaper-examples/examples"
 	helmTestConfigmapName     = "test-configmap"
 )
 
