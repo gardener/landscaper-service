@@ -58,7 +58,7 @@ spec:
     ref:
       repositoryContext:
         type: ociRegistry
-        baseUrl: eu.gcr.io/gardener-project/development
+        baseUrl: europe-docker.pkg.dev/sap-gcp-cp-k8s-stable-hub/development
       componentName: github.com/gardener/landscaper-service
       version: v0.1.0
 
