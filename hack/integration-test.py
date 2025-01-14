@@ -12,7 +12,7 @@ import json
 import model.container_registry
 import oci.auth as oa
 
-from util import ctx
+from ci.util import ctx
 from subprocess import run
 
 test_purpose = os.environ["TEST_PURPOSE"]
