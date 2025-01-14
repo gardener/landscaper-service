@@ -7,7 +7,7 @@ import tempfile
 import base64
 import yaml
 import json
-import util
+from ci.util import ctx
 import subprocess
 
 class TempFileAuto(object):
@@ -56,7 +56,7 @@ def run_command(args: any, cwd: str = None):
 def get_shoot_adminkubeconfig(shoot_name: str, service_account_name: str, namespace: str, expiration_seconds=86400):
     with tempfile.TemporaryDirectory() as tmpdir:
         print(f'Getting kubeconfig for service account {service_account_name}, expiration_seconds={expiration_seconds}')
-        factory = util.ctx().cfg_factory()
+        factory = ctx().cfg_factory()
         service_account = factory.kubernetes(service_account_name)
         service_account_kubeconfig_path = os.path.join(tmpdir, 'service_account_kubeconfig')
         print(f'DEBUG laas_admin_core_kubeconfig_path={service_account_kubeconfig_path}')
