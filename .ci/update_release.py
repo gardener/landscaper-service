@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import pathlib
-import util
+from ci.util import ctx
 import os
 
 from github.util import GitHubRepositoryHelper
@@ -23,7 +23,7 @@ version_file_path = repo_path / VERSION_FILE_NAME
 
 version_file_contents = version_file_path.read_text()
 
-cfg_factory = util.ctx().cfg_factory()
+cfg_factory = ctx().cfg_factory()
 github_cfg = cfg_factory.github('github_com')
 
 github_repo_helper = GitHubRepositoryHelper(
