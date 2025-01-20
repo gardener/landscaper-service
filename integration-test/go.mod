@@ -7,7 +7,7 @@ require (
 	github.com/gardener/landscaper-service v0.121.0
 	github.com/gardener/landscaper/apis v0.126.0
 	github.com/gardener/landscaper/controller-utils v0.126.0
-	github.com/gardener/landscapercli v0.40.0
+	github.com/gardener/landscapercli v0.42.0
 	k8s.io/api v0.30.3
 	k8s.io/apimachinery v0.30.3
 	k8s.io/client-go v0.30.3
@@ -118,7 +118,7 @@ require (
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/fvbommel/sortorder v1.1.0 // indirect
 	github.com/gardener/component-cli v0.55.0 // indirect
-	github.com/gardener/landscaper v0.121.0 // indirect
+	github.com/gardener/landscaper v0.126.0 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/go-chi/chi v4.1.2+incompatible // indirect
 	github.com/go-errors/errors v1.5.1 // indirect
