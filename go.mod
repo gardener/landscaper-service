@@ -1,6 +1,6 @@
 module github.com/gardener/landscaper-service
 
-go 1.22.7
+go 1.23.5
 
 require (
 	github.com/gardener/component-spec/bindings-go v0.0.98
