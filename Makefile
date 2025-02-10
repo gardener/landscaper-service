@@ -86,7 +86,7 @@ OCM ?= $(LOCALBIN)/ocm
 ## Tool Versions
 CODE_GEN_VERSION ?= $(shell  $(REPO_ROOT)/hack/extract-module-version.sh k8s.io/code-generator)
 # renovate: datasource=github-releases depName=kubernetes-sigs/controller-tools
-CONTROLLER_TOOLS_VERSION ?= v0.17.1
+CONTROLLER_TOOLS_VERSION ?= v0.17.2
 # renovate: datasource=github-tags depName=golang/tools
 FORMATTER_VERSION ?= v0.29.0
 # renovate: datasource=github-releases depName=golangci/golangci-lint
