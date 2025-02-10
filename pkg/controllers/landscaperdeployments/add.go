@@ -26,6 +26,7 @@ func AddControllerToManager(logger logging.Logger, mgr manager.Manager, config *
 	}
 
 	return builder.ControllerManagedBy(mgr).
+		Named("landscaper-deployment-controller").
 		For(&v1alpha1.LandscaperDeployment{}).
 		Owns(&v1alpha1.LandscaperDeployment{}).
 		Owns(&v1alpha1.Instance{}).

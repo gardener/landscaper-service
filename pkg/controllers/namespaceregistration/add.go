@@ -26,10 +26,13 @@ func AddControllerToManager(logger logging.Logger, mgr manager.Manager, config *
 		return err
 	}
 
-	predicates := builder.WithPredicates(predicate.Or(predicate.LabelChangedPredicate{},
-		predicate.GenerationChangedPredicate{}, predicate.AnnotationChangedPredicate{}))
+	predicates := builder.WithPredicates(predicate.Or(
+		predicate.LabelChangedPredicate{},
+		predicate.GenerationChangedPredicate{},
+		predicate.AnnotationChangedPredicate{}))
 
 	return builder.ControllerManagedBy(mgr).
+		Named("namespace-registration-controller").
 		For(&v1alpha1.NamespaceRegistration{}, predicates).
 		WithLogConstructor(func(r *reconcile.Request) logr.Logger { return log.Logr() }).
 		Complete(ctrl)
