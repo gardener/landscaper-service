@@ -25,6 +25,7 @@ func AddControllerToManager(logger logging.Logger, mgr manager.Manager, config *
 	}
 
 	return builder.ControllerManagedBy(mgr).
+		Named("av-monitor-registration-controller").
 		For(&v1alpha1.Instance{}).
 		Owns(&v1alpha1.AvailabilityCollection{}).
 		WithLogConstructor(func(r *reconcile.Request) logr.Logger { return log.Logr() }).
