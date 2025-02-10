@@ -31,6 +31,7 @@ func AddControllerToManager(logger logging.Logger, mgr manager.Manager, config *
 	}
 
 	return builder.ControllerManagedBy(mgr).
+		Named("av-collection-controller").
 		For(&v1alpha1.AvailabilityCollection{}).
 		WithLogConstructor(func(r *reconcile.Request) logr.Logger { return log.Logr() }).
 		Complete(ctrl)

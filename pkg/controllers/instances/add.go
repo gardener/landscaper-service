@@ -27,6 +27,7 @@ func AddControllerToManager(logger logging.Logger, mgr manager.Manager, config *
 	}
 
 	return builder.ControllerManagedBy(mgr).
+		Named("instance-controller").
 		For(&lssv1alpha1.Instance{}).
 		Owns(&lsv1alpha1.Installation{}).
 		Owns(&lsv1alpha1.Target{}).
