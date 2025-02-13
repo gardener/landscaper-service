@@ -638,7 +638,7 @@ func ParseIngressDomain(kubeconfigFile string) (string, error) {
 		return "", fmt.Errorf("failed to parse regex")
 	}
 	match := rexp.FindStringSubmatch(clusterServer)
-	if match == nil || len(match) < 2 {
+	if len(match) < 2 {
 		return "", fmt.Errorf("failed to parse url")
 	}
 	ingressDomain := fmt.Sprintf("ingress.%s", match[1])
