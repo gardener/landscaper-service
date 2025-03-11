@@ -8,14 +8,17 @@
   ],
   "prHourlyLimit": 1,
   "prConcurrentLimit": 0,
+  "minimumReleaseAge": "3 days",
   "timezone": "Europe/Berlin",
   "extends": [
+    "config:recommended",
     "config:best-practices",
     "group:kubernetes",
     "group:goOpenapi",
     "security:openssf-scorecard",
     "default:automergeDigest",
-    ":dependencyDashboard"
+    ":dependencyDashboard",
+    ":rebaseStalePrs"
   ],
   "packageRules": [
     {
