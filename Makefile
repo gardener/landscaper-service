@@ -88,7 +88,7 @@ CODE_GEN_VERSION ?= $(shell  $(REPO_ROOT)/hack/extract-module-version.sh k8s.io/
 # renovate: datasource=github-releases depName=kubernetes-sigs/controller-tools
 CONTROLLER_TOOLS_VERSION ?= v0.17.2
 # renovate: datasource=github-tags depName=golang/tools
-FORMATTER_VERSION ?= v0.30.0
+FORMATTER_VERSION ?= v0.31.0
 # renovate: datasource=github-releases depName=golangci/golangci-lint
 LINTER_VERSION ?= v1.64.5
 # renovate: datasource=github-releases depName=open-component-model/ocm
