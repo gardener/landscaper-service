@@ -3,6 +3,6 @@ LANDSCAPER_VERSION: v0.127.0
 
 # ingress controller
 # renovate: datasource=github-releases depName=kubernetes/ingress-nginx
-INGRESS_NGINX_CHART_VERSION: 4.11.1
+INGRESS_NGINX_CHART_VERSION: 4.12.1
 # renovate: datasource=github-releases depName=kubernetes/ingress-nginx
-INGRESS_NGINX_IMAGE_VERSION: v1.11.1
+INGRESS_NGINX_IMAGE_VERSION: v1.12.1
