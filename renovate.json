@@ -51,9 +51,42 @@
         "digest"
       ],
       "rebaseWhen": "auto"
+    },
+    {
+      "matchPackageNames": [
+        "github.com/gardener/landscaper",
+        "github.com/gardener/landscaper/apis",
+        "github.com/gardener/landscaper/controller-utils"
+      ],
+      "description": "Update references in go.mod, integration-test/go.mod and .landscaper/ocm-settings.yaml",
+      "rebaseWhen": "auto",
+      "automerge": true,
+      "automergeType": "pr-comment",
+      "automergeComment": "chore(deps): new Landscaper version references (automerge)",
+      "groupName": "gardener/landscaper",
+      "groupSlug": "landscaper",
+      "matchFileNames": [
+        "go.mod",
+        "integration-test/go.mod",
+        ".landscaper/ocm-settings.yaml"
+      ],
+      "versioning": "semver",
+      "enabled": true
     }
   ],
   "customManagers": [
+    {
+      "description": "Landscaper version",
+      "customType": "regex",
+      "fileMatch": [
+        "\\.landscaper/ocm-settings\\.yaml"
+      ],
+      "matchStrings": [
+        "LANDSCAPER_VERSION:\\s*v(?<currentValue>\\S+)"
+      ],
+      "depNameTemplate": "gardener/landscaper",
+      "datasourceTemplate": "github-tags"
+    },
     {
       "description": "Match in ocm-settings.yaml",
       "customType": "regex",
