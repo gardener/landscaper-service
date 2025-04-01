@@ -22,7 +22,9 @@
   ],
   "packageRules": [
     {
-      "matchPackageNames": ["github.com/gardener/landscaper-service"],
+      "matchPackageNames": [
+        "github.com/gardener/landscaper-service"
+      ],
       "enabled": false
     },
     {
@@ -63,8 +65,11 @@
       ]
     },
     {
+      "customType": "regex",
       "description": "Match in ocm-settings.yaml",
-      "fileMatch": [".landscaper/ocm-settings.yaml"],
+      "fileMatch": [
+        ".landscaper/ocm-settings.yaml"
+      ],
       "matchStrings": [
         "chartVersion:\\s*(?<currentValue>\\S+)",
         "image:\\s*k8s.gcr.io/ingress-nginx/controller:(?<currentValue>\\S+)"
