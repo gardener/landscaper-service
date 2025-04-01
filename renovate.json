@@ -22,16 +22,8 @@
   ],
   "packageRules": [
     {
-      "description": "Combine landscaper updates in a single PR",
-      "groupName": "landscaper group",
-      "groupSlug": "landscaper",
-      "matchDatasources": [
-        "go"
-      ],
-      "matchPackageNames": [
-        "github.com/gardener/landscaper{/,}**"
-      ],
-      "rebaseWhen": "auto"
+      "matchPackageNames": ["github.com/gardener/landscaper-service"],
+      "enabled": false
     },
     {
       "description": "Combine all patch updates in GO in a single PR",
@@ -69,6 +61,16 @@
       "matchStrings": [
         "# renovate: datasource=(?<datasource>[a-z-.]+?) depName=(?<depName>[^\\s]+?)(?: (lookupName|packageName)=(?<packageName>[^\\s]+?))?(?: versioning=(?<versioning>[^\\s]+?))?(?: extractVersion=(?<extractVersion>[^\\s]+?))?(?: registryUrl=(?<registryUrl>[^\\s]+?))?\\s(?:ENV |ARG )?.+?_VERSION ?(?:\\?=|=|: )? ?(?<currentValue>.+?)\"?\\s"
       ]
+    },
+    {
+      "description": "Match in ocm-settings.yaml",
+      "fileMatch": [".landscaper/ocm-settings.yaml"],
+      "matchStrings": [
+        "chartVersion:\\s*(?<currentValue>\\S+)",
+        "image:\\s*k8s.gcr.io/ingress-nginx/controller:(?<currentValue>\\S+)"
+      ],
+      "depNameTemplate": "kubernetes/ingress-nginx",
+      "datasourceTemplate": "helm"
     },
     {
       "description": "Match in Makefile and Dockerfile",
