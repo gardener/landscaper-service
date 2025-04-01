@@ -1,4 +1,4 @@
-LANDSCAPER_VERSION: v0.127.0
+LANDSCAPER_VERSION: v0.128.0
 
 # ingress controller
 # renovate: datasource=helm depName=kubernetes/ingress-nginx
