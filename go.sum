@@ -22,10 +22,10 @@ github.com/fxamacker/cbor/v2 v2.7.0 h1:iM5WgngdRBanHcxugY4JySA0nk1wZorNOpTgCMedv
 github.com/fxamacker/cbor/v2 v2.7.0/go.mod h1:pxXPTn3joSm21Gbwsv0w9OSA2y1HFR9qXEeXQVeNoDQ=
 github.com/gardener/component-spec/bindings-go v0.0.98 h1:noougWGxAQHr3ipqA2vbZ3qwodZ7wWX24QTD+zcZf7M=
 github.com/gardener/component-spec/bindings-go v0.0.98/go.mod h1:qr7kADDXbXB0huul+ih/B43YkwyiMFYQepp/tqJ331c=
-github.com/gardener/landscaper/apis v0.128.0 h1:ZYL5coXGwHDZK6qIBSPQgibkJY6N9ZTNzs2DJ68df/s=
-github.com/gardener/landscaper/apis v0.128.0/go.mod h1:b00hKOc9KQtCLhF/gUQhApQMi59q7S8NcaRzOJAijB8=
-github.com/gardener/landscaper/controller-utils v0.128.0 h1:25997KiYwprhW/WNLA8uPZ1Fr8ZVS++mdJkoxasZzwk=
-github.com/gardener/landscaper/controller-utils v0.128.0/go.mod h1:QyUY06x4C98srcEhuVcT4+nt9iTzmH6eVyt08a6/f5s=
+github.com/gardener/landscaper/apis v0.129.0 h1:HMDzJt0iF+Dld6cciEbQFuEFqVxYreVQ+vuEW7ZXKxk=
+github.com/gardener/landscaper/apis v0.129.0/go.mod h1:b00hKOc9KQtCLhF/gUQhApQMi59q7S8NcaRzOJAijB8=
+github.com/gardener/landscaper/controller-utils v0.129.0 h1:u56eXLr20ruoyHqAzPRn/+Udgdm+rWr0fjbT1WHqT0w=
+github.com/gardener/landscaper/controller-utils v0.129.0/go.mod h1:KqdTG8I2yxaKCDOnsixvSTmWdvdBjCKYlPE73vp4dWY=
 github.com/ghodss/yaml v1.0.0 h1:wQHKEahhL6wmXdzwWG11gIVCkOv05bNOh+Rxn0yngAk=
 github.com/ghodss/yaml v1.0.0/go.mod h1:4dBDuWmgqj2HViK6kFavaiC9ZROes6MMH2rRYeMEF04=
 github.com/go-logr/logr v1.4.2 h1:6pFjapn8bFcIbiKo3XT4j/BhANplGihG6tvd+8rYgrY=
