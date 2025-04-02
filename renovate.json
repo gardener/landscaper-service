@@ -71,6 +71,7 @@
         ".landscaper/ocm-settings.yaml"
       ],
       "versioning": "semver",
+      "minimumReleaseAge": "0 days",
       "enabled": true
     }
   ],
