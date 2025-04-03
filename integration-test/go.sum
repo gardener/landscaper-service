@@ -507,6 +507,8 @@ github.com/gardener/landscaper/controller-utils v0.129.0 h1:u56eXLr20ruoyHqAzPRn
 github.com/gardener/landscaper/controller-utils v0.129.0/go.mod h1:KqdTG8I2yxaKCDOnsixvSTmWdvdBjCKYlPE73vp4dWY=
 github.com/gardener/landscapercli v0.44.0 h1:346pVVdAL+Aq5cUhvpQK+PMpG+Zjz+IxXwHtdkoDLhY=
 github.com/gardener/landscapercli v0.44.0/go.mod h1:TrxpksFFxf5HzdGm6yHMrICgr+Y8Sr+fjTWTAK8k8oc=
+github.com/gardener/landscapercli v0.45.0 h1:DeVgBwC05uGZdKhRcN0UTJXhLTHTE4woCiCNsx0NgQM=
+github.com/gardener/landscapercli v0.45.0/go.mod h1:7VUdJ9DwbHC8joCvPtKnbJlVT9XYM7Gr0ugMOTnXHY0=
 github.com/ghodss/yaml v1.0.0 h1:wQHKEahhL6wmXdzwWG11gIVCkOv05bNOh+Rxn0yngAk=
 github.com/ghodss/yaml v1.0.0/go.mod h1:4dBDuWmgqj2HViK6kFavaiC9ZROes6MMH2rRYeMEF04=
 github.com/go-chi/chi v4.1.2+incompatible h1:fGFk2Gmi/YKXk0OmGfBh0WgmN3XB8lVnEyNz34tQRec=
