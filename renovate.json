@@ -20,6 +20,9 @@
     ":dependencyDashboard",
     ":rebaseStalePrs"
   ],
+  "postUpdateOptions": [
+    "gomodTidy"
+  ],
   "packageRules": [
     {
       "matchPackageNames": [
