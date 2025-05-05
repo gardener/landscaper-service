@@ -1,7 +1,7 @@
 LANDSCAPER_VERSION: v0.129.0
 
 # ingress controller
-# renovate: datasource=helm depName=kubernetes/ingress-nginx registryUrl=artifacthub.io/packages/helm
+# renovate: datasource=helm depName=ingress-nginx registryUrl=artifacthub.io/packages/helm
 INGRESS_NGINX_CHART_VERSION: 4.12.1
-# renovate: datasource=github-releases depName=kubernetes/ingress-nginx
+# renovate: datasource=github-releases depName=ingress-nginx
 INGRESS_NGINX_IMAGE_VERSION: v1.12.1

@@ -76,6 +76,24 @@
       "versioning": "semver",
       "minimumReleaseAge": "0 days",
       "enabled": true
+    },
+    {
+      "matchPackageNames": [
+        "kubernetes/ingress-nginx",
+        "k8s.gcr.io/ingress-nginx/controller"
+      ],
+      "groupName": "Ingress Nginx updates"
+    },
+    {
+      "matchDatasources": [
+        "helm"
+      ],
+      "matchPackageNames": [
+        "ingress-nginx"
+      ],
+      "registryUrls": [
+        "https://kubernetes.github.io/ingress-nginx"
+      ]
     }
   ],
   "customManagers": [
@@ -102,29 +120,30 @@
       ]
     },
     {
+      "description": "Ingress Nginx chart version",
       "customType": "regex",
-      "description": "Match in ocm-settings.yaml",
       "managerFilePatterns": [
-        "/.landscaper/ocm-settings.yaml/"
+        "/\\.landscaper/ocm-settings\\.yaml/"
       ],
       "matchStrings": [
-        "chartVersion:\\s*(?<currentValue>\\S+)",
-        "image:\\s*k8s.gcr.io/ingress-nginx/controller:(?<currentValue>\\S+)"
+        "INGRESS_NGINX_CHART_VERSION:\\s*(?<currentValue>\\S+)"
       ],
       "depNameTemplate": "kubernetes/ingress-nginx",
-      "datasourceTemplate": "helm"
+      "datasourceTemplate": "helm",
+      "packageNameTemplate": "ingress-nginx",
+      "registryUrlTemplate": "artifacthub.io/packages/helm"
     },
     {
-      "description": "Match in Makefile and Dockerfile",
+      "description": "Ingress Nginx image version",
       "customType": "regex",
       "managerFilePatterns": [
-        "/(^|/|\\.)([Dd]ocker|[Cc]ontainer)file$/",
-        "/(^|/)([Dd]ocker|[Cc]ontainer)file[^/]*$/",
-        "/(^|/)Makefile$/"
+        "/\\.landscaper/ocm-settings\\.yaml/"
       ],
       "matchStrings": [
-        "# renovate: datasource=(?<datasource>[a-z-.]+?) depName=(?<depName>[^\\s]+?)(?: (lookupName|packageName)=(?<packageName>[^\\s]+?))?(?: versioning=(?<versioning>[^\\s]+?))?(?: extractVersion=(?<extractVersion>[^\\s]+?))?(?: registryUrl=(?<registryUrl>[^\\s]+?))?\\s(?:ENV |ARG )?.+?_VERSION ?(?:\\?=|=)\"? ?(?<currentValue>.+?)\"?\\s"
-      ]
+        "INGRESS_NGINX_IMAGE_VERSION:\\s*v(?<currentValue>\\S+)"
+      ],
+      "depNameTemplate": "k8s.gcr.io/ingress-nginx/controller",
+      "datasourceTemplate": "docker"
     }
   ]
 }
