@@ -27,7 +27,7 @@ imports:
           "type": "n1-standard-2",
           "image": {
             "name": "gardenlinux",
-            "version": "1312.7.0"
+            "version": "1592.9.0"
           }
         },
         "volume": {
