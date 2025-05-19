@@ -146,9 +146,12 @@
       "datasourceTemplate": "docker"
     },
     {
-      "customType": "regex",
-      "description": "Gardenlinux in JSON shoot-config",
-      "managerFilePatterns": "\\.landscaper/blueprint/shoot-config\\.json",
+     "customType": "regex",
+      "description": "Gardenlinux in landscaper-service shoot-config.json and values-shoot.yaml",
+      "managerFilePatterns": [
+        "\\.landscaper/blueprint/shoot-config\\.json",
+        "\\.landscaper/landscaper-instance/test/internal-dataplane/values-shoot\\.yaml"
+      ],
       "matchStrings": [
         "gardenlinux\",\\s.*\"version\": \"\\s*(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
       ],
