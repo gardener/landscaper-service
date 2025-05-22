@@ -349,7 +349,7 @@ var _ = Describe("Reconcile", func() {
 })
 var _ = Describe("failed/succeded state handling", func() {
 
-	It("should set status to failed if timeout occured and lshealthcheck is ok", func() {
+	It("should set status to failed if timeout occurred and lshealthcheck is ok", func() {
 		avInstance := &lssv1alpha1.AvailabilityInstance{}
 		lsHealthChecks := &lsv1alpha1.LsHealthCheckList{
 			Items: []lsv1alpha1.LsHealthCheck{
@@ -366,7 +366,7 @@ var _ = Describe("failed/succeded state handling", func() {
 		Expect(avInstance.FailedSince).ToNot(BeNil())
 	})
 
-	It("should set status to failed if timeout occured and lshealthcheck is failed", func() {
+	It("should set status to failed if timeout occurred and lshealthcheck is failed", func() {
 		avInstance := &lssv1alpha1.AvailabilityInstance{}
 		lsHealthChecks := &lsv1alpha1.LsHealthCheckList{
 			Items: []lsv1alpha1.LsHealthCheck{

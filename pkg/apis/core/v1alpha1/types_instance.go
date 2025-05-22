@@ -79,8 +79,8 @@ type InstanceSpec struct {
 // AutomaticReconcile defines the automatic reconcile configuration.
 type AutomaticReconcile struct {
 	// Interval specifies the interval after which the instance is being automatically reconciled.
-	//+kubebuilder:validation:Type=string
-	//+kubebuilder:validation:Schemaless
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Schemaless
 	Interval lsv1alpha1.Duration `json:"interval"`
 }
 

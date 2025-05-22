@@ -25,10 +25,15 @@
   ],
   "packageRules": [
     {
+      "description": "Create landscaper updates immediately",
+      "groupName": "landscaper group",
+      "groupSlug": "landscaper",
+      "minimumReleaseAge": "0 days",
+      "enabled": true,
       "matchPackageNames": [
-        "github.com/gardener/landscaper-service"
+        "github.com/gardener/landscaper{/,}**"
       ],
-      "enabled": false
+      "rebaseWhen": "auto"
     },
     {
       "description": "Combine all patch updates in GO in a single PR",
