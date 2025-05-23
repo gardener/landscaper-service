@@ -4,8 +4,8 @@ go 1.24.3
 
 require (
 	github.com/gardener/component-spec/bindings-go v0.0.98
-	github.com/gardener/landscaper/apis v0.131.0
-	github.com/gardener/landscaper/controller-utils v0.131.0
+	github.com/gardener/landscaper/apis v0.134.0
+	github.com/gardener/landscaper/controller-utils v0.134.0
 	github.com/go-logr/logr v1.4.2
 	github.com/google/uuid v1.6.0
 	github.com/onsi/ginkgo v1.16.5
