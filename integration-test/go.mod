@@ -4,7 +4,7 @@ go 1.24.3
 
 require (
 	github.com/gardener/component-spec/bindings-go v0.0.98
-	github.com/gardener/landscaper-service v0.126.0
+	github.com/gardener/landscaper-service v0.127.0
 	github.com/gardener/landscaper/apis v0.134.0
 	github.com/gardener/landscaper/controller-utils v0.134.0
 	github.com/gardener/landscapercli v0.48.0
