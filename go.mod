@@ -6,7 +6,7 @@ require (
 	github.com/gardener/component-spec/bindings-go v0.0.98
 	github.com/gardener/landscaper/apis v0.135.0
 	github.com/gardener/landscaper/controller-utils v0.135.0
-	github.com/go-logr/logr v1.4.2
+	github.com/go-logr/logr v1.4.3
 	github.com/google/uuid v1.6.0
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.37.0
@@ -17,7 +17,7 @@ require (
 	k8s.io/apimachinery v0.33.1
 	k8s.io/client-go v0.33.1
 	k8s.io/code-generator v0.33.1
-	k8s.io/utils v0.0.0-20250502105355-0f33e8f1c979
+	k8s.io/utils v0.0.0-20250604170112-4c0f3b243397
 	sigs.k8s.io/controller-runtime v0.20.4
 )
 
