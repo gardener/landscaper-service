@@ -14,7 +14,7 @@ landscaper-service:
         ocm_repository: europe-docker.pkg.dev/sap-gcp-cp-k8s-stable-hub/landscaper
     steps:
       verify:
-        image: 'golang:1.24.3'
+        image: 'golang:1.24.4'
       ocm_build_and_publish:
         image: europe-docker.pkg.dev/gardener-project/releases/cicd/job-image:1.2360.0
         privilege_mode: privileged
