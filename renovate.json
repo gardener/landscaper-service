@@ -1,3 +1,4 @@
+
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "stopUpdatingLabel": "take-a-break-renovate",
@@ -24,6 +25,44 @@
     "gomodTidy"
   ],
   "packageRules": [
+    {
+      "matchManagers": [
+        "gomod"
+      ],
+      "matchDepNames": [
+        "go"
+      ],
+      "matchDepTypes": [
+        "golang"
+      ],
+      "rangeStrategy": "bump"
+    },
+    {
+      "description": "Update golang version in pipelines",
+      "groupName": "Update golang version in pipelines",
+      "groupSlug": "golang-pipelines",
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "golang"
+      ],
+      "matchFileNames": [
+        ".ci/pipeline_definitions"
+      ],
+      "extractVersion": "^image: 'golang:(?<version>\\d+\\.\\d+\\.\\d+)'$",
+      "versioning": "semver"
+    },
+    {
+      "description": "No update for landscaper-service in integration tests as used locally",
+      "matchManagers": [
+        "gomod"
+      ],
+      "enabled": false,
+      "matchPackageNames": [
+        "/github.com/gardener/landscaper-service/"
+      ]
+    },
     {
       "description": "Create landscaper updates immediately",
       "groupName": "landscaper group",
