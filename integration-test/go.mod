@@ -1,6 +1,6 @@
 module github.com/gardener/landscaper-service/test/integration
 
-go 1.24.3
+go 1.24.4
 
 require (
 	github.com/gardener/component-spec/bindings-go v0.0.98
