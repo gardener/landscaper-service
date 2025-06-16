@@ -282,7 +282,7 @@ var _ = Describe("Reconcile", func() {
 
 		counter := 1
 		result := testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
-		for (result.Requeue || result.RequeueAfter > 0) && counter < 5 {
+		for (result.RequeueAfter > 0) && counter < 5 {
 			counter++
 			result = testutils.ShouldReconcile(ctx, ctrl, testutils.RequestFromObject(namespaceRegistration))
 			time.Sleep(1 * time.Second)
