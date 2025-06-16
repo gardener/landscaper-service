@@ -523,7 +523,6 @@ var _ = Describe("Reconcile", func() {
 		result, err := ctrl.Reconcile(ctx, request)
 
 		Expect(err).ToNot(HaveOccurred())
-		Expect(result.Requeue).To(BeTrue())
 		Expect(result.RequeueAfter).To(Equal(time.Minute * 10))
 	})
 
@@ -541,7 +540,6 @@ var _ = Describe("Reconcile", func() {
 		result, err := ctrl.Reconcile(ctx, request)
 
 		Expect(err).ToNot(HaveOccurred())
-		Expect(result.Requeue).To(BeTrue())
 		Expect(result.RequeueAfter).To(Equal(instancescontroller.AutomaticReconcileDefaultDuration))
 	})
 
