@@ -2,8 +2,9 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-FROM golang:1.24.4-alpine3.21@sha256:56a23791af0f77c87b049230ead03bd8c3ad41683415ea4595e84ce7eada121a
+FROM golang:1.24.4-alpine3.22
 
+RUN apk update
 RUN apk add --no-cache --no-progress \
     bash \
     git \
@@ -15,7 +16,9 @@ RUN apk add --no-cache --no-progress \
     cargo \
     python3 python3-dev py3-pip  \
     libc-dev \
-    libffi-dev
+    libffi-dev \
+    yaml-dev
+# RUN apk upgrade libyaml
 
 RUN curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash && \
     ln -s "$(which helm)" /bin/helm3
