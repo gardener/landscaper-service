@@ -32,15 +32,16 @@ const (
 func ValidatorFromResourceType(log logging.Logger, kubeClient client.Client, scheme *runtime.Scheme, resource string) (GenericValidator, error) {
 	abstrVal := newAbstractedValidator(log, kubeClient, scheme)
 	var val GenericValidator
-	if resource == LandscaperDeploymentsResourceType {
+	switch resource {
+	case LandscaperDeploymentsResourceType:
 		val = &LandscaperDeploymentValidator{abstrVal}
-	} else if resource == InstancesResourceType {
+	case InstancesResourceType:
 		val = &InstanceValidator{abstrVal}
-	} else if resource == ServiceTargetConfigsResourceType {
+	case ServiceTargetConfigsResourceType:
 		val = &ServiceTargetConfigValidator{abstrVal}
-	} else if resource == TargetSchedulingsResourceType {
+	case TargetSchedulingsResourceType:
 		val = &TargetSchedulingValidator{abstrVal}
-	} else {
+	default:
 		return nil, fmt.Errorf("unable to find validator for resource type %q", resource)
 	}
 	return val, nil

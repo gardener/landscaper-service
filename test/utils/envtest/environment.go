@@ -126,7 +126,7 @@ func (e *Environment) InitResources(ctx context.Context, resourcesPath string) (
 			uObj.SetName(ownerRef.Name)
 			uObj.SetNamespace(obj.GetNamespace())
 			if err := e.Client.Get(ctx, kutil.ObjectKeyFromObject(uObj), uObj); err != nil {
-				return fmt.Errorf("no owner found for %s\n", kutil.ObjectKeyFromObject(obj).String())
+				return fmt.Errorf("no owner found for %s", kutil.ObjectKeyFromObject(obj).String())
 			}
 			refs[i].UID = uObj.GetUID()
 		}

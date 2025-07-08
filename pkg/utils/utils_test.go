@@ -91,15 +91,15 @@ var _ = Describe("Utils", func() {
 		secret := &corev1.Secret{}
 		Expect(utils.HasOperationAnnotation(secret, lssv1alpha1.LandscaperServiceOperationIgnore)).To(BeFalse())
 
-		secret.ObjectMeta.Annotations = map[string]string{
+		secret.Annotations = map[string]string{
 			"someKey": "someVar",
 		}
 		Expect(utils.HasOperationAnnotation(secret, lssv1alpha1.LandscaperServiceOperationIgnore)).To(BeFalse())
 
-		secret.ObjectMeta.Annotations[lssv1alpha1.LandscaperServiceOperationAnnotation] = "invalid"
+		secret.Annotations[lssv1alpha1.LandscaperServiceOperationAnnotation] = "invalid"
 		Expect(utils.HasOperationAnnotation(secret, lssv1alpha1.LandscaperServiceOperationIgnore)).To(BeFalse())
 
-		secret.ObjectMeta.Annotations[lssv1alpha1.LandscaperServiceOperationAnnotation] = lssv1alpha1.LandscaperServiceOperationIgnore
+		secret.Annotations[lssv1alpha1.LandscaperServiceOperationAnnotation] = lssv1alpha1.LandscaperServiceOperationIgnore
 		Expect(utils.HasOperationAnnotation(secret, lssv1alpha1.LandscaperServiceOperationIgnore)).To(BeTrue())
 	})
 

@@ -221,12 +221,12 @@ func (r *NamespaceregistrationSubjectSyncRunner) addNamespaceregistrationAndChec
 		}
 
 		role := &rbacv1.Role{}
-		if err := r.resourceClusterAdminClient.Get(r.BaseTestRunner.ctx, types.NamespacedName{Name: USER_ROLE_IN_NAMESPACE, Namespace: namespaceRegistration.Name}, role); err != nil {
+		if err := r.resourceClusterAdminClient.Get(r.ctx, types.NamespacedName{Name: USER_ROLE_IN_NAMESPACE, Namespace: namespaceRegistration.Name}, role); err != nil {
 			return false, nil
 		}
 
 		rolebinding := &rbacv1.RoleBinding{}
-		if err := r.resourceClusterAdminClient.Get(r.BaseTestRunner.ctx, types.NamespacedName{Name: USER_ROLE_BINDING_IN_NAMESPACE, Namespace: namespaceRegistration.Name}, rolebinding); err != nil {
+		if err := r.resourceClusterAdminClient.Get(r.ctx, types.NamespacedName{Name: USER_ROLE_BINDING_IN_NAMESPACE, Namespace: namespaceRegistration.Name}, rolebinding); err != nil {
 			return false, nil
 		}
 		if len(rolebinding.Subjects) != len(subjects.Spec.Subjects) {
@@ -383,21 +383,21 @@ func (r *NamespaceregistrationSubjectSyncRunner) checkInitialSetup(deployment *l
 
 	logger.Info("check initial namespace existance", "name", LS_USER_NAMESPACE)
 	namespace := &corev1.Namespace{}
-	err = r.resourceClusterAdminClient.Get(r.BaseTestRunner.ctx, types.NamespacedName{Name: LS_USER_NAMESPACE}, namespace)
+	err = r.resourceClusterAdminClient.Get(r.ctx, types.NamespacedName{Name: LS_USER_NAMESPACE}, namespace)
 	if err != nil {
 		return fmt.Errorf("failed retrieving namespace: %w", err)
 	}
 
 	logger.Info("check role existance", "name", LS_USER_ROLE_IN_NAMESPACE)
 	role := &rbacv1.Role{}
-	err = r.resourceClusterAdminClient.Get(r.BaseTestRunner.ctx, types.NamespacedName{Name: LS_USER_ROLE_IN_NAMESPACE, Namespace: namespace.Name}, role)
+	err = r.resourceClusterAdminClient.Get(r.ctx, types.NamespacedName{Name: LS_USER_ROLE_IN_NAMESPACE, Namespace: namespace.Name}, role)
 	if err != nil {
 		return fmt.Errorf("failed retrieving role: %w", err)
 	}
 
 	logger.Info("check role binding existance and being empty", "name", LS_USER_ROLE_BINDING_IN_NAMESPACE)
 	rolebinding := &rbacv1.RoleBinding{}
-	err = r.resourceClusterAdminClient.Get(r.BaseTestRunner.ctx, types.NamespacedName{Name: LS_USER_ROLE_BINDING_IN_NAMESPACE, Namespace: namespace.Name}, rolebinding)
+	err = r.resourceClusterAdminClient.Get(r.ctx, types.NamespacedName{Name: LS_USER_ROLE_BINDING_IN_NAMESPACE, Namespace: namespace.Name}, rolebinding)
 	if err != nil {
 		return fmt.Errorf("failed retrieving role: %w", err)
 	}
@@ -408,14 +408,14 @@ func (r *NamespaceregistrationSubjectSyncRunner) checkInitialSetup(deployment *l
 
 	logger.Info("check cluster role existance", "name", USER_CLUSTER_ROLE)
 	clusterRole := &rbacv1.ClusterRole{}
-	err = r.resourceClusterAdminClient.Get(r.BaseTestRunner.ctx, types.NamespacedName{Name: USER_CLUSTER_ROLE}, clusterRole)
+	err = r.resourceClusterAdminClient.Get(r.ctx, types.NamespacedName{Name: USER_CLUSTER_ROLE}, clusterRole)
 	if err != nil {
 		return fmt.Errorf("failed retrieving clusterrole: %w", err)
 	}
 
 	logger.Info("check clusterrole binding existance and being empty", "name", USER_CLUSTER_ROLE_BINDING)
 	clusterRolebinding := &rbacv1.ClusterRoleBinding{}
-	err = r.resourceClusterAdminClient.Get(r.BaseTestRunner.ctx, types.NamespacedName{Name: USER_CLUSTER_ROLE_BINDING}, clusterRolebinding)
+	err = r.resourceClusterAdminClient.Get(r.ctx, types.NamespacedName{Name: USER_CLUSTER_ROLE_BINDING}, clusterRolebinding)
 	if err != nil {
 		return fmt.Errorf("failed retrieving role: %w", err)
 	}
