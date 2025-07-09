@@ -50,7 +50,7 @@ var _ = Describe("ServiceTargetConfig", func() {
 	It("should allow valid resource", func() {
 		testObj := createServiceTargetConfig("test", "lss-system")
 
-		testObj.ObjectMeta.Labels = map[string]string{
+		testObj.Labels = map[string]string{
 			lssv1alpha1.ServiceTargetConfigVisibleLabelName: "true",
 		}
 		testObj.Spec = lssv1alpha1.ServiceTargetConfigSpec{
@@ -99,7 +99,7 @@ var _ = Describe("ServiceTargetConfig", func() {
 	It("should deny resource with invalid visible label", func() {
 		testObj := createServiceTargetConfig("test", "lss-system")
 
-		testObj.ObjectMeta.Labels = map[string]string{
+		testObj.Labels = map[string]string{
 			lssv1alpha1.ServiceTargetConfigVisibleLabelName: "abc",
 		}
 		testObj.Spec = lssv1alpha1.ServiceTargetConfigSpec{
@@ -127,7 +127,7 @@ var _ = Describe("ServiceTargetConfig", func() {
 	It("should deny resource with invalid secret reference", func() {
 		testObj := createServiceTargetConfig("test", "lss-system")
 
-		testObj.ObjectMeta.Labels = map[string]string{
+		testObj.Labels = map[string]string{
 			lssv1alpha1.ServiceTargetConfigVisibleLabelName: "true",
 		}
 		testObj.Spec = lssv1alpha1.ServiceTargetConfigSpec{
@@ -157,7 +157,7 @@ var _ = Describe("ServiceTargetConfig", func() {
 	It("should deny resource with missing ingress domain", func() {
 		testObj := createServiceTargetConfig("test", "lss-system")
 
-		testObj.ObjectMeta.Labels = map[string]string{
+		testObj.Labels = map[string]string{
 			lssv1alpha1.ServiceTargetConfigVisibleLabelName: "true",
 		}
 		testObj.Spec = lssv1alpha1.ServiceTargetConfigSpec{

@@ -595,8 +595,8 @@ func (c *Controller) mutateInstallation(ctx context.Context, installation *lsv1a
 		Context: instance.Status.ContextRef.Name,
 		ComponentDescriptor: &lsv1alpha1.ComponentDescriptorDefinition{
 			Reference: &lsv1alpha1.ComponentDescriptorReference{
-				ComponentName: c.Operation.Config().LandscaperServiceComponent.Name,
-				Version:       c.Operation.Config().LandscaperServiceComponent.Version,
+				ComponentName: c.Config().LandscaperServiceComponent.Name,
+				Version:       c.Config().LandscaperServiceComponent.Version,
 			},
 		},
 		Blueprint: lsv1alpha1.BlueprintDefinition{
@@ -766,8 +766,8 @@ func (c *Controller) mutateInstallationExternalDataPlane(ctx context.Context, in
 		Context: instance.Status.ContextRef.Name,
 		ComponentDescriptor: &lsv1alpha1.ComponentDescriptorDefinition{
 			Reference: &lsv1alpha1.ComponentDescriptorReference{
-				ComponentName: c.Operation.Config().LandscaperServiceComponent.Name,
-				Version:       c.Operation.Config().LandscaperServiceComponent.Version,
+				ComponentName: c.Config().LandscaperServiceComponent.Name,
+				Version:       c.Config().LandscaperServiceComponent.Version,
 			},
 		},
 		Blueprint: lsv1alpha1.BlueprintDefinition{

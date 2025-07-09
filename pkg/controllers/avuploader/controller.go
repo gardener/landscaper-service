@@ -69,7 +69,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 	//do not run on spec updates or when status was already uploaded
 	logger.Debug("check if upload is required")
-	if availabilityCollection.ObjectMeta.Generation != availabilityCollection.Status.ObservedGeneration || availabilityCollection.Status.LastRun == availabilityCollection.Status.LastReported {
+	if availabilityCollection.Generation != availabilityCollection.Status.ObservedGeneration || availabilityCollection.Status.LastRun == availabilityCollection.Status.LastReported {
 		logger.Debug("skip upload since spec changed or status was already uploaded")
 		return reconcile.Result{}, nil
 	}

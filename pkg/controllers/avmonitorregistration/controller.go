@@ -49,8 +49,8 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	logger, ctx := c.log.StartReconcileAndAddToContext(ctx, req)
 
 	availabilityCollection := &lssv1alpha1.AvailabilityCollection{}
-	availabilityCollection.Name = c.Operation.Config().AvailabilityMonitoring.AvailabilityCollectionName
-	availabilityCollection.Namespace = c.Operation.Config().AvailabilityMonitoring.AvailabilityCollectionNamespace
+	availabilityCollection.Name = c.Config().AvailabilityMonitoring.AvailabilityCollectionName
+	availabilityCollection.Namespace = c.Config().AvailabilityMonitoring.AvailabilityCollectionNamespace
 
 	instances := &lssv1alpha1.InstanceList{}
 	if err := c.Client().List(ctx, instances); err != nil {

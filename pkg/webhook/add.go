@@ -78,9 +78,9 @@ func UpdateValidatingWebhookConfiguration(ctx context.Context, kubeClient client
 			Operations: []admissionregistrationv1.OperationType{admissionregistrationv1.Create, admissionregistrationv1.Update},
 			Rule:       admissionregistrationv1.Rule{},
 		}
-		rule.Rule.APIGroups = []string{elem.APIGroup}
-		rule.Rule.APIVersions = elem.APIVersions
-		rule.Rule.Resources = []string{elem.ResourceName}
+		rule.APIGroups = []string{elem.APIGroup}
+		rule.APIVersions = elem.APIVersions
+		rule.Resources = []string{elem.ResourceName}
 		clientConfig := admissionregistrationv1.WebhookClientConfig{
 			CABundle: o.CABundle,
 		}

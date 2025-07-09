@@ -78,8 +78,8 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 	//dont run if spec has not changed and we are not in time yet
 	logger.Debug("check if reconcile is required")
-	if availabilityCollection.ObjectMeta.Generation == availabilityCollection.Status.ObservedGeneration &&
-		time.Since(availabilityCollection.Status.LastRun.Time) < c.Operation.Config().AvailabilityMonitoring.PeriodicCheckInterval.Duration {
+	if availabilityCollection.Generation == availabilityCollection.Status.ObservedGeneration &&
+		time.Since(availabilityCollection.Status.LastRun.Time) < c.Config().AvailabilityMonitoring.PeriodicCheckInterval.Duration {
 		logger.Debug("skip reconcile since spec has not changed and periodic check interval is not in time yet")
 		return reconcile.Result{Requeue: true}, nil
 	}
@@ -180,7 +180,7 @@ func (c *Controller) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	}
 	availabilityCollection.Status.Self = c.getLsHealthCheckFromSelfLandscaper(ctx,
 		c.Config().AvailabilityMonitoring.SelfLandscaperNamespace, availabilityCollection.Status.Self)
-	availabilityCollection.Status.ObservedGeneration = availabilityCollection.ObjectMeta.Generation
+	availabilityCollection.Status.ObservedGeneration = availabilityCollection.Generation
 	availabilityCollection.Status.LastRun = v1.NewTime(time.Now())
 
 	logFailedInstances(logger, *availabilityCollection)

@@ -13,7 +13,6 @@ import (
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	lsv1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 	v1alpha1 "github.com/gardener/landscaper/apis/core/v1alpha1"
 
 	config "github.com/gardener/landscaper-service/pkg/apis/config/v1alpha1"
@@ -65,7 +64,7 @@ func DefaultControllerConfiguration() *config.LandscaperServiceConfiguration {
 		GardenerConfiguration: config.GardenerConfiguration{
 			ShootSecretBindingName: "secret-binding",
 			ProjectName:            "test",
-			ServiceAccountKubeconfig: lsv1alpha1.SecretReference{
+			ServiceAccountKubeconfig: v1alpha1.SecretReference{
 				ObjectReference: v1alpha1.ObjectReference{
 					Name:      "service-account",
 					Namespace: "laas-system",
@@ -80,7 +79,7 @@ func DefaultControllerConfiguration() *config.LandscaperServiceConfiguration {
 	})
 
 	gomega.Expect(err).ToNot(gomega.HaveOccurred())
-	cfg.LandscaperServiceComponent.RepositoryContext = lsv1alpha1.NewAnyJSON(repositoryContext)
+	cfg.LandscaperServiceComponent.RepositoryContext = v1alpha1.NewAnyJSON(repositoryContext)
 	return cfg
 }
 

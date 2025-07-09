@@ -19,7 +19,6 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
-	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/labels"
@@ -83,7 +82,7 @@ func ForceDeleteInstallations(ctx context.Context, kclient client.Client, kubeCo
 
 	for _, installation := range installationList.Items {
 		if err := kclient.Get(ctx, types.NamespacedName{Name: installation.Name, Namespace: installation.Namespace}, &installation); err != nil {
-			if k8serrors.IsNotFound(err) {
+			if apierrors.IsNotFound(err) {
 				continue
 			}
 			return err
@@ -118,7 +117,7 @@ func CleanupLaasResources(ctx context.Context, kclient client.Client, namespace 
 	for _, deployment := range deploymentList.Items {
 		logger.Info("Deleting landscaper deployment", lc.KeyResource, types.NamespacedName{Name: deployment.Name, Namespace: deployment.Namespace}.String())
 		if err := kclient.Delete(ctx, &deployment); err != nil {
-			if !k8serrors.IsNotFound(err) {
+			if !apierrors.IsNotFound(err) {
 				return fmt.Errorf("failed to delete landscaper deployment %q: %w", deployment.Name, err)
 			}
 		}
@@ -140,7 +139,7 @@ func CleanupLaasResources(ctx context.Context, kclient client.Client, namespace 
 	for _, serviceTargetConfig := range serviceTargetConfigList.Items {
 		logger.Info("Deleting service target config", lc.KeyResource, types.NamespacedName{Name: serviceTargetConfig.Name, Namespace: serviceTargetConfig.Namespace}.String())
 		if err := kclient.Delete(ctx, &serviceTargetConfig); err != nil {
-			if !k8serrors.IsNotFound(err) {
+			if !apierrors.IsNotFound(err) {
 				return fmt.Errorf("failed to delete service target config %q: %w", serviceTargetConfig.Name, err)
 			}
 		}
@@ -282,7 +281,7 @@ func DeleteValidatingWebhookConfiguration(ctx context.Context, kclient client.Cl
 	}
 
 	if err := kclient.Delete(ctx, validationConfig); err != nil {
-		if !k8serrors.IsNotFound(err) {
+		if !apierrors.IsNotFound(err) {
 			return fmt.Errorf("failed to delete validating webhook configuration %s/%s: %w", name, namespace, err)
 		}
 	}
