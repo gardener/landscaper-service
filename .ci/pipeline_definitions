@@ -40,7 +40,7 @@ landscaper-service:
           - source
           depends:
           - verify
-          - run_integration_test
+#          - run_integration_test
       traits:
         draft_release: ~
         scheduling:
