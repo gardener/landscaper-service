@@ -145,7 +145,6 @@ deployItems:
               secretBindingName: {{ .imports.secretBindingName }}
               kubernetes:
                 version: "{{ .imports.shootConfig.kubernetes.version }}"
-                enableStaticTokenKubeconfig: false
                 kubeAPIServer:
                   {{ if ((.imports.shootConfig.kubernetes.kubeAPIServer).oidcConfig) }}
                   oidcConfig:
