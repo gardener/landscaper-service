@@ -27,7 +27,7 @@
     "maxUnavailable": 0
   },
   "kubernetes": {
-    "version": "1.32",
+    "version": "1.31",
     "kubeAPIServer": {
       "encryptionConfig": {
         "resources": [
