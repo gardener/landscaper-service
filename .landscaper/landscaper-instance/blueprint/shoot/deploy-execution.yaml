@@ -40,6 +40,33 @@ deployItems:
       deleteTimeout: 30m
 
       manifests:
+      {{ if .imports.shootConfig.kubernetes.kubeAPIServer.oidcConfig }}
+        - policy: manage
+          manifest:
+            apiVersion: v1
+            kind: ConfigMap
+            metadata:
+              name: "{{ .imports.name }}-authentication-config"
+              namespace: "{{ .imports.namespace }}"
+            data:
+              config.yaml: |
+                apiVersion: apiserver.config.k8s.io/v1beta1
+                kind: AuthenticationConfiguration
+                jwt:
+                  - issuer:
+                      url: "{{ .imports.shootConfig.kubernetes.kubeAPIServer.oidcConfig.issuerURL }}"
+                      audiences:
+                        - "{{ .imports.shootConfig.kubernetes.kubeAPIServer.oidcConfig.clientID }}"
+                      audienceMatchPolicy: MatchAny
+                    claimMappings:
+                      username:
+                        claim: email
+                        prefix: ""
+                      groups:
+                        claim: groups
+                        prefix: ""
+        {{ end }}
+
         {{ if .imports.auditPolicy }}
         - policy: manage
           manifest:
@@ -146,10 +173,6 @@ deployItems:
               kubernetes:
                 version: "{{ .imports.shootConfig.kubernetes.version }}"
                 kubeAPIServer:
-                  {{ if ((.imports.shootConfig.kubernetes.kubeAPIServer).oidcConfig) }}
-                  oidcConfig:
-{{ toYaml .imports.shootConfig.kubernetes.kubeAPIServer.oidcConfig | indent 20 }}
-                  {{ end }}
                   {{ if .imports.auditPolicy }}
                   auditConfig:
                     auditPolicy:
