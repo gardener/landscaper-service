@@ -173,6 +173,10 @@ deployItems:
               kubernetes:
                 version: "{{ .imports.shootConfig.kubernetes.version }}"
                 kubeAPIServer:
+                  {{ if .imports.shootConfig.kubernetes.kubeAPIServer.oidcConfig }}
+                  structuredAuthentication:
+                    configMapName: "{{ .imports.name }}-authentication-config"
+                  {{ end }}
                   {{ if .imports.auditPolicy }}
                   auditConfig:
                     auditPolicy:
