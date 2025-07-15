@@ -60,10 +60,10 @@ deployItems:
                       audienceMatchPolicy: MatchAny
                     claimMappings:
                       username:
-                        claim: email
+                        claim: "{{ default "email" .imports.shootConfig.kubernetes.kubeAPIServer.oidcConfig.usernameClaim }}"
                         prefix: ""
                       groups:
-                        claim: groups
+                        claim: "{{ default "groups" .imports.shootConfig.kubernetes.kubeAPIServer.oidcConfig.groupsClaim }}"
                         prefix: ""
         {{ end }}
 
