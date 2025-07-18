@@ -7,7 +7,7 @@ require (
 	github.com/gardener/landscaper-service v0.0.0-00010101000000-000000000000
 	github.com/gardener/landscaper/apis v0.137.0
 	github.com/gardener/landscaper/controller-utils v0.137.0
-	github.com/gardener/landscapercli v0.48.0
+	github.com/gardener/landscapercli v0.49.0
 	k8s.io/api v0.33.3
 	k8s.io/apimachinery v0.33.3
 	k8s.io/client-go v0.33.3
