@@ -3,30 +3,10 @@ SPDX-FileCopyrightText: 2023 "SAP SE or an SAP affiliate company and Gardener co
 
 SPDX-License-Identifier: Apache-2.0
 -->
+# Using Renovate Bot for Dependency Updates
 
-# landscaper-service dependency update
+To automate dependency updates, we use [Renovate Bot](https://docs.renovatebot.com/#why-use-renovate). Renovate regularly scans our project for outdated dependencies and automatically creates pull requests to update them and contributors will get notifications about. This helps keep your project secure and up-to-date with minimal manual effort.
 
-landscaper-service uses some external dependencies.
+Renovate can be configured via a `renovate.json` file in the repository, for all the different places where we reference or make usage of Free & Open Source Software.
 
-To update these dependencies check new versions for
-
-- [landscaper](https://github.com/gardener/landscaper/releases)
-- [ingress-nginx helm chart & image](https://github.com/kubernetes/ingress-nginx/releases)
-**Obacht! Keep the minor and patch version of chart and image in sync, as the chart always refer to image with the same minor and patch version.**
-
-and adapt versions in file [ocm-settings](../../.landscaper/ocm-settings.yaml)
-
-## OCM reuse logging-stack
-
-The [logging-stack](https://github.tools.sap/ocm-reuse/logging-stack) is now used from [OCM reuse](https://github.tools.sap/ocm-reuse)
-
-To update it's dependencies check new versions for
-
-- [artifacthub.io / cert-manager](https://artifacthub.io/packages/helm/cert-manager/cert-manager)
-- [SAP / sap-btp-service-operator](https://github.com/SAP/sap-btp-service-operator/releases/)
-- [brancz / kube-rbac-proxy](https://quay.io/repository/brancz/kube-rbac-proxy?tab=tags&tag=latest)
-- [fluentbit.io](https://docs.fluentbit.io/manual/installation/docker#tags-and-versions)
-
-and adapt versions in file [logging-stack/settings.yaml](https://github.tools.sap/ocm-reuse/logging-stack/blob/main/logging-stack/settings.yaml)
-
-## SDOL-005
+Renovate provides a [Dependency Dashboard](https://github.com/gardener/landscaper-service/issues/328) where you can find details of configuration and open pull requests.
