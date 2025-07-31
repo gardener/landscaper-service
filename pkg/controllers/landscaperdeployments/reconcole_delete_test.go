@@ -13,7 +13,7 @@ import (
 
 	"github.com/gardener/landscaper/controller-utils/pkg/logging"
 
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
 	kutil "github.com/gardener/landscaper/controller-utils/pkg/kubernetes"
