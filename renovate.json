@@ -14,10 +14,12 @@
   "extends": [
     "config:recommended",
     "config:best-practices",
+    "default:automergeDigest",
+    "docker:pinDigests",
     "group:kubernetes",
     "group:goOpenapi",
+    "helpers:pinGitHubActionDigests",
     "security:openssf-scorecard",
-    "default:automergeDigest",
     ":dependencyDashboard",
     ":rebaseStalePrs"
   ],
@@ -54,7 +56,7 @@
       "versioning": "semver"
     },
     {
-      "description": "No update for landscaper-service in integration tests as used locally",
+      "description": "Ignore version  for landscaper-service in integration tests as used locally",
       "matchManagers": [
         "gomod"
       ],
@@ -141,6 +143,18 @@
       ],
       "depNameTemplate": "gardener/landscaper",
       "datasourceTemplate": "github-tags"
+    },
+    {
+      "description": "Match in Makefile and Dockerfile",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/(^|/|\\.)([Dd]ocker|[Cc]ontainer)file$/",
+        "/(^|/)([Dd]ocker|[Cc]ontainer)file[^/]*$/",
+        "/(^|/)Makefile$/"
+      ],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>[a-z-.]+?) depName=(?<depName>[^\\s]+?)(?: (lookupName|packageName)=(?<packageName>[^\\s]+?))?(?: versioning=(?<versioning>[^\\s]+?))?(?: extractVersion=(?<extractVersion>[^\\s]+?))?(?: registryUrl=(?<registryUrl>[^\\s]+?))?\\s(?:ENV |ARG )?.+?_VERSION ?(?:\\?=|=)\"? ?(?<currentValue>.+?)\"?\\s"
+      ]
     },
     {
       "description": "Match in ocm-settings.yaml",

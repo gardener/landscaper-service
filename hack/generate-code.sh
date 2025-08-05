@@ -37,10 +37,9 @@ rm -f ${GOPATH}/bin/conversion-gen
 source "$CODE_GEN_SCRIPT"
 
 echo "> Generating deepcopy/conversion/defaulter functions"
-kube::codegen::gen_helpers \
-  --input-pkg-root "$LAAS_MODULE_PATH" \
-  --output-base "$src_path" \
+kube::codegen::gen_helpers "$PROJECT_ROOT" \
   --boilerplate "${PROJECT_ROOT}/hack/boilerplate.go.txt"
+
 
 echo
 echo "> Generating CRDs"
