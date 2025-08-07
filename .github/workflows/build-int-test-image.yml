@@ -1,0 +1,25 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Log in to GCR
+      env:
+        GCR_SERVICE_ACCOUNT_KEY: ${{ secrets.GCR_SERVICE_ACCOUNT_KEY }}
+      run: |
+        echo "${GCR_SERVICE_ACCOUNT_KEY}" | docker login -u _json_key --password-stdin https://europe-docker.pkg.dev
+
+    - name: Build the Integration Tests Docker image
+      run: make build-int-test-image
