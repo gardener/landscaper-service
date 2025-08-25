@@ -31,7 +31,7 @@ landscaper-service:
         run_integration_test:
           depends:
             - ocm_build_and_publish
-          image: 'europe-docker.pkg.dev/sap-gcp-cp-k8s-stable-hub/landscaper/integration-test:1.24.6-alpine3.22'
+          image: 'europe-docker.pkg.dev/sap-gcp-cp-k8s-stable-hub/landscaper/integration-test:1.25.0-alpine3.22'
           execute:
             - "integration_test"
           output_dir: 'integration_test'
@@ -58,7 +58,7 @@ landscaper-service:
           depends:
             - ocm_build_and_publish
             - verify
-          image: 'europe-docker.pkg.dev/sap-gcp-cp-k8s-stable-hub/landscaper/integration-test:1.24.6-alpine3.22'
+          image: 'europe-docker.pkg.dev/sap-gcp-cp-k8s-stable-hub/landscaper/integration-test:1.25.0-alpine3.22'
           execute:
           - "integration_test_pr"
           output_dir: 'integration_test'
@@ -84,7 +84,7 @@ landscaper-service:
         run_integration_test:
           depends:
             - ocm_build_and_publish
-          image: 'europe-docker.pkg.dev/sap-gcp-cp-k8s-stable-hub/landscaper/integration-test:1.24.6-alpine3.22'
+          image: 'europe-docker.pkg.dev/sap-gcp-cp-k8s-stable-hub/landscaper/integration-test:1.25.0-alpine3.22'
           execute:
             - "integration_test"
           output_dir: 'integration_test'
