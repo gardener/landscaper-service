@@ -10,7 +10,7 @@ require (
 	github.com/gardener/landscapercli v0.51.0
 	k8s.io/api v0.33.3
 	k8s.io/apimachinery v0.33.3
-	k8s.io/client-go v0.33.3
+	k8s.io/client-go/v12 v12.0.0
 	sigs.k8s.io/controller-runtime v0.21.0
 )
 
