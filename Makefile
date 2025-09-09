@@ -67,7 +67,9 @@ build-resources: docker-images component
 build-int-test-image:
 	- docker buildx create --name project-v3-builder
 	docker buildx use project-v3-builder
-	@docker buildx build --platform linux/amd64 integration-test/docker -t europe-docker.pkg.dev/sap-gcp-cp-k8s-stable-hub/landscaper/integration-test:1.24.6-alpine3.22 --push
+	@BASE_IMAGE_VERSION=$$(awk -F':' '/^FROM / {print $$2}' integration-test/docker/Dockerfile | cut -d'@' -f1) && \
+	echo "Building integration test image with base image version $$BASE_IMAGE_VERSION" && \
+ 	docker buildx build --platform linux/amd64 integration-test/docker -t europe-docker.pkg.dev/sap-gcp-cp-k8s-stable-hub/landscaper/integration-test:$$BASE_IMAGE_VERSION --push
 	- docker buildx rm project-v3-builder
 
 
