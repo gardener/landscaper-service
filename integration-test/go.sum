@@ -1054,8 +1054,8 @@ github.com/gardener/landscaper/apis v0.140.0 h1:7TmUa5ycEjSkQvGgbKxgPnySrZvCwTAG
 github.com/gardener/landscaper/apis v0.140.0/go.mod h1:/aadFlzjmCb6Hq3qNVyPLcOB2sCdpuQtQ17r3N/C5Hw=
 github.com/gardener/landscaper/controller-utils v0.140.0 h1:v8sGBsqTVUhunB6OJNM5qbEY2MxzuEeAnXkhMECy/zo=
 github.com/gardener/landscaper/controller-utils v0.140.0/go.mod h1:igUAA94YZGDMza/apePlI/PxM1VwcvitmMQPoCVgoF0=
-github.com/gardener/landscapercli v0.51.0 h1:NOs6Jjw9LOwUTBh6OIf3x60lXG9Kg9WKR312q3VmHb4=
-github.com/gardener/landscapercli v0.51.0/go.mod h1:PpgKkBRSHupPPT12e8XCqZRg5LDfVx4Hre8jNqOYbek=
+github.com/gardener/landscapercli v0.52.0 h1:JBfmfh7V+/CydGlvAMenBhsqZy30DFhKIUaMJG87P9M=
+github.com/gardener/landscapercli v0.52.0/go.mod h1:sosAUuEp/Min9w53vId5Y8lFN6LAp4+7CYnhBlD1h34=
 github.com/ghodss/yaml v1.0.0 h1:wQHKEahhL6wmXdzwWG11gIVCkOv05bNOh+Rxn0yngAk=
 github.com/ghodss/yaml v1.0.0/go.mod h1:4dBDuWmgqj2HViK6kFavaiC9ZROes6MMH2rRYeMEF04=
 github.com/gliderlabs/ssh v0.3.8 h1:a4YXD1V7xMF9g5nTkdfnja3Sxy1PVDCj1Zg4Wb8vY6c=
