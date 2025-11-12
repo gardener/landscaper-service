@@ -8,9 +8,9 @@ require (
 	github.com/gardener/landscaper/apis v0.144.0
 	github.com/gardener/landscaper/controller-utils v0.144.0
 	github.com/gardener/landscapercli v0.55.0
-	k8s.io/api v0.34.1
-	k8s.io/apimachinery v0.34.1
-	k8s.io/client-go v0.34.1
+	k8s.io/api v0.34.2
+	k8s.io/apimachinery v0.34.2
+	k8s.io/client-go v0.34.2
 	sigs.k8s.io/controller-runtime v0.22.4
 )
 
