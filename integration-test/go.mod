@@ -5,8 +5,8 @@ go 1.25.4
 require (
 	github.com/gardener/component-spec/bindings-go v0.0.98
 	github.com/gardener/landscaper-service v0.0.0-00010101000000-000000000000
-	github.com/gardener/landscaper/apis v0.144.0
-	github.com/gardener/landscaper/controller-utils v0.144.0
+	github.com/gardener/landscaper/apis v0.150.0
+	github.com/gardener/landscaper/controller-utils v0.150.0
 	github.com/gardener/landscapercli v0.55.0
 	k8s.io/api v0.34.2
 	k8s.io/apimachinery v0.34.2
@@ -145,7 +145,7 @@ require (
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/fvbommel/sortorder v1.1.0 // indirect
 	github.com/fxamacker/cbor/v2 v2.9.0 // indirect
-	github.com/gardener/landscaper v0.144.0 // indirect
+	github.com/gardener/landscaper v0.150.0 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/globocom/go-buffer v1.2.2 // indirect
 	github.com/go-chi/chi v4.1.2+incompatible // indirect
