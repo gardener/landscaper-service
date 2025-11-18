@@ -1040,8 +1040,8 @@ github.com/gardener/landscaper/legacy-component-cli v0.151.0 h1:31jIioiRNEeZp8yM
 github.com/gardener/landscaper/legacy-component-cli v0.151.0/go.mod h1:fmTMwE8znjuaf418F8/6iUK5lJ9YrfTtyH8zXjDxSMg=
 github.com/gardener/landscaper/legacy-component-spec/bindings-go v0.151.0 h1:gZmSHcrHH9/C82bf2prLEReIyJ7nhGkeezgiB1sgYgY=
 github.com/gardener/landscaper/legacy-component-spec/bindings-go v0.151.0/go.mod h1:VAU/tcGXGyuXrflOiTm8PUuJPgk9LirdkTxTTCSme/g=
-github.com/gardener/landscapercli v0.55.0 h1:PeUD/YHg2atr6mHcoPK7WGyzwSkqmyDngmPdDP2Dhf0=
-github.com/gardener/landscapercli v0.55.0/go.mod h1:/2EEGEi1Wzxw3bJZfSCN5Lw6lklATH0YV7ggPZwKSE4=
+github.com/gardener/landscapercli v0.56.0 h1:IWkOiEQaAOb20jyvGAJajCDTWGrlIQpX0TGawJBEyIU=
+github.com/gardener/landscapercli v0.56.0/go.mod h1:43we9Or4AEKkjzOylE+8GV5FvxJMMkXVqK54NNgwG/Q=
 github.com/ghodss/yaml v1.0.0 h1:wQHKEahhL6wmXdzwWG11gIVCkOv05bNOh+Rxn0yngAk=
 github.com/ghodss/yaml v1.0.0/go.mod h1:4dBDuWmgqj2HViK6kFavaiC9ZROes6MMH2rRYeMEF04=
 github.com/gliderlabs/ssh v0.3.8 h1:a4YXD1V7xMF9g5nTkdfnja3Sxy1PVDCj1Zg4Wb8vY6c=

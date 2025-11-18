@@ -7,7 +7,7 @@ require (
 	github.com/gardener/landscaper/apis v0.151.0
 	github.com/gardener/landscaper/controller-utils v0.151.0
 	github.com/gardener/landscaper/legacy-component-spec/bindings-go v0.151.0
-	github.com/gardener/landscapercli v0.55.0
+	github.com/gardener/landscapercli v0.56.0
 	k8s.io/api v0.34.2
 	k8s.io/apimachinery v0.34.2
 	k8s.io/client-go v0.34.2
