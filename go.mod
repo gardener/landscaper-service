@@ -3,9 +3,9 @@ module github.com/gardener/landscaper-service
 go 1.25.4
 
 require (
-	github.com/gardener/landscaper/apis v0.151.0
-	github.com/gardener/landscaper/controller-utils v0.151.0
-	github.com/gardener/landscaper/legacy-component-spec/bindings-go v0.151.0
+	github.com/gardener/landscaper/apis v0.152.0
+	github.com/gardener/landscaper/controller-utils v0.152.0
+	github.com/gardener/landscaper/legacy-component-spec/bindings-go v0.152.0
 	github.com/go-logr/logr v1.4.3
 	github.com/google/uuid v1.6.0
 	github.com/onsi/ginkgo/v2 v2.27.2
@@ -22,6 +22,8 @@ require (
 )
 
 exclude github.com/imdario/mergo v1.0.0
+
+replace github.com/ThalesIgnite/crypto11 => github.com/ThalesGroup/crypto11 v1.6.0
 
 require (
 	github.com/Masterminds/semver/v3 v3.4.0 // indirect
@@ -88,7 +90,7 @@ require (
 	k8s.io/apiextensions-apiserver v0.34.2 // indirect
 	k8s.io/gengo/v2 v2.0.0-20250922181213-ec3ebc5fd46b // indirect
 	k8s.io/klog/v2 v2.130.1 // indirect
-	k8s.io/kube-openapi v0.0.0-20250910181357-589584f1c912 // indirect
+	k8s.io/kube-openapi v0.0.0-20251125145642-4e65d59e963e // indirect
 	sigs.k8s.io/json v0.0.0-20241014173422-cfa47c3a1cc8 // indirect
 	sigs.k8s.io/randfill v1.0.0 // indirect
 	sigs.k8s.io/structured-merge-diff/v6 v6.3.0 // indirect
