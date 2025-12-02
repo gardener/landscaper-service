@@ -1,6 +1,6 @@
 module github.com/gardener/landscaper-service
 
-go 1.25.4
+go 1.25.5
 
 require (
 	github.com/gardener/landscaper/apis v0.152.0
