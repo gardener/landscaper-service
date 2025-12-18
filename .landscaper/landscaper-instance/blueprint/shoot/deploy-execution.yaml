@@ -169,7 +169,8 @@ deployItems:
                 services: 100.64.0.0/13
               cloudProfileName: {{ .imports.shootConfig.provider.type }}
               region: {{ .imports.shootConfig.region }}
-              secretBindingName: {{ .imports.secretBindingName }}
+              secretBindingName: null
+              credentialsBindingName: {{ .imports.secretBindingName }}
               kubernetes:
                 version: "{{ .imports.shootConfig.kubernetes.version }}"
                 kubeAPIServer:
